@@ -3,56 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Still & Golden Photography | Newborn & Family Photographer | Frankston, Melbourne</title>
-  <meta name="description" content="Still & Golden Photography — specialist newborn and family photographer serving Frankston, Chelsea, Seaford, Langwarrin, Mt Eliza and surrounding Melbourne suburbs. Warm, editorial, timeless imagery.">
-  <meta name="keywords" content="newborn photographer Frankston, family photographer Frankston, newborn photography Melbourne, still and golden photography, Chelsea photographer, Seaford photographer, Langwarrin photographer, Mt Eliza photographer, Carrum photographer">
+  <title>Still & Golden — Newborn & Family Photographer, Frankston Melbourne</title>
+  <meta name="description" content="Still & Golden — newborn and family photographer serving Frankston, Chelsea, Seaford, Langwarrin, Mt Eliza and surrounding Melbourne suburbs.">
+  <meta name="keywords" content="newborn photographer Frankston, family photographer Frankston, newborn photography Melbourne, Chelsea photographer, Seaford photographer, Langwarrin photographer, Mt Eliza photographer">
   <meta property="og:title" content="Still & Golden Photography">
-  <meta property="og:description" content="Newborn & family photography in Frankston and surrounding Melbourne suburbs.">
+  <meta property="og:description" content="Newborn & family photography — Frankston, Melbourne.">
   <meta property="og:type" content="website">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --cream:    #F4EDE4;
-      --cream-dk: #E8DDD2;
-      --gold:     #B8945A;
-      --gold-lt:  #D4AD72;
-      --charcoal: #1E1814;
-      --warm-grey:#7A706A;
-      --white:    #FDFAF7;
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --border: rgba(26,23,20,0.1);
 
-      --font-display: 'Cormorant Garamond', Georgia, serif;
-      --font-body:    'Jost', sans-serif;
-
-      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--cream);
-      color: var(--charcoal);
-      font-family: var(--font-body);
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
       font-weight: 300;
-      font-size: 16px;
-      line-height: 1.7;
+      font-size: 15px;
+      line-height: 1.6;
       overflow-x: hidden;
-    }
-
-    /* ─── GRAIN OVERLAY ─── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.35;
     }
 
     /* ─── NAV ─── */
@@ -63,1065 +48,830 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 24px 48px;
-      transition: background 0.4s var(--ease), padding 0.4s var(--ease);
+      padding: 28px 48px;
+      mix-blend-mode: normal;
+      transition: background 0.3s, padding 0.3s;
     }
     nav.scrolled {
-      background: rgba(244, 237, 228, 0.94);
-      backdrop-filter: blur(12px);
-      padding: 16px 48px;
-      border-bottom: 1px solid rgba(184, 148, 90, 0.15);
+      background: rgba(248,245,241,0.95);
+      backdrop-filter: blur(10px);
+      padding: 18px 48px;
+      border-bottom: 1px solid var(--border);
     }
     .nav-logo {
-      font-family: var(--font-display);
-      font-size: 1.4rem;
+      font-family: var(--serif);
+      font-size: 1.15rem;
       font-weight: 400;
-      letter-spacing: 0.06em;
-      color: var(--charcoal);
+      letter-spacing: 0.04em;
+      color: var(--warm-black);
       text-decoration: none;
     }
-    .nav-logo span { color: var(--gold); }
-    .nav-links {
+    .nav-right {
       display: flex;
-      gap: 36px;
-      list-style: none;
+      align-items: center;
+      gap: 40px;
     }
-    .nav-links a {
-      font-family: var(--font-body);
+    .nav-right a {
+      font-family: var(--sans);
       font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--charcoal);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--warm-black);
       text-decoration: none;
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: var(--gold); }
-
-    .nav-cta {
-      font-family: var(--font-body);
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--white);
-      background: var(--charcoal);
-      padding: 10px 24px;
-      text-decoration: none;
-      transition: background 0.3s, color 0.3s;
+    .nav-right a:hover { color: var(--gold); }
+    .nav-right a.book {
+      border-bottom: 1px solid var(--warm-black);
+      padding-bottom: 1px;
     }
-    .nav-cta:hover { background: var(--gold); }
+    .nav-right a.book:hover {
+      border-color: var(--gold);
+    }
 
-    .nav-hamburger { display: none; cursor: pointer; }
-    .nav-hamburger span {
-      display: block;
-      width: 24px; height: 1.5px;
-      background: var(--charcoal);
-      margin: 5px 0;
+    /* hamburger */
+    .hamburger { display: none; cursor: pointer; background: none; border: none; padding: 4px; }
+    .hamburger span {
+      display: block; width: 22px; height: 1px;
+      background: var(--warm-black); margin: 5px 0;
       transition: 0.3s;
     }
 
-    /* ─── HERO ─── */
-    #hero {
-      position: relative;
-      height: 100vh;
-      min-height: 640px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      overflow: hidden;
+    /* ─── INTRO ─── */
+    #intro {
+      padding: 160px 48px 60px;
+      max-width: 900px;
     }
-
-    .hero-image-side {
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-img-placeholder {
-      width: 100%; height: 100%;
-      background: linear-gradient(160deg, #D4BFA0 0%, #B89870 40%, #9A7D55 100%);
-      position: relative;
-    }
-    .hero-img-placeholder::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to right, transparent 60%, var(--cream) 100%);
-    }
-    /* Replace .hero-img-placeholder with your actual hero image:
-       background: url('images/hero.jpg') center/cover no-repeat; */
-
-    .hero-text-side {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 120px 64px 80px 48px;
-      position: relative;
-    }
-
-    .hero-eyebrow {
-      font-family: var(--font-body);
+    .intro-location {
+      font-family: var(--sans);
       font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.22em;
+      font-weight: 400;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 24px;
-      opacity: 0;
-      animation: fadeUp 0.9s var(--ease) 0.2s forwards;
-    }
-
-    .hero-headline {
-      font-family: var(--font-display);
-      font-size: clamp(3.2rem, 5vw, 5.5rem);
-      font-weight: 300;
-      line-height: 1.08;
-      letter-spacing: -0.01em;
-      color: var(--charcoal);
-      margin-bottom: 28px;
-      opacity: 0;
-      animation: fadeUp 0.9s var(--ease) 0.4s forwards;
-    }
-    .hero-headline em {
-      font-style: italic;
-      color: var(--gold);
-    }
-
-    .hero-sub {
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      font-weight: 300;
-      color: var(--warm-grey);
-      max-width: 380px;
-      line-height: 1.8;
-      margin-bottom: 44px;
-      opacity: 0;
-      animation: fadeUp 0.9s var(--ease) 0.6s forwards;
-    }
-
-    .hero-actions {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      opacity: 0;
-      animation: fadeUp 0.9s var(--ease) 0.8s forwards;
-    }
-
-    .btn-primary {
-      display: inline-block;
-      font-family: var(--font-body);
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--white);
-      background: var(--charcoal);
-      padding: 16px 36px;
-      text-decoration: none;
-      transition: background 0.3s, transform 0.2s;
-    }
-    .btn-primary:hover { background: var(--gold); transform: translateY(-2px); }
-
-    .btn-ghost {
-      font-family: var(--font-body);
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--charcoal);
-      text-decoration: none;
-      border-bottom: 1px solid var(--gold);
-      padding-bottom: 2px;
-      transition: color 0.2s;
-    }
-    .btn-ghost:hover { color: var(--gold); }
-
-    .hero-scroll-hint {
-      position: absolute;
-      bottom: 40px; left: 48px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: var(--font-body);
-      font-size: 0.7rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--warm-grey);
-      opacity: 0;
-      animation: fadeUp 0.9s var(--ease) 1.2s forwards;
-    }
-    .hero-scroll-hint::before {
-      content: '';
-      display: block;
-      width: 40px; height: 1px;
-      background: var(--gold);
-    }
-
-    /* ─── SECTION SHARED ─── */
-    section { padding: 100px 48px; }
-    .section-inner { max-width: 1200px; margin: 0 auto; }
-
-    .section-label {
-      font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--gold);
+      color: var(--mid);
       margin-bottom: 20px;
     }
-
-    .section-heading {
-      font-family: var(--font-display);
-      font-size: clamp(2.4rem, 4vw, 3.6rem);
-      font-weight: 300;
-      line-height: 1.15;
+    .intro-headline {
+      font-family: var(--serif);
+      font-size: clamp(2.6rem, 5vw, 5rem);
+      font-weight: 400;
+      line-height: 1.12;
       letter-spacing: -0.01em;
     }
-    .section-heading em { font-style: italic; color: var(--gold); }
-
-    /* ─── INTRO STRIP ─── */
-    #intro-strip {
-      background: var(--charcoal);
-      padding: 56px 48px;
-      text-align: center;
-    }
-    #intro-strip p {
-      font-family: var(--font-display);
-      font-size: clamp(1.6rem, 3vw, 2.8rem);
-      font-weight: 300;
+    .intro-headline em {
       font-style: italic;
-      color: var(--cream);
-      letter-spacing: 0.02em;
-      max-width: 800px;
-      margin: 0 auto;
-      line-height: 1.5;
+      color: var(--gold);
     }
-    #intro-strip p span { color: var(--gold-lt); }
+    .intro-sub {
+      margin-top: 28px;
+      font-size: 0.92rem;
+      color: var(--mid);
+      max-width: 480px;
+      line-height: 1.85;
+    }
+    .intro-actions {
+      margin-top: 40px;
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+    .btn {
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      text-transform: uppercase;
+      color: var(--warm-black);
+      border-bottom: 1px solid var(--warm-black);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .btn:hover { color: var(--gold); border-color: var(--gold); }
+    .btn.filled {
+      background: var(--warm-black);
+      color: var(--off-white);
+      border: none;
+      padding: 12px 28px;
+      transition: background 0.25s;
+    }
+    .btn.filled:hover { background: var(--gold); }
+
+    /* ─── MASONRY GRID ─── */
+    #grid {
+      padding: 0 8px 8px;
+    }
+    .masonry {
+      column-count: 3;
+      column-gap: 8px;
+    }
+    .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 8px;
+      overflow: hidden;
+      display: block;
+      position: relative;
+    }
+    .masonry-item img,
+    .masonry-item .ph {
+      width: 100%;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.25,0.1,0.25,1);
+    }
+    .masonry-item:hover img,
+    .masonry-item:hover .ph {
+      transform: scale(1.03);
+    }
+
+    /* warm film-tone placeholders */
+    .ph { background: var(--c, #C8A878); }
+    .ph.r1 { aspect-ratio: 4/5; }
+    .ph.r2 { aspect-ratio: 3/4; }
+    .ph.r3 { aspect-ratio: 2/3; }
+    .ph.r4 { aspect-ratio: 1/1; }
+    .ph.r5 { aspect-ratio: 4/3; }
+
+    /* swap colors per item */
+    .masonry-item:nth-child(1)  .ph { --c: #C8AD8A; }
+    .masonry-item:nth-child(2)  .ph { --c: #B09880; }
+    .masonry-item:nth-child(3)  .ph { --c: #D4BC9C; }
+    .masonry-item:nth-child(4)  .ph { --c: #A08870; }
+    .masonry-item:nth-child(5)  .ph { --c: #C4A884; }
+    .masonry-item:nth-child(6)  .ph { --c: #B8A488; }
+    .masonry-item:nth-child(7)  .ph { --c: #D0B898; }
+    .masonry-item:nth-child(8)  .ph { --c: #9C8870; }
+    .masonry-item:nth-child(9)  .ph { --c: #C0A880; }
+    .masonry-item:nth-child(10) .ph { --c: #B4A090; }
+    .masonry-item:nth-child(11) .ph { --c: #CCBA9A; }
+    .masonry-item:nth-child(12) .ph { --c: #A89078; }
+
+    /* replace placeholders with:
+       <img src="images/your-photo.jpg" alt="Session description"> */
+
+    .grid-caption {
+      padding: 20px 48px;
+      font-size: 0.78rem;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+    }
+    .grid-caption a {
+      color: var(--warm-black);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .grid-caption a:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ─── DIVIDER ─── */
+    .rule { border: none; border-top: 1px solid var(--border); margin: 0 48px; }
 
     /* ─── ABOUT ─── */
-    #about .section-inner {
+    #about {
+      padding: 100px 48px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 80px;
       align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
     }
-
-    .about-image {
-      position: relative;
-    }
-    .about-img-placeholder {
+    .about-img-wrap { position: relative; }
+    .about-ph {
       width: 100%;
-      aspect-ratio: 4/5;
-      background: linear-gradient(145deg, #C8AD8A 0%, #A8885E 60%, #8A6E48 100%);
-      /* Replace with: background: url('images/about.jpg') center/cover; */
-    }
-    .about-image::after {
-      content: '';
-      position: absolute;
-      bottom: -20px; right: -20px;
-      width: 60%; height: 60%;
-      border: 1px solid rgba(184, 148, 90, 0.4);
-      z-index: -1;
-    }
-
-    .about-text .section-label { margin-top: 0; }
-    .about-text .section-heading { margin-bottom: 28px; }
-    .about-text p {
-      font-size: 0.95rem;
-      color: var(--warm-grey);
-      margin-bottom: 20px;
-      line-height: 1.9;
-    }
-    .about-text p strong {
-      color: var(--charcoal);
-      font-weight: 500;
-    }
-    .about-signature {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      font-style: italic;
-      color: var(--gold);
-      margin-top: 32px;
-      margin-bottom: 32px;
-    }
-
-    /* ─── SERVICES ─── */
-    #services {
-      background: var(--cream-dk);
-    }
-    #services .section-heading {
-      margin-bottom: 60px;
-      text-align: center;
-    }
-    #services .section-label { text-align: center; }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-    }
-
-    .service-card {
-      background: var(--white);
-      padding: 52px 40px;
-      position: relative;
-      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
-    }
-    .service-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(30,24,20,0.1);
-      z-index: 1;
-    }
-    .service-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 3px;
-      background: var(--gold);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.4s var(--ease);
-    }
-    .service-card:hover::before { transform: scaleX(1); }
-
-    .service-number {
-      font-family: var(--font-display);
-      font-size: 4rem;
-      font-weight: 300;
-      color: rgba(184,148,90,0.2);
-      line-height: 1;
-      margin-bottom: 20px;
-    }
-    .service-name {
-      font-family: var(--font-display);
-      font-size: 1.7rem;
-      font-weight: 400;
-      margin-bottom: 8px;
-    }
-    .service-tagline {
-      font-size: 0.78rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 20px;
-    }
-    .service-desc {
-      font-size: 0.9rem;
-      color: var(--warm-grey);
-      line-height: 1.85;
-      margin-bottom: 28px;
-    }
-    .service-price {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-weight: 400;
-      color: var(--charcoal);
-      border-top: 1px solid var(--cream-dk);
-      padding-top: 20px;
-    }
-    .service-price small {
-      font-size: 0.85rem;
-      font-family: var(--font-body);
-      font-weight: 300;
-      color: var(--warm-grey);
-    }
-
-    /* ─── PORTFOLIO ─── */
-    #portfolio { background: var(--charcoal); }
-    #portfolio .section-label { color: var(--gold-lt); }
-    #portfolio .section-heading { color: var(--cream); margin-bottom: 60px; }
-
-    .portfolio-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      grid-template-rows: auto;
-      gap: 8px;
-    }
-
-    .p-item {
-      overflow: hidden;
-      position: relative;
-    }
-    .p-item::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(30,24,20,0);
-      transition: background 0.4s var(--ease);
-    }
-    .p-item:hover::after { background: rgba(30,24,20,0.3); }
-
-    .p-item img,
-    .p-ph {
-      width: 100%; height: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, #C8AD8A 0%, #9A7850 100%);
       display: block;
-      transition: transform 0.6s var(--ease);
+      /* replace with: <img src="images/about.jpg" ...> */
     }
-    .p-item:hover .p-ph,
-    .p-item:hover img { transform: scale(1.04); }
-
-    /* placeholder swatches — warm film tones */
-    .p-ph { min-height: 200px; }
-    .ph-1 { background: linear-gradient(150deg, #C8A878 0%, #8A6040 100%); }
-    .ph-2 { background: linear-gradient(150deg, #B8A090 0%, #786050 100%); }
-    .ph-3 { background: linear-gradient(150deg, #D4BC9C 0%, #A07848 100%); }
-    .ph-4 { background: linear-gradient(150deg, #C0A888 0%, #887060 100%); }
-    .ph-5 { background: linear-gradient(150deg, #BCA888 0%, #907060 100%); }
-    .ph-6 { background: linear-gradient(150deg, #D4C0A0 0%, #A08060 100%); }
-    .ph-7 { background: linear-gradient(150deg, #C8B090 0%, #907060 100%); }
-    .ph-8 { background: linear-gradient(150deg, #D0B898 0%, #988070 100%); }
-
-    /* grid layout */
-    .p-item:nth-child(1) { grid-column: 1 / 6; grid-row: 1; }
-    .p-item:nth-child(2) { grid-column: 6 / 9; grid-row: 1; }
-    .p-item:nth-child(3) { grid-column: 9 / 13; grid-row: 1 / 3; }
-    .p-item:nth-child(4) { grid-column: 1 / 4; grid-row: 2 / 4; }
-    .p-item:nth-child(5) { grid-column: 4 / 7; grid-row: 2; }
-    .p-item:nth-child(6) { grid-column: 7 / 9; grid-row: 2; }
-    .p-item:nth-child(7) { grid-column: 4 / 7; grid-row: 3; }
-    .p-item:nth-child(8) { grid-column: 7 / 13; grid-row: 3; }
-
-    .p-item .p-ph { aspect-ratio: inherit; min-height: 220px; height: 100%; }
-
-    .portfolio-cta {
-      text-align: center;
-      margin-top: 52px;
-    }
-    .portfolio-cta a {
-      font-family: var(--font-body);
-      font-size: 0.78rem;
-      font-weight: 500;
+    .about-text .label {
+      font-size: 0.7rem;
+      font-weight: 400;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--cream);
-      border-bottom: 1px solid var(--gold);
-      padding-bottom: 3px;
-      text-decoration: none;
-      transition: color 0.2s;
+      color: var(--gold);
+      margin-bottom: 18px;
     }
-    .portfolio-cta a:hover { color: var(--gold-lt); }
+    .about-text h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 28px;
+    }
+    .about-text h2 em { font-style: italic; }
+    .about-text p {
+      font-size: 0.92rem;
+      color: var(--mid);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .about-text p strong { color: var(--warm-black); font-weight: 400; }
+    .about-sig {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-style: italic;
+      color: var(--gold);
+      margin: 28px 0;
+    }
+
+    /* ─── SESSIONS ─── */
+    #sessions {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .sessions-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 48px;
+    }
+    .sessions-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 60px;
+    }
+    .sessions-header h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 400;
+    }
+    .sessions-header h2 em { font-style: italic; }
+    .sessions-header a { font-size: 0.8rem; color: var(--mid); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 1px; }
+    .sessions-header a:hover { color: var(--warm-black); border-color: var(--warm-black); }
+
+    .sessions-list { display: flex; flex-direction: column; }
+    .session-row {
+      display: grid;
+      grid-template-columns: 40px 1fr auto auto;
+      gap: 32px;
+      align-items: baseline;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .session-row:hover { background: rgba(168,132,90,0.04); margin: 0 -24px; padding: 28px 24px; }
+    .session-num {
+      font-family: var(--serif);
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--mid);
+    }
+    .session-name {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 400;
+    }
+    .session-detail {
+      font-size: 0.8rem;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+    }
+    .session-price {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 400;
+      white-space: nowrap;
+    }
 
     /* ─── PROCESS ─── */
-    #process .section-heading { margin-bottom: 60px; }
-    .process-steps {
+    #process {
+      padding: 100px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .process-header { margin-bottom: 60px; }
+    .process-header h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 400;
+    }
+    .process-header h2 em { font-style: italic; }
+    .process-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 40px;
+      gap: 48px;
     }
-    .process-step { position: relative; }
-    .process-step::after {
-      content: '';
-      position: absolute;
-      top: 24px; right: -20px;
-      width: 40px; height: 1px;
-      background: var(--gold);
-      opacity: 0.4;
+    .process-step {}
+    .step-n {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--gold);
+      margin-bottom: 14px;
     }
-    .process-step:last-child::after { display: none; }
-
-    .step-num {
-      font-family: var(--font-display);
-      font-size: 3rem;
-      font-weight: 300;
-      color: rgba(184,148,90,0.3);
-      line-height: 1;
-      margin-bottom: 16px;
-    }
-    .step-title {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
+    .step-t {
+      font-family: var(--serif);
+      font-size: 1.2rem;
       font-weight: 400;
       margin-bottom: 12px;
     }
-    .step-desc {
-      font-size: 0.88rem;
-      color: var(--warm-grey);
+    .step-d {
+      font-size: 0.85rem;
+      color: var(--mid);
       line-height: 1.85;
     }
 
     /* ─── TESTIMONIALS ─── */
     #testimonials {
-      background: var(--cream-dk);
       padding: 80px 48px;
+      border-top: 1px solid var(--border);
+      max-width: 1200px;
+      margin: 0 auto;
     }
-    .testimonials-grid {
+    .testi-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 52px;
+    }
+    .testi-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      margin-top: 52px;
+      gap: 48px;
     }
-    .testimonial {
-      background: var(--white);
-      padding: 44px 36px;
-    }
-    .testimonial-stars {
-      color: var(--gold);
-      font-size: 0.85rem;
-      letter-spacing: 0.1em;
+    .testi blockquote {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--warm-black);
       margin-bottom: 20px;
     }
-    .testimonial-text {
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      font-style: italic;
-      font-weight: 300;
-      line-height: 1.7;
-      color: var(--charcoal);
-      margin-bottom: 24px;
+    .testi cite {
+      font-size: 0.78rem;
+      font-style: normal;
+      color: var(--mid);
+      letter-spacing: 0.06em;
     }
-    .testimonial-author {
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--warm-grey);
-    }
-    .testimonial-author span {
-      color: var(--gold);
-      display: block;
-      font-weight: 300;
-      letter-spacing: 0.05em;
-      text-transform: none;
-      font-size: 0.75rem;
-      margin-top: 2px;
-    }
+    .testi cite strong { color: var(--warm-black); font-weight: 400; display: block; margin-bottom: 2px; }
 
     /* ─── CONTACT ─── */
-    #contact .section-inner {
+    #contact {
+      border-top: 1px solid var(--border);
+      padding: 100px 48px;
+    }
+    .contact-inner {
+      max-width: 1200px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 1.2fr;
+      grid-template-columns: 1fr 1.4fr;
       gap: 80px;
       align-items: start;
     }
-
-    .contact-info .section-heading { margin-bottom: 24px; }
-    .contact-info p {
-      font-size: 0.95rem;
-      color: var(--warm-grey);
-      line-height: 1.9;
-      margin-bottom: 36px;
+    .contact-left h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 28px;
     }
-    .contact-details { list-style: none; }
-    .contact-details li {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 16px;
+    .contact-left h2 em { font-style: italic; }
+    .contact-left p {
       font-size: 0.9rem;
-      color: var(--warm-grey);
+      color: var(--mid);
+      line-height: 1.9;
+      margin-bottom: 32px;
     }
-    .contact-details li strong {
-      font-weight: 500;
-      color: var(--charcoal);
-      min-width: 70px;
+    .contact-meta {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-    .contact-details a {
-      color: var(--gold);
-      text-decoration: none;
-    }
-    .contact-details a:hover { text-decoration: underline; }
-
-    .contact-social {
+    .contact-meta li {
+      font-size: 0.88rem;
+      color: var(--mid);
       display: flex;
       gap: 16px;
-      margin-top: 28px;
     }
-    .social-link {
+    .contact-meta li strong {
+      font-weight: 400;
+      color: var(--warm-black);
+      min-width: 55px;
+    }
+    .contact-meta a { color: var(--gold); text-decoration: none; }
+    .contact-meta a:hover { text-decoration: underline; }
+    .contact-socials {
+      margin-top: 28px;
+      display: flex;
+      gap: 20px;
+    }
+    .contact-socials a {
       font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--charcoal);
+      color: var(--mid);
       text-decoration: none;
-      border-bottom: 1px solid rgba(184,148,90,0.4);
-      padding-bottom: 2px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1px;
       transition: color 0.2s, border-color 0.2s;
     }
-    .social-link:hover { color: var(--gold); border-color: var(--gold); }
+    .contact-socials a:hover { color: var(--warm-black); border-color: var(--warm-black); }
 
-    /* FORM */
-    .contact-form { display: flex; flex-direction: column; gap: 0; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
-
-    .form-group label {
-      font-size: 0.72rem;
-      font-weight: 500;
+    /* form */
+    form { display: flex; flex-direction: column; gap: 2px; }
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .fg { display: flex; flex-direction: column; margin-bottom: 2px; }
+    .fg label {
+      font-size: 0.68rem;
+      font-weight: 400;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--warm-grey);
-      margin-bottom: 8px;
+      color: var(--mid);
+      padding: 10px 14px 0;
+      background: rgba(26,23,20,0.04);
     }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      font-family: var(--font-body);
+    .fg input, .fg select, .fg textarea {
+      font-family: var(--sans);
       font-size: 0.9rem;
       font-weight: 300;
-      color: var(--charcoal);
-      background: var(--cream-dk);
-      border: 1px solid transparent;
-      padding: 14px 16px;
+      color: var(--warm-black);
+      background: rgba(26,23,20,0.04);
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 8px 14px 12px;
       outline: none;
-      transition: border-color 0.2s, background 0.2s;
       appearance: none;
       border-radius: 0;
+      transition: background 0.2s, border-color 0.2s;
     }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: var(--gold);
-      background: var(--white);
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      background: rgba(168,132,90,0.08);
+      border-bottom-color: var(--gold);
     }
-    .form-group textarea { resize: vertical; min-height: 120px; }
+    .fg textarea { resize: vertical; min-height: 110px; }
     .form-submit {
-      font-family: var(--font-body);
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--white);
-      background: var(--charcoal);
-      border: none;
-      padding: 18px 40px;
-      cursor: pointer;
-      transition: background 0.3s;
+      margin-top: 16px;
       align-self: flex-start;
-      margin-top: 8px;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      background: var(--warm-black);
+      border: none;
+      padding: 16px 36px;
+      cursor: pointer;
+      transition: background 0.25s;
     }
     .form-submit:hover { background: var(--gold); }
 
     /* ─── FOOTER ─── */
     footer {
-      background: var(--charcoal);
-      padding: 60px 48px 36px;
-      color: var(--cream);
-    }
-    .footer-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .footer-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding-bottom: 40px;
-      border-bottom: 1px solid rgba(244,237,228,0.1);
-      margin-bottom: 28px;
-    }
-    .footer-logo {
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      font-weight: 300;
-      letter-spacing: 0.04em;
-    }
-    .footer-logo span { color: var(--gold-lt); }
-    .footer-tagline {
-      font-size: 0.82rem;
-      color: rgba(244,237,228,0.5);
-      margin-top: 6px;
-      letter-spacing: 0.06em;
-    }
-    .footer-links {
-      display: flex;
-      gap: 28px;
-      list-style: none;
-    }
-    .footer-links a {
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: rgba(244,237,228,0.6);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--gold-lt); }
-    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 36px 48px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+    .footer-logo {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--warm-black);
+    }
     .footer-copy {
-      font-size: 0.8rem;
-      color: rgba(244,237,228,0.4);
+      font-size: 0.75rem;
+      color: var(--mid);
     }
     .footer-area {
-      font-size: 0.78rem;
-      color: rgba(244,237,228,0.4);
-      letter-spacing: 0.04em;
+      font-size: 0.75rem;
+      color: var(--mid);
+      text-align: right;
     }
 
-    /* ─── ANIMATIONS ─── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
+    /* ─── SCROLL REVEAL ─── */
     .reveal {
       opacity: 0;
-      transform: translateY(32px);
-      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+      transform: translateY(20px);
+      transition: opacity 0.7s cubic-bezier(0.25,0.1,0.25,1),
+                  transform 0.7s cubic-bezier(0.25,0.1,0.25,1);
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal.d1 { transition-delay: 0.1s; }
+    .reveal.d2 { transition-delay: 0.2s; }
+    .reveal.d3 { transition-delay: 0.3s; }
+    .reveal.visible { opacity: 1; transform: none; }
 
     /* ─── MOBILE ─── */
     @media (max-width: 900px) {
       nav { padding: 20px 24px; }
       nav.scrolled { padding: 14px 24px; }
-      .nav-links, .nav-cta { display: none; }
-      .nav-hamburger { display: block; }
+      .nav-right { display: none; }
+      .hamburger { display: block; }
 
-      #hero { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
-      .hero-image-side { height: 50vh; order: -1; }
-      .hero-img-placeholder::after { background: linear-gradient(to bottom, transparent 50%, var(--cream) 100%); }
-      .hero-text-side { padding: 48px 24px 80px; }
-      .hero-scroll-hint { left: 24px; }
+      #intro { padding: 120px 24px 48px; }
+      .rule { margin: 0 24px; }
 
-      section { padding: 72px 24px; }
-      #intro-strip { padding: 48px 24px; }
+      .masonry { column-count: 2; }
+      .grid-caption { padding: 16px 24px; }
 
-      #about .section-inner { grid-template-columns: 1fr; gap: 48px; }
-      .about-image::after { display: none; }
-      .services-grid { grid-template-columns: 1fr; gap: 2px; }
-      .process-steps { grid-template-columns: 1fr 1fr; gap: 32px; }
-      .process-step::after { display: none; }
-      .testimonials-grid { grid-template-columns: 1fr; gap: 2px; }
-      #contact .section-inner { grid-template-columns: 1fr; gap: 52px; }
-      .form-row { grid-template-columns: 1fr; gap: 0; }
-      .portfolio-grid {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto;
+      #about {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 72px 24px;
       }
-      .p-item { grid-column: auto !important; grid-row: auto !important; }
+      .sessions-inner { padding: 72px 24px; }
+      .sessions-header { flex-direction: column; gap: 12px; }
+      .session-row { grid-template-columns: 32px 1fr auto; }
+      .session-price { display: none; }
 
-      footer { padding: 48px 24px 28px; }
-      .footer-top { flex-direction: column; gap: 28px; }
-      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+      #process { padding: 72px 24px; }
+      .process-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+
+      #testimonials { padding: 60px 24px; }
+      .testi-grid { grid-template-columns: 1fr; gap: 36px; }
+
+      #contact { padding: 72px 24px; }
+      .contact-inner { grid-template-columns: 1fr; gap: 52px; }
+      .frow { grid-template-columns: 1fr; }
+
+      footer { padding: 28px 24px; flex-direction: column; gap: 10px; text-align: center; }
+      .footer-area { text-align: center; }
+    }
+    @media (max-width: 540px) {
+      .masonry { column-count: 1; }
+      .process-grid { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 600px) {
-      .process-steps { grid-template-columns: 1fr; }
-      .portfolio-grid { grid-template-columns: 1fr; }
-    }
-
-    /* Mobile nav open */
-    .mobile-nav-open .nav-links,
-    .mobile-nav-open .nav-cta {
+    /* mobile nav overlay */
+    body.menu-open .nav-right {
       display: flex;
-      position: fixed;
       flex-direction: column;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: var(--cream);
+      position: fixed;
+      inset: 0;
+      background: var(--off-white);
       justify-content: center;
       align-items: center;
-      gap: 28px;
-      z-index: 99;
-      font-size: 1rem;
+      gap: 32px;
+      z-index: 98;
+      font-size: 1.1rem;
     }
-    .mobile-nav-open .nav-cta {
-      position: static;
-      margin-top: 16px;
-    }
+    body.menu-open .nav-right a.book { border: none; padding: 0; }
   </style>
 </head>
 <body>
 
   <!-- NAV -->
-  <nav id="navbar">
-    <a href="#hero" class="nav-logo">Still <span>&</span> Golden</a>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#services">Sessions</a></li>
-      <li><a href="#portfolio">Portfolio</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <a href="#contact" class="nav-cta">Book Now</a>
-    <div class="nav-hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
+  <nav id="nav">
+    <a href="#" class="nav-logo">Still & Golden</a>
+    <div class="nav-right">
+      <a href="#sessions">Sessions</a>
+      <a href="#about">About</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#contact" class="book">Book a session</a>
     </div>
+    <button class="hamburger" id="ham" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
-  <!-- HERO -->
-  <section id="hero">
-    <div class="hero-image-side">
-      <div class="hero-img-placeholder">
-        <!-- Replace this div with: <img src="images/hero.jpg" alt="Newborn photography" style="width:100%;height:100%;object-fit:cover;"> -->
-      </div>
+  <!-- INTRO -->
+  <div id="intro">
+    <p class="intro-location">Frankston · Chelsea · Seaford · Melbourne</p>
+    <h1 class="intro-headline">
+      Creating <em>still,</em><br>golden moments<br>for families
+    </h1>
+    <p class="intro-sub">Specialist newborn and family photography. Unhurried. Honest. Warm — the kind of images you'll want on your walls for the rest of your life.</p>
+    <div class="intro-actions">
+      <a href="#contact" class="btn filled">Book a session</a>
+      <a href="#grid" class="btn">View work</a>
     </div>
-    <div class="hero-text-side">
-      <p class="hero-eyebrow">Frankston & Surrounds · Melbourne</p>
-      <h1 class="hero-headline">Where <em>still</em><br>moments turn<br><em>golden</em></h1>
-      <p class="hero-sub">Specialist newborn and family photography for the Frankston, Chelsea, Seaford and Mornington Peninsula community. Warm. Honest. Timeless.</p>
-      <div class="hero-actions">
-        <a href="#contact" class="btn-primary">Book a Session</a>
-        <a href="#portfolio" class="btn-ghost">View Portfolio</a>
-      </div>
-      <p class="hero-scroll-hint">Scroll to explore</p>
-    </div>
-  </section>
-
-  <!-- INTRO STRIP -->
-  <div id="intro-strip">
-    <p>"The <span>first breath</span>, the tiny hands, the way they curl into you — these moments won't wait. <span>Let's make them last forever.</span>"</p>
   </div>
 
+  <!-- MASONRY PORTFOLIO -->
+  <div id="grid">
+    <div class="masonry" id="portfolio">
+      <!-- Add your images here. Replace each .ph div with:
+           <img src="images/session-01.jpg" alt="Newborn session Frankston">
+           Recommended: mix portrait (4:5, 3:4) and landscape (4:3) ratios -->
+      <div class="masonry-item reveal"><div class="ph r1"></div></div>
+      <div class="masonry-item reveal d1"><div class="ph r5"></div></div>
+      <div class="masonry-item reveal d2"><div class="ph r3"></div></div>
+      <div class="masonry-item reveal d1"><div class="ph r2"></div></div>
+      <div class="masonry-item reveal"><div class="ph r4"></div></div>
+      <div class="masonry-item reveal d2"><div class="ph r1"></div></div>
+      <div class="masonry-item reveal d1"><div class="ph r5"></div></div>
+      <div class="masonry-item reveal"><div class="ph r3"></div></div>
+      <div class="masonry-item reveal d2"><div class="ph r2"></div></div>
+      <div class="masonry-item reveal d1"><div class="ph r4"></div></div>
+      <div class="masonry-item reveal"><div class="ph r1"></div></div>
+      <div class="masonry-item reveal d2"><div class="ph r3"></div></div>
+    </div>
+    <p class="grid-caption">
+      Selected work — newborn &amp; family sessions, Melbourne &nbsp;·&nbsp;
+      <a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener">@stillandgoldenphotography</a>
+    </p>
+  </div>
+
+  <hr class="rule">
+
   <!-- ABOUT -->
-  <section id="about">
-    <div class="section-inner">
-      <div class="about-image reveal">
-        <div class="about-img-placeholder">
-          <!-- Replace with: <img src="images/about.jpg" alt="Your name, photographer" style="width:100%;height:100%;object-fit:cover;"> -->
-        </div>
-      </div>
-      <div class="about-text">
-        <p class="section-label reveal">The Photographer</p>
-        <h2 class="section-heading reveal">A fellow parent,<br>behind the <em>lens</em></h2>
-        <p class="reveal reveal-delay-1">
-          Hi, I'm <strong>[Your Name]</strong> — a photographer and parent based in [Your Suburb], Melbourne. I specialise in newborn and family photography across Frankston, Chelsea, Seaford, Langwarrin and the Mornington Peninsula.
-        </p>
-        <p class="reveal reveal-delay-2">
-          I know first-hand how fleeting these early moments are. My approach is <strong>unhurried and gentle</strong> — I work at your baby's pace, in your home or a location that feels natural to your family.
-        </p>
-        <p class="reveal reveal-delay-3">
-          With a Sony A7IV and years of experience, I bring professional quality without the studio stuffiness. What you'll get back is <strong>warm, editorial images</strong> you'll want on your walls forever.
-        </p>
-        <div class="about-signature reveal reveal-delay-4">[Your Name]</div>
-        <a href="#contact" class="btn-primary reveal reveal-delay-4">Let's Connect</a>
+  <div id="about">
+    <div class="about-img-wrap reveal">
+      <div class="about-ph">
+        <!-- Replace with: <img src="images/about.jpg" alt="[Your name]" style="width:100%;height:100%;object-fit:cover;display:block;"> -->
       </div>
     </div>
-  </section>
-
-  <!-- SERVICES -->
-  <section id="services">
-    <div class="section-inner">
-      <p class="section-label reveal">What I Offer</p>
-      <h2 class="section-heading reveal">Sessions crafted for<br><em>your family</em></h2>
-      <div class="services-grid">
-        <div class="service-card reveal">
-          <div class="service-number">01</div>
-          <h3 class="service-name">Newborn</h3>
-          <p class="service-tagline">0 – 14 days</p>
-          <p class="service-desc">Best captured in the first two weeks when babies are sleepy and curled. Sessions take place in your home or mine, at your baby's pace — never rushed, never forced. You'll receive 25–35 beautifully edited images.</p>
-          <p class="service-price">From $395 <small>· intro pricing</small></p>
-        </div>
-        <div class="service-card reveal reveal-delay-1">
-          <div class="service-number">02</div>
-          <h3 class="service-name">Family</h3>
-          <p class="service-tagline">Outdoors · 1 hour</p>
-          <p class="service-desc">Natural, relaxed sessions at beautiful local locations — Olivers Hill, Seaford foreshore, local parks and beaches. Bring the whole crew, the dog included. 20–30 edited images delivered in 2 weeks.</p>
-          <p class="service-price">From $295 <small>· intro pricing</small></p>
-        </div>
-        <div class="service-card reveal reveal-delay-2">
-          <div class="service-number">03</div>
-          <h3 class="service-name">Mini Sessions</h3>
-          <p class="service-tagline">Seasonal · 30 mins</p>
-          <p class="service-desc">Perfect for growing families who want updated portraits without the full session commitment. Run seasonally at curated locations — great value and always oversubscribed. 12 edited images.</p>
-          <p class="service-price">From $195 <small>· 30 mins</small></p>
-        </div>
-      </div>
+    <div class="about-text">
+      <p class="label reveal">The photographer</p>
+      <h2 class="reveal">A fellow parent,<br>behind the <em>lens</em></h2>
+      <p class="reveal d1">Hi, I'm <strong>[Your Name]</strong> — a photographer and parent based in [Your Suburb]. I specialise in newborn and family photography across Frankston, Chelsea, Seaford, Langwarrin, Mt Eliza and the Mornington Peninsula.</p>
+      <p class="reveal d2">As a new parent myself, I know how quickly these early days pass. My approach is unhurried and gentle — I work at your baby's pace, in the comfort of your own home or a location that feels natural to your family.</p>
+      <p class="reveal d2">Shooting with a Sony A7IV, I bring professional quality without the formality. What you'll receive are <strong>warm, editorial images</strong> you'll treasure for a lifetime.</p>
+      <div class="about-sig reveal d3">[Your Name]</div>
+      <a href="#contact" class="btn reveal d3">Get in touch</a>
     </div>
-  </section>
+  </div>
 
-  <!-- PORTFOLIO -->
-  <section id="portfolio">
-    <div class="section-inner">
-      <p class="section-label reveal">The Work</p>
-      <h2 class="section-heading reveal">Portfolio</h2>
-      <div class="portfolio-grid">
-        <div class="p-item reveal"><div class="p-ph ph-1"></div></div>
-        <div class="p-item reveal reveal-delay-1"><div class="p-ph ph-2"></div></div>
-        <div class="p-item reveal reveal-delay-2"><div class="p-ph ph-3"></div></div>
-        <div class="p-item reveal reveal-delay-1"><div class="p-ph ph-4"></div></div>
-        <div class="p-item reveal reveal-delay-2"><div class="p-ph ph-5"></div></div>
-        <div class="p-item reveal reveal-delay-3"><div class="p-ph ph-6"></div></div>
-        <div class="p-item reveal reveal-delay-2"><div class="p-ph ph-7"></div></div>
-        <div class="p-item reveal reveal-delay-3"><div class="p-ph ph-8"></div></div>
+  <!-- SESSIONS -->
+  <section id="sessions">
+    <div class="sessions-inner">
+      <div class="sessions-header reveal">
+        <h2>Sessions &amp; <em>pricing</em></h2>
+        <a href="#contact">Enquire about availability →</a>
       </div>
-      <!-- To replace placeholders: swap each <div class="p-ph ph-X"></div> with:
-           <img src="images/portfolio-X.jpg" alt="Newborn/family session" style="width:100%;height:100%;object-fit:cover;display:block;"> -->
-      <div class="portfolio-cta reveal">
-        <a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener">More on Instagram @stillandgoldenphotography</a>
+      <div class="sessions-list">
+        <div class="session-row reveal">
+          <span class="session-num">01</span>
+          <div>
+            <div class="session-name">Newborn Session</div>
+            <div class="session-detail">0–14 days · 2–3 hours · 25–35 images · your home or mine</div>
+          </div>
+          <span class="session-detail">Frankston &amp; surrounds</span>
+          <span class="session-price">From $395</span>
+        </div>
+        <div class="session-row reveal d1">
+          <span class="session-num">02</span>
+          <div>
+            <div class="session-name">Family Session</div>
+            <div class="session-detail">1 hour · 20–30 images · outdoor locations</div>
+          </div>
+          <span class="session-detail">Olivers Hill, Seaford foreshore &amp; more</span>
+          <span class="session-price">From $295</span>
+        </div>
+        <div class="session-row reveal d2">
+          <span class="session-num">03</span>
+          <div>
+            <div class="session-name">Mini Session</div>
+            <div class="session-detail">30 mins · 12 images · seasonal availability</div>
+          </div>
+          <span class="session-detail">Curated locations, limited spots</span>
+          <span class="session-price">From $195</span>
+        </div>
+        <div class="session-row reveal d3">
+          <span class="session-num">04</span>
+          <div>
+            <div class="session-name">Newborn + Family Combo</div>
+            <div class="session-detail">Best of both · 40+ images</div>
+          </div>
+          <span class="session-detail">Best value</span>
+          <span class="session-price">From $595</span>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- PROCESS -->
-  <section id="process">
-    <div class="section-inner">
-      <p class="section-label reveal">How It Works</p>
-      <h2 class="section-heading reveal">Simple, relaxed,<br><em>no surprises</em></h2>
-      <div class="process-steps">
-        <div class="process-step reveal">
-          <div class="step-num">01</div>
-          <h3 class="step-title">Get in Touch</h3>
-          <p class="step-desc">Send me a message with your due date or ideal session timing. I'll get back to you within 24 hours to chat through what you're after.</p>
-        </div>
-        <div class="process-step reveal reveal-delay-1">
-          <div class="step-num">02</div>
-          <h3 class="step-title">We Plan Together</h3>
-          <p class="step-desc">We'll discuss location, style, and any special details. A small booking deposit secures your date. A signed contract protects us both.</p>
-        </div>
-        <div class="process-step reveal reveal-delay-2">
-          <div class="step-num">03</div>
-          <h3 class="step-title">The Session</h3>
-          <p class="step-desc">Relaxed, unhurried, and guided by you and your little one. I bring everything I need — you just need to show up as yourselves.</p>
-        </div>
-        <div class="process-step reveal reveal-delay-3">
-          <div class="step-num">04</div>
-          <h3 class="step-title">Your Gallery</h3>
-          <p class="step-desc">Your beautifully edited images are delivered in a private online gallery within 2 weeks. Download, share, and print — they're yours forever.</p>
-        </div>
+  <div id="process">
+    <div class="process-header reveal">
+      <h2>How it <em>works</em></h2>
+    </div>
+    <div class="process-grid">
+      <div class="process-step reveal">
+        <p class="step-n">i.</p>
+        <h3 class="step-t">Get in touch</h3>
+        <p class="step-d">Send me a message with your due date or preferred timing. I'll reply within 24 hours to find out what you're after.</p>
+      </div>
+      <div class="process-step reveal d1">
+        <p class="step-n">ii.</p>
+        <h3 class="step-t">Plan together</h3>
+        <p class="step-d">We'll sort out location, style, and timing. A small deposit secures your date. A signed contract protects us both.</p>
+      </div>
+      <div class="process-step reveal d2">
+        <p class="step-n">iii.</p>
+        <h3 class="step-t">The session</h3>
+        <p class="step-d">Relaxed and guided by your family's energy. I bring everything needed — you just show up as yourselves.</p>
+      </div>
+      <div class="process-step reveal d3">
+        <p class="step-n">iv.</p>
+        <h3 class="step-t">Your gallery</h3>
+        <p class="step-d">Edited images delivered to a private online gallery within two weeks. Download, print, and keep forever.</p>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- TESTIMONIALS -->
-  <section id="testimonials">
-    <div class="section-inner">
-      <p class="section-label reveal">Kind Words</p>
-      <h2 class="section-heading reveal">What families <em>say</em></h2>
-      <div class="testimonials-grid">
-        <div class="testimonial reveal">
-          <p class="testimonial-stars">★★★★★</p>
-          <p class="testimonial-text">"We were nervous about a newborn shoot but the whole session felt so calm and natural. The photos are absolutely stunning — exactly what we hoped for."</p>
-          <p class="testimonial-author">Sarah M. <span>Newborn Session · Frankston</span></p>
-        </div>
-        <div class="testimonial reveal reveal-delay-1">
-          <p class="testimonial-stars">★★★★★</p>
-          <p class="testimonial-text">"Such a talented photographer who made our family feel completely at ease. The outdoor session at Olivers Hill was perfect. We'll treasure these forever."</p>
-          <p class="testimonial-author">The Nguyen Family <span>Family Session · Chelsea</span></p>
-        </div>
-        <div class="testimonial reveal reveal-delay-2">
-          <p class="testimonial-stars">★★★★★</p>
-          <p class="testimonial-text">"Professional, warm and genuinely wonderful with our baby. The gallery arrived faster than expected and every single image is print-worthy."</p>
-          <p class="testimonial-author">Emma & Tom <span>Newborn Session · Seaford</span></p>
-        </div>
+  <div id="testimonials">
+    <p class="testi-label reveal">Kind words</p>
+    <div class="testi-grid">
+      <div class="testi reveal">
+        <blockquote>"We were nervous about a newborn shoot but the whole session felt completely calm. The photos are absolutely stunning — exactly what we hoped for."</blockquote>
+        <cite><strong>Sarah M.</strong> Newborn session · Frankston</cite>
+      </div>
+      <div class="testi reveal d1">
+        <blockquote>"Such a talented photographer who made our whole family feel at ease. The outdoor session at Olivers Hill was perfect. We'll treasure these forever."</blockquote>
+        <cite><strong>The Nguyen Family</strong> Family session · Chelsea</cite>
+      </div>
+      <div class="testi reveal d2">
+        <blockquote>"Professional, warm, and genuinely wonderful with our baby. The gallery arrived ahead of schedule and every single image is print-worthy."</blockquote>
+        <cite><strong>Emma & Tom</strong> Newborn session · Seaford</cite>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- CONTACT -->
   <section id="contact">
-    <div class="section-inner">
-      <div class="contact-info">
-        <p class="section-label reveal">Get In Touch</p>
-        <h2 class="section-heading reveal">Let's create<br>something <em>beautiful</em></h2>
-        <p class="reveal reveal-delay-1">I'd love to hear about your family. Fill in the form and I'll get back to you within 24 hours. Currently booking newborn and family sessions across Frankston, Chelsea, Seaford, Langwarrin, Mt Eliza, Carrum and surrounding suburbs.</p>
-        <ul class="contact-details reveal reveal-delay-2">
+    <div class="contact-inner">
+      <div class="contact-left">
+        <h2 class="reveal">Let's make<br>something <em>beautiful</em></h2>
+        <p class="reveal d1">I'd love to hear about your family. Fill in the form and I'll be in touch within 24 hours. Currently booking newborn and family sessions across Frankston, Chelsea, Seaford, Langwarrin, Mt Eliza and Carrum.</p>
+        <ul class="contact-meta reveal d2">
           <li><strong>Email</strong> <a href="mailto:hello@stillandgolden.com.au">hello@stillandgolden.com.au</a></li>
-          <li><strong>Phone</strong> <a href="tel:+61400000000">[Your Phone Number]</a></li>
-          <li><strong>Area</strong> Frankston · Chelsea · Seaford · Langwarrin · Mt Eliza · Carrum</li>
+          <li><strong>Phone</strong> <a href="tel:+61400000000">[Your number]</a></li>
+          <li><strong>Area</strong> Frankston · Chelsea · Seaford · Langwarrin · Mt Eliza</li>
         </ul>
-        <div class="contact-social reveal reveal-delay-3">
-          <a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener" class="social-link">Instagram</a>
-          <a href="https://www.facebook.com/stillandgoldenphotography" target="_blank" rel="noopener" class="social-link">Facebook</a>
+        <div class="contact-socials reveal d3">
+          <a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.facebook.com/stillandgoldenphotography" target="_blank" rel="noopener">Facebook</a>
         </div>
       </div>
 
-      <!-- Netlify Forms — works automatically when deployed to Netlify -->
-      <form class="contact-form reveal" name="booking-enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <form name="booking-enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="reveal d1">
         <input type="hidden" name="form-name" value="booking-enquiry">
-        <p style="display:none;"><label>Don't fill this out: <input name="bot-field"></label></p>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="fname">First Name</label>
-            <input type="text" id="fname" name="first_name" required placeholder="Jane">
+        <p style="display:none"><label>Don't fill: <input name="bot-field"></label></p>
+        <div class="frow">
+          <div class="fg">
+            <label for="fn">First name</label>
+            <input type="text" id="fn" name="first_name" required placeholder="Jane">
           </div>
-          <div class="form-group">
-            <label for="lname">Last Name</label>
-            <input type="text" id="lname" name="last_name" required placeholder="Smith">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required placeholder="jane@email.com">
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone</label>
-            <input type="tel" id="phone" name="phone" placeholder="0400 000 000">
+          <div class="fg">
+            <label for="ln">Last name</label>
+            <input type="text" id="ln" name="last_name" required placeholder="Smith">
           </div>
         </div>
-        <div class="form-group">
-          <label for="session">Session Type</label>
-          <select id="session" name="session_type" required>
+        <div class="frow">
+          <div class="fg">
+            <label for="em">Email</label>
+            <input type="email" id="em" name="email" required placeholder="jane@email.com">
+          </div>
+          <div class="fg">
+            <label for="ph">Phone</label>
+            <input type="tel" id="ph" name="phone" placeholder="0400 000 000">
+          </div>
+        </div>
+        <div class="fg">
+          <label for="st">Session type</label>
+          <select id="st" name="session_type" required>
             <option value="" disabled selected>Select a session</option>
-            <option value="newborn">Newborn Session (0–14 days)</option>
-            <option value="family">Family Session (outdoors)</option>
-            <option value="mini">Mini Session</option>
-            <option value="other">Other / Not sure yet</option>
+            <option value="newborn">Newborn (0–14 days)</option>
+            <option value="family">Family session</option>
+            <option value="mini">Mini session</option>
+            <option value="combo">Newborn + family combo</option>
+            <option value="other">Not sure yet</option>
           </select>
         </div>
-        <div class="form-group">
-          <label for="date">Preferred Date / Due Date</label>
-          <input type="text" id="date" name="preferred_date" placeholder="e.g. Due early May, or mid-June preferred">
+        <div class="fg">
+          <label for="dt">Preferred date / due date</label>
+          <input type="text" id="dt" name="preferred_date" placeholder="e.g. Due early May, or mid-June preferred">
         </div>
-        <div class="form-group">
-          <label for="message">Anything else you'd like to share</label>
-          <textarea id="message" name="message" placeholder="Tell me about your family, any special requests, or questions you have..."></textarea>
+        <div class="fg">
+          <label for="msg">Anything else</label>
+          <textarea id="msg" name="message" placeholder="Tell me about your family, any questions, or special requests…"></textarea>
         </div>
-        <button type="submit" class="form-submit">Send Enquiry</button>
+        <button type="submit" class="form-submit">Send enquiry</button>
       </form>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
-    <div class="footer-inner">
-      <div class="footer-top">
-        <div>
-          <div class="footer-logo">Still <span>&</span> Golden</div>
-          <p class="footer-tagline">Newborn & Family Photography · Frankston, Melbourne</p>
-        </div>
-        <ul class="footer-links">
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Sessions</a></li>
-          <li><a href="#portfolio">Portfolio</a></li>
-          <li><a href="#contact">Enquire</a></li>
-          <li><a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener">Instagram</a></li>
-        </ul>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-copy">© 2026 Still & Golden Photography. ABN [Your ABN].</p>
-        <p class="footer-area">Serving Frankston · Chelsea · Seaford · Langwarrin · Mt Eliza · Carrum & surrounds</p>
-      </div>
-    </div>
+    <span class="footer-logo">Still & Golden</span>
+    <span class="footer-copy">© 2026 Still & Golden Photography · ABN [Your ABN]</span>
+    <span class="footer-area">Frankston · Chelsea · Seaford · Langwarrin · Mt Eliza</span>
   </footer>
 
   <script>
-    // Sticky nav
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 60);
-    });
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 50));
 
     // Mobile menu
-    const hamburger = document.getElementById('hamburger');
-    hamburger.addEventListener('click', () => {
-      document.body.classList.toggle('mobile-nav-open');
+    document.getElementById('ham').addEventListener('click', () => {
+      document.body.classList.toggle('menu-open');
     });
-    document.querySelectorAll('.nav-links a, .nav-cta').forEach(link => {
-      link.addEventListener('click', () => document.body.classList.remove('mobile-nav-open'));
-    });
+    document.querySelectorAll('.nav-right a').forEach(a =>
+      a.addEventListener('click', () => document.body.classList.remove('menu-open'))
+    );
 
     // Scroll reveal
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
+    const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
       });
-    }, { threshold: 0.12 });
-    reveals.forEach(el => observer.observe(el));
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   </script>
 
 </body>
