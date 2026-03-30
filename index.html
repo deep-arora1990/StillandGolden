@@ -609,11 +609,46 @@
       background: var(--off-white);
       justify-content: center;
       align-items: center;
-      gap: 32px;
+      gap: 36px;
       z-index: 98;
       font-size: 1.1rem;
+      animation: menuFadeIn 0.25s ease forwards;
     }
     body.menu-open .nav-right a.book { border: none; padding: 0; }
+    body.menu-open nav,
+    body.menu-open nav.scrolled {
+      background: transparent;
+      backdrop-filter: none;
+      border-bottom: none;
+    }
+
+    @keyframes menuFadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-close {
+      display: none;
+      position: fixed;
+      top: 24px; right: 24px;
+      z-index: 101;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 44px; height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+    .menu-close::before,
+    .menu-close::after {
+      content: '';
+      position: absolute;
+      width: 22px; height: 1.5px;
+      background: var(--warm-black);
+    }
+    .menu-close::before { transform: rotate(45deg); }
+    .menu-close::after  { transform: rotate(-45deg); }
+    body.menu-open .menu-close { display: flex; }
   </style>
 </head>
 <body>
@@ -631,6 +666,7 @@
       <span></span><span></span><span></span>
     </button>
   </nav>
+  <button class="menu-close" id="menu-close" aria-label="Close menu"></button>
 
   <!-- INTRO -->
   <div id="intro">
@@ -805,11 +841,13 @@
     addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 50));
 
     // Mobile menu
+    const closeMenu = () => document.body.classList.remove('menu-open');
     document.getElementById('ham').addEventListener('click', () => {
       document.body.classList.toggle('menu-open');
     });
+    document.getElementById('menu-close').addEventListener('click', closeMenu);
     document.querySelectorAll('.nav-right a').forEach(a =>
-      a.addEventListener('click', () => document.body.classList.remove('menu-open'))
+      a.addEventListener('click', closeMenu)
     );
 
     // Scroll reveal
