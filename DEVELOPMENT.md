@@ -17,21 +17,27 @@ Still & Golden Photography is a single-page static website for Deep Arora's newb
 StillandGolden/
 ├── index.html                  # Main website (single page)
 ├── netlify.toml                # Netlify config: headers, redirects
-├── brand-voice-guide.md        # Tone of voice & style guide
 ├── DEVELOPMENT.md              # This file
 │
-├── Images/                     # Original images (JPEG/HEIC source files)
+├── Images/                     # Original images (JPEG source files)
 │   └── webp/                   # Optimised WebP versions (served to browsers)
 │
-├── card-front-print.html       # Business card front — print-ready (100×65mm)
-├── card-back-print.html        # Business card back — print-ready (100×65mm)
-├── card-front-export.html      # Business card front — JPG screenshot export (340×207px)
-├── card-back-export.html       # Business card back — JPG screenshot export
+├── brand/                      # Brand guidelines & logo (not deployed as pages)
+│   ├── brand-voice-guide.html  # Brand guide — HTML source
+│   ├── brand-voice-guide.md    # Brand guide — plain text reference
+│   ├── brand-voice-guide.pdf   # Brand guide — print-ready PDF
+│   └── logo-preview.html       # Logo variants preview
 │
-├── flyer-dl-print.html         # DL flyer — print-ready (109×220mm, 300dpi)
-├── flyer-a5-print.html         # A5 flyer — print-ready
-│
-└── qr-dl-clean.svg             # QR code for https://stillandgolden.com.au/#contact
+└── print/                      # Print-ready files (not part of the live site)
+    ├── card-front-print.html   # Business card front — 100×65mm
+    ├── card-back-print.html    # Business card back — 100×65mm
+    ├── card-front-100x65.pdf   # Business card front — confirmed print PDF
+    ├── card-back-100x65.pdf    # Business card back — confirmed print PDF
+    ├── flyer-dl-print.html     # DL flyer — 109×220mm
+    ├── flyer-dl-109x220.pdf    # DL flyer — confirmed print PDF
+    ├── flyer-a5-print.html     # A5 flyer — print-ready
+    ├── flyer-a5.pdf            # A5 flyer — PDF
+    └── qr-dl-clean.svg         # QR code for https://stillandgolden.com.au/#contact
 ```
 
 ---
@@ -125,19 +131,47 @@ To update the notification email:
 
 ---
 
+## Git Branching
+
+`main` is the production branch — every push deploys to the live site.  
+**Never work directly on `main` for new features.**
+
+### Branch naming
+| Type | Pattern | Example |
+|------|---------|---------|
+| New feature / section | `feature/description` | `feature/logo-website` |
+| Content update | `content/description` | `content/portfolio-oct` |
+| Bug fix | `fix/description` | `fix/mobile-nav` |
+| Brand / print files | `brand/description` | `brand/logo-v2` |
+
+### Workflow
+```bash
+# 1. Start from an up-to-date main
+git checkout main
+git pull
+
+# 2. Create a feature branch
+git checkout -b feature/your-feature-name
+
+# 3. Make changes, commit normally
+git add .
+git commit -m "Description"
+
+# 4. Push branch (does NOT deploy)
+git push -u origin feature/your-feature-name
+
+# 5. When ready to go live — merge into main
+git checkout main
+git merge feature/your-feature-name
+git push origin main   # ← triggers Netlify deploy
+```
+
+---
+
 ## Deployment
 
-### Normal workflow
-```bash
-# Make changes to index.html or other files
-git add index.html
-git commit -m "Description of change"
-git push origin main
-```
-Netlify auto-deploys on every push to `main`. Typically live within 1–2 minutes.
-
 ### Verify deployment
-Check: https://app.netlify.com → Deploys tab for build status.
+Check: https://app.netlify.com → Deploys tab for build status. Typically live within 1–2 minutes of pushing to `main`.
 
 ### netlify.toml
 - **Publish directory:** `.` (root — no build step)
@@ -158,7 +192,7 @@ All print files are standalone HTML pages designed for PDF export via Chrome hea
   --headless --disable-gpu --no-sandbox \
   --print-to-pdf=OUTPUT.pdf \
   --no-margins \
-  "file:///Users/deep/StillandGolden/FILENAME.html"
+  "file:///Users/deep/StillandGolden/print/FILENAME.html"
 ```
 
 **300 DPI (for print submission):**
@@ -168,7 +202,7 @@ All print files are standalone HTML pages designed for PDF export via Chrome hea
   --print-to-pdf=OUTPUT.pdf \
   --no-margins \
   --force-device-scale-factor=3.125 \
-  "file:///Users/deep/StillandGolden/FILENAME.html"
+  "file:///Users/deep/StillandGolden/print/FILENAME.html"
 ```
 
 > **Important:** Page size is controlled by `@page { size: WIDTHmm HEIGHTmm; margin: 0; }` in the HTML CSS — Chrome ignores `--paper-width`/`--paper-height` CLI flags.
@@ -176,9 +210,9 @@ All print files are standalone HTML pages designed for PDF export via Chrome hea
 ### Officeworks print dimensions (include 5mm bleed)
 | Item | File | Dimensions |
 |------|------|------------|
-| Business card (front) | `card-front-print.html` | 100 × 65mm |
-| Business card (back) | `card-back-print.html` | 100 × 65mm |
-| DL flyer | `flyer-dl-print.html` | 109 × 220mm |
+| Business card (front) | `print/card-front-print.html` | 100 × 65mm |
+| Business card (back) | `print/card-back-print.html` | 100 × 65mm |
+| DL flyer | `print/flyer-dl-print.html` | 109 × 220mm |
 
 ### Verifying PDF dimensions
 ```python
