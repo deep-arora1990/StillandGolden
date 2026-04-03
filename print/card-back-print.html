@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+    @page { size: 100mm 65mm; margin: 0; }
+    html, body {
+      width: 100mm;
+      height: 65mm;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: var(--warm-black);
+    }
+    .card-back {
+      width: 100mm;
+      height: 65mm;
+      background: var(--warm-black);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 7mm 8mm;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-back::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .card-back::after {
+      content: '';
+      position: absolute; bottom: 0; right: 0;
+      width: 15mm; height: 15mm;
+      background: linear-gradient(135deg, transparent 50%, rgba(168,132,90,0.15) 50%);
+    }
+    .back-logo { font-family: var(--serif); font-size: 4mm; font-weight: 400; color: var(--off-white); letter-spacing: 0.04em; margin-bottom: 1mm; }
+    .back-logo em { font-style: italic; color: var(--gold); }
+    .back-rule { width: 8mm; height: 0.3px; background: var(--gold); margin: 3mm 0; opacity: 0.7; }
+    .back-details { display: flex; flex-direction: column; gap: 1.5mm; }
+    .back-row { display: flex; align-items: baseline; gap: 2.5mm; }
+    .back-key { font-family: var(--sans); font-size: 1.6mm; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); min-width: 10mm; opacity: 0.9; }
+    .back-val { font-family: var(--sans); font-size: 2mm; font-weight: 300; letter-spacing: 0.04em; color: rgba(248,245,241,0.75); }
+  </style>
+</head>
+<body>
+  <div class="card-back">
+    <div class="back-logo">Still <em>&</em> Golden</div>
+    <div class="back-rule"></div>
+    <div class="back-details">
+      <div class="back-row"><span class="back-key">Phone</span><span class="back-val">0426 834 359</span></div>
+      <div class="back-row"><span class="back-key">Email</span><span class="back-val">hello@stillandgolden.com.au</span></div>
+      <div class="back-row"><span class="back-key">Web</span><span class="back-val">stillandgolden.com.au</span></div>
+      <div class="back-row"><span class="back-key">Insta</span><span class="back-val">@stillandgoldenphotography</span></div>
+      <div class="back-row"><span class="back-key">Area</span><span class="back-val">Frankston · Chelsea · Seaford · Mornington Peninsula</span></div>
+    </div>
+  </div>
+</body>
+</html>

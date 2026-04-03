@@ -1,1 +1,25 @@
-logo-preview.html
+# System
+.DS_Store
+
+# Old / superseded versions
+business-card.html
+business-card.pdf
+flyers.html
+flyer-dl.pdf
+card-front-export.html
+card-back-export.html
+card-front.png
+card-back.png
+
+# Intermediate QR files (only print/qr-dl-clean.svg is kept)
+qr-contact.svg
+qr-dl.svg
+
+# Raw camera files (too large for git)
+Images/*.heic
+
+# Screenshot exports (generated, not source)
+logo-preview.png
+
+# Third-party templates
+Officeworks Template Application.pdf

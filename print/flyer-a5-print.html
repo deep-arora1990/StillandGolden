@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Still & Golden — Flyers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white:  #F8F5F1;
+      --warm-black: #1A1714;
+      --gold:       #A8845A;
+      --gold-lt:    #C4A070;
+      --mid:        #8A7E78;
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    body {
+      background: #DEDAD5;
+      font-family: var(--sans);
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 80px;
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #7A706A;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* ════════════════════════════════════
+       FLYER 1 — DL Dark (99 × 210mm)
+       Counter display for baby shops,
+       MCH centres, waiting rooms
+    ════════════════════════════════════ */
+
+    .flyer-dl {
+      width: 374px;   /* 99mm at 96dpi */
+      height: 794px;  /* 210mm at 96dpi */
+      background: var(--warm-black);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 80px rgba(26,23,20,0.3), 0 4px 16px rgba(26,23,20,0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* grain */
+    .flyer-dl::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .dl-image {
+      width: 100%;
+      height: 280px;
+      background: linear-gradient(170deg, #3A2E26 0%, #1A1714 100%);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .dl-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.7;
+      mix-blend-mode: luminosity;
+    }
+    .dl-image::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, transparent, var(--warm-black));
+    }
+
+    /* placeholder text when no image */
+    .dl-image-ph {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(248,245,241,0.2);
+    }
+
+    .dl-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 36px 36px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .dl-eyebrow {
+      font-family: var(--sans);
+      font-size: 0.58rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 18px;
+    }
+
+    .dl-headline {
+      font-family: var(--serif);
+      font-size: 3rem;
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--off-white);
+      margin-bottom: 24px;
+      letter-spacing: -0.01em;
+    }
+    .dl-headline em {
+      font-style: italic;
+      color: var(--gold-lt);
+      display: block;
+    }
+
+    .dl-rule {
+      width: 36px;
+      height: 0.5px;
+      background: var(--gold);
+      margin-bottom: 22px;
+      opacity: 0.6;
+    }
+
+    .dl-body-text {
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(248,245,241,0.6);
+      line-height: 1.7;
+      margin-bottom: 28px;
+      flex: 1;
+    }
+
+    .dl-services {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .dl-service {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 8px;
+      border-bottom: 0.5px solid rgba(248,245,241,0.08);
+    }
+    .dl-service-name {
+      font-family: var(--sans);
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: rgba(248,245,241,0.8);
+    }
+    .dl-service-price {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--gold-lt);
+    }
+
+    .dl-footer {
+      border-top: 0.5px solid rgba(168,132,90,0.25);
+      padding-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .dl-contact {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: rgba(248,245,241,0.45);
+    }
+    .dl-contact strong {
+      font-weight: 400;
+      color: rgba(248,245,241,0.75);
+    }
+    .dl-brand {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: rgba(248,245,241,0.9);
+      letter-spacing: 0.04em;
+      margin-top: 10px;
+    }
+    .dl-brand em { font-style: italic; color: var(--gold); }
+
+
+    /* ════════════════════════════════════
+       FLYER 2 — A5 Light (148 × 210mm)
+       Noticeboard / handout
+    ════════════════════════════════════ */
+
+    .flyer-a5 {
+      width: 559px;   /* 148mm at 96dpi */
+      height: 794px;  /* 210mm at 96dpi */
+      background: var(--off-white);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 80px rgba(26,23,20,0.2), 0 4px 16px rgba(26,23,20,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flyer-a5::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .a5-image {
+      width: 100%;
+      height: 360px;
+      background: linear-gradient(160deg, #D4BFA0 0%, #A8845A 60%, #7A5E3A 100%);
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .a5-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .a5-image::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(to bottom, transparent, var(--off-white));
+    }
+    .a5-image-ph {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(248,245,241,0.4);
+    }
+
+    /* top logo bar over image */
+    .a5-topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 22px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
+    .a5-topbar-logo {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--off-white);
+      letter-spacing: 0.04em;
+      text-shadow: 0 1px 4px rgba(26,23,20,0.4);
+    }
+    .a5-topbar-logo em { font-style: italic; color: var(--gold-lt); }
+    .a5-topbar-tag {
+      font-family: var(--sans);
+      font-size: 0.55rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(248,245,241,0.8);
+      text-shadow: 0 1px 3px rgba(26,23,20,0.4);
+    }
+
+    .a5-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 40px 36px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .a5-headline {
+      font-family: var(--serif);
+      font-size: 2.6rem;
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--warm-black);
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+    .a5-headline em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .a5-sub {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--mid);
+      line-height: 1.75;
+      margin-bottom: 24px;
+      max-width: 420px;
+    }
+
+    .a5-services {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2px;
+      margin-bottom: 24px;
+    }
+    .a5-svc {
+      background: rgba(26,23,20,0.04);
+      padding: 14px 16px;
+    }
+    .a5-svc-name {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--warm-black);
+      margin-bottom: 4px;
+    }
+    .a5-svc-price {
+      font-family: var(--sans);
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--gold);
+    }
+
+    .a5-footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-top: 0.5px solid rgba(26,23,20,0.1);
+      padding-top: 16px;
+    }
+    .a5-contact-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .a5-contact-line {
+      font-family: var(--sans);
+      font-size: 0.62rem;
+      font-weight: 300;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+    }
+    .a5-contact-line strong {
+      font-weight: 400;
+      color: var(--warm-black);
+    }
+    .a5-qr-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .a5-qr-wrap svg {
+      width: 60px; height: 60px;
+    }
+    .a5-qr-label {
+      font-size: 0.45rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-align: center;
+    }
+
+    /* ── PRINT NOTE ── */
+    .print-note {
+      max-width: 600px;
+      text-align: center;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 300;
+      color: #7A706A;
+      line-height: 1.8;
+    }
+    .print-note strong { font-weight: 500; color: var(--warm-black); }
+
+    @media print {
+      body { background: white; gap: 0; padding: 0; }
+      .section-label, .print-note { display: none; }
+      .flyer-dl, .flyer-a5 { box-shadow: none; page-break-after: always; }
+      .flyer-dl { width: 99mm; height: 210mm; }
+      .flyer-a5 { width: 148mm; height: 210mm; }
+    }
+    body { padding: 0; background: white; display: block; }
+    .section-label,.print-note{display:none}
+  </style>
+</head><body><!-- A5 FLYER -->
+  <div>
+    <p class="section-label">Flyer 02 — A5 size (148 × 210mm) · Noticeboard / handout</p>
+    <div class="flyer-a5">
+      <!-- top image with logo overlay -->
+      <div class="a5-image" style="position:relative;">
+        <img src="Images/DSC03050.jpg" alt="Still & Golden Photography">
+        <div class="a5-image-ph">[ your best image here ]</div>
+        <div class="a5-topbar">
+          <span class="a5-topbar-logo">Still <em>&</em> Golden</span>
+          <span class="a5-topbar-tag">Photography</span>
+        </div>
+      </div>
+
+      <div class="a5-body">
+        <h1 class="a5-headline">
+          <em>Still</em> moments.<br>Golden memories.
+        </h1>
+        <p class="a5-sub">
+          Newborn and family photography. Warm, honest images you'll treasure for life.
+        </p>
+
+        <div class="a5-services">
+          <div class="a5-svc">
+            <div class="a5-svc-name">Newborn</div>
+            <div class="a5-svc-price">From $395</div>
+          </div>
+          <div class="a5-svc">
+            <div class="a5-svc-name">Family</div>
+            <div class="a5-svc-price">From $295</div>
+          </div>
+          <div class="a5-svc">
+            <div class="a5-svc-name">Combo</div>
+            <div class="a5-svc-price">From $595</div>
+          </div>
+        </div>
+
+        <div class="a5-footer">
+          <div class="a5-contact-col">
+            <div class="a5-contact-line"><strong>Deep Arora</strong> &nbsp;·&nbsp; Newborn &amp; Family Photographer</div>
+            <div class="a5-contact-line">0426 834 359 &nbsp;·&nbsp; hello@stillandgolden.com.au</div>
+            <div class="a5-contact-line">stillandgolden.com.au &nbsp;·&nbsp; @stillandgoldenphotography</div>
+          </div>
+          <div class="a5-qr-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges"><path fill="transparent" d="M0 0h37v37H0z"/><path stroke="#1A1714" d="M4 4.5h7m4 0h2m3 0h4m2 0h7M4 5.5h1m5 0h1m2 0h2m2 0h1m1 0h3m4 0h1m5 0h1M4 6.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h2m2 0h3m1 0h1m1 0h3m1 0h1M4 7.5h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h3m1 0h1m1 0h1m2 0h1m1 0h3m1 0h1M4 8.5h1m1 0h3m1 0h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m1 0h3m1 0h1M4 9.5h1m5 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m5 0h1M4 10.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M12 11.5h2m1 0h1m3 0h2m3 0h1M4 12.5h1m1 0h5m2 0h1m1 0h1m3 0h3m4 0h5M6 13.5h1m5 0h1m2 0h1m1 0h1m2 0h9m3 0h1M4 14.5h1m3 0h4m5 0h3m1 0h1m4 0h1m1 0h1M6 15.5h4m1 0h3m2 0h2m2 0h1m3 0h2m1 0h1m1 0h1m1 0h1M6 16.5h2m1 0h4m1 0h3m1 0h1m2 0h1m7 0h2M4 17.5h3m1 0h1m3 0h1m7 0h9m3 0h1M4 18.5h1m2 0h2m1 0h2m2 0h1m1 0h1m2 0h2m4 0h1m1 0h4M4 19.5h1m1 0h1m1 0h1m2 0h2m2 0h1m2 0h1m1 0h1m3 0h1m6 0h1M7 20.5h1m2 0h3m1 0h1m1 0h1m4 0h3m5 0h2M4 21.5h2m2 0h2m1 0h3m1 0h4m1 0h9m1 0h1m1 0h1M4 22.5h1m3 0h4m1 0h2m1 0h6m2 0h1m1 0h1m1 0h1m1 0h1M4 23.5h1m1 0h2m1 0h1m1 0h2m1 0h1m2 0h1m4 0h7m2 0h1M4 24.5h1m4 0h2m2 0h1m4 0h2m1 0h1m1 0h6m1 0h3M12 25.5h4m4 0h1m1 0h1m1 0h1m3 0h5M4 26.5h7m2 0h1m5 0h2m1 0h3m1 0h1m1 0h3M4 27.5h1m5 0h1m1 0h1m1 0h1m1 0h1m1 0h1m4 0h2m3 0h1m2 0h2M4 28.5h1m1 0h3m1 0h1m1 0h3m1 0h1m2 0h1m1 0h1m2 0h5m1 0h1M4 29.5h1m1 0h3m1 0h1m1 0h1m3 0h3m4 0h2m2 0h1m1 0h4M4 30.5h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m1 0h2m2 0h1m1 0h7M4 31.5h1m5 0h1m2 0h2m1 0h2m2 0h1m3 0h1m2 0h1m1 0h1m1 0h1M4 32.5h7m1 0h4m1 0h2m2 0h3m1 0h1m2 0h3"/></svg>
+            <span class="a5-qr-label">Scan to book</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </body></html>

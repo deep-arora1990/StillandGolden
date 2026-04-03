@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+    @page { size: 100mm 65mm; margin: 0; }
+    html, body {
+      width: 100mm;
+      height: 65mm;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: var(--off-white);
+    }
+    .card-front {
+      width: 100mm;
+      height: 65mm;
+      background: var(--off-white);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 7mm 8mm 6mm;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-front::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .front-logo { font-family: var(--serif); font-size: 6.5mm; font-weight: 400; letter-spacing: 0.02em; color: var(--warm-black); line-height: 1; }
+    .front-logo span { font-style: italic; color: var(--gold); }
+    .front-sub { font-family: var(--sans); font-size: 2mm; font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); margin-top: 2mm; }
+    .front-rule { position: absolute; left: 8mm; right: 8mm; top: 50%; height: 0.3px; background: linear-gradient(to right, var(--gold), transparent); transform: translateY(-50%); opacity: 0.5; }
+    .front-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+    .front-name { font-family: var(--serif); font-size: 3.5mm; font-weight: 400; color: var(--warm-black); letter-spacing: 0.01em; }
+    .front-title { font-family: var(--sans); font-size: 1.8mm; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); margin-top: 1mm; }
+    .front-web { font-family: var(--sans); font-size: 1.8mm; font-weight: 300; letter-spacing: 0.08em; color: var(--mid); text-align: right; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="card-front">
+    <div>
+      <div class="front-logo">Still <span>&</span> Golden</div>
+      <div class="front-sub">Photography</div>
+    </div>
+    <div class="front-rule"></div>
+    <div class="front-bottom">
+      <div>
+        <div class="front-name">Deep Arora</div>
+        <div class="front-title">Newborn &amp; Family Photographer</div>
+      </div>
+      <div class="front-web">stillandgolden.com.au<br>@stillandgoldenphotography</div>
+    </div>
+  </div>
+</body>
+</html>
