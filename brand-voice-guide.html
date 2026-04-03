@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --light: #EDE9E4;
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+    @page { size: A4; margin: 0; }
+    html, body { width: 210mm; background: var(--off-white); font-family: var(--sans); color: var(--warm-black); }
+
+    /* Cover page */
+    .cover {
+      width: 210mm;
+      height: 297mm;
+      background: var(--warm-black);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20mm 18mm;
+      position: relative;
+      page-break-after: always;
+    }
+    .cover::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 40mm; height: 40mm;
+      background: linear-gradient(135deg, transparent 50%, rgba(168,132,90,0.2) 50%);
+    }
+    .cover-label {
+      font-family: var(--sans);
+      font-size: 8pt;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8mm;
+      opacity: 0.9;
+    }
+    .cover-title {
+      font-family: var(--serif);
+      font-size: 36pt;
+      font-weight: 400;
+      color: var(--off-white);
+      line-height: 1.15;
+      margin-bottom: 6mm;
+    }
+    .cover-title em { color: var(--gold); font-style: italic; }
+    .cover-subtitle {
+      font-family: var(--sans);
+      font-size: 11pt;
+      font-weight: 300;
+      color: rgba(248,245,241,0.55);
+      letter-spacing: 0.04em;
+      margin-bottom: 16mm;
+    }
+    .cover-rule { width: 12mm; height: 0.5px; background: var(--gold); opacity: 0.6; margin-bottom: 16mm; }
+    .cover-meta {
+      font-family: var(--sans);
+      font-size: 8pt;
+      font-weight: 300;
+      color: rgba(248,245,241,0.4);
+      letter-spacing: 0.08em;
+      line-height: 2;
+    }
+
+    /* Content pages */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 16mm 18mm;
+      page-break-after: always;
+      background: var(--off-white);
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10mm;
+      padding-bottom: 4mm;
+      border-bottom: 0.5px solid rgba(168,132,90,0.3);
+    }
+    .page-logo {
+      font-family: var(--serif);
+      font-size: 9pt;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+    }
+    .page-logo em { font-style: italic; color: var(--gold); }
+    .page-num {
+      font-family: var(--sans);
+      font-size: 7pt;
+      color: var(--mid);
+      letter-spacing: 0.1em;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: 22pt;
+      font-weight: 400;
+      color: var(--warm-black);
+      margin-bottom: 3mm;
+      line-height: 1.2;
+    }
+    h1 em { color: var(--gold); font-style: italic; }
+    h2 {
+      font-family: var(--sans);
+      font-size: 7pt;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 5mm;
+      margin-top: 8mm;
+    }
+    h3 {
+      font-family: var(--serif);
+      font-size: 13pt;
+      font-weight: 400;
+      color: var(--warm-black);
+      margin-bottom: 3mm;
+      margin-top: 6mm;
+    }
+    p {
+      font-family: var(--sans);
+      font-size: 9.5pt;
+      font-weight: 300;
+      line-height: 1.7;
+      color: #3A3330;
+      margin-bottom: 3mm;
+    }
+    .intro {
+      font-family: var(--serif);
+      font-size: 12pt;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--mid);
+      line-height: 1.6;
+      margin-bottom: 8mm;
+    }
+    .rule { height: 0.5px; background: rgba(168,132,90,0.25); margin: 7mm 0; }
+
+    /* Personality traits */
+    .traits { display: flex; flex-direction: column; gap: 3mm; margin-bottom: 6mm; }
+    .trait {
+      display: flex;
+      align-items: baseline;
+      gap: 4mm;
+      padding: 3mm 4mm;
+      background: white;
+      border-left: 2px solid var(--gold);
+    }
+    .trait-name {
+      font-family: var(--sans);
+      font-size: 8.5pt;
+      font-weight: 500;
+      color: var(--warm-black);
+      min-width: 30mm;
+    }
+    .trait-desc {
+      font-family: var(--sans);
+      font-size: 8.5pt;
+      font-weight: 300;
+      color: var(--mid);
+    }
+
+    /* Two column layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-bottom: 6mm; }
+    .col-box {
+      padding: 5mm;
+      background: white;
+    }
+    .col-box h3 { margin-top: 0; font-size: 11pt; }
+    .col-box ul { padding-left: 4mm; }
+    .col-box li {
+      font-family: var(--sans);
+      font-size: 8.5pt;
+      font-weight: 300;
+      color: #3A3330;
+      line-height: 1.7;
+      list-style: none;
+      padding-left: 3mm;
+      position: relative;
+    }
+    .col-box li::before { content: '—'; position: absolute; left: -3mm; color: var(--gold); }
+
+    /* Use / Avoid */
+    .use { border-top: 2px solid var(--gold); }
+    .avoid { border-top: 2px solid #C4A8A0; }
+    .avoid h3 { color: #A08078; }
+    .avoid li::before { color: #C4A8A0; }
+
+    /* Key messages */
+    .messages { display: flex; flex-direction: column; gap: 3mm; }
+    .message {
+      display: flex;
+      gap: 4mm;
+      align-items: flex-start;
+      padding: 4mm;
+      background: white;
+    }
+    .message-num {
+      font-family: var(--serif);
+      font-size: 18pt;
+      font-weight: 400;
+      color: var(--gold);
+      opacity: 0.5;
+      line-height: 1;
+      min-width: 8mm;
+    }
+    .message-text {
+      font-family: var(--sans);
+      font-size: 9pt;
+      font-weight: 300;
+      color: #3A3330;
+      line-height: 1.6;
+      padding-top: 1mm;
+    }
+    .message-text strong { font-weight: 500; color: var(--warm-black); }
+
+    /* Caption templates */
+    .templates { display: flex; flex-direction: column; gap: 4mm; }
+    .template {
+      padding: 4mm 5mm;
+      background: white;
+      border-left: 2px solid rgba(168,132,90,0.3);
+    }
+    .template-label {
+      font-family: var(--sans);
+      font-size: 7pt;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2mm;
+    }
+    .template-text {
+      font-family: var(--serif);
+      font-size: 10pt;
+      font-style: italic;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+
+    /* Hashtags */
+    .hashtag-core {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2mm;
+      margin-bottom: 5mm;
+    }
+    .tag {
+      font-family: var(--sans);
+      font-size: 7.5pt;
+      font-weight: 400;
+      color: var(--gold);
+      background: white;
+      padding: 1.5mm 3mm;
+      border: 0.5px solid rgba(168,132,90,0.3);
+    }
+    .hashtag-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+    .hashtag-group { background: white; padding: 4mm; }
+    .hashtag-group-label {
+      font-family: var(--sans);
+      font-size: 7pt;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 2mm;
+    }
+    .hashtag-group p { font-size: 8pt; color: var(--mid); margin: 0; line-height: 1.8; }
+
+    /* Never do */
+    .never-list { display: flex; flex-direction: column; gap: 2mm; margin-bottom: 8mm; }
+    .never-item {
+      display: flex;
+      align-items: center;
+      gap: 3mm;
+      font-family: var(--sans);
+      font-size: 9pt;
+      font-weight: 300;
+      color: #3A3330;
+      padding: 2.5mm 4mm;
+      background: white;
+    }
+    .never-item::before {
+      content: '✕';
+      color: #C4A8A0;
+      font-size: 8pt;
+      font-weight: 500;
+    }
+
+    /* The test */
+    .test-box {
+      background: var(--warm-black);
+      padding: 8mm 10mm;
+      margin-top: 6mm;
+    }
+    .test-label {
+      font-family: var(--sans);
+      font-size: 7pt;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4mm;
+    }
+    .test-question {
+      font-family: var(--serif);
+      font-size: 13pt;
+      font-style: italic;
+      color: var(--off-white);
+      line-height: 1.5;
+      margin-bottom: 4mm;
+    }
+    .test-answer {
+      font-family: var(--sans);
+      font-size: 8.5pt;
+      font-weight: 300;
+      color: rgba(248,245,241,0.5);
+    }
+
+    /* Formula box */
+    .formula {
+      background: var(--warm-black);
+      padding: 5mm 6mm;
+      margin: 4mm 0;
+    }
+    .formula-label {
+      font-family: var(--sans);
+      font-size: 7pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.8;
+      margin-bottom: 2mm;
+    }
+    .formula-text {
+      font-family: var(--serif);
+      font-size: 11pt;
+      font-style: italic;
+      color: var(--off-white);
+    }
+
+    ul.plain-list { list-style: none; padding: 0; }
+    ul.plain-list li {
+      font-family: var(--sans);
+      font-size: 9pt;
+      font-weight: 300;
+      color: #3A3330;
+      line-height: 1.7;
+      padding-left: 4mm;
+      position: relative;
+    }
+    ul.plain-list li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="cover-label">Brand Guidelines</div>
+    <!-- Logo mark on cover -->
+    <svg width="28" height="56" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:6mm; opacity:0.85;">
+      <defs>
+        <path id="cvr" d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z"/>
+      </defs>
+      <path d="M 50 195 C 49 162 45 118 48 78 C 51 42 54 20 52 5" stroke="#A8845A" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+      <use href="#cvr" fill="#A8845A" transform="translate(49,168) rotate(-28) scale(0.66)"/>
+      <use href="#cvr" fill="#A8845A" transform="translate(47,145) rotate(207) scale(0.70)"/>
+      <use href="#cvr" fill="#A8845A" transform="translate(46,122) rotate(-24) scale(0.72)"/>
+      <use href="#cvr" fill="#A8845A" transform="translate(48,96)  rotate(204) scale(0.69)"/>
+      <use href="#cvr" fill="#A8845A" transform="translate(50,70)  rotate(-30) scale(0.64)"/>
+      <use href="#cvr" fill="#A8845A" transform="translate(52,47)  rotate(210) scale(0.59)"/>
+      <use href="#cvr" fill="#A8845A" transform="translate(53,26)  rotate(-38) scale(0.48)"/>
+    </svg>
+    <div class="cover-title">Still <em>&</em> Golden<br>Photography</div>
+    <div class="cover-subtitle">Tone of Voice & Style Guide</div>
+    <div class="cover-rule"></div>
+    <div class="cover-meta">
+      stillandgolden.com.au<br>
+      @stillandgoldenphotography<br>
+      hello@stillandgolden.com.au
+    </div>
+  </div>
+
+  <!-- PAGE 0: Visual Identity -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-logo">Still <em>&</em> Golden Photography</div>
+      <div class="page-num">00 — Visual Identity</div>
+    </div>
+
+    <h1>Visual <em>Identity</em></h1>
+    <p class="intro">The gum tree branch mark draws from the eucalyptus-lined coast of South East Melbourne — quiet, warm, distinctly Australian. Paired with EB Garamond, it reflects the stillness and warmth at the heart of the brand.</p>
+
+    <h2>Primary Logo</h2>
+
+    <!-- Light version -->
+    <div style="background:white; padding:8mm 12mm; display:flex; align-items:center; gap:16px; margin-bottom:3mm;">
+      <svg width="24" height="48" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><path id="p0a" d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z"/></defs>
+        <path d="M 50 195 C 49 162 45 118 48 78 C 51 42 54 20 52 5" stroke="#A8845A" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        <use href="#p0a" fill="#A8845A" transform="translate(49,168) rotate(-28) scale(0.66)"/>
+        <use href="#p0a" fill="#A8845A" transform="translate(47,145) rotate(207) scale(0.70)"/>
+        <use href="#p0a" fill="#A8845A" transform="translate(46,122) rotate(-24) scale(0.72)"/>
+        <use href="#p0a" fill="#A8845A" transform="translate(48,96)  rotate(204) scale(0.69)"/>
+        <use href="#p0a" fill="#A8845A" transform="translate(50,70)  rotate(-30) scale(0.64)"/>
+        <use href="#p0a" fill="#A8845A" transform="translate(52,47)  rotate(210) scale(0.59)"/>
+        <use href="#p0a" fill="#A8845A" transform="translate(53,26)  rotate(-38) scale(0.48)"/>
+      </svg>
+      <div style="width:1px; height:42px; background:#A8845A; opacity:0.4; flex-shrink:0;"></div>
+      <span style="font-family:'EB Garamond',Georgia,serif; font-size:19pt; font-weight:400; letter-spacing:0.1em; color:#1A1714; line-height:1;">Still <span style="color:#A8845A;">&amp;</span> Golden</span>
+    </div>
+
+    <!-- Dark version -->
+    <div style="background:#1A1714; padding:8mm 12mm; display:flex; align-items:center; gap:16px; margin-bottom:5mm;">
+      <svg width="24" height="48" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><path id="p0b" d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z"/></defs>
+        <path d="M 50 195 C 49 162 45 118 48 78 C 51 42 54 20 52 5" stroke="#A8845A" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        <use href="#p0b" fill="#A8845A" transform="translate(49,168) rotate(-28) scale(0.66)"/>
+        <use href="#p0b" fill="#A8845A" transform="translate(47,145) rotate(207) scale(0.70)"/>
+        <use href="#p0b" fill="#A8845A" transform="translate(46,122) rotate(-24) scale(0.72)"/>
+        <use href="#p0b" fill="#A8845A" transform="translate(48,96)  rotate(204) scale(0.69)"/>
+        <use href="#p0b" fill="#A8845A" transform="translate(50,70)  rotate(-30) scale(0.64)"/>
+        <use href="#p0b" fill="#A8845A" transform="translate(52,47)  rotate(210) scale(0.59)"/>
+        <use href="#p0b" fill="#A8845A" transform="translate(53,26)  rotate(-38) scale(0.48)"/>
+      </svg>
+      <div style="width:1px; height:42px; background:#A8845A; opacity:0.4; flex-shrink:0;"></div>
+      <span style="font-family:'EB Garamond',Georgia,serif; font-size:19pt; font-weight:400; letter-spacing:0.1em; color:#F8F5F1; line-height:1;">Still <span style="color:#A8845A;">&amp;</span> Golden</span>
+    </div>
+
+    <div class="rule"></div>
+    <h2>Secondary Variants</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:3mm; margin-bottom:5mm;">
+      <div style="background:white; padding:5mm 6mm;">
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; letter-spacing:0.14em; text-transform:uppercase; color:#8A7E78; margin-bottom:3mm;">Wordmark</div>
+        <span style="font-family:'EB Garamond',Georgia,serif; font-size:13pt; letter-spacing:0.1em; color:#1A1714;">Still <span style="color:#A8845A;">&amp;</span> Golden</span>
+      </div>
+      <div style="background:white; padding:5mm 6mm;">
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; letter-spacing:0.14em; text-transform:uppercase; color:#8A7E78; margin-bottom:3mm;">Icon Mark</div>
+        <svg width="14" height="28" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><path id="p0c" d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z"/></defs>
+          <path d="M 50 195 C 49 162 45 118 48 78 C 51 42 54 20 52 5" stroke="#A8845A" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+          <use href="#p0c" fill="#A8845A" transform="translate(49,168) rotate(-28) scale(0.66)"/>
+          <use href="#p0c" fill="#A8845A" transform="translate(47,145) rotate(207) scale(0.70)"/>
+          <use href="#p0c" fill="#A8845A" transform="translate(46,122) rotate(-24) scale(0.72)"/>
+          <use href="#p0c" fill="#A8845A" transform="translate(48,96)  rotate(204) scale(0.69)"/>
+          <use href="#p0c" fill="#A8845A" transform="translate(50,70)  rotate(-30) scale(0.64)"/>
+          <use href="#p0c" fill="#A8845A" transform="translate(52,47)  rotate(210) scale(0.59)"/>
+          <use href="#p0c" fill="#A8845A" transform="translate(53,26)  rotate(-38) scale(0.48)"/>
+        </svg>
+      </div>
+      <div style="background:#1A1714; padding:5mm 6mm;">
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; letter-spacing:0.14em; text-transform:uppercase; color:#4A4440; margin-bottom:3mm;">Reversed</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <svg width="10" height="20" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+            <defs><path id="p0d" d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z"/></defs>
+            <path d="M 50 195 C 49 162 45 118 48 78 C 51 42 54 20 52 5" stroke="#A8845A" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+            <use href="#p0d" fill="#A8845A" transform="translate(49,168) rotate(-28) scale(0.66)"/>
+            <use href="#p0d" fill="#A8845A" transform="translate(47,145) rotate(207) scale(0.70)"/>
+            <use href="#p0d" fill="#A8845A" transform="translate(46,122) rotate(-24) scale(0.72)"/>
+            <use href="#p0d" fill="#A8845A" transform="translate(48,96)  rotate(204) scale(0.69)"/>
+            <use href="#p0d" fill="#A8845A" transform="translate(50,70)  rotate(-30) scale(0.64)"/>
+            <use href="#p0d" fill="#A8845A" transform="translate(52,47)  rotate(210) scale(0.59)"/>
+            <use href="#p0d" fill="#A8845A" transform="translate(53,26)  rotate(-38) scale(0.48)"/>
+          </svg>
+          <div style="width:1px; height:18px; background:#A8845A; opacity:0.4;"></div>
+          <span style="font-family:'EB Garamond',Georgia,serif; font-size:9pt; letter-spacing:0.1em; color:#F8F5F1;">Still <span style="color:#A8845A;">&amp;</span> Golden</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <h2>Brand Colours</h2>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:3mm; margin-bottom:5mm;">
+      <div>
+        <div style="height:12mm; background:#1A1714; margin-bottom:2mm;"></div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7.5pt; font-weight:500; color:#1A1714;">Warm Black</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; font-weight:300; color:#8A7E78;">#1A1714</div>
+      </div>
+      <div>
+        <div style="height:12mm; background:#A8845A; margin-bottom:2mm;"></div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7.5pt; font-weight:500; color:#1A1714;">Gold</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; font-weight:300; color:#8A7E78;">#A8845A</div>
+      </div>
+      <div>
+        <div style="height:12mm; background:#8A7E78; margin-bottom:2mm;"></div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7.5pt; font-weight:500; color:#1A1714;">Mid</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; font-weight:300; color:#8A7E78;">#8A7E78</div>
+      </div>
+      <div>
+        <div style="height:12mm; background:#F8F5F1; border:0.5px solid #E0DCD7; margin-bottom:2mm;"></div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7.5pt; font-weight:500; color:#1A1714;">Off White</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; font-weight:300; color:#8A7E78;">#F8F5F1</div>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <h2>Typography</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:3mm;">
+      <div style="background:white; padding:5mm 6mm;">
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; letter-spacing:0.14em; text-transform:uppercase; color:#8A7E78; margin-bottom:3mm;">EB Garamond — Headings &amp; Serif Body</div>
+        <div style="font-family:'EB Garamond',Georgia,serif; font-size:18pt; color:#1A1714; line-height:1.2; margin-bottom:2mm;">Still &amp; Golden</div>
+        <div style="font-family:'EB Garamond',Georgia,serif; font-size:10pt; font-style:italic; color:#8A7E78;">warmth · stillness · memory</div>
+      </div>
+      <div style="background:white; padding:5mm 6mm;">
+        <div style="font-family:'DM Sans',sans-serif; font-size:7pt; letter-spacing:0.14em; text-transform:uppercase; color:#8A7E78; margin-bottom:3mm;">DM Sans — Labels &amp; UI Text</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:13pt; font-weight:300; color:#1A1714; line-height:1.4; margin-bottom:2mm;">Clean. Quiet. Present.</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:7.5pt; font-weight:300; letter-spacing:0.12em; text-transform:uppercase; color:#8A7E78;">SE Melbourne · Family Photography</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 1: Brand Essence + Personality -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-logo">Still <em>&</em> Golden Photography</div>
+      <div class="page-num">01 — Brand Foundation</div>
+    </div>
+
+    <h1>Brand <em>Essence</em></h1>
+    <p class="intro">Still & Golden exists to capture the moments families will want to return to forever. The name says it all — still (quiet, unhurried, present) and golden (precious, warm, fleeting). Every word we write should reflect that.</p>
+
+    <div class="rule"></div>
+    <h2>Brand Personality</h2>
+
+    <div class="traits">
+      <div class="trait">
+        <div class="trait-name">Warm</div>
+        <div class="trait-desc">Write like you're talking to a friend, not a customer</div>
+      </div>
+      <div class="trait">
+        <div class="trait-name">Calm</div>
+        <div class="trait-desc">Never salesy, never urgent, never pushy</div>
+      </div>
+      <div class="trait">
+        <div class="trait-name">Genuine</div>
+        <div class="trait-desc">Personal stories over polished marketing speak</div>
+      </div>
+      <div class="trait">
+        <div class="trait-name">Quietly confident</div>
+        <div class="trait-desc">Let the work speak — don't oversell</div>
+      </div>
+      <div class="trait">
+        <div class="trait-name">Emotionally aware</div>
+        <div class="trait-desc">Acknowledge how big these moments are for families</div>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <h2>Key Messages</h2>
+    <div class="messages">
+      <div class="message">
+        <div class="message-num">1</div>
+        <div class="message-text"><strong>Newborn sessions are time-sensitive</strong> — best between 5–14 days old. Book early.</div>
+      </div>
+      <div class="message">
+        <div class="message-num">2</div>
+        <div class="message-text"><strong>Sessions are relaxed and led by your family</strong> — no stiff posing, no pressure.</div>
+      </div>
+      <div class="message">
+        <div class="message-num">3</div>
+        <div class="message-text"><strong>These moments go fast</strong> — photographs are how you hold onto them.</div>
+      </div>
+      <div class="message">
+        <div class="message-num">4</div>
+        <div class="message-text"><strong>Still & Golden is personal</strong> — Deep is a dad himself and understands what these photos mean.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: Voice Across Channels -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-logo">Still <em>&</em> Golden Photography</div>
+      <div class="page-num">02 — Voice Across Channels</div>
+    </div>
+
+    <h1>Voice Across <em>Channels</em></h1>
+
+    <h2>Instagram Captions</h2>
+    <ul class="plain-list">
+      <li>Lead with emotion or observation, not information</li>
+      <li>Short sentences. White space. Let the image breathe.</li>
+      <li>End with a soft call to action — never a hard sell</li>
+      <li>One or two emojis max, used intentionally (🤍 ✨ are on-brand)</li>
+      <li>Hashtags at the bottom, not in the caption body</li>
+    </ul>
+    <div class="formula">
+      <div class="formula-label">Caption Formula</div>
+      <div class="formula-text">Emotional hook → brief observation → what this means → soft CTA</div>
+    </div>
+
+    <h2>Website Copy</h2>
+    <ul class="plain-list">
+      <li>Conversational but refined — like a warm, articulate human wrote it</li>
+      <li>Second person ("you", "your family") to speak directly to the reader</li>
+      <li>Avoid photography jargon</li>
+      <li>Focus on the feeling, not the technical process</li>
+    </ul>
+
+    <div class="rule"></div>
+
+    <h2>Email / Enquiry Responses</h2>
+    <ul class="plain-list">
+      <li>Friendly and personal — use the client's name</li>
+      <li>Respond warmly to their specific situation (due date, family details)</li>
+      <li>Keep it concise — busy new parents don't have time to read essays</li>
+    </ul>
+
+    <h2>Stories / Behind the Scenes</h2>
+    <ul class="plain-list">
+      <li>More casual and unfiltered than feed posts</li>
+      <li>Can use humour, especially around the realities of newborn/family life</li>
+      <li>Great place to show process, setup, or personal moments</li>
+    </ul>
+  </div>
+
+  <!-- PAGE 3: Language + Templates -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-logo">Still <em>&</em> Golden Photography</div>
+      <div class="page-num">03 — Language & Templates</div>
+    </div>
+
+    <h1>Language & <em>Templates</em></h1>
+
+    <div class="two-col">
+      <div class="col-box use">
+        <h3>Language to Use</h3>
+        <ul>
+          <li>tiny · fleeting · unhurried · soft</li>
+          <li>quiet · golden · still</li>
+          <li>moments · details · story</li>
+          <li>remember · hold onto</li>
+          <li>little one · just arrived · brand new</li>
+          <li>real · honest · authentic · unposed</li>
+          <li>beautiful chaos (family sessions)</li>
+        </ul>
+      </div>
+      <div class="col-box avoid">
+        <h3>Language to Avoid</h3>
+        <ul>
+          <li>packages · slots · shoot</li>
+          <li>"book now!" — exclamation urgency</li>
+          <li>professional · high-quality</li>
+          <li>stunning results — clichés</li>
+          <li>"I offer..." — transactional</li>
+          <li>amazing · incredible · breathtaking</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <h2>Caption Templates</h2>
+
+    <div class="templates">
+      <div class="template">
+        <div class="template-label">Newborn — Detail / Abstract</div>
+        <div class="template-text">[Tiny detail observation]. [What it represents emotionally]. [Soft CTA + contact]</div>
+      </div>
+      <div class="template">
+        <div class="template-label">Newborn — Parent with Baby</div>
+        <div class="template-text">[What you see in the image — the emotion]. [Relatable truth for new parents]. [Soft CTA]</div>
+      </div>
+      <div class="template">
+        <div class="template-label">Family Session</div>
+        <div class="template-text">[Honest, slightly playful observation about kids/family]. [What the photos capture]. [CTA]</div>
+      </div>
+      <div class="template">
+        <div class="template-label">Personal / Story Post</div>
+        <div class="template-text">[Personal moment or story]. [What it means to you as a photographer and a dad]. [Connection to the work]</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: Hashtags + Never Do + Test -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-logo">Still <em>&</em> Golden Photography</div>
+      <div class="page-num">04 — Hashtags & Standards</div>
+    </div>
+
+    <h1>Hashtags & <em>Standards</em></h1>
+
+    <h2>Core Hashtags — Always Include</h2>
+    <div class="hashtag-core">
+      <div class="tag">#stillandgolden</div>
+      <div class="tag">#newbornphotographer</div>
+      <div class="tag">#melbournephotographer</div>
+      <div class="tag">#newbornphotography</div>
+    </div>
+
+    <h2>Rotate Based on Content — Keep to 10–15 Per Post</h2>
+    <div class="hashtag-groups">
+      <div class="hashtag-group">
+        <div class="hashtag-group-label">Newborn</div>
+        <p>#melbournenewborn #newbornphotographymelbourne #newborn #newbornbaby</p>
+      </div>
+      <div class="hashtag-group">
+        <div class="hashtag-group-label">Family</div>
+        <p>#familyphotography #melbournefamilyphotographer #familyphotographer</p>
+      </div>
+      <div class="hashtag-group">
+        <div class="hashtag-group-label">Location</div>
+        <p>#frankston #morningtonpeninsula #seaford #chelsea</p>
+      </div>
+      <div class="hashtag-group">
+        <div class="hashtag-group-label">Style</div>
+        <p>#blackandwhitephotography #candidphotography #lifestylephotography</p>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <h2>What We Never Do</h2>
+    <div class="never-list">
+      <div class="never-item">Run discount promotions or "limited time offers"</div>
+      <div class="never-item">Post low-quality or heavily filtered images</div>
+      <div class="never-item">Write captions that are longer than they need to be</div>
+      <div class="never-item">Use stock imagery or generic graphics</div>
+      <div class="never-item">Compare ourselves to other photographers</div>
+    </div>
+
+    <div class="test-box">
+      <div class="test-label">The Still & Golden Test</div>
+      <div class="test-question">Is this warm? Is this honest? Does it sound like a real person who genuinely cares about families?</div>
+      <div class="test-answer">If yes — post it. If not — rewrite it.</div>
+    </div>
+  </div>
+
+</body>
+</html>
