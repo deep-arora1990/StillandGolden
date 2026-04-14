@@ -336,8 +336,23 @@
           <input type="email" id="em" name="email" required>
         </div>
         <div class="fg">
-          <label for="dt">Date</label>
-          <input type="date" id="dt" name="agreement_date" required>
+          <label for="st">Session type</label>
+          <select id="st" name="session_type" required>
+            <option value="" disabled selected>Select a session</option>
+            <option value="Newborn">Newborn</option>
+            <option value="Family">Family</option>
+            <option value="Newborn + Family Combo">Newborn + Family combo</option>
+          </select>
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label for="sd">Session date</label>
+            <input type="date" id="sd" name="session_date" required>
+          </div>
+          <div class="fg">
+            <label for="dt">Today's date</label>
+            <input type="date" id="dt" name="agreement_date" required>
+          </div>
         </div>
         <div class="checkbox-row">
           <input type="checkbox" id="agree" name="agreement_accepted" required>
@@ -362,6 +377,9 @@
   </footer>
 
   <script>
+    // Auto-fill today's date
+    document.getElementById('dt').valueAsDate = new Date();
+
     document.getElementById('contract-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = this.querySelector('.form-submit');
@@ -374,8 +392,9 @@
         firstName: this.firstname.value,
         lastName: this.lastname.value,
         email: this.email.value,
-        agreementDate: this.agreement_date.value,
-        sessionType: 'Standard Session'
+        sessionType: this.session_type.value,
+        sessionDate: this.session_date.value,
+        agreementDate: this.agreement_date.value
       };
 
       try {

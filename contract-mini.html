@@ -336,13 +336,15 @@
           <label for="em">Email</label>
           <input type="email" id="em" name="email" required>
         </div>
-        <div class="fg">
-          <label for="sd">Preferred session date</label>
-          <input type="date" id="sd" name="session_date" required>
-        </div>
-        <div class="fg">
-          <label for="dt">Date</label>
-          <input type="date" id="dt" name="agreement_date" required>
+        <div class="frow">
+          <div class="fg">
+            <label for="sd">Session date</label>
+            <input type="date" id="sd" name="session_date" required>
+          </div>
+          <div class="fg">
+            <label for="dt">Today's date</label>
+            <input type="date" id="dt" name="agreement_date" required>
+          </div>
         </div>
         <div class="checkbox-row">
           <input type="checkbox" id="agree" name="agreement_accepted" required>
@@ -367,6 +369,9 @@
   </footer>
 
   <script>
+    // Auto-fill today's date
+    document.getElementById('dt').valueAsDate = new Date();
+
     document.getElementById('contract-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = this.querySelector('.form-submit');
