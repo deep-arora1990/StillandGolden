@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Session Agreement — Still & Golden Photography</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --border: rgba(26,23,20,0.1);
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px;
+      background: rgba(248,245,241,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--warm-black);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-right a {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-right a:hover { color: var(--gold); }
+
+    /* ─── PAGE ─── */
+    .page {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 140px 48px 100px;
+    }
+
+    .page-label {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--mid);
+      margin-bottom: 56px;
+    }
+
+    .rule {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+      margin-bottom: 56px;
+    }
+
+    /* ─── CONTENT ─── */
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 14px;
+      color: var(--warm-black);
+    }
+
+    .section p {
+      color: var(--warm-black);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .section p:last-child { margin-bottom: 0; }
+
+    /* ─── FORM ─── */
+    .acceptance-form {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 40px;
+      margin-top: 56px;
+    }
+
+    .acceptance-form h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      color: var(--warm-black);
+    }
+
+    form { display: flex; flex-direction: column; gap: 2px; }
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .fg { display: flex; flex-direction: column; margin-bottom: 2px; }
+    .fg label {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      padding: 10px 14px 0;
+      background: rgba(26,23,20,0.04);
+    }
+    .fg input, .fg select, .fg textarea {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--warm-black);
+      background: rgba(26,23,20,0.04);
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 8px 14px 12px;
+      outline: none;
+      appearance: none;
+      border-radius: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      background: rgba(168,132,90,0.08);
+      border-bottom-color: var(--gold);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+      flex-shrink: 0;
+      appearance: auto;
+    }
+    .checkbox-row label {
+      font-size: 0.88rem;
+      color: var(--warm-black);
+      line-height: 1.6;
+      cursor: pointer;
+    }
+
+    .form-submit {
+      margin-top: 16px;
+      align-self: flex-start;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      background: var(--warm-black);
+      border: none;
+      padding: 16px 36px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .form-submit:hover { background: var(--gold); }
+    .form-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .form-success {
+      text-align: center;
+      padding: 48px 24px;
+    }
+    .form-success h2 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: var(--warm-black);
+    }
+    .form-success p {
+      font-size: 0.95rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    .form-error {
+      color: #b54a4a;
+      font-size: 0.82rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--mid);
+    }
+
+    .footer-brand {
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 20px 24px; }
+      .page { padding: 120px 24px 80px; }
+      .frow { grid-template-columns: 1fr; }
+      .acceptance-form { padding: 28px 20px; }
+      footer { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Still <span>&</span> Golden</a>
+    <div class="nav-right">
+      <a href="/">← Back to site</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <div class="page-label">Agreement</div>
+    <h1 class="page-title">Mini Session Agreement</h1>
+    <p class="page-subtitle">Please read carefully and complete the acceptance form below.</p>
+    <div class="rule"></div>
+
+    <div class="section">
+      <h2>What's Included</h2>
+      <p>The session includes 10 professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.</p>
+      <p>The full gallery of all images captured during the session is available for an additional $50. Please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.</p>
+    </div>
+
+    <div class="section">
+      <h2>Payment Terms</h2>
+      <p>A non-refundable deposit of 50% of the session fee is required at the time of booking to secure the session date. The remaining balance is due in full no later than 2 days prior to the session.</p>
+      <p>Failure to pay the remaining balance by the due date may result in the session being cancelled and the deposit forfeited.</p>
+    </div>
+
+    <div class="section">
+      <h2>Cancellation & Rescheduling</h2>
+      <p>The deposit is non-refundable in the event of a change of mind, or if the client cancels within 7 days of the scheduled session date.</p>
+      <p>Rescheduling is available at no additional charge and is subject to mutual agreement between the client and photographer. The photographer reserves the right to reschedule in the event of illness, extreme weather, or other unforeseen circumstances, with an alternative date offered at no extra cost.</p>
+    </div>
+
+    <div class="section">
+      <h2>Image Usage & Rights</h2>
+      <p><strong>Client use:</strong> Images are licensed for personal, non-commercial use only. The client may print, share, and display images for personal purposes. Commercial use of any image is strictly prohibited without prior written consent from Still & Golden Photography.</p>
+      <p><strong>Photographer use:</strong> Still & Golden Photography retains full copyright of all images. The photographer reserves the right to use images for portfolio, website, social media, and other promotional purposes. If you would prefer your images not be used publicly, please notify the photographer in writing prior to your session.</p>
+    </div>
+
+    <div class="section">
+      <h2>General</h2>
+      <p>This agreement constitutes the entire agreement between the parties with respect to the Mother's Day Mini Session and is governed by the laws of Victoria, Australia. By completing the form below, both parties confirm they have read, understood, and agree to the terms set out in this document.</p>
+    </div>
+
+    <!-- Acceptance form -->
+    <div class="acceptance-form" id="acceptance-form">
+      <h2>Accept Agreement</h2>
+      <form id="contract-form">
+        <div class="frow">
+          <div class="fg">
+            <label for="fn">First name</label>
+            <input type="text" id="fn" name="firstname" required>
+          </div>
+          <div class="fg">
+            <label for="ln">Last name</label>
+            <input type="text" id="ln" name="lastname" required>
+          </div>
+        </div>
+        <div class="fg">
+          <label for="em">Email</label>
+          <input type="email" id="em" name="email" required>
+        </div>
+        <div class="fg">
+          <label for="sd">Preferred session date</label>
+          <input type="date" id="sd" name="session_date" required>
+        </div>
+        <div class="fg">
+          <label for="dt">Date</label>
+          <input type="date" id="dt" name="agreement_date" required>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="agree" name="agreement_accepted" required>
+          <label for="agree">I have read, understood, and agree to the terms set out in this Photography Session Agreement.</label>
+        </div>
+        <button type="submit" class="form-submit">Submit Agreement</button>
+        <p class="form-error" id="form-error"></p>
+      </form>
+    </div>
+
+    <!-- Success (hidden by default) -->
+    <div class="acceptance-form form-success" id="form-success" style="display:none;">
+      <h2>Thank you</h2>
+      <p>Deep will be in touch within 24 hours.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-copy">© 2026 Still & Golden Photography · ABN 37 280 912 036</span>
+    <span class="footer-brand">Still & Golden</span>
+  </footer>
+
+  <script>
+    document.getElementById('contract-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('.form-submit');
+      const errorEl = document.getElementById('form-error');
+      errorEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      const payload = {
+        firstName: this.firstname.value,
+        lastName: this.lastname.value,
+        email: this.email.value,
+        sessionDate: this.session_date.value,
+        agreementDate: this.agreement_date.value,
+        sessionType: "Mother's Day Mini Session"
+      };
+
+      try {
+        const res = await fetch('/.netlify/functions/submit-contract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          document.getElementById('acceptance-form').style.display = 'none';
+          document.getElementById('form-success').style.display = 'block';
+          document.getElementById('form-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (err) {
+        errorEl.textContent = 'Something went wrong. Please try again or email hello@stillandgolden.com.au';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Submit Agreement';
+      }
+    });
+  </script>
+
+</body>
+</html>

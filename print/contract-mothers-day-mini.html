@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Still & Golden — Photography Session Contract</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white:  #F8F5F1;
+      --warm-black: #1A1714;
+      --gold:       #A8845A;
+      --mid:        #8A7E78;
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    html, body {
+      width: 210mm;
+      min-height: 297mm;
+      background: var(--off-white);
+      font-family: var(--serif);
+      color: var(--warm-black);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: var(--off-white);
+      padding: 13mm 18mm;
+      display: flex;
+      flex-direction: column;
+      page-break-after: always;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    /* ── Page 2 header ── */
+    .header-p2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 4mm;
+      border-bottom: 0.3mm solid #E8E3DC;
+      margin-bottom: 6mm;
+    }
+
+    .header-p2-brand {
+      font-family: var(--serif);
+      font-size: 11pt;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+    }
+
+    .header-p2-label {
+      font-family: var(--sans);
+      font-size: 6.5pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 6mm;
+      border-bottom: 0.4mm solid var(--gold);
+      margin-bottom: 6mm;
+    }
+
+    .logo-name {
+      font-family: var(--serif);
+      font-size: 20pt;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--warm-black);
+      line-height: 1.1;
+    }
+
+    .logo-name span { color: var(--gold); }
+
+    .logo-tagline {
+      font-family: var(--sans);
+      font-size: 7pt;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-top: 1.5mm;
+    }
+
+    .header-meta {
+      text-align: right;
+      font-family: var(--sans);
+      font-size: 7.5pt;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    .header-meta strong {
+      color: var(--warm-black);
+      font-weight: 500;
+    }
+
+    /* ── Document title ── */
+    .doc-title {
+      font-family: var(--serif);
+      font-size: 14pt;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--warm-black);
+      margin-bottom: 1mm;
+    }
+
+    .doc-subtitle {
+      font-family: var(--sans);
+      font-size: 7pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 5mm;
+    }
+
+    /* ── Parties ── */
+    .parties {
+      display: flex;
+      gap: 5mm;
+      margin-bottom: 5mm;
+    }
+
+    .party-box {
+      flex: 1;
+      background: white;
+      border: 0.3mm solid #DDD8D2;
+      border-radius: 1.5mm;
+      padding: 3.5mm 4.5mm;
+    }
+
+    .party-label {
+      font-family: var(--sans);
+      font-size: 6.5pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5mm;
+      font-weight: 500;
+    }
+
+    .party-name {
+      font-family: var(--serif);
+      font-size: 10.5pt;
+      font-weight: 500;
+      color: var(--warm-black);
+      margin-bottom: 0.8mm;
+    }
+
+    .party-detail {
+      font-family: var(--sans);
+      font-size: 7.5pt;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+
+    /* Client name fill line */
+    .client-name-line {
+      display: block;
+      min-width: 55mm;
+      border-bottom: 0.3mm solid var(--gold);
+      min-height: 5.5mm;
+      margin-bottom: 1mm;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 4mm;
+      page-break-inside: avoid;
+    }
+
+    .section-heading {
+      font-family: var(--sans);
+      font-size: 6.5pt;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2mm;
+      padding-bottom: 1mm;
+      border-bottom: 0.3mm solid #E8E3DC;
+    }
+
+    .section-body {
+      font-family: var(--serif);
+      font-size: 10pt;
+      line-height: 1.6;
+      color: var(--warm-black);
+    }
+
+    .section-body p {
+      margin-bottom: 1.5mm;
+    }
+
+    .section-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ── Session detail grid ── */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2mm 6mm;
+      background: white;
+      border: 0.3mm solid #DDD8D2;
+      border-radius: 1.5mm;
+      padding: 3.5mm 4.5mm;
+    }
+
+    .detail-key {
+      font-family: var(--sans);
+      font-size: 6.5pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 0.5mm;
+    }
+
+    .detail-val {
+      font-family: var(--serif);
+      font-size: 10pt;
+      color: var(--warm-black);
+      border-bottom: 0.3mm solid var(--gold);
+      min-height: 5.5mm;
+      display: block;
+    }
+
+    /* ── Signature block ── */
+    .sig-block {
+      display: flex;
+      gap: 8mm;
+      margin-top: 5mm;
+      page-break-inside: avoid;
+    }
+
+    .sig-col { flex: 1; }
+
+    .sig-label {
+      font-family: var(--sans);
+      font-size: 6.5pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 7mm;
+    }
+
+    .sig-line {
+      border-bottom: 0.4mm solid var(--warm-black);
+      margin-bottom: 1.5mm;
+    }
+
+    .sig-name-label {
+      font-family: var(--sans);
+      font-size: 7pt;
+      color: var(--mid);
+      margin-bottom: 5mm;
+    }
+
+    .sig-date-line {
+      border-bottom: 0.4mm solid #DDD8D2;
+      margin-bottom: 1.5mm;
+    }
+
+    .sig-date-label {
+      font-family: var(--sans);
+      font-size: 7pt;
+      color: var(--mid);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: auto;
+      padding-top: 4mm;
+      border-top: 0.3mm solid #E8E3DC;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-text {
+      font-family: var(--sans);
+      font-size: 6.5pt;
+      color: var(--mid);
+      letter-spacing: 0.08em;
+    }
+
+    .footer-brand {
+      font-family: var(--serif);
+      font-size: 8pt;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="logo-name">Still <span>&</span> Golden</div>
+      <div class="logo-tagline">Photography · Melbourne</div>
+    </div>
+    <div class="header-meta">
+      <strong>Deep Arora</strong><br>
+      ABN 37 280 912 036<br>
+      stillandgolden.com.au
+    </div>
+  </div>
+
+  <!-- Document title -->
+  <div class="doc-title">Photography Session Agreement</div>
+  <div class="doc-subtitle">Please read carefully and sign before your session</div>
+
+  <!-- Parties -->
+  <div class="parties">
+    <div class="party-box">
+      <div class="party-label">Photographer</div>
+      <div class="party-name">Deep Arora</div>
+      <div class="party-detail">Still &amp; Golden Photography<br>stillandgolden.com.au</div>
+    </div>
+    <div class="party-box">
+      <div class="party-label">Client</div>
+      <span class="client-name-line"></span>
+      <div class="party-detail">&nbsp;</div>
+    </div>
+  </div>
+
+  <!-- Session details -->
+  <div class="section">
+    <div class="section-heading">Session Details</div>
+    <div class="detail-grid">
+      <div class="detail-item">
+        <div class="detail-key">Session Type</div>
+        <span class="detail-val"></span>
+      </div>
+      <div class="detail-item">
+        <div class="detail-key">Session Date</div>
+        <span class="detail-val"></span>
+      </div>
+      <div class="detail-item">
+        <div class="detail-key">Location</div>
+        <span class="detail-val"></span>
+      </div>
+      <div class="detail-item">
+        <div class="detail-key">Session Fee</div>
+        <span class="detail-val"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- What's included -->
+  <div class="section">
+    <div class="section-heading">What's Included</div>
+    <div class="section-body">
+      <p>The session includes 10 professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.</p>
+      <p>The full gallery of all images captured during the session is available for an additional $50. Please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.</p>
+    </div>
+  </div>
+
+  <!-- Payment -->
+  <div class="section">
+    <div class="section-heading">Payment Terms</div>
+    <div class="section-body">
+      <p>A non-refundable deposit of 50% of the session fee is required at the time of booking to secure the session date. The remaining balance is due in full no later than 2 days prior to the session.</p>
+      <p>Failure to pay the remaining balance by the due date may result in the session being cancelled and the deposit forfeited.</p>
+    </div>
+  </div>
+
+  <!-- Cancellation -->
+  <div class="section">
+    <div class="section-heading">Cancellation &amp; Rescheduling</div>
+    <div class="section-body">
+      <p>The deposit is non-refundable in the event of a change of mind, or if the client cancels within 7 days of the scheduled session date.</p>
+      <p>Rescheduling is available at no additional charge and is subject to mutual agreement between the client and photographer. The photographer reserves the right to reschedule in the event of illness, extreme weather, or other unforeseen circumstances, with an alternative date offered at no extra cost.</p>
+    </div>
+  </div>
+
+  <!-- Footer page 1 -->
+  <div class="footer">
+    <div class="footer-text">Still &amp; Golden Photography · ABN 37 280 912 036 · stillandgolden.com.au</div>
+    <div class="footer-brand">Page 1 of 2</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════ PAGE 2 ═══════════════════ -->
+<div class="page">
+
+  <!-- Lighter header for page 2 -->
+  <div class="header-p2">
+    <div class="header-p2-brand">Still <span style="color:#A8845A;">&amp;</span> Golden</div>
+    <div class="header-p2-label">Photography Session Agreement — continued</div>
+  </div>
+
+  <!-- Usage rights -->
+  <div class="section">
+    <div class="section-heading">Image Usage &amp; Rights</div>
+    <div class="section-body">
+      <p><strong>Client use:</strong> Images are licensed for personal, non-commercial use only. The client may print, share, and display images for personal purposes. Commercial use of any image is strictly prohibited without prior written consent from Still &amp; Golden Photography.</p>
+      <p><strong>Photographer use:</strong> Still &amp; Golden Photography retains full copyright of all images. The photographer reserves the right to use images for portfolio, website, social media, and other promotional purposes. If you would prefer your images not be used publicly, please notify the photographer in writing prior to your session.</p>
+    </div>
+  </div>
+
+  <!-- General -->
+  <div class="section">
+    <div class="section-heading">General</div>
+    <div class="section-body">
+      <p>This agreement constitutes the entire agreement between the parties with respect to the session and is governed by the laws of Victoria, Australia. By signing below, both parties confirm they have read, understood, and agree to the terms set out in this document.</p>
+    </div>
+  </div>
+
+  <!-- Signatures -->
+  <div class="sig-block">
+    <div class="sig-col">
+      <div class="sig-label">Client Signature</div>
+      <div class="sig-line">&nbsp;</div>
+      <div class="sig-name-label">Full name</div>
+      <div class="sig-date-line">&nbsp;</div>
+      <div class="sig-date-label">Date</div>
+    </div>
+    <div class="sig-col">
+      <div class="sig-label">Photographer Signature</div>
+      <div class="sig-line">&nbsp;</div>
+      <div class="sig-name-label">Deep Arora — Still &amp; Golden Photography</div>
+      <div class="sig-date-line">&nbsp;</div>
+      <div class="sig-date-label">Date</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-text">Still &amp; Golden Photography · ABN 37 280 912 036 · stillandgolden.com.au</div>
+    <div class="footer-brand">Still &amp; Golden</div>
+  </div>
+
+</div>
+</body>
+</html>

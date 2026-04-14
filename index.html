@@ -809,7 +809,6 @@
             <option value="newborn">Newborn (0–14 days)</option>
             <option value="family">Family session</option>
             <option value="combo">Newborn + family combo</option>
-            <option value="other">Not sure yet</option>
           </select>
         </div>
         <div class="fg">
@@ -834,6 +833,18 @@
   </footer>
 
   <script>
+    // Fix hash navigation: re-scroll after images load to prevent lazy-load layout shift
+    if (location.hash) {
+      const target = document.querySelector(location.hash);
+      if (target) {
+        setTimeout(() => window.scrollTo(0, 0), 0);
+        window.addEventListener('load', () => {
+          const navH = document.getElementById('nav').offsetHeight;
+          window.scrollTo({ top: target.offsetTop - navH, behavior: 'instant' });
+        });
+      }
+    }
+
     // Nav scroll
     const nav = document.getElementById('nav');
     addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 50));

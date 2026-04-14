@@ -21,5 +21,8 @@ Images/*.heic
 # Screenshot exports (generated, not source)
 logo-preview.png
 
+# Node
+node_modules/
+
 # Third-party templates
 Officeworks Template Application.pdf

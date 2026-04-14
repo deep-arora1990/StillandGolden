@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "resend": "^4.0.0"
+  }
+}
