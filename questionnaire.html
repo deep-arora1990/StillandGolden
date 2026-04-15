@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Questionnaire — Still & Golden Photography</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --border: rgba(26,23,20,0.1);
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px;
+      background: rgba(248,245,241,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--warm-black);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-right a {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-right a:hover { color: var(--gold); }
+
+    /* ─── PAGE ─── */
+    .page {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 140px 48px 100px;
+    }
+
+    .page-label {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--mid);
+      margin-bottom: 56px;
+      line-height: 1.7;
+    }
+
+    .rule {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+      margin-bottom: 56px;
+    }
+
+    /* ─── FORM ─── */
+    .form-section {
+      margin-bottom: 40px;
+    }
+
+    .form-section-heading {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    form { display: flex; flex-direction: column; gap: 2px; }
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .fg { display: flex; flex-direction: column; margin-bottom: 2px; }
+    .fg label {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      padding: 10px 14px 0;
+      background: rgba(26,23,20,0.04);
+    }
+    .fg .hint {
+      font-family: var(--serif);
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--mid);
+      padding: 4px 14px 0;
+      background: rgba(26,23,20,0.04);
+    }
+    .fg input, .fg select, .fg textarea {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--warm-black);
+      background: rgba(26,23,20,0.04);
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 8px 14px 12px;
+      outline: none;
+      appearance: none;
+      border-radius: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      background: rgba(168,132,90,0.08);
+      border-bottom-color: var(--gold);
+    }
+    .fg textarea { resize: vertical; min-height: 100px; }
+
+    .form-submit {
+      margin-top: 16px;
+      align-self: flex-start;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      background: var(--warm-black);
+      border: none;
+      padding: 16px 36px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .form-submit:hover { background: var(--gold); }
+    .form-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .form-error {
+      color: #b54a4a;
+      font-size: 0.82rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .form-success {
+      text-align: center;
+      padding: 48px 24px;
+    }
+    .form-success h2 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: var(--warm-black);
+    }
+    .form-success p {
+      font-size: 0.95rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    /* ─── COLOUR PALETTE ─── */
+    .palette {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 32px;
+      margin-top: 48px;
+    }
+
+    .palette h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 14px;
+      color: var(--warm-black);
+    }
+
+    .palette-intro {
+      font-size: 0.88rem;
+      color: var(--warm-black);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .palette-intro em { color: var(--gold); font-style: italic; }
+
+    .palette-label {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 12px;
+    }
+
+    .swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .swatch {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+    }
+
+    .palette-notes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .palette-note {
+      font-size: 0.82rem;
+      color: var(--warm-black);
+      line-height: 1.5;
+      padding: 10px 12px;
+      padding-left: 14px;
+      border-left: 2px solid var(--gold);
+      background: rgba(26,23,20,0.02);
+    }
+
+    .palette-note.avoid {
+      border-left-color: #C4A898;
+      color: var(--mid);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--mid);
+    }
+
+    .footer-brand {
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 20px 24px; }
+      .page { padding: 120px 24px 80px; }
+      .frow { grid-template-columns: 1fr; }
+      .palette { padding: 24px 20px; }
+      .palette-notes { grid-template-columns: 1fr; }
+      footer { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Still <span>&</span> Golden</a>
+    <div class="nav-right">
+      <a href="/">← Back to site</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <div class="page-label">Pre-Session</div>
+    <h1 class="page-title">Session Questionnaire</h1>
+    <p class="page-subtitle">Help us make your session as personal as possible. There are no wrong answers — just tell us about your family.</p>
+    <div class="rule"></div>
+
+    <div id="form-wrap">
+      <form id="questionnaire-form">
+
+        <div class="form-section">
+          <div class="form-section-heading">About Your Family</div>
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label for="names">Your name(s)</label>
+            <input type="text" id="names" name="names" required>
+          </div>
+          <div class="fg">
+            <label for="session_date">Session date</label>
+            <input type="date" id="session_date" name="session_date" required>
+          </div>
+        </div>
+        <div class="fg">
+          <label for="children">Children's names and ages</label>
+          <textarea id="children" name="children" style="min-height:70px;"></textarea>
+        </div>
+        <div class="fg">
+          <label for="pets">Will any pets be joining the session?</label>
+          <input type="text" id="pets" name="pets">
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-heading">Your Session</div>
+        </div>
+        <div class="fg">
+          <label for="capture">What do you most want to capture?</label>
+          <span class="hint">Connection, candid moments, individual portraits, the whole family together — anything goes.</span>
+          <textarea id="capture" name="capture"></textarea>
+        </div>
+        <div class="fg">
+          <label for="must_have">Is there a specific shot or moment you definitely want?</label>
+          <span class="hint">A particular pose, a location in your home, a favourite activity together.</span>
+          <textarea id="must_have" name="must_have"></textarea>
+        </div>
+        <div class="fg">
+          <label for="avoid">Is there anything you'd prefer not to include?</label>
+          <input type="text" id="avoid" name="avoid">
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-heading">This Moment in Time</div>
+        </div>
+        <div class="fg">
+          <label for="whats_special">What's special about this stage in your child's life that you don't want to forget?</label>
+          <textarea id="whats_special" name="whats_special"></textarea>
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label for="special_toy">Is there a special stuffed toy, blanket, or comforter that's part of everyday life?</label>
+            <input type="text" id="special_toy" name="special_toy">
+          </div>
+          <div class="fg">
+            <label for="together">Is there something special you do together as a family you'd love captured?</label>
+            <input type="text" id="together" name="together">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-heading">Practical Notes</div>
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label for="best_time">Best time of day for your child/children</label>
+            <span class="hint">Nap schedules, energy levels, grumpy hours.</span>
+            <input type="text" id="best_time" name="best_time">
+          </div>
+          <div class="fg">
+            <label for="anything_else">Anything else we should know?</label>
+            <span class="hint">Temperaments, fears, allergies, things to avoid.</span>
+            <textarea id="anything_else" name="anything_else" style="min-height:70px;"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="form-submit">Submit questionnaire</button>
+        <p class="form-error" id="form-error"></p>
+      </form>
+    </div>
+
+    <!-- Success -->
+    <div class="form-success" id="form-success" style="display:none;">
+      <h2>Thank you</h2>
+      <p>Deep will be in touch within 24 hours.</p>
+    </div>
+
+    <!-- Colour palette (always visible) -->
+    <div class="palette">
+      <h2>Outfit & Colour Guide</h2>
+      <p class="palette-intro">For the most timeless images, we recommend choosing outfits from a <em>soft, earthy palette</em> — muted tones that complement natural light and keep the focus on your family rather than the clothing.</p>
+
+      <div class="palette-label">Recommended tones</div>
+      <div class="swatches">
+        <div class="swatch" style="background:#A07830;"></div>
+        <div class="swatch" style="background:#C49A6C;"></div>
+        <div class="swatch" style="background:#D4B59A;"></div>
+        <div class="swatch" style="background:#E8D5B8;"></div>
+        <div class="swatch" style="background:#F0E8D8;"></div>
+        <div class="swatch" style="background:#D4A8A8;"></div>
+        <div class="swatch" style="background:#C09090;"></div>
+        <div class="swatch" style="background:#B08898;"></div>
+        <div class="swatch" style="background:#7A9EA8;"></div>
+        <div class="swatch" style="background:#5F8888;"></div>
+        <div class="swatch" style="background:#6A9898;"></div>
+        <div class="swatch" style="background:#A8C0C0;"></div>
+        <div class="swatch" style="background:#A8C0A0;"></div>
+        <div class="swatch" style="background:#8AAF88;"></div>
+        <div class="swatch" style="background:#789868;"></div>
+        <div class="swatch" style="background:#4A6A40;"></div>
+        <div class="swatch" style="background:#C87850;"></div>
+        <div class="swatch" style="background:#B86848;"></div>
+        <div class="swatch" style="background:#D89878;"></div>
+        <div class="swatch" style="background:#B8B8B8;"></div>
+        <div class="swatch" style="background:#A0A0A8;"></div>
+      </div>
+
+      <div class="palette-notes">
+        <div class="palette-note">Coordinate tones, don't match exactly — variety within the palette looks natural</div>
+        <div class="palette-note">Textures like linen, knit, and cotton photograph beautifully in natural light</div>
+        <div class="palette-note">Layers work well — cardigans, wraps, and soft jackets add warmth and dimension</div>
+        <div class="palette-note avoid">Avoid: bright white, black, neon colours, or large bold patterns</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-copy">© 2026 Still & Golden Photography · ABN 37 280 912 036</span>
+    <span class="footer-brand">Still & Golden</span>
+  </footer>
+
+  <script>
+    document.getElementById('questionnaire-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('.form-submit');
+      const errorEl = document.getElementById('form-error');
+      errorEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      const payload = {
+        names: this.names.value,
+        sessionDate: this.session_date.value,
+        children: this.children.value,
+        pets: this.pets.value,
+        capture: this.capture.value,
+        mustHave: this.must_have.value,
+        avoid: this.avoid.value,
+        whatsSpecial: this.whats_special.value,
+        specialToy: this.special_toy.value,
+        together: this.together.value,
+        bestTime: this.best_time.value,
+        anythingElse: this.anything_else.value
+      };
+
+      try {
+        const res = await fetch('/.netlify/functions/submit-questionnaire', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          document.getElementById('form-wrap').style.display = 'none';
+          document.getElementById('form-success').style.display = 'block';
+          document.getElementById('form-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (err) {
+        errorEl.textContent = 'Something went wrong. Please try again or email hello@stillandgolden.com.au';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Submit questionnaire';
+      }
+    });
+  </script>
+
+</body>
+</html>
