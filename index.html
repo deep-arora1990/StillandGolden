@@ -779,9 +779,8 @@
         </div>
       </div>
 
-      <form name="booking-enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="reveal d1">
-        <input type="hidden" name="form-name" value="booking-enquiry">
-        <p style="display:none"><label>Don't fill: <input name="bot-field"></label></p>
+      <form id="enquiry-form" class="reveal d1">
+        <p style="display:none"><label>Don't fill: <input name="bot-field" id="bot-field"></label></p>
         <div class="frow">
           <div class="fg">
             <label for="fn">First name</label>
@@ -819,7 +818,9 @@
           <label for="msg">Anything else</label>
           <textarea id="msg" name="message" placeholder="Tell me about your family, any questions, or special requests…"></textarea>
         </div>
-        <button type="submit" class="form-submit">Send enquiry</button>
+        <button type="submit" class="form-submit" id="enquiry-submit">Send enquiry</button>
+        <p id="enquiry-success" style="display:none;margin-top:16px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:var(--gold);">Thanks — I'll be in touch within 24 hours.</p>
+        <p id="enquiry-error" style="display:none;margin-top:16px;font-size:13px;color:#b04040;">Something went wrong — please email me directly at hello@stillandgolden.com.au</p>
       </form>
     </div>
   </section>
@@ -866,6 +867,45 @@
       });
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Enquiry form
+    document.getElementById('enquiry-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('enquiry-submit');
+      const successMsg = document.getElementById('enquiry-success');
+      const errorMsg = document.getElementById('enquiry-error');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      successMsg.style.display = 'none';
+      errorMsg.style.display = 'none';
+      const body = {
+        first_name: document.getElementById('fn').value.trim(),
+        last_name: document.getElementById('ln').value.trim(),
+        email: document.getElementById('em').value.trim(),
+        phone: document.getElementById('ph').value.trim(),
+        session_type: document.getElementById('st').value,
+        preferred_date: document.getElementById('dt').value.trim(),
+        message: document.getElementById('msg').value.trim(),
+        'bot-field': document.getElementById('bot-field').value,
+      };
+      try {
+        const res = await fetch('/.netlify/functions/submit-enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (res.ok) {
+          this.reset();
+          successMsg.style.display = 'block';
+        } else {
+          throw new Error('non-200');
+        }
+      } catch {
+        errorMsg.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Send enquiry';
+      }
+    });
   </script>
 
 </body>

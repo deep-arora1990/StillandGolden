@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Still &amp; Golden Photography</title>
+</head>
+<!--
+  VARIABLES (pass when sending via Resend API):
+    {{{first_name}}}        - recipient first name (or "Hi there" fallback)
+    {{{hero_image_url}}}    - full URL to a hosted JPG/PNG (1200×800px recommended)
+    {{{session_type}}}      - e.g. "Cake Smash Sessions" / "Birthday Mini Sessions"
+    {{{headline}}}          - main headline, e.g. "One messy hour. A gallery for life."
+    {{{body}}}              - 2-3 sentences of body copy
+    {{{detail_1}}}          - e.g. "Sessions from $295"
+    {{{detail_2}}}          - e.g. "South-east Melbourne"
+    {{{detail_3}}}          - e.g. "Limited spots · May & June"
+    {{{cta_text}}}          - button label, e.g. "Book a session"
+    {{{cta_url}}}           - booking / enquiry URL
+    {{{unsubscribe_url}}}   - unsubscribe link (handled by Resend Broadcasts automatically)
+-->
+<body style="margin:0;padding:0;background-color:#E8E3DC;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#E8E3DC;">
+  <tr>
+    <td align="center" style="padding:40px 20px;">
+
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
+
+        <!-- Gold top bar -->
+        <tr>
+          <td height="4" style="background-color:#A8845A;font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+
+        <!-- Hero image -->
+        <tr>
+          <td style="background-color:#1A1714;font-size:0;line-height:0;">
+            <img src="{{{hero_image_url}}}" width="600" alt="{{{session_type}}} — Still &amp; Golden Photography" style="display:block;width:100%;max-width:600px;height:auto;" />
+          </td>
+        </tr>
+
+        <!-- Session type label -->
+        <tr>
+          <td align="center" style="background-color:#1A1714;padding:20px 48px 24px;">
+            <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;letter-spacing:0.22em;color:#A8845A;text-transform:uppercase;">{{{session_type}}}</p>
+          </td>
+        </tr>
+
+        <!-- Logo -->
+        <tr>
+          <td align="center" style="padding:36px 48px 24px;background-color:#F8F5F1;">
+            <svg width="24" height="48" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;">
+              <path d="M 50 195 C 49 162 45 118 48 78 C 51 42 54 20 52 5" stroke="#A8845A" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <g transform="translate(49,168) rotate(-28) scale(0.66)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="#A8845A"/></g>
+              <g transform="translate(47,145) rotate(207) scale(0.70)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="#A8845A"/></g>
+              <g transform="translate(46,122) rotate(-24) scale(0.72)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="#A8845A"/></g>
+              <g transform="translate(48,96) rotate(204) scale(0.69)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="#A8845A"/></g>
+              <g transform="translate(50,70) rotate(-30) scale(0.64)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="#A8845A"/></g>
+              <g transform="translate(52,47) rotate(210) scale(0.59)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="#A8845A"/></g>
+              <g transform="translate(53,26) rotate(-38) scale(0.48)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="#A8845A"/></g>
+            </svg>
+            <p style="margin:14px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:normal;letter-spacing:0.2em;color:#1A1714;text-transform:uppercase;">STILL &amp; GOLDEN</p>
+            <p style="margin:6px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:0.18em;color:#A8845A;text-transform:uppercase;">Photography</p>
+          </td>
+        </tr>
+
+        <!-- Divider -->
+        <tr>
+          <td style="background-color:#F8F5F1;padding:0 48px;">
+            <table width="100%" cellpadding="0" cellspacing="0"><tr><td style="border-top:1px solid #D4C4B0;font-size:0;line-height:0;">&nbsp;</td></tr></table>
+          </td>
+        </tr>
+
+        <!-- Headline + body -->
+        <tr>
+          <td style="background-color:#F8F5F1;padding:40px 48px 12px;">
+            <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:normal;letter-spacing:0.12em;color:#A8845A;text-transform:uppercase;">Hi {{{first_name}}},</p>
+            <p style="margin:0 0 24px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:normal;line-height:1.35;color:#1A1714;">{{{headline}}}</p>
+            <p style="margin:0 0 32px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">{{{body}}}</p>
+          </td>
+        </tr>
+
+        <!-- Details row: 3 pills -->
+        <tr>
+          <td style="background-color:#F8F5F1;padding:0 48px 36px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="width:33%;padding:12px 8px;border:1px solid #D4C4B0;border-right:none;">
+                  <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#A8845A;letter-spacing:0.06em;">{{{detail_1}}}</p>
+                </td>
+                <td align="center" style="width:33%;padding:12px 8px;border:1px solid #D4C4B0;border-right:none;">
+                  <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#A8845A;letter-spacing:0.06em;">{{{detail_2}}}</p>
+                </td>
+                <td align="center" style="width:33%;padding:12px 8px;border:1px solid #D4C4B0;">
+                  <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#A8845A;letter-spacing:0.06em;">{{{detail_3}}}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- CTA -->
+        <tr>
+          <td style="background-color:#F8F5F1;padding:0 48px 52px;">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="background-color:#1A1714;">
+                  <a href="{{{cta_url}}}" style="display:inline-block;padding:16px 40px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.14em;color:#F8F5F1;text-decoration:none;text-transform:uppercase;">{{{cta_text}}}</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#1A1714;padding:28px 48px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="font-family:Georgia,'Times New Roman',serif;font-size:12px;letter-spacing:0.14em;color:#A8845A;text-transform:uppercase;padding-bottom:6px;">Still &amp; Golden Photography</td></tr>
+              <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#8A7E78;padding-bottom:3px;">Newborn &amp; Family · South-east Melbourne</td></tr>
+              <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:11px;padding-bottom:3px;"><a href="https://stillandgolden.com.au" style="color:#A8845A;text-decoration:none;">stillandgolden.com.au</a></td></tr>
+              <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#8A7E78;padding-bottom:20px;"><a href="https://instagram.com/stillandgoldenphotography" style="color:#8A7E78;text-decoration:none;">@stillandgoldenphotography</a></td></tr>
+              <tr>
+                <td style="border-top:1px solid #2E2A27;padding-top:16px;font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#4A4440;">
+                  ABN 37 280 912 036 &nbsp;·&nbsp; You're receiving this because you enquired about a session with Still &amp; Golden. &nbsp;·&nbsp; <a href="{{{unsubscribe_url}}}" style="color:#4A4440;text-decoration:underline;">Unsubscribe</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
