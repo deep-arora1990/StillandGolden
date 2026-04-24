@@ -121,16 +121,23 @@ exports.handler = async (event) => {
       }),
     ]);
 
-    // 3. Add to audience
+    // 3. Add to audience via REST (SDK contact methods unreliable in Lambda)
     try {
-      const contactResult = await resend.contacts.create({
-        audienceId: GENERAL_AUDIENCE_ID,
-        email,
-        firstName: first_name,
-        lastName: last_name || '',
-        unsubscribed: false,
+      const contactRes = await fetch(`https://api.resend.com/audiences/${GENERAL_AUDIENCE_ID}/contacts`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          first_name,
+          last_name: last_name || '',
+          unsubscribed: false,
+        }),
       });
-      console.log('Contact result:', JSON.stringify(contactResult));
+      const contactJson = await contactRes.json();
+      console.log('Contact result:', JSON.stringify(contactJson));
     } catch (err) {
       console.error('Contact creation threw:', err);
     }
