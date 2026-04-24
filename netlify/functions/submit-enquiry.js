@@ -55,16 +55,20 @@ exports.handler = async (event) => {
         ].filter(Boolean).join('\n'),
       }),
 
-      // 2. Auto-response to enquirer
-      resend.emails.send({
-        from: 'Still & Golden <notifications@stillandgolden.com.au>',
-        to: email,
-        subject: 'Thanks for reaching out — Still & Golden',
-        template_id: ENQUIRY_TEMPLATE_ID,
-        variables: {
-          first_name,
-          unsubscribe_url: 'https://stillandgolden.com.au',
+      // 2. Auto-response to enquirer via template (REST — SDK v4 has no template support)
+      fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          from: 'Still & Golden <notifications@stillandgolden.com.au>',
+          to: [email],
+          subject: 'Thanks for reaching out — Still & Golden',
+          template_id: ENQUIRY_TEMPLATE_ID,
+          variables: { first_name, unsubscribe_url: 'https://stillandgolden.com.au' },
+        }),
       }),
 
       // 3. Add to General audience
