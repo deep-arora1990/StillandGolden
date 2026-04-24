@@ -121,17 +121,18 @@ exports.handler = async (event) => {
       }),
     ]);
 
-    // 3. Add to audience — awaited so Lambda doesn't freeze before it completes
+    // 3. Add to audience
     try {
-      await resend.contacts.create({
+      const contactResult = await resend.contacts.create({
         audienceId: GENERAL_AUDIENCE_ID,
         email,
         firstName: first_name,
         lastName: last_name || '',
         unsubscribed: false,
       });
+      console.log('Contact result:', JSON.stringify(contactResult));
     } catch (err) {
-      console.error('Contact creation failed:', err);
+      console.error('Contact creation threw:', err);
     }
 
     return {
