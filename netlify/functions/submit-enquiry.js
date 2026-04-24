@@ -121,14 +121,18 @@ exports.handler = async (event) => {
       }),
     ]);
 
-    // 3. Add to audience — fire and forget, don't fail the response if this errors
-    resend.contacts.create({
-      audienceId: GENERAL_AUDIENCE_ID,
-      email,
-      firstName: first_name,
-      lastName: last_name || '',
-      unsubscribed: false,
-    }).catch(err => console.error('Contact creation failed:', err));
+    // 3. Add to audience — awaited so Lambda doesn't freeze before it completes
+    try {
+      await resend.contacts.create({
+        audienceId: GENERAL_AUDIENCE_ID,
+        email,
+        firstName: first_name,
+        lastName: last_name || '',
+        unsubscribed: false,
+      });
+    } catch (err) {
+      console.error('Contact creation failed:', err);
+    }
 
     return {
       statusCode: 200,
