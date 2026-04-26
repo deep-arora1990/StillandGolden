@@ -121,7 +121,8 @@ exports.handler = async (event) => {
       }),
     ]);
 
-    // 3. Add to audience
+    // 3. Add to audience — delay to avoid hitting 2 req/s rate limit after Promise.all emails
+    await new Promise(resolve => setTimeout(resolve, 1100));
     const contactResult = await resend.contacts.create({
       audienceId: GENERAL_AUDIENCE_ID,
       email,
