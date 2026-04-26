@@ -1,5 +1,4 @@
 const { Resend } = require('resend');
-const https = require('https');
 
 const RESEND_API_KEY = 're_h529UAzs_GYpeRshcGLi3TwXuN7zXLsPS';
 const GENERAL_AUDIENCE_ID = '09483754-cd3f-4537-9990-001237752466';
@@ -122,36 +121,15 @@ exports.handler = async (event) => {
       }),
     ]);
 
-    // 3. Add to audience — use https module (no global fetch in Node 16)
-    try {
-      await new Promise((resolve) => {
-        const body = JSON.stringify({
-          email,
-          first_name,
-          last_name: last_name || '',
-          unsubscribed: false,
-        });
-        const req = https.request({
-          hostname: 'api.resend.com',
-          path: `/audiences/${GENERAL_AUDIENCE_ID}/contacts`,
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${RESEND_API_KEY}`,
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(body),
-          },
-        }, (res) => {
-          let data = '';
-          res.on('data', (chunk) => { data += chunk; });
-          res.on('end', () => { console.log('Contact result:', res.statusCode, data); resolve(); });
-        });
-        req.on('error', (err) => { console.error('Contact creation threw:', err); resolve(); });
-        req.write(body);
-        req.end();
-      });
-    } catch (err) {
-      console.error('Contact creation threw:', err);
-    }
+    // 3. Add to audience
+    const contactResult = await resend.contacts.create({
+      audienceId: GENERAL_AUDIENCE_ID,
+      email,
+      firstName: first_name,
+      lastName: last_name || '',
+      unsubscribed: false,
+    });
+    console.log('Contact result:', JSON.stringify(contactResult));
 
     return {
       statusCode: 200,
