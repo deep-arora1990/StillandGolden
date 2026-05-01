@@ -6,6 +6,7 @@ const GENERAL_AUDIENCE_ID = '09483754-cd3f-4537-9990-001237752466';
 const SESSION_LABELS = {
   newborn: 'Newborn (0–14 days)',
   family: 'Family session',
+  mini: 'Mini session',
   combo: 'Newborn + family combo',
 };
 
