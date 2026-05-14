@@ -254,17 +254,28 @@ exports.handler = async (event) => {
 
     const fileName = `${contractLabel.replace(/\s+/g, '-').toLowerCase()}-agreement-${lastName.toLowerCase()}-${firstName.toLowerCase()}.pdf`;
 
+    const attachment = { filename: fileName, content: pdfBase64 };
+
     await resend.emails.send({
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: 'hello@stillandgolden.com.au',
       subject: `${contractLabel} Agreement — ${firstName} ${lastName}`,
       text: detailsText,
-      attachments: [
-        {
-          filename: fileName,
-          content: pdfBase64,
-        },
-      ],
+      attachments: [attachment],
+    });
+
+    await resend.emails.send({
+      from: 'Still & Golden <hello@stillandgolden.com.au>',
+      to: email,
+      subject: `Your ${contractLabel} Agreement — Still & Golden Photography`,
+      html: `<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1A1714;">
+        <p style="font-size:1.1rem;margin-bottom:8px;">Hi ${firstName},</p>
+        <p>Thank you for signing your ${contractLabel} agreement with Still &amp; Golden Photography.</p>
+        <p>A copy of your signed agreement is attached to this email for your records.</p>
+        <p>I'm looking forward to your session${sessionDate ? ' on ' + sessionDate : ''} — if you have any questions in the meantime, just reply to this email.</p>
+        <p style="margin-top:32px;">Warm regards,<br><strong>Deep Arora</strong><br>Still &amp; Golden Photography</p>
+      </div>`,
+      attachments: [attachment],
     });
 
     return {
