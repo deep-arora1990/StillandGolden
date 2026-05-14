@@ -291,8 +291,10 @@
 
     <div class="section">
       <h2>What's Included</h2>
-      <p>The session includes 10 professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.</p>
-      <p>The full gallery of all images captured during the session is available for an additional $50. Please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.</p>
+      <div id="whats-included-body">
+        <p>The session includes 10 professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.</p>
+        <p>Access to the extended gallery is an additional $70. Please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.</p>
+      </div>
     </div>
 
     <div class="section">
@@ -338,7 +340,7 @@
         </div>
         <div class="fg">
           <label for="st">Session type</label>
-          <input type="text" id="st" name="session_type" value="Mother's Day Mini Session" readonly style="color:var(--mid);">
+          <input type="text" id="st" name="session_type" value="Mini session" readonly style="color:var(--mid);">
         </div>
         <div class="frow">
           <div class="fg">
@@ -390,7 +392,7 @@
         email: this.email.value,
         sessionDate: this.session_date.value,
         agreementDate: this.agreement_date.value,
-        sessionType: "Mother's Day Mini Session"
+        sessionType: this.session_type.value
       };
 
       try {
