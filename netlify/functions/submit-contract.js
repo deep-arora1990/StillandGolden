@@ -57,8 +57,8 @@ async function generatePDF(data) {
 
   y -= 28;
   // Title
-  const titleText = data.sessionType === "Mother's Day Mini Session"
-    ? 'Mini Session Agreement' : 'Photography Session Agreement';
+  const isMini = data.sessionType === 'Mini session';
+  const titleText = isMini ? 'Mini Session Agreement' : 'Photography Session Agreement';
   page1.drawText(titleText, {
     x: margin, y, size: 16, font: timesRoman, color: rgb(...BRAND.black),
   });
@@ -148,10 +148,10 @@ async function generatePDF(data) {
   }
 
   // What's Included
-  const includedParas = data.sessionType === "Mother's Day Mini Session"
+  const includedParas = isMini
     ? [
         'The session includes 10 professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.',
-        'The full gallery of all images captured during the session is available for an additional $50. Please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.'
+        'Access to the extended gallery is an additional $70. Please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.'
       ]
     : [
         'The session includes 30 professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.'
@@ -243,8 +243,7 @@ exports.handler = async (event) => {
     const pdfBytes = await generatePDF(data);
     const pdfBase64 = Buffer.from(pdfBytes).toString('base64');
 
-    const contractLabel = sessionType === "Mother's Day Mini Session"
-      ? 'Mini Session' : 'Standard Session';
+    const contractLabel = sessionType === 'Mini session' ? 'Mini Session' : 'Standard Session';
 
     let detailsText = `New ${contractLabel} Agreement Signed\n\n`;
     detailsText += `Name: ${firstName} ${lastName}\n`;
