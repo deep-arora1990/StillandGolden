@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio — Still & Golden Photography</title>
+  <meta name="description" content="Family and newborn photography portfolio — Still & Golden Photography, Frankston, South-east Melbourne.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white:  #F8F5F1;
+      --warm-black: #1A1714;
+      --gold:       #A8845A;
+      --mid:        #8A7E78;
+      --border:     rgba(26,23,20,0.1);
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px;
+      background: rgba(248,245,241,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.3s;
+    }
+    nav.scrolled { padding: 18px 48px; }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--warm-black);
+      text-decoration: none;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+    .nav-right a {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--warm-black);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-right a:hover { color: var(--gold); }
+    .nav-right a.active { color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 1px; }
+    .nav-right a.book { border-bottom: 1px solid var(--warm-black); padding-bottom: 1px; }
+    .nav-right a.book:hover { border-color: var(--gold); }
+
+    .hamburger { display: none; cursor: pointer; background: none; border: none; padding: 4px; }
+    .hamburger span {
+      display: block; width: 22px; height: 1px;
+      background: var(--warm-black); margin: 5px 0;
+      transition: 0.3s;
+    }
+
+    /* ─── PAGE HEADER ─── */
+    .port-header {
+      padding: 120px 48px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .port-header h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .port-header h1 em { font-style: italic; color: var(--gold); }
+    .port-header p {
+      font-size: 0.88rem;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      margin-bottom: 40px;
+    }
+
+    /* ─── TABS ─── */
+    .port-tabs-bar {
+      position: sticky;
+      top: 65px;
+      z-index: 50;
+      background: rgba(248,245,241,0.97);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .port-tabs {
+      display: flex;
+      gap: 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+    .port-tab {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 400;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 12px 28px 12px 0;
+      margin-bottom: -1px;
+      cursor: pointer;
+      color: var(--mid);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .port-tab:hover { color: var(--warm-black); }
+    .port-tab.active { color: var(--warm-black); border-bottom-color: var(--warm-black); }
+
+    /* ─── MASONRY ─── */
+    .port-section { display: none; }
+    .port-section.visible { display: block; }
+
+    #grid { padding: 8px 8px; }
+    .masonry { column-count: 3; column-gap: 8px; }
+    .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 8px;
+      overflow: hidden;
+      display: block;
+      position: relative;
+    }
+    .masonry-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.25,0.1,0.25,1);
+    }
+    .masonry-item:hover img { transform: scale(1.03); }
+
+    .grid-caption {
+      padding: 20px 48px 48px;
+      font-size: 0.78rem;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+    }
+    .grid-caption a {
+      color: var(--warm-black);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .grid-caption a:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-logo { font-family: var(--serif); font-size: 1rem; font-weight: 400; color: var(--warm-black); }
+    .footer-copy { font-size: 0.75rem; color: var(--mid); }
+    .footer-area { font-size: 0.75rem; color: var(--mid); text-align: right; }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s cubic-bezier(0.25,0.1,0.25,1),
+                  transform 0.7s cubic-bezier(0.25,0.1,0.25,1);
+    }
+    .reveal.d1 { transition-delay: 0.1s; }
+    .reveal.d2 { transition-delay: 0.2s; }
+    .reveal.d3 { transition-delay: 0.3s; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
+      .nav-right { display: none; }
+      .hamburger { display: block; }
+      .port-header { padding: 100px 24px 32px; }
+      .port-tabs-bar { top: 57px; }
+      .port-tabs {
+        padding: 0 24px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        flex-wrap: nowrap;
+        touch-action: pan-x;
+      }
+      .port-tabs::-webkit-scrollbar { display: none; }
+      .port-tab { flex-shrink: 0; }
+      .port-tabs-bar::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; bottom: 0;
+        width: 48px;
+        background: linear-gradient(to right, transparent, rgba(248,245,241,0.97));
+        pointer-events: none;
+      }
+      .masonry { column-count: 2; }
+      .grid-caption { padding: 16px 24px 40px; }
+      footer { padding: 28px 24px; flex-direction: column; gap: 10px; text-align: center; }
+      .footer-area { text-align: center; }
+    }
+    @media (max-width: 540px) {
+      .masonry { column-count: 1; }
+    }
+
+    body.menu-open .nav-right {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      background: var(--off-white);
+      justify-content: center;
+      align-items: center;
+      gap: 36px;
+      z-index: 98;
+      font-size: 1.1rem;
+      animation: menuFadeIn 0.25s ease forwards;
+    }
+    body.menu-open .nav-right a.book { border: none; padding: 0; }
+    body.menu-open nav { background: transparent; backdrop-filter: none; border-bottom: none; }
+    @keyframes menuFadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .menu-close {
+      display: none;
+      position: fixed;
+      top: 24px; right: 24px;
+      z-index: 101;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.4rem;
+      color: var(--warm-black);
+      padding: 8px;
+    }
+    body.menu-open .menu-close { display: block; }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <a href="/" class="nav-logo">Still &amp; Golden</a>
+    <div class="nav-right">
+      <a href="/portfolio.html" class="active">Portfolio</a>
+      <a href="/#about">About</a>
+      <a href="/#sessions">Sessions &amp; Pricing</a>
+      <a href="/#contact" class="book">Book a session</a>
+    </div>
+    <button class="hamburger" id="ham" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <button class="menu-close" id="menu-close" aria-label="Close menu">&times;</button>
+
+  <div class="port-header">
+    <h1>Portfolio</h1>
+    <p>Family &amp; newborn &nbsp;&middot;&nbsp; South-east Melbourne</p>
+  </div>
+
+  <div class="port-tabs-bar">
+    <div class="port-tabs">
+      <button class="port-tab active" data-tab="family">Family</button>
+      <button class="port-tab" data-tab="motherhood">Motherhood</button>
+      <button class="port-tab" data-tab="fatherhood">Fatherhood</button>
+      <button class="port-tab" data-tab="newborn">Newborn</button>
+    </div>
+  </div>
+
+  <div id="grid">
+    <div id="tab-family" class="port-section visible">
+      <div class="masonry">
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC03403.webp" type="image/webp"><img src="New%20photos/Family/DSC03403.jpg" alt="Family photography, South-east Melbourne"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC03668.webp" type="image/webp"><img src="New%20photos/Family/DSC03668.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC03688.webp" type="image/webp"><img src="New%20photos/Family/DSC03688.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC03474.webp" type="image/webp"><img src="New%20photos/Family/DSC03474.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC03515.webp" type="image/webp"><img src="New%20photos/Family/DSC03515.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC03395.webp" type="image/webp"><img src="New%20photos/Family/DSC03395.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC03469.webp" type="image/webp"><img src="New%20photos/Family/DSC03469.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC03389.webp" type="image/webp"><img src="New%20photos/Family/DSC03389.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC09402.webp" type="image/webp"><img src="New%20photos/Family/DSC09402.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC09824.webp" type="image/webp"><img src="New%20photos/Family/DSC09824.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC02630.webp" type="image/webp"><img src="New%20photos/Family/DSC02630.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC02307.webp" type="image/webp"><img src="New%20photos/Family/DSC02307.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC09027%201.webp" type="image/webp"><img src="New%20photos/Family/DSC09027%201.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC02413.webp" type="image/webp"><img src="New%20photos/Family/DSC02413.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC02156.webp" type="image/webp"><img src="New%20photos/Family/DSC02156.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC02162.webp" type="image/webp"><img src="New%20photos/Family/DSC02162.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC09805.webp" type="image/webp"><img src="New%20photos/Family/DSC09805.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC02812.webp" type="image/webp"><img src="New%20photos/Family/DSC02812.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC02798.webp" type="image/webp"><img src="New%20photos/Family/DSC02798.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC02580.webp" type="image/webp"><img src="New%20photos/Family/DSC02580.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC02552.webp" type="image/webp"><img src="New%20photos/Family/DSC02552.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC02546.webp" type="image/webp"><img src="New%20photos/Family/DSC02546.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC02484.webp" type="image/webp"><img src="New%20photos/Family/DSC02484.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC02479.webp" type="image/webp"><img src="New%20photos/Family/DSC02479.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC02310.webp" type="image/webp"><img src="New%20photos/Family/DSC02310.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC00829.webp" type="image/webp"><img src="New%20photos/Family/DSC00829.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC00752.webp" type="image/webp"><img src="New%20photos/Family/DSC00752.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC01139.webp" type="image/webp"><img src="New%20photos/Family/DSC01139.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC01756.webp" type="image/webp"><img src="New%20photos/Family/DSC01756.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC00331.webp" type="image/webp"><img src="New%20photos/Family/DSC00331.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC00276.webp" type="image/webp"><img src="New%20photos/Family/DSC00276.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC00075.webp" type="image/webp"><img src="New%20photos/Family/DSC00075.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/1912-1.webp" type="image/webp"><img src="New%20photos/Family/1912-1.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC04797_websize.webp" type="image/webp"><img src="New%20photos/Family/DSC04797_websize.JPG" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC05197_websize.webp" type="image/webp"><img src="New%20photos/Family/DSC05197_websize.JPG" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Family/webp/DSC05234_websize.webp" type="image/webp"><img src="New%20photos/Family/DSC05234_websize.JPG" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Family/webp/DSC03398.webp" type="image/webp"><img src="New%20photos/Family/DSC03398.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Family/webp/DSC03406.webp" type="image/webp"><img src="New%20photos/Family/DSC03406.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Family/webp/DSC03410.webp" type="image/webp"><img src="New%20photos/Family/DSC03410.jpg" alt="Family photography, South-east Melbourne" loading="lazy"></picture></div>
+      </div>
+      <p class="grid-caption">Family sessions &nbsp;&middot;&nbsp; South-east Melbourne &nbsp;&middot;&nbsp; <a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener">@stillandgoldenphotography</a></p>
+    </div>
+
+    <div id="tab-motherhood" class="port-section">
+      <div class="masonry">
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Motherhood/webp/DSC03432%202.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC03432%202.jpg" alt="Motherhood photography, South-east Melbourne"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Motherhood/webp/DSC03791%201.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC03791%201.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Motherhood/webp/DSC03379%201.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC03379%201.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Motherhood/webp/DSC03381%201.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC03381%201.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Motherhood/webp/DSC01993.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC01993.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Motherhood/webp/DSC02536.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC02536.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Motherhood/webp/DSC03364.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC03364.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Motherhood/webp/DSC03382.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC03382.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Motherhood/webp/DSC07899.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC07899.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Motherhood/webp/DSC08072.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC08072.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Motherhood/webp/DSC09153%201.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC09153%201.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Motherhood/webp/DSC09190%201.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC09190%201.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Motherhood/webp/DSC09201%201.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC09201%201.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Motherhood/webp/DSC02537.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC02537.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Motherhood/webp/DSC02541.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC02541.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Motherhood/webp/DSC02114.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC02114.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Motherhood/webp/DSC01011.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC01011.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Motherhood/webp/DSC00369.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC00369.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Motherhood/webp/DSC00392.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC00392.jpg" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Motherhood/webp/DSC05137_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC05137_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Motherhood/webp/DSC06606_1_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC06606_1_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Motherhood/webp/DSC05162_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC05162_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Motherhood/webp/DSC06370_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC06370_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Motherhood/webp/DSC06488_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC06488_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Motherhood/webp/DSC06393_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC06393_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Motherhood/webp/DSC06558_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC06558_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Motherhood/webp/DSC06198_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC06198_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Motherhood/webp/DSC04314_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC04314_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Motherhood/webp/DSC04662_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC04662_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Motherhood/webp/DSC05008_websize.webp" type="image/webp"><img src="New%20photos/Motherhood/DSC05008_websize.JPG" alt="Motherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+      </div>
+      <p class="grid-caption">Motherhood sessions &nbsp;&middot;&nbsp; South-east Melbourne &nbsp;&middot;&nbsp; <a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener">@stillandgoldenphotography</a></p>
+    </div>
+
+    <div id="tab-fatherhood" class="port-section">
+      <div class="masonry">
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Fatherhood/webp/IMG_7575.webp" type="image/webp"><img src="New%20photos/Fatherhood/IMG_7575.JPG" alt="Fatherhood photography, South-east Melbourne"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Fatherhood/webp/DSC03815%201.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC03815%201.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Fatherhood/webp/DSC03451.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC03451.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Fatherhood/webp/DSC03330.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC03330.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Fatherhood/webp/DSC03457%201.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC03457%201.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Fatherhood/webp/DSC03569.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC03569.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Fatherhood/webp/DSC09618.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC09618.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Fatherhood/webp/DSC09608.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC09608.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Fatherhood/webp/DSC09598.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC09598.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Fatherhood/webp/DSC02721.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC02721.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00915.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00915.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00631.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00631.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00601.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00601.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00587.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00587.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00573.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00573.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00510.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00510.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00491.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00491.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00162.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00162.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Fatherhood/webp/DSC00149.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC00149.jpg" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Fatherhood/webp/DSC05454_websize.webp" type="image/webp"><img src="New%20photos/Fatherhood/DSC05454_websize.JPG" alt="Fatherhood photography, South-east Melbourne" loading="lazy"></picture></div>
+      </div>
+      <p class="grid-caption">Fatherhood sessions &nbsp;&middot;&nbsp; South-east Melbourne &nbsp;&middot;&nbsp; <a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener">@stillandgoldenphotography</a></p>
+    </div>
+
+    <div id="tab-newborn" class="port-section">
+      <div class="masonry">
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Newborn/webp/DSC03366.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03366.jpg" alt="Newborn photography, South-east Melbourne"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Newborn/webp/DSC03641.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03641.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Newborn/webp/DSC03428.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03428.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Newborn/webp/DSC03623.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03623.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Newborn/webp/DSC03657.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03657.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Newborn/webp/DSC03676.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03676.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Newborn/webp/DSC09864.webp" type="image/webp"><img src="New%20photos/Newborn/DSC09864.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Newborn/webp/DSC09951.webp" type="image/webp"><img src="New%20photos/Newborn/DSC09951.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Newborn/webp/DSC03658.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03658.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Newborn/webp/DSC03639.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03639.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Newborn/webp/DSC03644.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03644.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Newborn/webp/DSC03661.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03661.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Newborn/webp/DSC03737%201.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03737%201.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Newborn/webp/DSC03412.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03412.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Newborn/webp/DSC03447.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03447.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Newborn/webp/DSC03381.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03381.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Newborn/webp/DSC03092.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03092.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Newborn/webp/DSC03085.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03085.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Newborn/webp/DSC03083.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03083.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Newborn/webp/DSC03050.webp" type="image/webp"><img src="New%20photos/Newborn/DSC03050.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Newborn/webp/DSC01777.webp" type="image/webp"><img src="New%20photos/Newborn/DSC01777.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Newborn/webp/DSC01351.webp" type="image/webp"><img src="New%20photos/Newborn/DSC01351.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Newborn/webp/DSC01321.webp" type="image/webp"><img src="New%20photos/Newborn/DSC01321.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Newborn/webp/DSC00663.webp" type="image/webp"><img src="New%20photos/Newborn/DSC00663.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal"><picture><source srcset="New%20photos/Newborn/webp/DSC00127.webp" type="image/webp"><img src="New%20photos/Newborn/DSC00127.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Newborn/webp/DSC09815.webp" type="image/webp"><img src="New%20photos/Newborn/DSC09815.jpg" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Newborn/webp/IMG_4818.webp" type="image/webp"><img src="New%20photos/Newborn/IMG_4818.JPG" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+    <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Newborn/webp/IMG_4824.webp" type="image/webp"><img src="New%20photos/Newborn/IMG_4824.JPG" alt="Newborn photography, South-east Melbourne" loading="lazy"></picture></div>
+      </div>
+      <p class="grid-caption">Newborn sessions &nbsp;&middot;&nbsp; In-home &nbsp;&middot;&nbsp; South-east Melbourne &nbsp;&middot;&nbsp; <a href="https://www.instagram.com/stillandgoldenphotography" target="_blank" rel="noopener">@stillandgoldenphotography</a></p>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-logo">Still &amp; Golden</span>
+    <span class="footer-copy">&copy; 2026 Still &amp; Golden Photography &middot; ABN 37 280 912 036</span>
+    <span class="footer-area">Frankston &middot; Chelsea &middot; Seaford &middot; Langwarrin &middot; Mt Eliza</span>
+    <a href="/privacy" class="footer-copy" style="color:var(--mid);text-decoration:none;border-bottom:1px solid rgba(138,126,120,0.3);">Privacy Policy</a>
+  </footer>
+
+  <script>
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 50));
+
+    // Mobile menu
+    const closeMenu = () => document.body.classList.remove('menu-open');
+    document.getElementById('ham').addEventListener('click', () => document.body.classList.toggle('menu-open'));
+    document.getElementById('menu-close').addEventListener('click', closeMenu);
+    document.querySelectorAll('.nav-right a').forEach(a => a.addEventListener('click', closeMenu));
+
+    // Tabs
+    document.querySelectorAll('.port-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.port-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.port-section').forEach(s => s.classList.remove('visible'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('visible');
+        // Re-observe newly visible items
+        document.querySelectorAll('#tab-' + btn.dataset.tab + ' .reveal:not(.visible)').forEach(el => io.observe(el));
+      });
+    });
+
+    // Scroll reveal
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.05 });
+    document.querySelectorAll('#tab-family .reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
