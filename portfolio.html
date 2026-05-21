@@ -14,6 +14,20 @@
     gtag('js', new Date());
     gtag('config', 'AW-18178273358');
   </script>
+  <script>
+    function gtag_report_conversion(url) {
+      var callback = function () {
+        if (typeof(url) != 'undefined') { window.location = url; }
+      };
+      gtag('event', 'conversion', {
+        send_to: 'AW-18178273358/P64aCMayzbAcEM7gidxD',
+        value: 1.0,
+        currency: 'AUD',
+        event_callback: callback
+      });
+      return false;
+    }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
