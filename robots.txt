@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /contract.html
+Disallow: /contract-mini.html
+Disallow: /session-contract.html
+Disallow: /questionnaire.html
+Disallow: /book-mini.html
+Disallow: /flyers.html
+Disallow: /business-card.html
+Disallow: /card-front-export.html
+Disallow: /card-back-export.html
+Disallow: /print/
+
+Sitemap: https://stillandgolden.com.au/sitemap.xml
