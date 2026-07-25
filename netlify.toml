@@ -46,3 +46,53 @@
   from = "/book-mini"
   to = "/"
   status = 301
+
+# Session pages renamed to tier + keyword (25 Jul 2026). Permanent redirects
+# preserve the search rankings and any links already pointing at the old URLs.
+[[redirects]]
+  from = "/mini-sessions.html"
+  to = "/glimpse-mini-sessions.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/mini-sessions"
+  to = "/glimpse-mini-sessions.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/family-photography.html"
+  to = "/golden-family-photography.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/family-photography"
+  to = "/golden-family-photography.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cake-smash-photography.html"
+  to = "/golden-cake-smash-photography.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cake-smash-photography"
+  to = "/golden-cake-smash-photography.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/newborn-photography.html"
+  to = "/gathered-newborn-photography.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/newborn-photography"
+  to = "/gathered-newborn-photography.html"
+  status = 301
+  force = true
