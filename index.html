@@ -63,45 +63,51 @@
     "makesOffer": [
       {
         "@type": "Offer",
-        "name": "Mini Session",
-        "description": "30-minute in-home or on-location photography session with 10 edited images.",
+        "name": "Glimpse Session",
+        "description": "30-minute in-home or on-location photography session with 10 edited images. Option to upgrade to the full gallery. Suits updated core family photos.",
         "price": "195",
-        "priceCurrency": "AUD"
+        "priceCurrency": "AUD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "minPrice": "195",
+          "priceCurrency": "AUD"
+        }
       },
       {
         "@type": "Offer",
-        "name": "Cake Smash Session",
-        "description": "In-home first birthday cake smash session with 30+ edited images. Parents provide the cake.",
+        "name": "Golden Session",
+        "description": "60-minute in-home or on-location photography session with 20 edited images. Option to upgrade to the full gallery. Suits family, newborn, maternity and cake smash sessions.",
         "price": "250",
-        "priceCurrency": "AUD"
+        "priceCurrency": "AUD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "minPrice": "250",
+          "priceCurrency": "AUD"
+        }
       },
       {
         "@type": "Offer",
-        "name": "Cake Smash & Splash Session",
-        "description": "In-home first birthday cake smash session with splash-bath finale and clean-up photos, 30+ edited images. Parents provide the cake.",
-        "price": "300",
-        "priceCurrency": "AUD"
-      },
-      {
-        "@type": "Offer",
-        "name": "Newborn Session",
-        "description": "In-home newborn photography session within the first 4 weeks after birth.",
+        "name": "Gathered Session",
+        "description": "90-minute in-home or on-location photography session with 30+ edited images and the full gallery included. Suits newborn, extended family and larger groups.",
         "price": "395",
-        "priceCurrency": "AUD"
+        "priceCurrency": "AUD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "minPrice": "395",
+          "priceCurrency": "AUD"
+        }
       },
       {
         "@type": "Offer",
-        "name": "Family Session",
-        "description": "In-home or on-location family photography session.",
-        "price": "295",
-        "priceCurrency": "AUD"
-      },
-      {
-        "@type": "Offer",
-        "name": "Newborn + Family Combo",
-        "description": "Two sessions at a discounted rate.",
+        "name": "Bloom Bundle",
+        "description": "Two 90-minute in-home sessions combining a maternity or family session with a newborn session, booked together at a better rate.",
         "price": "595",
-        "priceCurrency": "AUD"
+        "priceCurrency": "AUD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "minPrice": "595",
+          "priceCurrency": "AUD"
+        }
       }
     ]
   }
@@ -145,7 +151,7 @@
       {
         "@type": "Question",
         "name": "How much does a session cost?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Mini sessions are $195, cake smash sessions are $250, cake smash & splash sessions are $300, family sessions are $295, newborn sessions are $395, and the newborn + family combo is $595." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from $195 (30 minutes, 10 edited images), Golden from $250 (60 minutes, 20 edited images) and Gathered from $395 (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from $595. Glimpse and Golden can both be upgraded to the full gallery." }
       },
       {
         "@type": "Question",
@@ -924,6 +930,96 @@
     .menu-close::before { transform: rotate(45deg); }
     .menu-close::after  { transform: rotate(-45deg); }
     body.menu-open .menu-close { display: flex; }
+
+    /* ═══ MOCKUP: new tier pricing + reviews (scoped, overrides old #sessions) ═══ */
+    #sessions { padding: 0; }
+    #sessions .sessions-inner { max-width: 1160px; margin: 0 auto; padding: 80px 48px; }
+    #sessions .sessions-header { display: block; text-align: center; margin-bottom: 8px; }
+    #sessions .sessions-header p { color: var(--mid); max-width: 52ch; margin: 16px auto 0; font-size: 0.95rem; }
+
+    #sessions .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; padding: 44px 0 20px; }
+    #sessions .tier { background: #fff; border: 1px solid var(--border); padding: 40px 32px 32px; display: flex; flex-direction: column; position: relative; transition: transform 0.25s, box-shadow 0.25s; }
+    #sessions .tier:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -24px rgba(26,23,20,0.28); }
+    #sessions .tier.featured { border: 1px solid var(--gold); box-shadow: 0 20px 46px -26px rgba(168,132,90,0.5); }
+    #sessions .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #fff; font-size: 0.62rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 16px; white-space: nowrap; }
+    #sessions .tier-name { font-family: var(--serif); font-size: 1.9rem; font-weight: 400; margin-bottom: 4px; }
+    #sessions .tier-tag { font-family: var(--serif); font-style: italic; color: var(--mid); font-size: 1rem; margin-bottom: 22px; }
+    #sessions .tier-price { font-family: var(--serif); display: flex; align-items: baseline; gap: 6px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    #sessions .tier-price .from { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); }
+    #sessions .tier-price .amt { font-size: 2.5rem; line-height: 1; }
+    #sessions .tier-specs { list-style: none; margin: 0 0 24px; padding: 0; flex: 1; }
+    #sessions .tier-specs li { position: relative; padding-left: 22px; margin-bottom: 12px; font-size: 0.88rem; color: #4d453f; }
+    #sessions .tier-specs li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+    #sessions .tier-specs li.upgrade { color: var(--gold); }
+    #sessions .best { font-size: 0.8rem; color: var(--mid); line-height: 1.6; margin-bottom: 24px; padding: 13px 15px; background: var(--off-white); border-left: 2px solid var(--gold); }
+    #sessions .best b { color: var(--warm-black); font-weight: 400; }
+    #sessions .tbtn { display: block; text-align: center; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 15px 18px; text-decoration: none; transition: background 0.25s; }
+    #sessions .tbtn:hover { background: var(--gold); }
+    #sessions .tbtn.ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); }
+    #sessions .tbtn.ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
+    #sessions .fineprint { text-align: center; color: var(--mid); font-size: 0.8rem; padding-bottom: 4px; }
+
+    /* Bloom band */
+    #bloom { background: var(--warm-black); color: var(--off-white); padding: 0 48px; }
+    #bloom .bloom-inner { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; padding: 76px 0; }
+    #bloom .eyebrow { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+    #bloom h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.4rem, 4.5vw, 3.4rem); line-height: 1.05; margin-bottom: 20px; }
+    #bloom h2 em { font-style: italic; color: var(--gold); }
+    #bloom p { color: #cfc7bd; max-width: 46ch; margin-bottom: 16px; font-size: 0.98rem; }
+    #bloom .bloom-card { border: 1px solid rgba(248,245,241,0.16); padding: 40px 38px; background: rgba(248,245,241,0.03); }
+    #bloom .bloom-card .from { font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+    #bloom .bloom-card .amt { font-family: var(--serif); font-size: 3rem; line-height: 1; margin: 6px 0 24px; }
+    #bloom .bloom-specs { list-style: none; margin: 0 0 30px; padding: 0; }
+    #bloom .bloom-specs li { position: relative; padding-left: 22px; margin-bottom: 12px; font-size: 0.92rem; color: #e6e0d8; }
+    #bloom .bloom-specs li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+    #bloom .tbtn { display: block; text-align: center; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; background: var(--gold); color: var(--warm-black); padding: 15px 18px; text-decoration: none; transition: background 0.25s; }
+    #bloom .tbtn:hover { background: var(--off-white); }
+
+    /* Reviews */
+    #reviews { border-top: 1px solid var(--border); padding: 80px 48px; }
+    #reviews .reviews-inner { max-width: 1160px; margin: 0 auto; }
+    #reviews .reviews-header { text-align: center; margin-bottom: 44px; }
+    #reviews .eyebrow { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    #reviews .reviews-header h2 { font-family: var(--serif); font-size: clamp(1.9rem, 3.4vw, 2.8rem); font-weight: 400; }
+    #reviews .reviews-header h2 em { font-style: italic; color: var(--gold); }
+    #reviews .review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    #reviews .review { background: #fff; border: 1px solid var(--border); padding: 30px 30px 28px; display: flex; flex-direction: column; }
+    #reviews .stars { color: var(--gold); letter-spacing: 3px; font-size: 0.95rem; margin-bottom: 16px; }
+    #reviews .review q { font-family: var(--serif); font-size: 1.12rem; line-height: 1.55; color: var(--warm-black); quotes: none; flex: 1; }
+    #reviews .review q::before, #reviews .review q::after { content: ""; }
+    #reviews .reviewer { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    #reviews .avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-weight: 400; font-size: 0.95rem; color: #fff; flex-shrink: 0; }
+    #reviews .reviewer .name { font-size: 0.9rem; }
+    #reviews .reviewer .src { font-size: 0.74rem; color: var(--mid); }
+    #reviews .google-cue { text-align: center; color: var(--mid); font-size: 0.8rem; letter-spacing: 0.06em; margin-top: 30px; }
+    #reviews .google-cue b { color: var(--warm-black); font-weight: 400; }
+    #reviews .tbtn { display: block; text-align: center; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 14px 18px; text-decoration: none; transition: filter 0.25s; }
+    #reviews .tbtn:hover { filter: brightness(1.08); }
+
+    @media (max-width: 880px) {
+      #sessions .sessions-inner { padding: 60px 24px; }
+      #sessions .tiers { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
+      #bloom { padding: 0 24px; }
+      #bloom .bloom-inner { grid-template-columns: 1fr; gap: 36px; padding: 56px 0; }
+      #reviews { padding: 60px 24px; }
+      #reviews .review-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
+    }
+
+    /* Editorial mosaic portfolio (full-bleed, face-aware crops) */
+    #grid .mosaic { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 30vw; gap: 8px; }
+    #grid .mosaic .m-item { overflow: hidden; }
+    #grid .mosaic .m-item img { width: 100%; height: 100%; object-fit: cover; object-position: center 28%; transition: transform 0.6s cubic-bezier(0.25,0.1,0.25,1); }
+    #grid .mosaic .m-item:hover img { transform: scale(1.03); }
+    #grid .mosaic .feature { grid-column: span 2; grid-row: span 2; }
+    @media (max-width: 820px) {
+      #grid .mosaic { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 44vw; }
+      #grid .mosaic .feature { grid-column: span 2; grid-row: span 1; }
+    }
+    @media (max-width: 520px) {
+      #grid .mosaic { grid-template-columns: 1fr; grid-auto-rows: auto; }
+      #grid .mosaic .feature { grid-column: span 1; }
+      #grid .mosaic .m-item img { height: auto; }
+    }
   </style>
 </head>
 <body>
@@ -960,24 +1056,13 @@
 
   <!-- MASONRY PORTFOLIO -->
   <div id="grid">
-    <div class="masonry" id="portfolio">
-      <div class="masonry-item reveal"><picture><source srcset="New%20photos/Homepage/webp/DSC00127.webp" type="image/webp"><img decoding="async" width="1200" height="811" src="New%20photos/Homepage/DSC00127.jpg" alt="Newborn baby's hand wrapped around dad's tattooed finger during an in-home newborn session, Frankston"></picture></div>
-      <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Homepage/webp/IMG_7575.webp" type="image/webp"><img decoding="async" width="1200" height="1801" src="New%20photos/Homepage/IMG_7575.JPG" alt="Dad pulling a funny face with his baby on his shoulders, black and white fatherhood portrait" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Homepage/webp/DSC06606_1_websize.webp" type="image/webp"><img decoding="async" width="1200" height="1275" src="New%20photos/Homepage/DSC06606_1_websize.JPG" alt="Mum chasing her laughing daughter along the shoreline, beach family session near Mt Eliza" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Homepage/webp/DSC03050.webp" type="image/webp"><img decoding="async" width="1200" height="1801" src="New%20photos/Homepage/DSC03050.jpg" alt="Newborn girl in a bow headband asleep on a pink knitted blanket with a teddy bear" loading="lazy"></picture></div>
-      <div class="masonry-item reveal"><picture><source srcset="New%20photos/Homepage/webp/DSC09608.webp" type="image/webp"><img decoding="async" width="1200" height="1800" src="New%20photos/Homepage/DSC09608.jpg" alt="Mum cradling her newborn on the couch while her toddler rests beside her, in-home session South-East Melbourne" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Homepage/webp/DSC03381%201.webp" type="image/webp"><img decoding="async" width="1200" height="1854" src="New%20photos/Homepage/DSC03381%201.jpg" alt="Dad kissing his two giggling daughters in matching denim dresses, relaxed family portrait" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Homepage/webp/DSC03658.webp" type="image/webp"><img decoding="async" width="1200" height="1801" src="New%20photos/Homepage/DSC03658.jpg" alt="Mum holding her newborn close, forehead resting against baby's head, black and white newborn photography" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Homepage/webp/DSC05454_websize.webp" type="image/webp"><img decoding="async" width="1200" height="2073" src="New%20photos/Homepage/DSC05454_websize.JPG" alt="Dad lifting his daughter into the air under a gum tree while her brother watches, outdoor family session Frankston" loading="lazy"></picture></div>
-      <div class="masonry-item reveal"><picture><source srcset="New%20photos/Homepage/webp/DSC09027%201.webp" type="image/webp"><img decoding="async" width="1200" height="922" src="New%20photos/Homepage/DSC09027%201.jpg" alt="Parents and their two young daughters laughing together, in-home family photography Melbourne" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Homepage/webp/DSC03457%201.webp" type="image/webp"><img decoding="async" width="1200" height="1845" src="New%20photos/Homepage/DSC03457%201.jpg" alt="Dad playfully holding his giggling toddler upside down on the couch at home" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Homepage/webp/DSC00805.webp" type="image/webp"><img decoding="async" width="1200" height="800" src="New%20photos/Homepage/DSC00805.jpg" alt="New parents smiling at each other while dad cradles their newborn, in-home newborn session Chelsea" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Homepage/webp/DSC03657.webp" type="image/webp"><img decoding="async" width="1200" height="1310" src="New%20photos/Homepage/DSC03657.jpg" alt="Close-up of a newborn's tiny foot with peeling newborn skin, black and white detail photograph" loading="lazy"></picture></div>
-      <div class="masonry-item reveal"><picture><source srcset="New%20photos/Homepage/webp/DSC09201%201.webp" type="image/webp"><img decoding="async" width="1200" height="845" src="New%20photos/Homepage/DSC09201%201.jpg" alt="Mum sitting with her two daughters in matching denim, relaxed in-home motherhood session" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d1"><picture><source srcset="New%20photos/Homepage/webp/DSC02721.webp" type="image/webp"><img decoding="async" width="1200" height="800" src="New%20photos/Homepage/DSC02721.jpg" alt="Dad kissing his smiling baby's cheek, both in brown knits, in-home session Seaford" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d2"><picture><source srcset="New%20photos/Homepage/webp/DSC01351.webp" type="image/webp"><img decoding="async" width="1200" height="1498" src="New%20photos/Homepage/DSC01351.jpg" alt="Newborn hand curled around mum's thumb, black and white close-up detail" loading="lazy"></picture></div>
-      <div class="masonry-item reveal d3"><picture><source srcset="New%20photos/Homepage/webp/DSC00331.webp" type="image/webp"><img decoding="async" width="1200" height="800" src="New%20photos/Homepage/DSC00331.jpg" alt="Parents with their toddler and newborn baby together at home, family of four session Langwarrin" loading="lazy"></picture></div>
-      <div class="masonry-item reveal"><picture><source srcset="New%20photos/Homepage/webp/DSC03092.webp" type="image/webp"><img decoding="async" width="1200" height="800" src="New%20photos/Homepage/DSC03092.jpg" alt="Newborn baby resting in a parent's hand against a black background, fine art newborn portrait" loading="lazy"></picture></div>
+    <div class="mosaic" id="portfolio">
+      <div class="m-item feature reveal"><picture><source srcset="New%20photos/webp/DSC03984_websize.webp" type="image/webp"><img decoding="async" width="933" height="1400" style="object-position:center 22%;" src="New%20photos/DSC03984_websize.JPG" alt="A family standing together among the trees at golden hour, outdoor family session South-East Melbourne"></picture></div>
+      <div class="m-item reveal d1"><picture><source srcset="New%20photos/webp/DSC05548.webp" type="image/webp"><img decoding="async" width="1400" height="933" style="object-position:center 45%;" src="New%20photos/DSC05548.jpg" alt="Close-up of a newborn baby sleeping peacefully, in-home newborn photography Melbourne" loading="lazy"></picture></div>
+      <div class="m-item reveal d2"><picture><source srcset="New%20photos/webp/DSC04590_websize.webp" type="image/webp"><img decoding="async" width="933" height="1400" style="object-position:center 30%;" src="New%20photos/DSC04590_websize.JPG" alt="Dad holding his newborn close against his chest, black and white in-home newborn portrait" loading="lazy"></picture></div>
+      <div class="m-item reveal d3"><picture><source srcset="New%20photos/webp/DSC05894_websize.webp" type="image/webp"><img decoding="async" width="933" height="1400" style="object-position:center 30%;" src="New%20photos/DSC05894_websize.JPG" alt="Big brother gazing down at his newborn sibling swaddled in mum's arms, in-home family session" loading="lazy"></picture></div>
+      <div class="m-item reveal"><picture><source srcset="New%20photos/webp/DSC06086_websize.webp" type="image/webp"><img decoding="async" width="1334" height="1400" style="object-position:center 50%;" src="New%20photos/DSC06086_websize.JPG" alt="Dad lifting his laughing son into the air by the basketball hoop, outdoor lifestyle family session" loading="lazy"></picture></div>
+      <div class="m-item reveal d1"><picture><source srcset="New%20photos/webp/DSC06317_websize.webp" type="image/webp"><img decoding="async" width="1371" height="1400" style="object-position:center 40%;" src="New%20photos/DSC06317_websize.JPG" alt="Parents kissing while cuddling their two children together on the couch, relaxed in-home family session" loading="lazy"></picture></div>
     </div>
     <p class="grid-caption">
       Selected work &nbsp;·&nbsp;
@@ -1008,64 +1093,121 @@
     <div class="sessions-inner">
       <div class="sessions-header reveal">
         <h2>Sessions &amp; <em>pricing</em></h2>
-        <a href="#contact">Enquire about availability →</a>
+        <p>Choose by how much time you want together. Every session is in-home or on-location, with the option to unlock your full gallery.</p>
       </div>
-      <div class="sessions-list">
-        <div class="session-row reveal">
-          <span class="session-num">01</span>
-          <div>
-            <div class="session-name">Mini Session</div>
-            <div class="session-detail">30 mins &middot; 10 edited images &mdash; In-home or at location. A smaller, focused session with the option to add on the extended gallery.</div>
-            <a class="session-book" href="/mini-sessions.html" style="margin-right:22px;">Learn more →</a><a class="session-book" href="https://stillandgolden.setmore.com/services/d6e1959f-dde0-4785-a0b1-8249d1305c7d" target="_blank" rel="noopener">Book directly →</a>
-          </div>
-          <span class="session-price">$195</span>
+
+      <div class="tiers">
+        <div class="tier reveal">
+          <div class="tier-name">Glimpse</div>
+          <div class="tier-tag">The quick refresh</div>
+          <div class="tier-price"><span class="from">From</span><span class="amt">$195</span></div>
+          <ul class="tier-specs">
+            <li>30 minutes</li>
+            <li>10 edited images</li>
+            <li>In-home or on-location</li>
+            <li class="upgrade">Upgrade to the full gallery</li>
+          </ul>
+          <div class="best"><b>Best for</b> — updated core family photos, a fast and focused sitting.</div>
+          <a class="tbtn ghost" href="https://stillandgolden.setmore.com/services/d6e1959f-dde0-4785-a0b1-8249d1305c7d" target="_blank" rel="noopener">Book Glimpse</a>
         </div>
-        <div class="session-row reveal d1">
-          <span class="session-num">02</span>
-          <div>
-            <div class="session-name">Cake Smash Session</div>
-            <div class="session-detail">1 hour &middot; 30+ edited images &mdash; A first birthday marked properly, in your own home. You provide the cake, I bring everything else &mdash; and we make a gorgeous mess.</div>
-            <a class="session-book" href="/cake-smash-photography.html" style="margin-right:22px;">Learn more →</a><a class="session-book" href="https://stillandgolden.setmore.com/services/ccef5044-2b52-4159-9e08-fb2fed242acb" target="_blank" rel="noopener">Book directly →</a>
-          </div>
-          <span class="session-price">$250</span>
+
+        <div class="tier featured reveal d1">
+          <span class="badge">Most popular</span>
+          <div class="tier-name">Golden</div>
+          <div class="tier-tag">The signature sitting</div>
+          <div class="tier-price"><span class="from">From</span><span class="amt">$250</span></div>
+          <ul class="tier-specs">
+            <li>60 minutes</li>
+            <li>20 edited images</li>
+            <li>In-home or on-location</li>
+            <li class="upgrade">Upgrade to the full gallery</li>
+          </ul>
+          <div class="best"><b>Best for</b> — newborn, maternity, cake smash &amp; splash.</div>
+          <a class="tbtn" href="https://stillandgolden.setmore.com/services/cbad199e-41dd-4572-803b-7f27ae3e2bb3" target="_blank" rel="noopener">Book Golden</a>
         </div>
-        <div class="session-row reveal d1">
-          <span class="session-num">03</span>
-          <div>
-            <div class="session-name">Cake Smash &amp; Splash Session</div>
-            <div class="session-detail">1 hour &middot; 30+ edited images &mdash; Everything in the cake smash, plus a warm splash-bath finale and the giggly clean-up photos that follow.</div>
-            <a class="session-book" href="/cake-smash-photography.html#splash" style="margin-right:22px;">Learn more →</a><a class="session-book" href="https://stillandgolden.setmore.com/services/6dafbca8-79c1-46fa-b06d-fb4c10694ba3" target="_blank" rel="noopener">Book directly →</a>
-          </div>
-          <span class="session-price">$300</span>
-        </div>
-        <div class="session-row reveal d2">
-          <span class="session-num">04</span>
-          <div>
-            <div class="session-name">Family Session</div>
-            <div class="session-detail">A chance to capture your family exactly as you are right now &mdash; the chaos, the cuddles, the real moments in between. Great if you&rsquo;re expecting, or just want to capture your family.</div>
-            <a class="session-book" href="/family-photography.html" style="margin-right:22px;">Learn more →</a><a class="session-book" href="https://stillandgolden.setmore.com/services/cbad199e-41dd-4572-803b-7f27ae3e2bb3" target="_blank" rel="noopener">Book directly →</a>
-          </div>
-          <span class="session-price">$295</span>
-        </div>
-        <div class="session-row reveal d2">
-          <span class="session-num">05</span>
-          <div>
-            <div class="session-name">Newborn Session</div>
-            <div class="session-detail">In-home session capturing you and your baby in those first precious weeks of life, any time within the first 4 weeks after birth.</div>
-            <a class="session-book" href="/newborn-photography.html" style="margin-right:22px;">Learn more →</a><a class="session-book" href="https://stillandgolden.setmore.com/services/fe328a93-6db2-41d2-9a7d-4e7d4b4bf9e3" target="_blank" rel="noopener">Book directly →</a>
-          </div>
-          <span class="session-price">$395</span>
-        </div>
-        <div class="session-row reveal d3">
-          <span class="session-num">06</span>
-          <div>
-            <div class="session-name">Newborn + Family Combo</div>
-            <div class="session-detail">Two sessions at a discounted rate &mdash; document the newborn days and your growing family together.</div>
-            <a class="session-book" href="https://stillandgolden.setmore.com/services/d05d6d95-7e5c-4af6-8067-c25bcc55702b" target="_blank" rel="noopener">Book directly →</a>
-          </div>
-          <span class="session-price">$595</span>
+
+        <div class="tier reveal d2">
+          <div class="tier-name">Gathered</div>
+          <div class="tier-tag">Room to move</div>
+          <div class="tier-price"><span class="from">From</span><span class="amt">$395</span></div>
+          <ul class="tier-specs">
+            <li>90 minutes</li>
+            <li>30+ edited images</li>
+            <li>In-home or on-location</li>
+            <li class="upgrade">Full gallery included · no restrictions</li>
+          </ul>
+          <div class="best"><b>Best for</b> — extended family, multiple set-ups, bigger groups.</div>
+          <a class="tbtn ghost" href="https://stillandgolden.setmore.com/services/fe328a93-6db2-41d2-9a7d-4e7d4b4bf9e3" target="_blank" rel="noopener">Book Gathered</a>
         </div>
       </div>
+      <p class="fineprint">All sessions delivered within two weeks. Prices in AUD.</p>
+    </div>
+  </section>
+
+  <!-- BLOOM -->
+  <section id="bloom">
+    <div class="bloom-inner">
+      <div class="reveal">
+        <div class="eyebrow">The bundle</div>
+        <h2>Bloom</h2>
+        <p>Two sittings that follow your family from bump to baby — a maternity or family session while you wait, and a newborn session once they arrive.</p>
+        <p>Booked together at a better rate than two separate sessions.</p>
+      </div>
+      <div class="bloom-card reveal d1">
+        <div class="from">From</div>
+        <div class="amt">$595</div>
+        <ul class="bloom-specs">
+          <li>Two 90-minute sessions</li>
+          <li>Maternity / family + newborn</li>
+          <li>In-home, both sittings</li>
+          <li>Newborn within the first 4 weeks</li>
+        </ul>
+        <a class="tbtn" href="https://stillandgolden.setmore.com/services/d05d6d95-7e5c-4af6-8067-c25bcc55702b" target="_blank" rel="noopener">Book Bloom</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews">
+    <div class="reviews-inner">
+      <div class="reviews-header reveal">
+        <div class="eyebrow">Kind words</div>
+        <h2>What families <em>say</em></h2>
+      </div>
+      <div class="review-grid">
+        <div class="review reveal">
+          <div class="stars">★★★★★</div>
+          <q>His images of our newborn were beautiful!! He was so patient and no request was too much. We will 100% use Deep in the future.</q>
+          <div class="reviewer"><span class="avatar" style="background:#B0552E">A</span><div><div class="name">Alyce Patterson</div><div class="src">Newborn session</div></div></div>
+        </div>
+        <div class="review reveal d1">
+          <div class="stars">★★★★★</div>
+          <q>Absolutely loved my mini photoshoot — each photo was stunning. After 10 years I finally have photos of my son and I for the walls.</q>
+          <div class="reviewer"><span class="avatar" style="background:#D98A32">M</span><div><div class="name">Martine Stevens</div><div class="src">Mini session</div></div></div>
+        </div>
+        <div class="review reveal d2">
+          <div class="stars">★★★★★</div>
+          <q>Made the whole experience so enjoyable. The turnaround is super quick and the photos are very high quality and professional.</q>
+          <div class="reviewer"><span class="avatar" style="background:#B0552E">A</span><div><div class="name">Alvina Singh</div><div class="src">Google review</div></div></div>
+        </div>
+        <div class="review reveal">
+          <div class="stars">★★★★★</div>
+          <q>Welcoming and nice, no fuss — just some lovely relaxed family photos. We got what we wanted super quick.</q>
+          <div class="reviewer"><span class="avatar" style="background:#6E7B6A">J</span><div><div class="name">Jess Shields</div><div class="src">Local Guide · Family</div></div></div>
+        </div>
+        <div class="review reveal d1">
+          <div class="stars">★★★★★</div>
+          <q>Super friendly and made everything feel easy and relaxed. Photos came out really natural — exactly what we wanted. Highly recommend.</q>
+          <div class="reviewer"><span class="avatar" style="background:#8A7E78">S</span><div><div class="name">Stacey</div><div class="src">Google review</div></div></div>
+        </div>
+        <div class="review reveal d2" style="background:var(--warm-black); color:var(--off-white); justify-content:center; align-items:flex-start;">
+          <div class="stars">★★★★★</div>
+          <div style="font-family:var(--serif); font-size:2.4rem; line-height:1; margin-bottom:8px;">5.0</div>
+          <div style="font-size:0.85rem; color:#cfc7bd;">Rated five stars across every Google review.</div>
+          <a class="tbtn" href="#" style="background:var(--gold); color:var(--warm-black); margin-top:22px; align-self:stretch;">Read them on Google</a>
+        </div>
+      </div>
+      <p class="google-cue">Reviewed on <b>Google</b> · Still &amp; Golden Photography</p>
     </div>
   </section>
 
@@ -1100,7 +1242,7 @@
       </details>
       <details class="faq-item reveal d3">
         <summary>How much does a session cost?</summary>
-        <p>Mini sessions are $195, cake smash sessions are $250, cake smash &amp; splash sessions are $300, family sessions are $295, newborn sessions are $395, and the newborn + family combo is $595. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
+        <p>Sessions are grouped by how much time you want together. Glimpse is from $195 (30 minutes, 10 edited images), Golden from $250 (60 minutes, 20 edited images) and Gathered from $395 (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from $595. Glimpse and Golden can both be upgraded to the full gallery. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
       </details>
       <details class="faq-item reveal d3">
         <summary>Do you provide the cake for cake smash sessions?</summary>
