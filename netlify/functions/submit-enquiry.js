@@ -1,6 +1,6 @@
 const { Resend } = require('resend');
 
-const RESEND_API_KEY = 're_h529UAzs_GYpeRshcGLi3TwXuN7zXLsPS';
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const GENERAL_AUDIENCE_ID = '09483754-cd3f-4537-9990-001237752466';
 
 const SESSION_LABELS = {
@@ -74,6 +74,11 @@ function autoResponseHtml(firstName) {
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
+  }
+
+  if (!RESEND_API_KEY) {
+    console.error('RESEND_API_KEY is not set in the environment.');
+    return { statusCode: 500, body: 'Email service is not configured.' };
   }
 
   const resend = new Resend(RESEND_API_KEY);

@@ -8,6 +8,63 @@ const BRAND = {
   cream: [0.973, 0.961, 0.945],  // #F8F5F1
 };
 
+// Session tiers. `upgrade` is the cost of unlocking the full gallery, or null
+// where the full gallery already comes with the session.
+const TIERS = {
+  glimpse: {
+    name: 'Glimpse',
+    label: 'Glimpse Session Agreement',
+    duration: '30 minutes',
+    images: '10',
+    upgrade: 75,
+  },
+  golden: {
+    name: 'Golden',
+    label: 'Golden Session Agreement',
+    duration: '60 minutes',
+    images: '20',
+    upgrade: 50,
+  },
+  gathered: {
+    name: 'Gathered',
+    label: 'Gathered Session Agreement',
+    duration: '90 minutes',
+    images: '30 or more',
+    upgrade: null,
+  },
+  bloom: {
+    name: 'Bloom',
+    label: 'Bloom Session Agreement',
+    duration: '90 minutes per session',
+    images: '30 or more per session',
+    upgrade: null,
+    note: 'Bloom covers two separate 90-minute sessions — a maternity or family session, and a newborn session — each delivered as its own gallery. The newborn session takes place within the first 4 weeks after birth.',
+  },
+};
+
+// Session names used before the tier restructure, so agreements signed from an
+// older form or link still produce the right deliverables.
+const LEGACY_SESSION_TIERS = [
+  [/\bmini\b/, 'glimpse'],
+  [/\bcombo\b/, 'bloom'],
+  [/\bnewborn\b/, 'gathered'],
+  [/\bcake\s*smash\b/, 'golden'],
+  [/\bmaternity\b/, 'golden'],
+  [/\bfamily\b/, 'golden'],
+];
+
+// Session types are submitted as free text from the contract form, so match on
+// the tier name, then on the pre-restructure session names, and fall back to
+// Golden as the most commonly booked session.
+function resolveTier(sessionType) {
+  const value = String(sessionType || '').toLowerCase();
+  const tierMatch = Object.keys(TIERS).find((key) => value.includes(key));
+  if (tierMatch) return TIERS[tierMatch];
+
+  const legacy = LEGACY_SESSION_TIERS.find(([pattern]) => pattern.test(value));
+  return legacy ? TIERS[legacy[1]] : TIERS.golden;
+}
+
 async function generatePDF(data) {
   const doc = await PDFDocument.create();
   const helvetica = await doc.embedFont(StandardFonts.Helvetica);
@@ -57,8 +114,8 @@ async function generatePDF(data) {
 
   y -= 28;
   // Title
-  const isMini = data.sessionType === 'Mini session';
-  const titleText = isMini ? 'Mini Session Agreement' : 'Photography Session Agreement';
+  const tier = resolveTier(data.sessionType);
+  const titleText = `${tier.label} Agreement`;
   page1.drawText(titleText, {
     x: margin, y, size: 16, font: timesRoman, color: rgb(...BRAND.black),
   });
@@ -148,14 +205,21 @@ async function generatePDF(data) {
   }
 
   // What's Included
-  const includedParas = isMini
-    ? [
-        'The session includes 10 professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.',
-        'Access to the extended gallery is an additional $70. Please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.'
-      ]
-    : [
-        'The session includes 30 professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.'
-      ];
+  const includedParas = [
+    `The ${tier.name} session runs for ${tier.duration} and includes ${tier.images} professionally edited photographs delivered via a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use.`,
+  ];
+
+  if (tier.upgrade) {
+    includedParas.push(
+      `Access to the full gallery is an additional $${tier.upgrade}. Please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.`
+    );
+  } else {
+    includedParas.push(
+      'The full gallery is included in this session at no additional cost.'
+    );
+  }
+
+  if (tier.note) includedParas.push(tier.note);
 
   y = drawSection(page1, "What's Included", includedParas, y);
 
@@ -220,7 +284,12 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
-  const resend = new Resend('re_h529UAzs_GYpeRshcGLi3TwXuN7zXLsPS');
+  if (!process.env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY is not set in the environment.');
+    return { statusCode: 500, body: 'Email service is not configured.' };
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   let data;
   try {
@@ -243,7 +312,7 @@ exports.handler = async (event) => {
     const pdfBytes = await generatePDF(data);
     const pdfBase64 = Buffer.from(pdfBytes).toString('base64');
 
-    const contractLabel = sessionType === 'Mini session' ? 'Mini Session' : 'Standard Session';
+    const contractLabel = `${resolveTier(sessionType).name} Session`;
 
     let detailsText = `New ${contractLabel} Agreement Signed\n\n`;
     detailsText += `Name: ${firstName} ${lastName}\n`;

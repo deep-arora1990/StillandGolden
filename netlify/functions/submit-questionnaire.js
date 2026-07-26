@@ -321,7 +321,12 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
-  const resend = new Resend('re_h529UAzs_GYpeRshcGLi3TwXuN7zXLsPS');
+  if (!process.env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY is not set in the environment.');
+    return { statusCode: 500, body: 'Email service is not configured.' };
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   let data;
   try {
