@@ -758,8 +758,10 @@
 
     /* form */
     form { display: flex; flex-direction: column; gap: 2px; }
-    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
-    .fg { display: flex; flex-direction: column; margin-bottom: 2px; }
+    /* min-width:0 lets these shrink below their content width, so a long
+       <option> can't force the form (and the page) wider than the viewport. */
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; min-width: 0; }
+    .fg { display: flex; flex-direction: column; margin-bottom: 2px; min-width: 0; }
     .fg label {
       font-size: 0.68rem;
       font-weight: 400;
@@ -781,6 +783,10 @@
       outline: none;
       appearance: none;
       border-radius: 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      text-overflow: ellipsis;
       transition: background 0.2s, border-color 0.2s;
     }
     .fg input:focus, .fg select:focus, .fg textarea:focus {
@@ -788,6 +794,14 @@
       border-bottom-color: var(--gold);
     }
     .fg textarea { resize: vertical; min-height: 110px; }
+    .fg-hint {
+      font-size: 0.7rem;
+      line-height: 1.6;
+      color: var(--mid);
+      background: rgba(26,23,20,0.04);
+      padding: 0 14px 12px;
+      margin-bottom: 2px;
+    }
     .form-submit {
       margin-top: 16px;
       align-self: flex-start;
@@ -1307,11 +1321,12 @@
           <select id="st" name="session_type" required>
             <option value="" disabled selected>Select a session</option>
             <option value="glimpse">Glimpse &mdash; 30 min, 10 images</option>
-            <option value="golden">Golden &mdash; 60 min, 20 images (family, maternity, newborn, cake smash)</option>
-            <option value="gathered">Gathered &mdash; 90 min, 30+ images (newborn, extended family)</option>
-            <option value="bloom">Bloom &mdash; two sessions, maternity/family + newborn</option>
+            <option value="golden">Golden &mdash; 60 min, 20 images</option>
+            <option value="gathered">Gathered &mdash; 90 min, 30+ images</option>
+            <option value="bloom">Bloom &mdash; two sessions</option>
             <option value="unsure">Not sure yet &mdash; help me choose</option>
           </select>
+          <p class="fg-hint">Golden suits family, maternity, newborn and cake smash. Gathered suits newborn, extended family and bigger groups. Bloom pairs maternity or family with newborn.</p>
         </div>
         <div class="fg">
           <label for="dt">Preferred date / due date</label>
