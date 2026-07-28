@@ -4,10 +4,20 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const GENERAL_AUDIENCE_ID = '09483754-cd3f-4537-9990-001237752466';
 
 const SESSION_LABELS = {
-  newborn: 'Newborn (0–14 days)',
-  family: 'Family session',
-  mini: 'Mini session',
-  combo: 'Newborn + family combo',
+  glimpse: 'Glimpse — 30 min, 10 images',
+  golden: 'Golden — 60 min, 20 images',
+  gathered: 'Gathered — 90 min, 30+ images',
+  bloom: 'Bloom — two sessions, maternity/family + newborn',
+  unsure: 'Not sure yet — help me choose',
+
+  // Session names used before the tier restructure. Kept so an enquiry sent
+  // from a cached page still reads properly in the notification email.
+  newborn: 'Newborn (legacy enquiry — Gathered)',
+  family: 'Family session (legacy enquiry — Golden)',
+  mini: 'Mini session (legacy enquiry — Glimpse)',
+  cakesmash: 'Cake smash (legacy enquiry — Golden)',
+  'cakesmash-splash': 'Cake smash & splash (legacy enquiry — Golden)',
+  combo: 'Newborn + family combo (legacy enquiry — Bloom)',
 };
 
 function autoResponseHtml(firstName) {
