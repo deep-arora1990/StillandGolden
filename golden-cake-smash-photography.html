@@ -107,6 +107,9 @@
     p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
     .lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
     ul.list { margin: 0 0 18px 20px; color: #4d453f; }
+    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 40px 0 8px; }
+    .gallery img { width: 100%; height: 100%; object-fit: cover; display: block; aspect-ratio: 4/5; }
+    @media (max-width: 600px) { .gallery { grid-template-columns: 1fr 1fr; } .gallery picture:last-child { display: none; } }
     ul.list li { margin-bottom: 8px; }
     main a { color: var(--warm-black); }
     .btn {
@@ -142,10 +145,9 @@
     <a href="/" class="nav-logo">Still &amp; Golden</a>
     <div class="nav-right">
       <a href="/portfolio.html">Portfolio</a>
-      <a href="/golden-family-photography.html">Family Sessions</a>
-      <a href="/gathered-newborn-photography.html">Newborn Sessions</a>
-      <a href="/blog/">Blog</a>
+      <a href="/#sessions">Sessions &amp; Pricing</a>
       <a href="/#faq">Common Questions</a>
+      <a href="/blog/">Blog</a>
       <a href="/#contact" class="book">Enquire now</a>
     </div>
   </nav>
@@ -158,6 +160,13 @@
     <p>The first birthday is a big one &mdash; for your baby, and honestly, for you. You made it through the newborn fog, the sleep regressions and a year of firsts. A cake smash session marks the milestone the way a one-year-old would want to: with cake, chaos and absolutely no table manners.</p>
 
     <p>I'm Deep, a dad of two based in South-East Melbourne. These sessions happen in your own home, so your little one is on familiar turf &mdash; no strange studio, no pressure to perform. Just a simple, beautiful setup, their favourite people close by, and a cake with their name on it.</p>
+
+    <div class="gallery">
+      <picture><source srcset="New%20photos/Cake%20smash/webp/DSC06445_websize.webp" type="image/webp"><img src="New%20photos/Cake%20smash/DSC06445_websize.JPG" alt="Parents holding their one-year-old in a party hat before the cake smash begins, in-home session Frankston" loading="lazy" decoding="async"></picture>
+      <picture><source srcset="New%20photos/Cake%20smash/webp/DSC06503_websize.webp" type="image/webp"><img src="New%20photos/Cake%20smash/DSC06503_websize.JPG" alt="One-year-old girl laughing with both hands in her smash cake, first birthday photography" loading="lazy" decoding="async"></picture>
+      <picture><source srcset="New%20photos/Cake%20smash/webp/DSC06624_websize.webp" type="image/webp"><img src="New%20photos/Cake%20smash/DSC06624_websize.JPG" alt="The aftermath of a cake smash session, crumbs and icing across the floor, South-East Melbourne" loading="lazy" decoding="async"></picture>
+    </div>
+    <p style="font-size:0.75rem;color:var(--mid);letter-spacing:0.06em;">More real sessions in the <a href="/portfolio.html" style="color:var(--warm-black);">portfolio</a>.</p>
 
     <h2>How the hour <em>runs</em></h2>
     <ul class="list">
