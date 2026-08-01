@@ -26,3 +26,9 @@ node_modules/
 
 # Third-party templates
 Officeworks Template Application.pdf
+
+# Internal documentation — kept local, never published.
+# The repo root is the Netlify web root, so anything committed here is
+# served at stillandgolden.com.au/<filename> and is publicly readable.
+DEVELOPMENT.md
+PROJECT-HANDOFF.md
