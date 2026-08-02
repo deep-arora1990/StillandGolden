@@ -1,0 +1,99 @@
+/* Still & Golden — shared site styles.
+   Loaded by every page via <link rel="stylesheet" href="/site.css">.
+   Page-specific rules live in each page's inline <style> block and
+   override these where they collide (inline styles come later in the
+   cascade at equal specificity). */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --off-white:  #F8F5F1;
+  --warm-black: #1A1714;
+  --gold:       #A8845A;
+  --mid:        #8A7E78;
+  --border:     rgba(26,23,20,0.1);
+  --serif: 'EB Garamond', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 48px;
+  background: rgba(248,245,241,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: var(--serif); font-size: 1.15rem; letter-spacing: 0.04em; color: var(--warm-black); text-decoration: none; }
+.nav-right { display: flex; align-items: center; gap: 32px; }
+.nav-right a { font-size: 0.78rem; letter-spacing: 0.08em; color: var(--warm-black); text-decoration: none; }
+.nav-right a:hover { color: var(--gold); }
+.nav-right a.book { border-bottom: 1px solid var(--warm-black); padding-bottom: 1px; }
+
+/* Hamburger (mobile nav) — hidden on desktop, shown at <=700px */
+.hamburger { display: none; cursor: pointer; background: none; border: none; padding: 4px; }
+.hamburger span {
+  display: block; width: 22px; height: 1px;
+  background: var(--warm-black); margin: 5px 0;
+  transition: 0.3s;
+}
+@media (max-width: 700px) {
+  .nav-right { display: none; }
+  .hamburger { display: block; }
+}
+
+/* Mobile nav overlay */
+body.menu-open .nav-right {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  background: var(--off-white);
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
+  z-index: 98;
+  animation: menuFadeIn 0.25s ease forwards;
+}
+body.menu-open .nav-right a { font-size: 1.1rem; }
+body.menu-open .nav-right a.book { border: none; padding: 0; }
+body.menu-open nav { background: transparent; backdrop-filter: none; border-bottom: none; }
+
+@keyframes menuFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu-close {
+  display: none;
+  position: fixed;
+  top: 24px; right: 24px;
+  z-index: 101;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 44px; height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+.menu-close::before,
+.menu-close::after {
+  content: '';
+  position: absolute;
+  width: 22px; height: 1.5px;
+  background: var(--warm-black);
+}
+.menu-close::before { transform: rotate(45deg); }
+.menu-close::after  { transform: rotate(-45deg); }
+body.menu-open .menu-close { display: flex; }
+
+.label { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+
+footer {
+  border-top: 1px solid var(--border);
+  margin-top: 80px; padding: 40px 48px;
+  display: flex; flex-wrap: wrap; gap: 10px 30px; justify-content: space-between;
+  font-size: 0.75rem; color: var(--mid); letter-spacing: 0.06em;
+}
+footer .footer-logo { font-family: var(--serif); font-size: 1rem; color: var(--warm-black); }
+footer a { color: var(--mid); text-decoration: none; border-bottom: 1px solid rgba(138,126,120,0.3); }

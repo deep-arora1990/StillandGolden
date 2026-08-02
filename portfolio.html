@@ -64,6 +64,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <script src="/site.js" defer></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -300,9 +301,9 @@
       align-items: center;
       gap: 36px;
       z-index: 98;
-      font-size: 1.1rem;
       animation: menuFadeIn 0.25s ease forwards;
     }
+    body.menu-open .nav-right a { font-size: 1.1rem; }
     body.menu-open .nav-right a.book { border: none; padding: 0; }
     body.menu-open nav { background: transparent; backdrop-filter: none; border-bottom: none; }
     @keyframes menuFadeIn {
@@ -317,11 +318,20 @@
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.4rem;
-      color: var(--warm-black);
-      padding: 8px;
+      width: 44px; height: 44px;
+      align-items: center;
+      justify-content: center;
     }
-    body.menu-open .menu-close { display: block; }
+    .menu-close::before,
+    .menu-close::after {
+      content: '';
+      position: absolute;
+      width: 22px; height: 1.5px;
+      background: var(--warm-black);
+    }
+    .menu-close::before { transform: rotate(45deg); }
+    .menu-close::after  { transform: rotate(-45deg); }
+    body.menu-open .menu-close { display: flex; }
   </style>
 </head>
 <body>
@@ -340,7 +350,7 @@
       <span></span><span></span><span></span>
     </button>
   </nav>
-  <button class="menu-close" id="menu-close" aria-label="Close menu">&times;</button>
+  <button class="menu-close" id="menu-close" aria-label="Close menu"></button>
 
   <div class="port-header">
     <h1>Portfolio</h1>
@@ -512,12 +522,6 @@
     // Nav scroll
     const nav = document.getElementById('nav');
     addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 50));
-
-    // Mobile menu
-    const closeMenu = () => document.body.classList.remove('menu-open');
-    document.getElementById('ham').addEventListener('click', () => document.body.classList.toggle('menu-open'));
-    document.getElementById('menu-close').addEventListener('click', closeMenu);
-    document.querySelectorAll('.nav-right a').forEach(a => a.addEventListener('click', closeMenu));
 
     // Tabs
     document.querySelectorAll('.port-tab').forEach(btn => {

@@ -61,17 +61,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="/site.css">
+  <script src="/site.js" defer></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --off-white:  #F8F5F1;
-      --warm-black: #1A1714;
-      --gold:       #A8845A;
-      --mid:        #8A7E78;
-      --border:     rgba(26,23,20,0.1);
-      --serif: 'EB Garamond', Georgia, serif;
-      --sans:  'DM Sans', system-ui, sans-serif;
-    }
     html { scroll-behavior: smooth; }
     body {
       background: var(--off-white);
@@ -82,23 +74,8 @@
       line-height: 1.6;
       overflow-x: hidden;
     }
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 22px 48px;
-      background: rgba(248,245,241,0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo { font-family: var(--serif); font-size: 1.15rem; letter-spacing: 0.04em; color: var(--warm-black); text-decoration: none; }
-    .nav-right { display: flex; align-items: center; gap: 32px; }
-    .nav-right a { font-size: 0.78rem; letter-spacing: 0.08em; color: var(--warm-black); text-decoration: none; }
-    .nav-right a:hover { color: var(--gold); }
-    .nav-right a.book { border-bottom: 1px solid var(--warm-black); padding-bottom: 1px; }
-    @media (max-width: 700px) { .nav-right a:not(.book) { display: none; } }
 
     main { max-width: 860px; margin: 0 auto; padding: 140px 48px 40px; }
-    .label { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
     h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
     h1 em, h2 em { font-style: italic; color: var(--gold); }
     h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 400; margin: 56px 0 18px; }
@@ -128,15 +105,6 @@
     }
     .price-box .amount { font-family: var(--serif); font-size: 2rem; }
     .price-box .detail { font-size: 0.82rem; color: var(--mid); letter-spacing: 0.04em; }
-
-    footer {
-      border-top: 1px solid var(--border);
-      margin-top: 80px; padding: 40px 48px;
-      display: flex; flex-wrap: wrap; gap: 10px 30px; justify-content: space-between;
-      font-size: 0.75rem; color: var(--mid); letter-spacing: 0.06em;
-    }
-    footer .footer-logo { font-family: var(--serif); font-size: 1rem; color: var(--warm-black); }
-    footer a { color: var(--mid); text-decoration: none; border-bottom: 1px solid rgba(138,126,120,0.3); }
   </style>
 </head>
 <body>
@@ -149,7 +117,11 @@
       <a href="/blog/">Blog</a>
       <a href="/#contact" class="book">Enquire now</a>
     </div>
+    <button class="hamburger" id="ham" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  <button class="menu-close" id="menu-close" aria-label="Close menu"></button>
 
   <main>
     <div class="label">Glimpse Sessions &middot; Frankston &amp; South-East Melbourne</div>
