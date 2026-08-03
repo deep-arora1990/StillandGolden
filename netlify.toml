@@ -65,50 +65,135 @@
 
 # Session pages renamed to tier + keyword (25 Jul 2026). Permanent redirects
 # preserve the search rankings and any links already pointing at the old URLs.
+# Targets point straight at the extensionless canonical URL so no redirect
+# chain runs through a .html URL (see URL consolidation redirects below).
 [[redirects]]
   from = "/mini-sessions.html"
-  to = "/glimpse-mini-sessions.html"
+  to = "/glimpse-mini-sessions"
   status = 301
   force = true
 
 [[redirects]]
   from = "/mini-sessions"
-  to = "/glimpse-mini-sessions.html"
+  to = "/glimpse-mini-sessions"
   status = 301
   force = true
 
 [[redirects]]
   from = "/family-photography.html"
-  to = "/golden-family-photography.html"
+  to = "/golden-family-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/family-photography"
-  to = "/golden-family-photography.html"
+  to = "/golden-family-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/cake-smash-photography.html"
-  to = "/golden-cake-smash-photography.html"
+  to = "/golden-cake-smash-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/cake-smash-photography"
-  to = "/golden-cake-smash-photography.html"
+  to = "/golden-cake-smash-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/newborn-photography.html"
-  to = "/gathered-newborn-photography.html"
+  to = "/gathered-newborn-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/newborn-photography"
-  to = "/gathered-newborn-photography.html"
+  to = "/gathered-newborn-photography"
+  status = 301
+  force = true
+
+# URL consolidation for SEO (3 Aug 2026): the site standardised on
+# extensionless URLs. Canonical tags, internal links and the sitemap all use
+# the extensionless form, but Netlify also serves each page at its .html path
+# with a 200 — duplicate content. Force a 301 from every .html URL to the
+# canonical extensionless URL.
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/portfolio.html"
+  to = "/portfolio"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/gathered-newborn-photography.html"
+  to = "/gathered-newborn-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/golden-family-photography.html"
+  to = "/golden-family-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/golden-cake-smash-photography.html"
+  to = "/golden-cake-smash-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/glimpse-mini-sessions.html"
+  to = "/glimpse-mini-sessions"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/privacy.html"
+  to = "/privacy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/index.html"
+  to = "/blog/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/how-to-choose-a-smash-cake.html"
+  to = "/blog/how-to-choose-a-smash-cake"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/preparing-your-home-newborn-session.html"
+  to = "/blog/preparing-your-home-newborn-session"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/what-happens-at-a-cake-smash-session.html"
+  to = "/blog/what-happens-at-a-cake-smash-session"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/what-to-wear-family-photo-session.html"
+  to = "/blog/what-to-wear-family-photo-session"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/when-to-book-newborn-photos.html"
+  to = "/blog/when-to-book-newborn-photos"
   status = 301
   force = true
