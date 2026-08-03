@@ -52,6 +52,12 @@
 # out of the repo. 410 rather than 404 tells search engines the URL is
 # permanently gone so it gets dropped from the index.
 [[redirects]]
+  from = "/README.md"
+  to = "/404.html"
+  status = 410
+  force = true
+
+[[redirects]]
   from = "/DEVELOPMENT.md"
   to = "/404.html"
   status = 410
