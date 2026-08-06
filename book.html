@@ -85,6 +85,19 @@
     .cal-day:disabled { color: #C9C0B8; cursor: default; }
     .cal-day.selected { background: var(--warm-black); color: var(--off-white); }
     .cal-empty { border: none; }
+    /* Loading overlay: calendar renders immediately, faded, with the
+       "Checking availability…" message over it while Setmore answers. */
+    .cal-wrap { position: relative; }
+    .cal-wrap .cal-grid { transition: opacity 0.25s; }
+    .cal-wrap.loading .cal-grid { opacity: 0.3; pointer-events: none; }
+    .cal-overlay {
+      position: absolute; inset: 0; margin: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(248, 245, 241, 0.55);
+      font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--mid); text-align: center; z-index: 2;
+    }
+    .cal-overlay[hidden] { display: none; }
 
     /* Slots */
     .slots { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
@@ -184,13 +197,15 @@
         <span class="cal-title" id="cal-title" aria-live="polite"></span>
         <button type="button" class="cal-nav" id="cal-next" aria-label="Next month">→</button>
       </div>
-      <div class="cal-grid" id="cal-dows">
-        <span class="cal-dow">Mon</span><span class="cal-dow">Tue</span><span class="cal-dow">Wed</span>
-        <span class="cal-dow">Thu</span><span class="cal-dow">Fri</span><span class="cal-dow">Sat</span>
-        <span class="cal-dow">Sun</span>
+      <div class="cal-wrap" id="cal-wrap">
+        <div class="cal-grid" id="cal-dows">
+          <span class="cal-dow">Mon</span><span class="cal-dow">Tue</span><span class="cal-dow">Wed</span>
+          <span class="cal-dow">Thu</span><span class="cal-dow">Fri</span><span class="cal-dow">Sat</span>
+          <span class="cal-dow">Sun</span>
+        </div>
+        <div class="cal-grid" id="cal-days" role="group" aria-label="Available dates"></div>
+        <p id="cal-loading" class="loading cal-overlay" hidden>Checking availability…</p>
       </div>
-      <div class="cal-grid" id="cal-days" role="group" aria-label="Available dates"></div>
-      <p id="cal-loading" class="loading" hidden>Checking availability…</p>
 
       <!-- Step 3: slots, shown under the calendar once a date is picked -->
       <div id="slot-area" hidden>
@@ -434,15 +449,18 @@
       var key = monthKey(year, month);
       if (state.availableDates[key]) { renderCalendar(); return; }
       $('cal-loading').hidden = false;
+      $('cal-wrap').classList.add('loading');
       api('booking-availability?service_key=' + encodeURIComponent(state.service.serviceKey) +
           '&year=' + year + '&month=' + month)
         .then(function (data) {
           state.availableDates[key] = data.availableDates || [];
           $('cal-loading').hidden = true;
+          $('cal-wrap').classList.remove('loading');
           renderCalendar();
         })
         .catch(function (err) {
           $('cal-loading').hidden = true;
+          $('cal-wrap').classList.remove('loading');
           showNotice(err.message || 'Availability could not be loaded — please try again.', true);
         });
     }
