@@ -15,6 +15,7 @@ const {
   findCustomer,
   createCustomer,
   createAppointment,
+  getAppointmentsOnDate,
 } = require('./lib/setmore');
 
 const GENERAL_AUDIENCE_ID = '09483754-cd3f-4537-9990-001237752466';
@@ -120,12 +121,29 @@ async function handleBookingFailure(stripe, resend, session, meta, err) {
   }
 }
 
+// Idempotency guard 2: Stripe redelivers events (at-least-once). If the slot
+// is already held by this same customer, the original delivery succeeded and
+// this one is a duplicate — never refund in that case.
+async function findExistingBooking(meta) {
+  try {
+    const appts = await getAppointmentsOnDate(meta.date);
+    return appts.find((a) =>
+      (a.start_time || '').startsWith(`${meta.date}T${meta.time}`) &&
+      ((a.customer && a.customer.email_id) || '').toLowerCase() === (meta.email || '').toLowerCase()
+    ) || null;
+  } catch (err) {
+    console.error('stripe-webhook: duplicate-booking check failed (continuing):', err);
+    return null;
+  }
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
   let stripeEvent;
+  let stripe = null;
 
   if (MOCK) {
     try {
@@ -148,7 +166,7 @@ exports.handler = async (event) => {
       return json(500, { error: 'Webhook not configured' });
     }
     const Stripe = require('stripe');
-    const stripe = new Stripe(stripeKey);
+    stripe = new Stripe(stripeKey);
     const rawBody = event.isBase64Encoded
       ? Buffer.from(event.body, 'base64').toString('utf8')
       : event.body;
@@ -171,12 +189,37 @@ exports.handler = async (event) => {
   const session = stripeEvent.data.object;
   const meta = session.metadata || {};
 
+  // Idempotency guard 1 (live only): a successfully-processed session is
+  // flagged in its metadata; a redelivery of the same event exits cleanly
+  // instead of double-booking and refunding a legitimate payment.
+  if (stripe) {
+    try {
+      const fresh = await stripe.checkout.sessions.retrieve(session.id);
+      if (fresh.metadata && fresh.metadata.booked) {
+        console.log(`stripe-webhook: ${session.id} already booked (${fresh.metadata.booked}), ignoring redelivery`);
+        return json(200, { received: true, alreadyBooked: true });
+      }
+    } catch (err) {
+      console.error('stripe-webhook: session re-fetch failed (continuing):', err);
+    }
+  }
+
   const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
   if (!resend) console.error('RESEND_API_KEY is not set; audience add and failure emails will be skipped.');
 
   try {
     const appointment = await bookAppointment(meta);
     console.log(`stripe-webhook: booked ${session.id} → appointment ${appointment.key || '(no key)'}`);
+    if (stripe) {
+      try {
+        await stripe.checkout.sessions.update(session.id, {
+          metadata: { ...meta, booked: appointment.key || 'yes' },
+        });
+      } catch (flagErr) {
+        // Non-fatal — the Setmore duplicate-check covers redeliveries too.
+        console.error('stripe-webhook: could not flag session as booked:', flagErr);
+      }
+    }
     if (resend) await addToAudience(resend, meta);
   } catch (err) {
     if (MOCK) {
@@ -184,8 +227,13 @@ exports.handler = async (event) => {
       console.error('stripe-webhook mock booking failed:', err);
       return json(200, { received: true, booked: false, error: err.message });
     }
-    const Stripe = require('stripe');
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || process.env.STRIPE_TEST_KEY);
+    // Guard 2: the "failure" may be a redelivery where the original delivery
+    // already booked this slot for this customer — never refund that.
+    const existing = await findExistingBooking(meta);
+    if (existing) {
+      console.log(`stripe-webhook: slot already held by this customer (${existing.key}); treating as duplicate delivery, no refund`);
+      return json(200, { received: true, alreadyBooked: true });
+    }
     await handleBookingFailure(stripe, resend, session, meta, err);
     return json(200, { received: true, booked: false, refunded: true });
   }

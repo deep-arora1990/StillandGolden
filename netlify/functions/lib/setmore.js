@@ -289,6 +289,18 @@ async function createAppointment({ staffKey, serviceKey, customerKey, startTime,
   return appointment;
 }
 
+// Appointments on a single day, with embedded customer records — used by the
+// webhook's duplicate-delivery guard. date: 'YYYY-MM-DD'; the Setmore
+// appointments endpoint wants dd-mm-yyyy.
+async function getAppointmentsOnDate(date) {
+  if (MOCK) return [];
+  const [y, m, d] = date.split('-');
+  const data = await setmoreFetch('/bookingapi/appointments', {
+    query: { startDate: `${d}-${m}-${y}`, endDate: `${d}-${m}-${y}`, customerDetails: 'true' },
+  });
+  return (data && data.appointments) || [];
+}
+
 module.exports = {
   TIERS,
   SERVICE_KEY_TO_TIER,
@@ -300,4 +312,5 @@ module.exports = {
   findCustomer,
   createCustomer,
   createAppointment,
+  getAppointmentsOnDate,
 };
