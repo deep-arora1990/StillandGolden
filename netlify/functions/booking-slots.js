@@ -31,7 +31,9 @@ exports.handler = async (event) => {
     return {
       statusCode: 502,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: { code: 'SETMORE_DOWN', message: 'Could not load times right now' } }),
+      // TEMP debug: expose the underlying error message to diagnose the
+      // production-only 502. Remove once fixed.
+      body: JSON.stringify({ error: { code: 'SETMORE_DOWN', message: 'Could not load times right now', detail: String(err && err.message), status: err && err.status, code2: err && err.code } }),
     };
   }
 };
