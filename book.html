@@ -343,6 +343,7 @@
       var grid = $('svc-grid');
       grid.innerHTML = '';
       state.services.forEach(function (s) {
+        if (s.hidden) return; // test tier — only reachable via ?service=test
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'svc-card';
