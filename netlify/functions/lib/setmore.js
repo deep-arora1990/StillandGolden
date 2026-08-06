@@ -156,8 +156,6 @@ function invalidateToken() {
 
 // --- authed request wrapper -------------------------------------------------
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
 async function setmoreFetch(path, { method = 'GET', body, query } = {}, { retry = true } = {}) {
   const token = await getAccessToken();
   let url = BASE + path;
@@ -180,7 +178,7 @@ async function setmoreFetch(path, { method = 'GET', body, query } = {}, { retry 
   });
 
   if (res.status === 429 && retry) {
-    await sleep(1500);
+    await sleepMs(1500);
     return setmoreFetch(path, { method, body, query }, { retry: false });
   }
 
@@ -303,20 +301,27 @@ async function createAppointment({ staffKey, serviceKey, customerKey, startTime,
   if (MOCK) {
     return { key: `mock-appt-${Date.now()}`, staff_key: staffKey, service_key: serviceKey, customer_key: customerKey, start_time: startTime, end_time: endTime, comment: comment || '' };
   }
-  const data = await setmoreFetch('/bookingapi/appointment/create', {
-    method: 'POST',
-    body: {
-      staff_key: staffKey,
-      service_key: serviceKey,
-      customer_key: customerKey,
-      start_time: startTime, // yyyy-MM-ddTHH:mm
-      end_time: endTime,
-      comment: comment || '',
-    },
-  });
-  const appointment = data && data.appointment;
-  if (!appointment) throw new SetmoreError('Appointment created but no data returned');
-  return appointment;
+  // Setmore intermittently answers with response:true but empty data (nothing
+  // is created in that case — verified). Retry that flake once. If the first
+  // attempt did secretly book, the retry fails with slot_already_booked and
+  // the webhook's duplicate guard finds our own booking — safe either way.
+  const body = {
+    staff_key: staffKey,
+    service_key: serviceKey,
+    customer_key: customerKey,
+    start_time: startTime, // yyyy-MM-ddTHH:mm
+    end_time: endTime,
+    comment: comment || '',
+  };
+  let lastErr = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (attempt > 0) await sleepMs(1000);
+    const data = await setmoreFetch('/bookingapi/appointment/create', { method: 'POST', body });
+    const appointment = data && data.appointment;
+    if (appointment) return appointment;
+    lastErr = new SetmoreError('Appointment created but no data returned');
+  }
+  throw lastErr;
 }
 
 // Appointments on a single day, with embedded customer records — used by the
