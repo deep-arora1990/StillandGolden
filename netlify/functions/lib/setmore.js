@@ -97,7 +97,25 @@ class SetmoreError extends Error {
 let cachedToken = null; // { value, expiresAt }
 let envVarIsAccessToken = false; // set when the refresh exchange says so
 
+const sleepMs = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Setmore's exchange endpoint flakes occasionally (empty data, 5xx) — retry up
+// to twice with backoff before giving up. The deterministic "this isn't a
+// refresh token" fallback returns normally and is never retried.
 async function exchangeRefreshToken() {
+  let lastErr;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await exchangeRefreshTokenOnce();
+    } catch (err) {
+      lastErr = err;
+      if (attempt < 2) await sleepMs(800 * (attempt + 1));
+    }
+  }
+  throw lastErr;
+}
+
+async function exchangeRefreshTokenOnce() {
   const url = `${BASE}/o/oauth2/token?refreshToken=${encodeURIComponent(REFRESH_TOKEN)}`;
   const res = await fetch(url);
   const body = await res.json().catch(() => ({}));
