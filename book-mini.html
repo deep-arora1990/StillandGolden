@@ -295,9 +295,11 @@
 
     <div class="scheduler-wrap">
       <h2>Book Your Session</h2>
-      <p style="color:var(--mid);font-size:0.88rem;line-height:1.7;margin-bottom:24px;">Select a date and time that works for you. Payment is taken at the time of booking via Square.</p>
-      <script id="anywhere_book_now_script" src="https://assets.setmore.com/integration/book-now/live/v1/anywhere-book-now.js"></script>
-      <button id="Anywhere_button_iframe" class="anywhere-book-now-button" style="
+      <p style="color:var(--mid);font-size:0.88rem;line-height:1.7;margin-bottom:24px;">Select a date and time that works for you. Payment is taken at the time of booking.</p>
+      <a href="/book" style="
+        display: block;
+        text-align: center;
+        text-decoration: none;
         background-color: var(--warm-black);
         color: var(--off-white);
         border: none;
@@ -311,10 +313,11 @@
         cursor: pointer;
         transition: background 0.25s;
         width: 100%;
-      " data-booking-url="https://deeparora.setmore.com" data-new-tab="false"
+        box-sizing: border-box;
+      "
       onmouseover="this.style.background='var(--gold)'"
       onmouseout="this.style.background='var(--warm-black)'"
-      >Book a session</button>
+      >Book a session</a>
     </div>
 
   </div>

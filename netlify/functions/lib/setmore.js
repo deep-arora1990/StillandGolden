@@ -64,18 +64,6 @@ const TIERS = {
     priceCents: 59500,
     includes: 'Two 90-minute sessions',
   },
-  // Live-payment test tier ($1 Setmore service). Hidden from the session
-  // picker; reachable only via /book.html?service=test. Remove after go-live.
-  test: {
-    name: 'Test',
-    tagline: 'Payment test',
-    serviceKey: '50fcdf64-13b9-4587-a339-12a9609f8af7',
-    durationMinutes: 10,
-    priceFrom: 1,
-    priceCents: 100,
-    includes: 'Test booking',
-    hidden: true,
-  },
 };
 
 const SERVICE_KEY_TO_TIER = {};

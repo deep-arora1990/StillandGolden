@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Book a Session | Still & Golden Photography</title>
   <meta name="description" content="Book your Still & Golden photography session — pick a session type, choose a date and time, and you're booked.">
-  <meta name="robots" content="noindex">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -343,7 +342,6 @@
       var grid = $('svc-grid');
       grid.innerHTML = '';
       state.services.forEach(function (s) {
-        if (s.hidden) return; // test tier — only reachable via ?service=test
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'svc-card';

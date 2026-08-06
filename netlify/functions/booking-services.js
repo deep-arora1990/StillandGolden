@@ -19,7 +19,6 @@ exports.handler = async (event) => {
     priceFrom: cfg.priceFrom,
     includes: cfg.includes,
     serviceKey: cfg.serviceKey,
-    hidden: !!cfg.hidden,
   }));
 
   return {

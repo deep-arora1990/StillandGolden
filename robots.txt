@@ -5,8 +5,6 @@ Disallow: /contract-mini.html
 Disallow: /session-contract.html
 Disallow: /questionnaire.html
 Disallow: /book-mini.html
-Disallow: /book.html
-Disallow: /book
 Disallow: /flyers.html
 Disallow: /business-card.html
 Disallow: /card-front-export.html
