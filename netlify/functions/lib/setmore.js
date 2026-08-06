@@ -276,8 +276,15 @@ async function findCustomer(firstName, email) {
   const data = await setmoreFetch('/bookingapi/customer', {
     query: { firstname: firstName, email },
   });
-  const customers = (data && data.customers) || (data && data.customer ? [data.customer] : []);
-  return customers.find((c) => (c.email_id || '').toLowerCase() === email.toLowerCase()) || customers[0] || null;
+  // Setmore returns matches as data.customer — an ARRAY of customer objects
+  // (per the API docs). Only accept an exact email match; falling back to the
+  // first record would book against the wrong customer.
+  let customers = [];
+  if (Array.isArray(data && data.customer)) customers = data.customer;
+  else if (data && data.customer) customers = [data.customer];
+  else if (Array.isArray(data && data.customers)) customers = data.customers;
+  const match = customers.find((c) => (c.email_id || '').toLowerCase() === email.toLowerCase());
+  return (match && match.key) ? match : null;
 }
 
 async function createCustomer({ firstName, lastName, email, phone }) {
@@ -305,6 +312,7 @@ async function createAppointment({ staffKey, serviceKey, customerKey, startTime,
   // is created in that case — verified). Retry that flake once. If the first
   // attempt did secretly book, the retry fails with slot_already_booked and
   // the webhook's duplicate guard finds our own booking — safe either way.
+  if (!customerKey) throw new SetmoreError('Cannot create appointment without a customer key');
   const body = {
     staff_key: staffKey,
     service_key: serviceKey,
