@@ -97,7 +97,9 @@ async function exchangeRefreshToken() {
       return await exchangeRefreshTokenOnce();
     } catch (err) {
       lastErr = err;
-      if (attempt < 2) await sleepMs(800 * (attempt + 1));
+      // Back off harder for rate limiting — Setmore throttles per account.
+      const wait = err.code === 'RATE_LIMITED' ? 3000 * (attempt + 1) : 800 * (attempt + 1);
+      if (attempt < 2) await sleepMs(wait);
     }
   }
   throw lastErr;
@@ -117,11 +119,19 @@ async function exchangeRefreshTokenOnce() {
     };
   }
 
-  // The exchange rejects the value (any 400/401 shape: "invalid_refresh_token",
-  // "invalid_request", …) → the env var is not a refresh token; per the Setmore
-  // docs fallback, treat it as an access token directly. If it isn't one
-  // either, the next authed call 401s and surfaces as SETMORE_DOWN.
-  if (res.status === 400 || res.status === 401 || body.error === 'invalid_refresh_token') {
+  // Rate limited — retryable, and must NOT be mistaken for a bad token.
+  if (res.status === 429 || body.error === 'too_many_requests') {
+    throw new SetmoreError('Setmore rate limit hit during token exchange', {
+      status: res.status,
+      code: 'RATE_LIMITED',
+    });
+  }
+
+  // Only an explicit invalid_refresh_token means the env var is not a refresh
+  // token; per the Setmore docs fallback, treat it as an access token
+  // directly. If it isn't one either, the next authed call 401s and surfaces
+  // as SETMORE_DOWN.
+  if (body.error === 'invalid_refresh_token' || body.error === 'invalid_request') {
     envVarIsAccessToken = true;
     return { value: REFRESH_TOKEN, expiresAt: Date.now() + 24 * 60 * 60 * 1000 };
   }
@@ -168,6 +178,15 @@ async function setmoreFetch(path, { method = 'GET', body, query } = {}, { retry 
   if (res.status === 429 && retry) {
     await sleepMs(1500);
     return setmoreFetch(path, { method, body, query }, { retry: false });
+  }
+
+  // Setmore signals rate limits as HTTP 400 + error:"too_many_requests" too.
+  if (res.status === 400 && retry) {
+    const peek = await res.clone().json().catch(() => ({}));
+    if (peek.error === 'too_many_requests') {
+      await sleepMs(2500);
+      return setmoreFetch(path, { method, body, query }, { retry: false });
+    }
   }
 
   if (res.status === 401 && retry && !envVarIsAccessToken) {

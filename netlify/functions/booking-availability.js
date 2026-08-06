@@ -7,7 +7,7 @@
 
 const { TIERS, TIMEZONE, getSlots, SetmoreError } = require('./lib/setmore');
 
-const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_TTL_MS = 30 * 60 * 1000;
 const cache = new Map(); // key: `${serviceKey}:${year}:${month}` → { expiresAt, availableDates }
 
 const BATCH_SIZE = 5;
