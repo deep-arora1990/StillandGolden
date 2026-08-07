@@ -199,6 +199,24 @@
   force = true
 
 [[redirects]]
+  from = "/blog/what-happens-at-a-newborn-session.html"
+  to = "/blog/what-happens-at-a-newborn-session"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/what-happens-at-a-family-session.html"
+  to = "/blog/what-happens-at-a-family-session"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/what-happens-at-a-maternity-session.html"
+  to = "/blog/what-happens-at-a-maternity-session"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/blog/when-to-book-newborn-photos.html"
   to = "/blog/when-to-book-newborn-photos"
   status = 301
