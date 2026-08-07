@@ -174,27 +174,7 @@
 
   <!-- Google Ads -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18178273358"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'AW-18178273358');
-    gtag('config', 'G-R92YP24HMJ');
-  </script>
-  <script>
-    function gtag_report_conversion(url) {
-      var callback = function () {
-        if (typeof(url) != 'undefined') { window.location = url; }
-      };
-      gtag('event', 'conversion', {
-        send_to: 'AW-18178273358/P64aCMayzbAcEM7gidxD',
-        value: 1.0,
-        currency: 'AUD',
-        event_callback: callback
-      });
-      return false;
-    }
-  </script>
+  <script src="/site-tags.js"></script>
 
   <!-- Meta Pixel -->
   <script>
@@ -1415,8 +1395,13 @@
         if (res.ok) {
           this.reset();
           successMsg.style.display = 'block';
-          gtag_report_conversion();
-          fbq('track', 'Lead');
+          // Tracking is wrapped so it can never fail a successful enquiry.
+          // Ad blockers routinely remove gtag and the Meta pixel; without this
+          // guard the ReferenceError lands in the catch below and shows the
+          // error message to someone whose enquiry actually went through.
+          try { gtag_report_conversion(); } catch (e) {}
+          try { fbq('track', 'Lead'); } catch (e) {}
+          try { sgTrack('generate_lead', { currency: 'AUD', value: 1.0 }); } catch (e) {}
         } else {
           throw new Error('non-200');
         }

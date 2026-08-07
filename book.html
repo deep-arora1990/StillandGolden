@@ -15,6 +15,9 @@
 
   <link rel="stylesheet" href="/site.css">
   <script src="/site.js" defer></script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18178273358"></script>
+  <script src="/site-tags.js"></script>
   <style>
     body {
       background: var(--off-white);
@@ -287,6 +290,13 @@
 
     var $ = function (id) { return document.getElementById(id); };
 
+    // Analytics must never be able to break a booking. site-tags.js is a
+    // separate request and ad blockers do remove files like it, so every call
+    // goes through this — if the helper isn't there, nothing happens.
+    function track(name, params) {
+      try { if (window.sgTrack) window.sgTrack(name, params); } catch (e) {}
+    }
+
     // --- helpers -------------------------------------------------------------
 
     function showNotice(msg, isError) {
@@ -374,11 +384,40 @@
       });
     }
 
+    /**
+     * Reports the sale once. Two guards against double-counting revenue if the
+     * confirmation page is refreshed or shared: the stashed details are removed
+     * after the first run, and GA4 itself de-duplicates on `transaction_id`
+     * (Stripe's checkout session id, already on the return URL).
+     */
+    function trackPurchase(sessionId) {
+      var pending = null;
+      try {
+        pending = JSON.parse(sessionStorage.getItem('sg_pending_purchase') || 'null');
+        sessionStorage.removeItem('sg_pending_purchase');
+      } catch (e) {}
+
+      if (!pending) return; // already reported, or a shared/bookmarked link
+
+      track('purchase', {
+        transaction_id: sessionId || undefined,
+        currency: 'AUD',
+        value: pending.price,
+        items: [{
+          item_id: pending.tier,
+          item_name: pending.name,
+          price: pending.price,
+          currency: 'AUD',
+        }],
+      });
+    }
+
     function applyUrlState() {
       var params = new URLSearchParams(window.location.search);
 
       // Returned from Stripe after a successful payment.
       if (params.get('booked') === '1') {
+        trackPurchase(params.get('session_id'));
         showStep('confirm');
         window.scrollTo(0, 0);
         return;
@@ -406,6 +445,10 @@
       state.service = s;
       state.date = null;
       state.time = null;
+      track('select_item', {
+        item_list_name: 'Sessions',
+        items: [{ item_id: s.tier, item_name: s.name, price: s.priceFrom, currency: 'AUD' }],
+      });
       renderSummary();
       showStep('calendar');
       clearNotice();
@@ -599,6 +642,28 @@
       var label = 'Pay & book — $' + state.service.priceFrom;
       btn.disabled = true;
       btn.textContent = 'Redirecting to payment…';
+
+      track('begin_checkout', {
+        currency: 'AUD',
+        value: state.service.priceFrom,
+        items: [{
+          item_id: state.service.tier,
+          item_name: state.service.name,
+          price: state.service.priceFrom,
+          currency: 'AUD',
+        }],
+      });
+
+      // Stripe navigates away and back, and the return trip carries only
+      // `booked=1&session_id=...` — not what was bought. Stash it so the
+      // confirmation step can report the sale with its real value.
+      try {
+        sessionStorage.setItem('sg_pending_purchase', JSON.stringify({
+          tier: state.service.tier,
+          name: state.service.name,
+          price: state.service.priceFrom,
+        }));
+      } catch (e) {}
 
       api('booking-checkout', {
         method: 'POST',
