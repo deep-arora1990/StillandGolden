@@ -3,7 +3,7 @@
 //
 // Setmore has no "available dates in a month" endpoint, so this fans out one
 // slots call per remaining day of the month (parallel batches of 5 to stay
-// rate-limit friendly) and caches the result in memory for 10 minutes.
+// rate-limit friendly) and caches the result in memory for 30 minutes.
 
 const { TIERS, TIMEZONE, getSlots, SetmoreError } = require('./lib/setmore');
 
