@@ -50,7 +50,8 @@ function thankYouHtml(firstName, childName) {
           <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">Thanks for coming along to the Father&rsquo;s Day class &mdash; it was lovely to meet you${child}.</p>
           <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">Your photos will be ready within two weeks. I&rsquo;ll email them straight through as soon as they&rsquo;re edited, along with how to grab the ones you&rsquo;d like.</p>
           <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">If today left you wanting more than a few frames, a full session gives you proper time together &mdash; an hour, twenty edited images, in your own home or somewhere outdoors you love. Sessions start from $195.</p>
-          <p style="margin:0 0 36px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">No rush at all &mdash; have a look whenever suits.</p>
+          <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">No rush at all &mdash; have a look whenever suits.</p>
+          <p style="margin:0 0 36px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">I&rsquo;m <a href="https://instagram.com/stillandgoldenphotography" style="color:#A8845A;text-decoration:none;font-weight:bold;">@stillandgoldenphotography</a> on Instagram if you&rsquo;d like to follow along &mdash; session dates and mini spots go up there first.</p>
           <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#1A1714;">Deep</p>
           <p style="margin:0 0 36px;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-style:italic;color:#A8845A;">Still &amp; Golden Photography</p>
         </td>
