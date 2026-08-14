@@ -168,6 +168,22 @@
   status = 301
   force = true
 
+# Event sign-up form (Baby Sensory Father's Day, 12 Sept 2026). Extensionless
+# like every other page — this is the URL behind the QR code at the venue.
+[[redirects]]
+  from = "/fathers-day.html"
+  to = "/fathers-day"
+  status = 301
+  force = true
+
+# /book was added after the extensionless convention and never got its pair,
+# so it still served on both URLs.
+[[redirects]]
+  from = "/book.html"
+  to = "/book"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/blog/index.html"
   to = "/blog/"

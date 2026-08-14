@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Father's Day Photos — Still &amp; Golden Photography</title>
+  <meta name="description" content="Sign up for your Father's Day photos with Still &amp; Golden Photography at Baby Sensory.">
+  <!-- Event-specific page: useful for a term, not something to index. -->
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18178273358"></script>
+  <script src="/site-tags.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --border: rgba(26,23,20,0.1);
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main { max-width: 540px; margin: 0 auto; padding: 48px 24px 64px; }
+
+    .mark { text-align: center; margin-bottom: 36px; }
+    .mark .name { font-family: var(--serif); font-size: 0.95rem; letter-spacing: 0.18em; text-transform: uppercase; }
+    .mark .sub  { font-family: var(--serif); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-top: 2px; }
+
+    h1 { font-family: var(--serif); font-size: clamp(2rem, 7vw, 2.6rem); font-weight: 400; line-height: 1.15; margin-bottom: 10px; }
+    h1 em { font-style: italic; color: var(--gold); }
+    .lead { color: #4d453f; margin-bottom: 32px; }
+
+    .field { margin-bottom: 20px; }
+    .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    /* Side-by-side down to ~360px — a standard iPhone is 390px, and stacking
+       there made the form twice as long for no benefit. */
+    @media (max-width: 340px) { .name-row { grid-template-columns: 1fr; gap: 0; } }
+    .section { font-family: var(--serif); font-size: 1.05rem; color: var(--warm-black); margin: 4px 0 10px; }
+    .req { letter-spacing: 0; text-transform: none; color: var(--gold); }
+    label { display: block; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    input[type=text], input[type=email], input[type=tel] {
+      width: 100%; border: 1px solid var(--border); background: #fff;
+      padding: 14px 15px; font-family: inherit; font-size: 16px; /* 16px stops iOS zooming on focus */
+      color: var(--warm-black); border-radius: 2px;
+    }
+    input:focus { outline: none; border-color: var(--gold); }
+
+    .consent { display: flex; gap: 10px; align-items: flex-start; margin: 26px 0 8px; }
+    .consent input { margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--gold); }
+    .consent label { font-size: 0.84rem; letter-spacing: 0; text-transform: none; color: #4d453f; margin: 0; line-height: 1.55; }
+
+    .btn {
+      width: 100%; border: none; cursor: pointer; margin-top: 18px;
+      font-family: inherit; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--off-white); background: var(--warm-black);
+      padding: 18px 24px; border-radius: 2px; transition: background 0.25s;
+    }
+    .btn:hover:not(:disabled) { background: var(--gold); }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+
+    .note { font-size: 0.8rem; color: var(--mid); margin-top: 16px; }
+    .error { border-left: 3px solid #B4552D; background: #fff; padding: 14px 16px; margin-bottom: 20px; font-size: 0.9rem; }
+
+    /* Hidden from people, visible to bots. */
+    .hp { position: absolute; left: -9999px; opacity: 0; height: 0; }
+
+    .done { text-align: center; padding: 20px 0; }
+    .done .tick { font-family: var(--serif); font-size: 2.4rem; color: var(--gold); }
+    .done h2 { font-family: var(--serif); font-size: 1.7rem; font-weight: 400; margin: 8px 0 12px; }
+    .done p { color: #4d453f; margin-bottom: 10px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark">
+      <div class="name">Still &amp; Golden</div>
+      <div class="sub">Photography</div>
+    </div>
+
+    <section id="form-step">
+      <h1>Father&rsquo;s Day <em>photos</em></h1>
+      <p class="lead">Pop your details in and I&rsquo;ll email your photos within two weeks. Only the email is needed &mdash; fill in as much of the rest as you like.</p>
+
+      <div class="error" id="error" hidden></div>
+
+      <form id="signup" novalidate>
+        <div class="hp" aria-hidden="true">
+          <label for="bot-field">Leave this empty</label>
+          <input type="text" id="bot-field" name="bot-field" tabindex="-1" autocomplete="off">
+        </div>
+
+        <p class="section">Parent 1</p>
+        <div class="name-row">
+          <div class="field">
+            <label for="p1first">First name</label>
+            <input type="text" id="p1first" autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label for="p1last">Last name</label>
+            <input type="text" id="p1last" autocomplete="family-name">
+          </div>
+        </div>
+
+        <p class="section">Parent 2</p>
+        <div class="name-row">
+          <div class="field">
+            <label for="p2first">First name</label>
+            <input type="text" id="p2first" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="p2last">Last name</label>
+            <input type="text" id="p2last" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="childName">Little one&rsquo;s name</label>
+          <input type="text" id="childName" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label for="email">Email <span class="req">&mdash; so I can send your photos</span></label>
+          <input type="email" id="email" autocomplete="email" inputmode="email" required>
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" autocomplete="tel" inputmode="tel">
+        </div>
+
+        <div class="consent">
+          <input type="checkbox" id="photoConsent" required>
+          <label for="photoConsent">I&rsquo;m happy for Deep to photograph our family today and email the photos to me.</label>
+        </div>
+
+        <div class="consent">
+          <input type="checkbox" id="marketingConsent">
+          <label for="marketingConsent">You can occasionally email me about sessions and offers. (Optional &mdash; and you can unsubscribe any time.)</label>
+        </div>
+
+        <button type="submit" class="btn" id="submit-btn">I&rsquo;m ready</button>
+        <p class="note">Your details are only used for your photos. See the <a href="/privacy" style="color:var(--gold);">privacy policy</a>.</p>
+      </form>
+    </section>
+
+    <section id="done-step" hidden>
+      <div class="done">
+        <div class="tick">&#10003;</div>
+        <h2>You&rsquo;re all set</h2>
+        <p>Come and see me whenever you&rsquo;re ready &mdash; no need to show this screen.</p>
+        <p>Your photos will land in your inbox within two weeks.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+      var form = document.getElementById('signup');
+      var btn = document.getElementById('submit-btn');
+      var errorBox = document.getElementById('error');
+
+      function showError(message) {
+        errorBox.textContent = message;
+        errorBox.hidden = false;
+        errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errorBox.hidden = true;
+
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+
+        fetch('/.netlify/functions/submit-event-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            parent1FirstName: document.getElementById('p1first').value,
+            parent1LastName: document.getElementById('p1last').value,
+            parent2FirstName: document.getElementById('p2first').value,
+            parent2LastName: document.getElementById('p2last').value,
+            childName: document.getElementById('childName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            marketingConsent: document.getElementById('marketingConsent').checked,
+            'bot-field': document.getElementById('bot-field').value
+          })
+        }).then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            if (!res.ok || !data.ok) throw new Error(data.error || 'Something went wrong.');
+            document.getElementById('form-step').hidden = true;
+            document.getElementById('done-step').hidden = false;
+            window.scrollTo(0, 0);
+            if (window.sgTrack) window.sgTrack('generate_lead', { currency: 'AUD', value: 1.0 });
+          });
+        }).catch(function (err) {
+          btn.disabled = false;
+          btn.textContent = 'I’m ready';
+          showError(err.message || 'Could not save that — please try again, or grab Deep.');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
