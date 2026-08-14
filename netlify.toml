@@ -237,3 +237,9 @@
   to = "/blog/when-to-book-newborn-photos"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/fathers-day.html"
+  to = "/fathers-day"
+  status = 301
+  force = true

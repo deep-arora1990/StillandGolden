@@ -3,228 +3,438 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Father's Day Photos — Still &amp; Golden Photography</title>
-  <meta name="description" content="Sign up for your Father's Day photos with Still &amp; Golden Photography at Baby Sensory.">
-  <!-- Event-specific page: useful for a term, not something to index. -->
-  <meta name="robots" content="noindex, nofollow">
+  <title>Father's Day Mini Sessions — 30 August | Still &amp; Golden</title>
+  <meta name="description" content="Father's Day mini sessions at George Pentland Botanic Gardens, Sunday 30 August 2026. $150, 20 minutes, 5 edited photos — only 10 spots, social-only offer.">
+  <meta name="robots" content="noindex">
+  <meta property="og:title" content="Father's Day Mini Sessions — Sunday 30 August">
+  <meta property="og:description" content="$150 · 20 minutes · 5 edited photos at George Pentland Botanic Gardens. Only 10 spots — delivered before Father's Day.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://stillandgolden.com.au/fathers-day">
+  <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
+  <meta property="og:site_name" content="Still &amp; Golden Photography">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/site.css">
+  <script src="/site.js" defer></script>
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18178273358"></script>
   <script src="/site-tags.js"></script>
-
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --off-white: #F8F5F1;
-      --warm-black: #1A1714;
-      --gold: #A8845A;
-      --mid: #8A7E78;
-      --border: rgba(26,23,20,0.1);
-      --serif: 'EB Garamond', Georgia, serif;
-      --sans:  'DM Sans', system-ui, sans-serif;
-    }
-
     body {
       background: var(--off-white);
       color: var(--warm-black);
       font-family: var(--sans);
       font-weight: 300;
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    main { max-width: 540px; margin: 0 auto; padding: 48px 24px 64px; }
-
-    .mark { text-align: center; margin-bottom: 36px; }
-    .mark .name { font-family: var(--serif); font-size: 0.95rem; letter-spacing: 0.18em; text-transform: uppercase; }
-    .mark .sub  { font-family: var(--serif); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-top: 2px; }
-
-    h1 { font-family: var(--serif); font-size: clamp(2rem, 7vw, 2.6rem); font-weight: 400; line-height: 1.15; margin-bottom: 10px; }
+    main { max-width: 720px; margin: 0 auto; padding: 140px 48px 40px; }
+    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 12px; }
     h1 em { font-style: italic; color: var(--gold); }
-    .lead { color: #4d453f; margin-bottom: 32px; }
+    h2 { font-family: var(--serif); font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 400; margin: 0 0 18px; }
+    p.sub { color: #4d453f; margin-bottom: 32px; max-width: 60ch; }
 
-    .field { margin-bottom: 20px; }
-    .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    /* Side-by-side down to ~360px — a standard iPhone is 390px, and stacking
-       there made the form twice as long for no benefit. */
-    @media (max-width: 340px) { .name-row { grid-template-columns: 1fr; gap: 0; } }
-    .section { font-family: var(--serif); font-size: 1.05rem; color: var(--warm-black); margin: 4px 0 10px; }
-    .req { letter-spacing: 0; text-transform: none; color: var(--gold); }
-    label { display: block; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
-    input[type=text], input[type=email], input[type=tel] {
-      width: 100%; border: 1px solid var(--border); background: #fff;
-      padding: 14px 15px; font-family: inherit; font-size: 16px; /* 16px stops iOS zooming on focus */
-      color: var(--warm-black); border-radius: 2px;
+    .step { display: none; }
+    .step.active { display: block; }
+
+    /* Offer card */
+    .offer {
+      border: 1px solid var(--gold); background: #fff;
+      padding: 30px 34px; margin: 0 0 40px;
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 26px;
     }
-    input:focus { outline: none; border-color: var(--gold); }
+    .offer .amount { font-family: var(--serif); font-size: 2.2rem; }
+    .offer .detail { font-size: 0.84rem; color: var(--mid); letter-spacing: 0.04em; line-height: 1.8; }
 
-    .consent { display: flex; gap: 10px; align-items: flex-start; margin: 26px 0 8px; }
-    .consent input { margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--gold); }
-    .consent label { font-size: 0.84rem; letter-spacing: 0; text-transform: none; color: #4d453f; margin: 0; line-height: 1.55; }
+    /* Slots — same pattern as book.html, incl. the loading overlay */
+    .counter { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .slots-wrap { position: relative; min-height: 90px; }
+    .slots { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; transition: opacity 0.25s; }
+    .slots-wrap.loading .slots { opacity: 0.3; pointer-events: none; }
+    .slot-overlay {
+      position: absolute; inset: 0; margin: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(248, 245, 241, 0.55);
+      font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--mid); text-align: center; z-index: 2;
+    }
+    .slot-overlay[hidden] { display: none; }
+    .slot-btn {
+      background: none; border: 1px solid var(--border); cursor: pointer;
+      padding: 12px 20px; font-family: inherit; font-size: 0.95rem; color: var(--warm-black);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .slot-btn:hover, .slot-btn:focus-visible { border-color: var(--gold); outline: none; }
+    .slot-btn.selected { background: var(--warm-black); color: var(--off-white); border-color: var(--warm-black); }
+    .soldout { border: 1px solid var(--border); background: #fff; padding: 26px 30px; font-size: 0.95rem; color: #4d453f; }
+    .soldout a { color: var(--warm-black); }
+
+    /* Details form */
+    .details { max-width: 520px; }
+    .field { margin-bottom: 18px; }
+    .field label { display: block; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    .field input, .field textarea {
+      width: 100%; border: 1px solid var(--border); background: #fff;
+      padding: 12px 14px; font-family: inherit; font-size: 0.95rem; color: var(--warm-black);
+    }
+    .field input:focus, .field textarea:focus { outline: none; border-color: var(--gold); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+    .terms { display: flex; gap: 12px; align-items: flex-start; margin: 22px 0 6px; font-size: 0.85rem; color: #4d453f; }
+    .terms input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--warm-black); flex-shrink: 0; }
+    .terms a { color: var(--warm-black); }
 
     .btn {
-      width: 100%; border: none; cursor: pointer; margin-top: 18px;
-      font-family: inherit; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+      display: inline-block; margin: 12px 0 8px; border: none; cursor: pointer;
+      font-family: inherit; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--off-white); background: var(--warm-black);
-      padding: 18px 24px; border-radius: 2px; transition: background 0.25s;
+      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
     }
     .btn:hover:not(:disabled) { background: var(--gold); }
     .btn:disabled { opacity: 0.5; cursor: default; }
+    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
+    .btn-ghost:hover:not(:disabled) { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
 
-    .note { font-size: 0.8rem; color: var(--mid); margin-top: 16px; }
-    .error { border-left: 3px solid #B4552D; background: #fff; padding: 14px 16px; margin-bottom: 20px; font-size: 0.9rem; }
+    .notice {
+      border-left: 3px solid var(--gold); background: #fff;
+      padding: 14px 18px; margin: 0 0 24px; font-size: 0.9rem; color: #4d453f;
+    }
+    .notice.error { border-left-color: #B4552D; }
 
-    /* Hidden from people, visible to bots. */
-    .hp { position: absolute; left: -9999px; opacity: 0; height: 0; }
+    .summary-line { font-size: 0.86rem; color: var(--mid); margin: 0 0 24px; }
+    .summary-line b { color: var(--warm-black); font-weight: 400; }
 
-    .done { text-align: center; padding: 20px 0; }
-    .done .tick { font-family: var(--serif); font-size: 2.4rem; color: var(--gold); }
-    .done h2 { font-family: var(--serif); font-size: 1.7rem; font-weight: 400; margin: 8px 0 12px; }
-    .done p { color: #4d453f; margin-bottom: 10px; }
-    [hidden] { display: none !important; }
+    /* Confirmation */
+    .confirm-box { border: 1px solid var(--border); padding: 40px 44px; background: #fff; }
+    .confirm-box .tick { font-family: var(--serif); font-size: 2rem; color: var(--gold); }
+
+    @media (max-width: 700px) {
+      main { padding: 120px 24px 32px; }
+      .confirm-box { padding: 28px 24px; }
+    }
   </style>
 </head>
 <body>
+  <nav>
+    <a href="/" class="nav-logo">Still &amp; Golden</a>
+    <div class="nav-right">
+      <a href="/portfolio">Portfolio</a>
+      <a href="/#sessions">Sessions &amp; Pricing</a>
+      <a href="/#faq">Common Questions</a>
+      <a href="/blog/">Blog</a>
+      <a href="/#contact" class="book">Enquire now</a>
+    </div>
+    <button class="hamburger" id="ham" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <button class="menu-close" id="menu-close" aria-label="Close menu"></button>
+
   <main>
-    <div class="mark">
-      <div class="name">Still &amp; Golden</div>
-      <div class="sub">Photography</div>
+    <div class="label">Social-only offer &middot; Limited to 10 spots</div>
+    <h1>Father's Day <em>Mini Sessions</em></h1>
+    <p class="sub">Sunday 30 August &middot; George Pentland Botanic Gardens, Frankston. Twenty minutes, five edited photos, and something for dad's wall that isn't a mug. Photos delivered before Father's Day on 6 September.</p>
+
+    <div class="offer">
+      <span class="amount">$150</span>
+      <span class="detail">20-minute session &middot; 5 edited photos &middot; option to upgrade to the full gallery afterwards &middot; delivered before Father's Day (6 Sept)</span>
     </div>
 
-    <section id="form-step">
-      <h1>Father&rsquo;s Day <em>photos</em></h1>
-      <p class="lead">Pop your details in and I&rsquo;ll email your photos within two weeks. Only the email is needed &mdash; fill in as much of the rest as you like.</p>
+    <div id="notice" class="notice" role="alert" hidden></div>
 
-      <div class="error" id="error" hidden></div>
+    <!-- Step 1: slots -->
+    <section id="step-slots" class="step active" aria-label="Choose a time">
+      <h2>Pick your time</h2>
+      <p class="counter" id="counter" aria-live="polite" hidden></p>
+      <div class="slots-wrap" id="slots-wrap">
+        <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
+        <p id="slot-loading" class="slot-overlay">Checking the day's spots…</p>
+      </div>
+      <div id="sold-out" class="soldout" hidden>
+        All spots are gone. If you'd like to hear about the next mini day &mdash; or book a full session instead &mdash; <a href="/#contact">get in touch here</a>.
+      </div>
+    </section>
 
-      <form id="signup" novalidate>
-        <div class="hp" aria-hidden="true">
-          <label for="bot-field">Leave this empty</label>
-          <input type="text" id="bot-field" name="bot-field" tabindex="-1" autocomplete="off">
-        </div>
-
-        <p class="section">Parent 1</p>
-        <div class="name-row">
+    <!-- Step 2: details -->
+    <section id="step-details" class="step" aria-label="Your details">
+      <h2>Your details</h2>
+      <p class="summary-line" id="details-context"></p>
+      <form id="details-form" class="details" novalidate>
+        <div class="field-row">
           <div class="field">
-            <label for="p1first">First name</label>
-            <input type="text" id="p1first" autocomplete="given-name">
+            <label for="f-first">First name</label>
+            <input id="f-first" name="firstName" type="text" autocomplete="given-name" required>
           </div>
           <div class="field">
-            <label for="p1last">Last name</label>
-            <input type="text" id="p1last" autocomplete="family-name">
-          </div>
-        </div>
-
-        <p class="section">Parent 2</p>
-        <div class="name-row">
-          <div class="field">
-            <label for="p2first">First name</label>
-            <input type="text" id="p2first" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="p2last">Last name</label>
-            <input type="text" id="p2last" autocomplete="off">
+            <label for="f-last">Last name</label>
+            <input id="f-last" name="lastName" type="text" autocomplete="family-name" required>
           </div>
         </div>
-
         <div class="field">
-          <label for="childName">Little one&rsquo;s name</label>
-          <input type="text" id="childName" autocomplete="off">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required>
         </div>
-
         <div class="field">
-          <label for="email">Email <span class="req">&mdash; so I can send your photos</span></label>
-          <input type="email" id="email" autocomplete="email" inputmode="email" required>
+          <label for="f-phone">Phone</label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel">
         </div>
-
         <div class="field">
-          <label for="phone">Phone</label>
-          <input type="tel" id="phone" autocomplete="tel" inputmode="tel">
+          <label for="f-notes">Anything I should know? (optional)</label>
+          <textarea id="f-notes" name="notes" rows="3"></textarea>
         </div>
-
-        <div class="consent">
-          <input type="checkbox" id="photoConsent" required>
-          <label for="photoConsent">I&rsquo;m happy for Deep to photograph our family today and email the photos to me.</label>
+        <div class="terms">
+          <input type="checkbox" id="f-terms" required>
+          <label for="f-terms">I agree to the <a href="/session-contract.html" target="_blank" rel="noopener">session terms and conditions</a>.</label>
         </div>
-
-        <div class="consent">
-          <input type="checkbox" id="marketingConsent">
-          <label for="marketingConsent">You can occasionally email me about sessions and offers. (Optional &mdash; and you can unsubscribe any time.)</label>
-        </div>
-
-        <button type="submit" class="btn" id="submit-btn">I&rsquo;m ready</button>
-        <p class="note">Your details are only used for your photos. See the <a href="/privacy" style="color:var(--gold);">privacy policy</a>.</p>
+        <button type="submit" class="btn" id="pay-btn" disabled>Pay &amp; book — $150</button>
+        <button type="button" class="btn btn-ghost" id="back-to-slots">Back</button>
       </form>
     </section>
 
-    <section id="done-step" hidden>
-      <div class="done">
-        <div class="tick">&#10003;</div>
-        <h2>You&rsquo;re all set</h2>
-        <p>Come and see me whenever you&rsquo;re ready &mdash; no need to show this screen.</p>
-        <p>Your photos will land in your inbox within two weeks.</p>
+    <!-- Step 3: confirmation (arrived here via Stripe success redirect) -->
+    <section id="step-confirm" class="step" aria-label="Booking confirmed">
+      <div class="confirm-box">
+        <div class="tick">Payment received.</div>
+        <h2 style="margin-top:6px;">You're booked in</h2>
+        <p class="sub" style="margin-bottom:0;">Your Father's Day mini is being confirmed and you'll get a confirmation email shortly &mdash; Setmore will send its own confirmation too. See you at the gardens on Sunday 30 August.</p>
       </div>
     </section>
   </main>
 
+  <footer>
+    <span class="footer-logo">Still &amp; Golden</span>
+    <span>&copy; 2026 Still &amp; Golden Photography &middot; ABN 37 280 912 036</span>
+    <span>Frankston &middot; Chelsea &middot; Seaford &middot; Langwarrin &middot; Mt Eliza</span>
+    <span><a href="/glimpse-mini-sessions">Glimpse Minis</a> &middot; <a href="/golden-family-photography">Golden Family</a> &middot; <a href="/gathered-newborn-photography">Gathered Newborn</a> &middot; <a href="/blog/">Blog</a></span>
+    <a href="/privacy">Privacy Policy</a>
+  </footer>
+
   <script>
-    (function () {
-      'use strict';
-      var form = document.getElementById('signup');
-      var btn = document.getElementById('submit-btn');
-      var errorBox = document.getElementById('error');
+  (function () {
+    'use strict';
 
-      function showError(message) {
-        errorBox.textContent = message;
-        errorBox.hidden = false;
-        errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+    var FN = '/.netlify/functions/';
+    // Same key as the 'fathers-day' entry in netlify/functions/lib/setmore.js
+    var SERVICE_KEY = 'c3709660-7aa6-4a07-8ec2-d98548526a3e';
+    var SESSION_DATE = '2026-08-30';
+    var TOTAL_SPOTS = 10;
 
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        errorBox.hidden = true;
+    var state = { time: null, restoreTime: null };
 
-        if (!form.checkValidity()) { form.reportValidity(); return; }
+    var $ = function (id) { return document.getElementById(id); };
 
-        btn.disabled = true;
-        btn.textContent = 'Saving…';
+    // Analytics must never be able to break a booking (same guard as book.html).
+    function track(name, params) {
+      try { if (window.sgTrack) window.sgTrack(name, params); } catch (e) {}
+    }
 
-        fetch('/.netlify/functions/submit-event-signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            parent1FirstName: document.getElementById('p1first').value,
-            parent1LastName: document.getElementById('p1last').value,
-            parent2FirstName: document.getElementById('p2first').value,
-            parent2LastName: document.getElementById('p2last').value,
-            childName: document.getElementById('childName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            marketingConsent: document.getElementById('marketingConsent').checked,
-            'bot-field': document.getElementById('bot-field').value
-          })
-        }).then(function (res) {
-          return res.json().catch(function () { return {}; }).then(function (data) {
-            if (!res.ok || !data.ok) throw new Error(data.error || 'Something went wrong.');
-            document.getElementById('form-step').hidden = true;
-            document.getElementById('done-step').hidden = false;
-            window.scrollTo(0, 0);
-            if (window.sgTrack) window.sgTrack('generate_lead', { currency: 'AUD', value: 1.0 });
-          });
-        }).catch(function (err) {
-          btn.disabled = false;
-          btn.textContent = 'I’m ready';
-          showError(err.message || 'Could not save that — please try again, or grab Deep.');
+    function showNotice(msg, isError) {
+      var n = $('notice');
+      n.textContent = msg;
+      n.className = 'notice' + (isError ? ' error' : '');
+      n.hidden = false;
+      n.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function clearNotice() { $('notice').hidden = true; }
+
+    function showStep(name) {
+      var steps = document.querySelectorAll('.step');
+      for (var i = 0; i < steps.length; i++) steps[i].classList.remove('active');
+      $('step-' + name).classList.add('active');
+    }
+
+    function api(path, opts) {
+      return fetch(FN + path, opts).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          if (!res.ok) {
+            var err = new Error((body.error && body.error.message) || 'Something went wrong');
+            err.code = body.error && body.error.code;
+            throw err;
+          }
+          return body;
         });
       });
+    }
+
+    function formatTime(hhmm) {
+      var p = hhmm.split(':');
+      var d = new Date(); d.setHours(Number(p[0]), Number(p[1]), 0, 0);
+      return d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' }).toLowerCase().replace(' ', '');
+    }
+
+    // --- slots -----------------------------------------------------------------
+
+    function loadSlots() {
+      $('slot-loading').hidden = false;
+      $('slots-wrap').classList.add('loading');
+      api('booking-slots?service_key=' + encodeURIComponent(SERVICE_KEY) + '&date=' + SESSION_DATE)
+        .then(function (data) {
+          $('slot-loading').hidden = true;
+          $('slots-wrap').classList.remove('loading');
+          renderSlots(data.slots || []);
+        })
+        .catch(function (err) {
+          $('slot-loading').hidden = true;
+          $('slots-wrap').classList.remove('loading');
+          showNotice(err.message || 'Availability could not be loaded — please refresh the page.', true);
+        });
+    }
+
+    function renderSlots(slots) {
+      var list = $('slot-list');
+      list.innerHTML = '';
+      if (!slots.length) {
+        $('sold-out').hidden = false;
+        $('counter').hidden = true;
+        return;
+      }
+      $('sold-out').hidden = true;
+      var counter = $('counter');
+      counter.hidden = false;
+      counter.textContent = slots.length + ' of ' + TOTAL_SPOTS + ' spots left';
+      slots.forEach(function (t) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'slot-btn';
+        btn.textContent = formatTime(t);
+        btn.setAttribute('aria-label', formatTime(t) + ' on Sunday 30 August');
+        if (state.restoreTime === t) {
+          btn.classList.add('selected');
+          state.time = t;
+        }
+        btn.addEventListener('click', function () {
+          state.time = t;
+          var all = list.querySelectorAll('.slot-btn');
+          for (var i = 0; i < all.length; i++) all[i].classList.remove('selected');
+          btn.classList.add('selected');
+          track('select_item', {
+            item_list_name: "Father's Day Minis",
+            items: [{ item_id: 'fathers-day', item_name: "Father's Day Mini", price: 150, currency: 'AUD' }],
+          });
+          goToDetails();
+        });
+        list.appendChild(btn);
+      });
+      state.restoreTime = null;
+    }
+
+    // --- details ---------------------------------------------------------------
+
+    function goToDetails() {
+      var ctx = $('details-context');
+      ctx.innerHTML = '';
+      var b = document.createElement('b');
+      b.textContent = "Father's Day Mini — Sunday 30 August, " + formatTime(state.time) + ' · George Pentland Botanic Gardens';
+      ctx.appendChild(b);
+      showStep('details');
+      $('f-first').focus();
+    }
+
+    $('back-to-slots').addEventListener('click', function () { showStep('slots'); });
+
+    // The Pay button stays disabled until the terms checkbox is ticked.
+    $('f-terms').addEventListener('change', function (e) {
+      $('pay-btn').disabled = !e.target.checked;
+    });
+
+    $('details-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearNotice();
+      var form = e.target;
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      if (!$('f-terms').checked) return; // button is disabled; belt-and-braces
+
+      var btn = $('pay-btn');
+      btn.disabled = true;
+      btn.textContent = 'Redirecting to payment…';
+
+      track('begin_checkout', {
+        currency: 'AUD',
+        value: 150,
+        items: [{ item_id: 'fathers-day', item_name: "Father's Day Mini", price: 150, currency: 'AUD' }],
+      });
+
+      // Stripe navigates away and back; stash the purchase so the confirmation
+      // step can report it with its real value (same pattern as book.html).
+      try {
+        sessionStorage.setItem('sg_pending_purchase', JSON.stringify({
+          tier: 'fathers-day', name: "Father's Day Mini", price: 150,
+        }));
+      } catch (e2) {}
+
+      api('booking-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_key: SERVICE_KEY,
+          date: SESSION_DATE,
+          time: state.time,
+          firstName: $('f-first').value.trim(),
+          lastName: $('f-last').value.trim(),
+          email: $('f-email').value.trim(),
+          phone: $('f-phone').value.trim(),
+          notes: $('f-notes').value.trim(),
+          returnTo: '/fathers-day.html',
+        }),
+      }).then(function (data) {
+        if (!data.url) throw new Error('No payment URL returned');
+        window.location.href = data.url; // Stripe Checkout (or mock success URL)
+      }).catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = 'Pay & book — $150';
+        if (err.code === 'INVALID_DETAILS') {
+          showNotice(err.message, true);
+        } else {
+          showNotice('Could not start the payment — please try again shortly, or get in touch.', true);
+        }
+      });
+    });
+
+    // --- init ------------------------------------------------------------------
+
+    (function init() {
+      var params = new URLSearchParams(window.location.search);
+
+      // Returned from Stripe after a successful payment.
+      if (params.get('booked') === '1') {
+        // Report the sale once — sessionStorage stash is cleared on first run,
+        // and GA4 de-duplicates on transaction_id (the checkout session id).
+        var pending = null;
+        try {
+          pending = JSON.parse(sessionStorage.getItem('sg_pending_purchase') || 'null');
+          sessionStorage.removeItem('sg_pending_purchase');
+        } catch (e) {}
+        if (pending) {
+          track('purchase', {
+            transaction_id: params.get('session_id') || undefined,
+            currency: 'AUD',
+            value: pending.price,
+            items: [{ item_id: pending.tier, item_name: pending.name, price: pending.price, currency: 'AUD' }],
+          });
+        }
+        showStep('confirm');
+        window.scrollTo(0, 0);
+        return;
+      }
+
+      // Returned from a cancelled payment — reload the slots, re-highlight the
+      // previously chosen time if it's still free, and say no charge was made.
+      if (params.get('cancelled') === '1') {
+        state.restoreTime = params.get('time');
+        showNotice('Payment was cancelled — no charge was made. Pick a time below if you’d like to try again.', true);
+      }
+
+      loadSlots();
     })();
+  })();
   </script>
 </body>
 </html>

@@ -64,6 +64,19 @@ const TIERS = {
     priceCents: 59500,
     includes: 'Two 90-minute sessions',
   },
+  'fathers-day': {
+    name: "Father's Day Mini",
+    tagline: 'One day only — George Pentland Botanic Gardens',
+    serviceKey: 'c3709660-7aa6-4a07-8ec2-d98548526a3e',
+    durationMinutes: 30, // Setmore block is 30 min (20-min session + 10-min changeover buffer)
+    priceFrom: 150,
+    priceCents: 15000,
+    includes: '5 edited photos',
+    hidden: true,
+    allowedDates: ['2026-08-30'],
+    // Exactly ten spots, half-hourly from 10am (20-min session + 10-min buffer).
+    slotTimes: ['10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30'],
+  },
 };
 
 const SERVICE_KEY_TO_TIER = {};
@@ -249,7 +262,15 @@ function toSetmoreDate(date) {
 }
 
 async function getSlots(serviceKey, date /* YYYY-MM-DD */) {
-  if (MOCK) return mockSlots(date);
+  if (MOCK) {
+    // Fixed-date offers (e.g. Father's Day) mock to their advertised date even
+    // when it falls on a mock-closed day — ten slots, matching the real cap.
+    const tier = Object.values(TIERS).find((t) => t.serviceKey === serviceKey);
+    if (tier && tier.allowedDates && tier.allowedDates.includes(date)) {
+      return ['10:00', '10:20', '10:40', '11:00', '11:20', '11:40', '12:00', '12:20', '12:40', '13:00'];
+    }
+    return mockSlots(date);
+  }
   const staffKey = await getStaffKey();
   const data = await setmoreFetch('/bookingapi/slots', {
     method: 'POST',

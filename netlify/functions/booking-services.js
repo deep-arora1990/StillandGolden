@@ -11,15 +11,19 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
-  const services = Object.entries(TIERS).map(([tier, cfg]) => ({
-    tier,
-    name: cfg.name,
-    tagline: cfg.tagline,
-    durationMinutes: cfg.durationMinutes,
-    priceFrom: cfg.priceFrom,
-    includes: cfg.includes,
-    serviceKey: cfg.serviceKey,
-  }));
+  // Hidden tiers (fixed-date offers like Father's Day minis) have their own
+  // campaign pages — never show them in the main /book picker.
+  const services = Object.entries(TIERS)
+    .filter(([, cfg]) => !cfg.hidden)
+    .map(([tier, cfg]) => ({
+      tier,
+      name: cfg.name,
+      tagline: cfg.tagline,
+      durationMinutes: cfg.durationMinutes,
+      priceFrom: cfg.priceFrom,
+      includes: cfg.includes,
+      serviceKey: cfg.serviceKey,
+    }));
 
   return {
     statusCode: 200,

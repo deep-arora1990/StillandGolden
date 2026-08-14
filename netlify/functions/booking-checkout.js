@@ -68,6 +68,23 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Please check the booking details and try again');
   }
 
+  // Fixed-date offers (allowedDates in the tier config) only take their
+  // advertised date.
+  if (tier.allowedDates && !tier.allowedDates.includes(date)) {
+    return error(400, 'INVALID_DETAILS', 'This offer is only available on the advertised date');
+  }
+
+  // Tiers with a fixed slot list only take their canonical start times.
+  if (tier.slotTimes && !tier.slotTimes.includes(time)) {
+    return error(400, 'INVALID_DETAILS', 'Please pick one of the listed session times');
+  }
+
+  // Campaign pages get their own success/cancel URLs; anything not on the
+  // allowlist falls back to the main booking page.
+  const returnTo = ['/book.html', '/fathers-day.html'].includes(data.returnTo)
+    ? data.returnTo
+    : '/book.html';
+
   const origin = requestOrigin(event);
 
   // --- mock mode: book straight through the lib, skip Stripe -------------
@@ -89,7 +106,7 @@ exports.handler = async (event) => {
         endTime: `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(end.getDate())}T${pad(end.getHours())}:${pad(end.getMinutes())}`,
         comment: notes || '',
       });
-      return json(200, { url: `${origin}/book.html?booked=1&mock=1` });
+      return json(200, { url: `${origin}${returnTo}?booked=1&mock=1` });
     } catch (err) {
       console.error('booking-checkout mock booking error:', err);
       return error(502, 'SETMORE_DOWN', 'Booking is unavailable right now — please try again shortly');
@@ -136,8 +153,8 @@ exports.handler = async (event) => {
         phone: (phone || '').slice(0, 100),
         notes: (notes || '').slice(0, 500),
       },
-      success_url: `${origin}/book.html?booked=1&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/book.html?${cancelParams.toString()}`,
+      success_url: `${origin}${returnTo}?booked=1&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}${returnTo}?${cancelParams.toString()}`,
     });
 
     return json(200, { url: session.url });

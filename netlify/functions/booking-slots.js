@@ -20,7 +20,10 @@ exports.handler = async (event) => {
   }
 
   try {
-    const slots = await getSlots(serviceKey, date);
+    let slots = await getSlots(serviceKey, date);
+    // Tiers with a fixed slot list (e.g. Father's Day minis) only ever offer
+    // their canonical start times; booked ones drop out via Setmore.
+    if (tier.slotTimes) slots = slots.filter((s) => tier.slotTimes.includes(s));
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
