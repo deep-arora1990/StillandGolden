@@ -100,6 +100,7 @@ exports.handler = async (event) => {
 
   const email = String(body.email || '').trim().toLowerCase();
   const childName = String(body.childName || '').trim();
+  const classSession = String(body.classSession || '').trim();
   const phone = String(body.phone || '').trim();
   const p1First = String(body.parent1FirstName || '').trim();
   const p1Last = String(body.parent1LastName || '').trim();
@@ -127,6 +128,7 @@ exports.handler = async (event) => {
         parent2FirstName: p2First,
         parent2LastName: p2Last,
         childName,
+        classSession,
         email,
         phone,
         marketingConsent: body.marketingConsent === true,
