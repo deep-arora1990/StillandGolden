@@ -81,7 +81,7 @@ exports.handler = async (event) => {
 
   // Campaign pages get their own success/cancel URLs; anything not on the
   // allowlist falls back to the main booking page.
-  const returnTo = ['/book.html', '/fathers-day.html'].includes(data.returnTo)
+  const returnTo = ['/book.html', '/fathers-day.html', '/test-booking.html'].includes(data.returnTo)
     ? data.returnTo
     : '/book.html';
 

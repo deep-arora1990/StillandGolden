@@ -77,6 +77,18 @@ const TIERS = {
     // Exactly ten spots, half-hourly from 10am (20-min session + 10-min buffer).
     slotTimes: ['10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30'],
   },
+  // Permanent $1 test tier for verifying the live booking+payment chain after
+  // incidents — hidden from the /book picker, drives /test-booking.html.
+  test: {
+    name: 'Test',
+    tagline: 'Flow verification',
+    serviceKey: '50fcdf64-13b9-4587-a339-12a9609f8af7',
+    durationMinutes: 10,
+    priceFrom: 1,
+    priceCents: 100,
+    includes: 'Test booking',
+    hidden: true,
+  },
 };
 
 const SERVICE_KEY_TO_TIER = {};

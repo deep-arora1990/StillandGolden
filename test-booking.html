@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking flow test (internal) | Still &amp; Golden</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/site.css">
+  <script src="/site.js" defer></script>
+  <style>
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    main { max-width: 720px; margin: 0 auto; padding: 140px 48px 40px; }
+    h1 { font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; line-height: 1.12; margin-bottom: 12px; }
+    h1 em { font-style: italic; color: var(--gold); }
+    h2 { font-family: var(--serif); font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 400; margin: 0 0 18px; }
+    p.sub { color: #4d453f; margin-bottom: 32px; max-width: 60ch; }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .internal-note {
+      border: 1px solid var(--gold); background: #fff;
+      padding: 18px 22px; margin: 0 0 36px; font-size: 0.88rem; color: #4d453f; line-height: 1.7;
+    }
+
+    /* 14-day strip + slots (book.html idioms) */
+    .day-strip { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 28px; }
+    .day-btn {
+      background: none; border: 1px solid var(--border); cursor: pointer;
+      padding: 8px 14px; font-family: inherit; font-size: 0.85rem; color: var(--warm-black);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .day-btn small { display: block; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); }
+    .day-btn.avail:hover, .day-btn.avail:focus-visible { border-color: var(--gold); outline: none; }
+    .day-btn:disabled { color: #C9C0B8; cursor: default; }
+    .day-btn:disabled small { color: #C9C0B8; }
+    .day-btn.selected { background: var(--warm-black); color: var(--off-white); border-color: var(--warm-black); }
+    .day-btn.selected small { color: var(--off-white); }
+
+    .slots { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+    .slot-btn {
+      background: none; border: 1px solid var(--border); cursor: pointer;
+      padding: 12px 20px; font-family: inherit; font-size: 0.95rem; color: var(--warm-black);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .slot-btn:hover, .slot-btn:focus-visible { border-color: var(--gold); outline: none; }
+    .slot-btn.selected { background: var(--warm-black); color: var(--off-white); border-color: var(--warm-black); }
+
+    /* Details form */
+    .details { max-width: 520px; }
+    .field { margin-bottom: 18px; }
+    .field label { display: block; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    .field input, .field textarea {
+      width: 100%; border: 1px solid var(--border); background: #fff;
+      padding: 12px 14px; font-family: inherit; font-size: 0.95rem; color: var(--warm-black);
+    }
+    .field input:focus, .field textarea:focus { outline: none; border-color: var(--gold); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+    .terms { display: flex; gap: 12px; align-items: flex-start; margin: 22px 0 6px; font-size: 0.85rem; color: #4d453f; }
+    .terms input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--warm-black); flex-shrink: 0; }
+    .terms a { color: var(--warm-black); }
+
+    .btn {
+      display: inline-block; margin: 12px 0 8px; border: none; cursor: pointer;
+      font-family: inherit; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--off-white); background: var(--warm-black);
+      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
+    }
+    .btn:hover:not(:disabled) { background: var(--gold); }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
+    .btn-ghost:hover:not(:disabled) { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
+
+    .notice {
+      border-left: 3px solid var(--gold); background: #fff;
+      padding: 14px 18px; margin: 0 0 24px; font-size: 0.9rem; color: #4d453f;
+    }
+    .notice.error { border-left-color: #B4552D; }
+    .loading { color: var(--mid); font-size: 0.9rem; letter-spacing: 0.04em; padding: 12px 0; }
+
+    .summary-line { font-size: 0.86rem; color: var(--mid); margin: 0 0 24px; }
+    .summary-line b { color: var(--warm-black); font-weight: 400; }
+
+    /* Confirmation + QA checklist */
+    .confirm-box { border: 1px solid var(--border); padding: 40px 44px; background: #fff; }
+    .confirm-box .tick { font-family: var(--serif); font-size: 2rem; color: var(--gold); }
+    .confirm-box ul { margin: 18px 0 0 20px; color: #4d453f; font-size: 0.92rem; }
+    .confirm-box li { margin-bottom: 8px; }
+
+    @media (max-width: 700px) {
+      main { padding: 120px 24px 32px; }
+      .confirm-box { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">Still &amp; Golden</a>
+    <div class="nav-right">
+      <a href="/portfolio">Portfolio</a>
+      <a href="/#sessions">Sessions &amp; Pricing</a>
+      <a href="/#faq">Common Questions</a>
+      <a href="/blog/">Blog</a>
+      <a href="/#contact" class="book">Enquire now</a>
+    </div>
+    <button class="hamburger" id="ham" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <button class="menu-close" id="menu-close" aria-label="Close menu"></button>
+
+  <main>
+    <div class="label">Internal &middot; not linked anywhere</div>
+    <h1>Booking flow <em>test</em></h1>
+    <p class="sub">This page runs the real booking chain against the $1 Test service. Completing it <strong>charges $1 live</strong> — refund it from the Stripe dashboard (Payments → the payment → Refund) and delete the appointment in Setmore afterwards.</p>
+
+    <div id="notice" class="notice" role="alert" hidden></div>
+
+    <!-- Step 1: date + slot -->
+    <section id="step-slots" class="step active" aria-label="Choose a date and time">
+      <h2>Pick a date and time</h2>
+      <div class="day-strip" id="day-strip" role="group" aria-label="Next 14 days"></div>
+      <p id="days-loading" class="loading">Checking availability…</p>
+      <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
+      <p id="slot-loading" class="loading" hidden>Loading times…</p>
+      <p id="slot-none" class="loading" hidden>No times left that day — pick another.</p>
+    </section>
+
+    <!-- Step 2: details -->
+    <section id="step-details" class="step" aria-label="Your details">
+      <h2>Your details</h2>
+      <p class="summary-line" id="details-context"></p>
+      <form id="details-form" class="details" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-first">First name</label>
+            <input id="f-first" name="firstName" type="text" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="f-last">Last name</label>
+            <input id="f-last" name="lastName" type="text" autocomplete="family-name" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="f-phone">Phone</label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="f-notes">Notes (optional)</label>
+          <textarea id="f-notes" name="notes" rows="3"></textarea>
+        </div>
+        <div class="terms">
+          <input type="checkbox" id="f-terms" required>
+          <label for="f-terms">I agree to the <a href="/session-contract.html" target="_blank" rel="noopener">session terms and conditions</a>.</label>
+        </div>
+        <button type="submit" class="btn" id="pay-btn" disabled>Pay &amp; book — $1</button>
+        <button type="button" class="btn btn-ghost" id="back-to-slots">Back</button>
+      </form>
+    </section>
+
+    <!-- Step 3: confirmation (arrived here via Stripe success redirect) -->
+    <section id="step-confirm" class="step" aria-label="Test booking confirmed">
+      <div class="confirm-box">
+        <div class="tick">Payment received.</div>
+        <h2 style="margin-top:6px;">Test booking placed</h2>
+        <p class="sub" style="margin-bottom:0;">Now verify the whole chain fired:</p>
+        <ul>
+          <li><strong>Stripe</strong> — a $1 payment appears in the dashboard (then refund it).</li>
+          <li><strong>Setmore</strong> — the appointment exists at the chosen time (delete it when done).</li>
+          <li><strong>Resend</strong> — the contact exists in the general audience, with the phone property set if you entered one.</li>
+          <li><strong>Email</strong> — Setmore's confirmation email arrived at the address you used.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span class="footer-logo">Still &amp; Golden</span>
+    <span>&copy; 2026 Still &amp; Golden Photography &middot; ABN 37 280 912 036</span>
+    <span>Frankston &middot; Chelsea &middot; Seaford &middot; Langwarrin &middot; Mt Eliza</span>
+    <a href="/privacy">Privacy Policy</a>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var FN = '/.netlify/functions/';
+    var SERVICE_KEY = '50fcdf64-13b9-4587-a339-12a9609f8af7'; // the Setmore "Test" service
+    var DAYS_TO_SHOW = 14;
+
+    var state = { date: null, time: null, restoreTime: null, available: {} };
+
+    var $ = function (id) { return document.getElementById(id); };
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    function dateStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+    function showNotice(msg, isError) {
+      var n = $('notice');
+      n.textContent = msg;
+      n.className = 'notice' + (isError ? ' error' : '');
+      n.hidden = false;
+      n.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function clearNotice() { $('notice').hidden = true; }
+
+    function showStep(name) {
+      var steps = document.querySelectorAll('.step');
+      for (var i = 0; i < steps.length; i++) steps[i].classList.remove('active');
+      $('step-' + name).classList.add('active');
+    }
+
+    function api(path, opts) {
+      return fetch(FN + path, opts).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          if (!res.ok) {
+            var err = new Error((body.error && body.error.message) || 'Something went wrong');
+            err.code = body.error && body.error.code;
+            throw err;
+          }
+          return body;
+        });
+      });
+    }
+
+    function formatTime(hhmm) {
+      var p = hhmm.split(':');
+      var d = new Date(); d.setHours(Number(p[0]), Number(p[1]), 0, 0);
+      return d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' }).toLowerCase().replace(' ', '');
+    }
+    function formatDate(iso) {
+      return new Date(iso + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+
+    // --- dates -----------------------------------------------------------------
+
+    function loadAvailability() {
+      var now = new Date();
+      var months = [
+        { year: now.getFullYear(), month: now.getMonth() + 1 },
+      ];
+      // if the 14-day window crosses into next month, fetch that too
+      var end = new Date(now.getTime() + (DAYS_TO_SHOW - 1) * 86400000);
+      if (end.getMonth() !== now.getMonth()) {
+        months.push({ year: end.getFullYear(), month: end.getMonth() + 1 });
+      }
+      return Promise.all(months.map(function (m) {
+        return api('booking-availability?service_key=' + encodeURIComponent(SERVICE_KEY) +
+          '&year=' + m.year + '&month=' + m.month);
+      })).then(function (results) {
+        results.forEach(function (r) {
+          (r.availableDates || []).forEach(function (d) { state.available[d] = true; });
+        });
+        renderDays();
+      }).catch(function (err) {
+        $('days-loading').textContent = '';
+        showNotice(err.message || 'Availability could not be loaded — please refresh.', true);
+      });
+    }
+
+    function renderDays() {
+      $('days-loading').hidden = true;
+      var strip = $('day-strip');
+      strip.innerHTML = '';
+      var now = new Date();
+      for (var i = 0; i < DAYS_TO_SHOW; i++) {
+        var d = new Date(now.getTime() + i * 86400000);
+        var iso = dateStr(d);
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'day-btn';
+        btn.setAttribute('aria-label', formatDate(iso));
+        var small = document.createElement('small');
+        small.textContent = d.toLocaleDateString('en-AU', { weekday: 'short' });
+        btn.appendChild(small);
+        btn.appendChild(document.createTextNode(d.getDate() + ' ' + d.toLocaleDateString('en-AU', { month: 'short' })));
+        if (!state.available[iso]) {
+          btn.disabled = true;
+        } else {
+          btn.classList.add('avail');
+          if (state.date === iso) btn.classList.add('selected');
+          (function (isoCopy) {
+            btn.addEventListener('click', function () { selectDate(isoCopy); });
+          })(iso);
+        }
+        strip.appendChild(btn);
+      }
+    }
+
+    // --- slots -----------------------------------------------------------------
+
+    function selectDate(iso) {
+      state.date = iso;
+      state.time = null;
+      renderDays();
+      $('slot-none').hidden = true;
+      $('slot-list').innerHTML = '';
+      $('slot-loading').hidden = false;
+      api('booking-slots?service_key=' + encodeURIComponent(SERVICE_KEY) + '&date=' + iso)
+        .then(function (data) {
+          $('slot-loading').hidden = true;
+          renderSlots(data.slots || []);
+        })
+        .catch(function (err) {
+          $('slot-loading').hidden = true;
+          showNotice(err.message || 'Times could not be loaded — please try again.', true);
+        });
+    }
+
+    function renderSlots(slots) {
+      var list = $('slot-list');
+      list.innerHTML = '';
+      if (!slots.length) { $('slot-none').hidden = false; return; }
+      $('slot-none').hidden = true;
+      slots.forEach(function (t) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'slot-btn';
+        btn.textContent = formatTime(t);
+        btn.setAttribute('aria-label', formatTime(t) + ' on ' + formatDate(state.date));
+        if (state.restoreTime === t) {
+          btn.classList.add('selected');
+          state.time = t;
+        }
+        btn.addEventListener('click', function () {
+          state.time = t;
+          var all = list.querySelectorAll('.slot-btn');
+          for (var i = 0; i < all.length; i++) all[i].classList.remove('selected');
+          btn.classList.add('selected');
+          goToDetails();
+        });
+        list.appendChild(btn);
+      });
+      state.restoreTime = null;
+    }
+
+    // --- details ---------------------------------------------------------------
+
+    function goToDetails() {
+      var ctx = $('details-context');
+      ctx.innerHTML = '';
+      var b = document.createElement('b');
+      b.textContent = 'Test booking — ' + formatDate(state.date) + ', ' + formatTime(state.time);
+      ctx.appendChild(b);
+      showStep('details');
+      $('f-first').focus();
+    }
+
+    $('back-to-slots').addEventListener('click', function () { showStep('slots'); });
+
+    // Pay button stays disabled until the terms checkbox is ticked.
+    $('f-terms').addEventListener('change', function (e) {
+      $('pay-btn').disabled = !e.target.checked;
+    });
+
+    $('details-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearNotice();
+      var form = e.target;
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      if (!$('f-terms').checked) return; // button is disabled; belt-and-braces
+
+      var btn = $('pay-btn');
+      btn.disabled = true;
+      btn.textContent = 'Redirecting to payment…';
+
+      api('booking-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_key: SERVICE_KEY,
+          date: state.date,
+          time: state.time,
+          firstName: $('f-first').value.trim(),
+          lastName: $('f-last').value.trim(),
+          email: $('f-email').value.trim(),
+          phone: $('f-phone').value.trim(),
+          notes: $('f-notes').value.trim(),
+          returnTo: '/test-booking.html',
+        }),
+      }).then(function (data) {
+        if (!data.url) throw new Error('No payment URL returned');
+        window.location.href = data.url; // Stripe Checkout
+      }).catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = 'Pay & book — $1';
+        showNotice(err.code === 'INVALID_DETAILS'
+          ? err.message
+          : 'Could not start the payment — check the function logs.', true);
+      });
+    });
+
+    // --- init ------------------------------------------------------------------
+
+    (function init() {
+      var params = new URLSearchParams(window.location.search);
+
+      if (params.get('booked') === '1') {
+        showStep('confirm');
+        window.scrollTo(0, 0);
+        return;
+      }
+      if (params.get('cancelled') === '1') {
+        state.restoreTime = params.get('time');
+        if (params.get('date')) selectDate(params.get('date'));
+        showNotice('Payment was cancelled — no charge was made. Pick a time to try again.', true);
+      }
+      loadAvailability();
+    })();
+  })();
+  </script>
+</body>
+</html>
