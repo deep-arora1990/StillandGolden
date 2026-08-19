@@ -17,8 +17,8 @@ const {
   createAppointment,
   getAppointmentsOnDate,
 } = require('./lib/setmore');
+const { upsertResendContact } = require('./lib/resend-contacts');
 
-const GENERAL_AUDIENCE_ID = '09483754-cd3f-4537-9990-001237752466';
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
 
@@ -57,16 +57,17 @@ async function bookAppointment(meta) {
   });
 }
 
-async function addToAudience(resend, meta) {
+async function addToAudience(meta) {
   try {
-    const contactResult = await resend.contacts.create({
-      audienceId: GENERAL_AUDIENCE_ID,
+    // Raw-fetch helper (not the SDK): carries the booking form's phone into
+    // the Resend `phone` contact property, which the SDK doesn't type.
+    const result = await upsertResendContact({
       email: meta.email,
       firstName: meta.firstName,
       lastName: meta.lastName,
-      unsubscribed: false,
+      phone: meta.phone,
     });
-    console.log('Resend contact result:', JSON.stringify(contactResult));
+    console.log('Resend contact upsert:', meta.email, result.created ? 'created' : 'updated');
   } catch (err) {
     console.error('stripe-webhook Resend audience error (booking already made):', err);
   }
@@ -220,7 +221,7 @@ exports.handler = async (event) => {
         console.error('stripe-webhook: could not flag session as booked:', flagErr);
       }
     }
-    if (resend) await addToAudience(resend, meta);
+    if (resend) await addToAudience(meta);
   } catch (err) {
     if (MOCK) {
       // No real payment exists in mock mode — just report it.

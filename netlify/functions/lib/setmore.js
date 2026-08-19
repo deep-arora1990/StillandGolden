@@ -372,6 +372,39 @@ async function getAppointmentsOnDate(date) {
   return (data && data.appointments) || [];
 }
 
+const toSetmoreRangeDate = (iso) => {
+  const [y, m, d] = iso.split('-');
+  return `${d}-${m}-${y}`;
+};
+
+// Appointments across a date range (both 'YYYY-MM-DD'), with embedded customer
+// records and cursor pagination. Used by the scheduled Setmore→Resend sync.
+async function getAppointmentsInRange(startDate, endDate) {
+  if (MOCK) {
+    return [{
+      key: 'mock-appt-range',
+      start_time: `${startDate}T10:00`,
+      customer: { key: 'mock-customer-key', first_name: 'Mock', last_name: 'Customer', email_id: 'mock-customer@example.com' },
+    }];
+  }
+  const appointments = [];
+  let cursor;
+  for (let page = 0; page < 25; page++) { // hard cap — never loop forever on a stuck cursor
+    const query = {
+      startDate: toSetmoreRangeDate(startDate),
+      endDate: toSetmoreRangeDate(endDate),
+      customerDetails: 'true',
+    };
+    if (cursor) query.cursor = cursor;
+    const data = await setmoreFetch('/bookingapi/appointments', { query });
+    appointments.push(...((data && data.appointments) || []));
+    const next = data && data.pagination && data.pagination.cursor;
+    if (!next || next === cursor) break;
+    cursor = next;
+  }
+  return appointments;
+}
+
 module.exports = {
   TIERS,
   SERVICE_KEY_TO_TIER,
@@ -384,4 +417,5 @@ module.exports = {
   createCustomer,
   createAppointment,
   getAppointmentsOnDate,
+  getAppointmentsInRange,
 };
