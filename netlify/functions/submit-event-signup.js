@@ -27,8 +27,9 @@ async function getAudienceId(resend) {
   return cachedAudienceId;
 }
 
-function thankYouHtml(firstName, childName) {
+function registrationHtml(firstName, childName, classSession) {
   const child = childName ? ` and ${childName}` : '';
+  const when = classSession ? `the ${classSession} class` : 'your class';
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -47,20 +48,11 @@ function thankYouHtml(firstName, childName) {
       <tr>
         <td style="background-color:#F8F5F1;padding:40px 48px 16px;">
           <p style="margin:0 0 28px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;line-height:1.3;color:#1A1714;">Hi ${firstName},</p>
-          <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">Thanks for coming along to the Father&rsquo;s Day class &mdash; it was lovely to meet you${child}.</p>
-          <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">Your photos will be ready within two weeks. I&rsquo;ll email them straight through as soon as they&rsquo;re edited, along with how to grab the ones you&rsquo;d like.</p>
-          <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">If today left you wanting more than a few frames, a full session gives you proper time together &mdash; an hour, twenty edited images, in your own home or somewhere outdoors you love. Sessions start from $195.</p>
-          <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">No rush at all &mdash; have a look whenever suits.</p>
-          <p style="margin:0 0 36px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">I&rsquo;m <a href="https://instagram.com/stillandgoldenphotography" style="color:#A8845A;text-decoration:none;font-weight:bold;">@stillandgoldenphotography</a> on Instagram if you&rsquo;d like to follow along &mdash; session dates and mini spots go up there first.</p>
+          <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">You&rsquo;re registered for photos at the Baby Sensory Father&rsquo;s Day class on Saturday 12 September &mdash; ${when}.</p>
+          <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">There&rsquo;s nothing to bring and nothing to prepare. Come and find me at the setup whenever suits you${child} on the day, and it&rsquo;ll take a couple of minutes.</p>
+          <p style="margin:0 0 36px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.8;color:#1A1714;">Your photos will land in your inbox within two weeks afterwards, along with how to grab the ones you&rsquo;d like.</p>
           <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#1A1714;">Deep</p>
           <p style="margin:0 0 36px;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-style:italic;color:#A8845A;">Still &amp; Golden Photography</p>
-        </td>
-      </tr>
-      <tr>
-        <td style="background-color:#F8F5F1;padding:0 48px 48px;">
-          <table cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#1A1714;">
-            <a href="https://stillandgolden.com.au/book" style="display:inline-block;padding:14px 32px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.12em;color:#F8F5F1;text-decoration:none;text-transform:uppercase;">See session options</a>
-          </td></tr></table>
         </td>
       </tr>
       <tr>
@@ -156,8 +148,8 @@ exports.handler = async (event) => {
       await resend.emails.send({
         from: 'Still & Golden Photography <hello@stillandgolden.com.au>',
         to: email,
-        subject: 'Thanks for coming along today',
-        html: thankYouHtml(firstName, childName),
+        subject: "You're registered — Baby Sensory Father's Day photos",
+        html: registrationHtml(firstName, childName, classSession),
       });
     } catch (err) {
       console.error('Thank-you email failed:', err.message);
