@@ -190,6 +190,14 @@ exports.handler = async (event) => {
   const session = stripeEvent.data.object;
   const meta = session.metadata || {};
 
+  // Only sessions created by the booking widget carry our metadata. Any other
+  // Checkout payment (e.g. a manual Stripe Payment Link) fires this event too
+  // — ignore it; never book or refund a payment we don't recognise.
+  if (!meta.service_key) {
+    console.log(`stripe-webhook: ignoring ${session.id} — no booking metadata (not a widget checkout)`);
+    return json(200, { received: true, ignored: 'no_booking_metadata' });
+  }
+
   // Idempotency guard 1 (live only): a successfully-processed session is
   // flagged in its metadata; a redelivery of the same event exits cleanly
   // instead of double-booking and refunding a legitimate payment.
