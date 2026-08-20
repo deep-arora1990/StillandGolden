@@ -195,6 +195,7 @@ async function generatePDF(data) {
   y -= 18;
 
   drawQA("Children's names and ages", data.children);
+  drawQA('Address (in-home sessions)', data.address);
   drawQA('Pets joining the session', data.pets);
 
   // ── Section: Your Session ──
@@ -211,6 +212,7 @@ async function generatePDF(data) {
 
   drawQA('What do you most want to capture?', data.capture);
   drawQA('Must-have shot or moment', data.mustHave);
+  drawQA('Vision link (Pinterest / Instagram)', data.visionLink);
   drawQA('Anything to avoid', data.avoid);
 
   // ── Section: This Moment in Time ──
@@ -341,6 +343,11 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
   }
 
+  const clientEmail = (data.email || '').trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'A valid email address is required' }) };
+  }
+
   try {
     const pdfBytes = await generatePDF(data);
     const pdfBase64 = Buffer.from(pdfBytes).toString('base64');
@@ -349,9 +356,11 @@ exports.handler = async (event) => {
     detailsText += `Name(s): ${names}\n`;
     if (sessionDate) detailsText += `Session Date: ${sessionDate}\n`;
     if (data.children) detailsText += `Children: ${data.children}\n`;
+    if (data.address) detailsText += `Address: ${data.address}\n`;
     if (data.pets) detailsText += `Pets: ${data.pets}\n`;
     if (data.capture) detailsText += `What to capture: ${data.capture}\n`;
     if (data.mustHave) detailsText += `Must-have shot: ${data.mustHave}\n`;
+    if (data.visionLink) detailsText += `Vision link: ${data.visionLink}\n`;
     if (data.avoid) detailsText += `Avoid: ${data.avoid}\n`;
     if (data.whatsSpecial) detailsText += `What's special: ${data.whatsSpecial}\n`;
     if (data.specialToy) detailsText += `Special toy/blanket: ${data.specialToy}\n`;
@@ -367,6 +376,29 @@ exports.handler = async (event) => {
       to: 'hello@stillandgolden.com.au',
       subject: `Session Questionnaire — ${names}`,
       text: detailsText,
+      attachments: [
+        {
+          filename: fileName,
+          content: pdfBase64,
+        },
+      ],
+    });
+
+    // The client gets their own copy of the PDF — their answers, in writing.
+    await resend.emails.send({
+      from: 'Still & Golden <notifications@stillandgolden.com.au>',
+      to: clientEmail,
+      subject: 'Your session questionnaire — Still & Golden',
+      text: [
+        `Hi ${names.split(' ')[0]},`,
+        '',
+        `Thank you for sharing all of this with me — it genuinely helps me photograph your family the way this season actually feels. A copy of your answers is attached to keep.`,
+        '',
+        `I'll be in touch within 24 hours. If anything comes to mind in the meantime, just reply to this email.`,
+        '',
+        'Deep',
+        'Still & Golden Photography',
+      ].join('\n'),
       attachments: [
         {
           filename: fileName,

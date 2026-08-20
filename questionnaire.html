@@ -324,7 +324,7 @@
 
     <div class="page-label">Pre-Session</div>
     <h1 class="page-title">Session Questionnaire</h1>
-    <p class="page-subtitle">Help us make your session as personal as possible. There are no wrong answers — just tell us about your family.</p>
+    <p class="page-subtitle">This isn't homework — it's how I get to know your family before I ever pick up the camera. Answer as much or as little as you like; everything you tell me helps me photograph this season of your life the way it actually feels.</p>
     <div class="rule"></div>
 
     <div id="form-wrap">
@@ -344,11 +344,23 @@
           </div>
         </div>
         <div class="fg">
+          <label for="email">Your email</label>
+          <span class="hint">So I can reply to you — and send you a copy of your answers to keep.</span>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </div>
+        <div class="fg">
+          <label for="address">Your address</label>
+          <span class="hint">For in-home sessions — so I know where I'm heading on the day, and can think about the light before I arrive.</span>
+          <input type="text" id="address" name="address" autocomplete="street-address">
+        </div>
+        <div class="fg">
           <label for="children">Children's names and ages</label>
+          <span class="hint">Tell me a little about them — who they are right now, not just numbers.</span>
           <textarea id="children" name="children" style="min-height:70px;"></textarea>
         </div>
         <div class="fg">
           <label for="pets">Will any pets be joining the session?</label>
+          <span class="hint">Furry family absolutely counts.</span>
           <input type="text" id="pets" name="pets">
         </div>
 
@@ -362,17 +374,24 @@
         </div>
         <div class="fg">
           <label for="must_have">Is there a specific shot or moment you definitely want?</label>
-          <span class="hint">A particular pose, a location in your home, a favourite activity together.</span>
+          <span class="hint">A particular pose, a location in your home, a favourite activity together. If it matters to you, it matters to me.</span>
           <textarea id="must_have" name="must_have"></textarea>
         </div>
         <div class="fg">
+          <label for="vision_link">Have a vision for your session? Share the link</label>
+          <span class="hint">A Pinterest board, an Instagram post you loved — anything that shows the feel you're after. I'll use it as a starting point, not a script.</span>
+          <input type="url" id="vision_link" name="vision_link" placeholder="https://…">
+        </div>
+        <div class="fg">
           <label for="avoid">Is there anything you'd prefer not to include?</label>
+          <span class="hint">Just as useful to know.</span>
           <input type="text" id="avoid" name="avoid">
         </div>
 
         <div class="form-section">
           <div class="form-section-heading">This Moment in Time</div>
         </div>
+        <p class="hint" style="margin:-6px 0 18px;">These are the questions I love most — the little things that make right now <em>right now</em>.</p>
         <div class="fg">
           <label for="whats_special">What's special about this stage in your child's life that you don't want to forget?</label>
           <textarea id="whats_special" name="whats_special"></textarea>
@@ -391,6 +410,7 @@
         <div class="form-section">
           <div class="form-section-heading">Practical Notes</div>
         </div>
+        <p class="hint" style="margin:-6px 0 18px;">Nothing here is a problem — it just helps the day feel easy.</p>
         <div class="frow">
           <div class="fg">
             <label for="best_time">Best time of day for your child/children</label>
@@ -472,10 +492,13 @@
       const payload = {
         names: this.names.value,
         sessionDate: this.session_date.value,
+        email: this.email.value,
+        address: this.address.value,
         children: this.children.value,
         pets: this.pets.value,
         capture: this.capture.value,
         mustHave: this.must_have.value,
+        visionLink: this.vision_link.value,
         avoid: this.avoid.value,
         whatsSpecial: this.whats_special.value,
         specialToy: this.special_toy.value,
