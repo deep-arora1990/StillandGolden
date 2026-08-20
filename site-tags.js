@@ -6,6 +6,22 @@
 //
 // Load it with a plain (non-deferred) script tag right after the loader, so
 // `gtag` exists before any later inline script runs.
+//
+// Analytics only run on the production domain. Netlify draft deploys
+// (…--stillandgolden.netlify.app) and local dev serve these same files, and
+// preview/dev traffic must not pollute the GA4/Ads account.
+
+var SG_PROD_HOSTS = ['stillandgolden.com.au', 'www.stillandgolden.com.au'];
+
+if (SG_PROD_HOSTS.indexOf(location.hostname) === -1) {
+  // Non-production: keep the helpers callable (the enquiry redirect must still
+  // work) but send nothing anywhere.
+  window.sgTrack = function () {};
+  window.gtag_report_conversion = function (url) {
+    if (typeof (url) != 'undefined') { window.location = url; }
+    return false;
+  };
+} else {
 
 window.dataLayer = window.dataLayer || [];
 function gtag() { dataLayer.push(arguments); }
@@ -46,4 +62,6 @@ function gtag_report_conversion(url) {
     event_callback: callback
   });
   return false;
+}
+
 }
