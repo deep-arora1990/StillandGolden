@@ -32,10 +32,24 @@
 
   var path = location.pathname;
 
+  // Pages that belong to the "Sessions & Pricing" nav item (the tier landing
+  // pages and the booking widget) — the link itself points at the homepage's
+  // sessions section.
+  var SESSION_PAGES = [
+    '/glimpse-mini-sessions',
+    '/golden-family-photography',
+    '/golden-cake-smash-photography',
+    '/gathered-newborn-photography',
+    '/book',
+  ];
+
   function isActive(href) {
     if (href === '/portfolio') return path === '/portfolio' || path === '/portfolio.html';
     if (href === '/about') return path === '/about' || path === '/about.html';
     if (href === '/blog/') return path.indexOf('/blog') === 0;
+    if (href === '/#sessions') {
+      return SESSION_PAGES.some(function (p) { return path === p || path === p + '.html'; });
+    }
     return false;
   }
 

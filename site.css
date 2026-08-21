@@ -29,6 +29,7 @@ nav {
 .nav-right a { font-size: 0.78rem; letter-spacing: 0.08em; color: var(--warm-black); text-decoration: none; }
 .nav-right a:hover { color: var(--gold); }
 .nav-right a.book { border-bottom: 1px solid var(--warm-black); padding-bottom: 1px; }
+.nav-right a.active { color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 1px; }
 
 /* Hamburger (mobile nav) — hidden on desktop, shown at <=700px */
 .hamburger { display: none; cursor: pointer; background: none; border: none; padding: 4px; }

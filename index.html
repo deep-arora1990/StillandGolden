@@ -268,6 +268,7 @@
       transition: color 0.2s;
     }
     .nav-right a:hover { color: var(--gold); }
+    .nav-right a.active { color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 1px; }
     .nav-right a.book {
       border-bottom: 1px solid var(--warm-black);
       padding-bottom: 1px;
@@ -895,6 +896,7 @@
       font-size: 1.1rem;
       animation: menuFadeIn 0.25s ease forwards;
     }
+    body.menu-open .nav-right a { font-size: 1.1rem; }
     body.menu-open .nav-right a.book { border: none; padding: 0; }
     body.menu-open nav,
     body.menu-open nav.scrolled {
@@ -1319,14 +1321,19 @@
   <footer data-sg-footer></footer>
 
   <script>
-    // Fix hash navigation: re-scroll after images load to prevent lazy-load layout shift
+    // Fix hash navigation: lazy images above the anchor keep loading after the
+    // first scroll and push the target down, so re-scroll once on load and
+    // again after they've had time to settle.
     if (location.hash) {
       const target = document.querySelector(location.hash);
       if (target) {
+        const navH = () => document.getElementById('nav').offsetHeight;
+        const jump = () => window.scrollTo({ top: target.offsetTop - navH(), behavior: 'instant' });
         setTimeout(() => window.scrollTo(0, 0), 0);
         window.addEventListener('load', () => {
-          const navH = document.getElementById('nav').offsetHeight;
-          window.scrollTo({ top: target.offsetTop - navH, behavior: 'instant' });
+          jump();
+          setTimeout(jump, 600);
+          setTimeout(jump, 1600);
         });
       }
     }

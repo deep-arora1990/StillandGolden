@@ -37,6 +37,23 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
+# Shared JS/CSS must revalidate every load so phones pick up changes after a
+# deploy (the immutable image rules above don't cover these).
+[[headers]]
+  for = "/site.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/site.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/site-tags.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
 [[redirects]]
   from = "/index"
   to = "/"
