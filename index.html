@@ -1022,25 +1022,12 @@
       #grid .mosaic .feature { grid-column: span 1; }
     }
   </style>
+  <script src="/site.js" defer></script>
 </head>
 <body>
 
   <!-- NAV -->
-  <nav id="nav">
-    <a href="/" class="nav-logo">Still & Golden</a>
-    <div class="nav-right">
-      <a href="/portfolio">Portfolio</a>
-      <a href="/about">About</a>
-      <a href="#sessions">Sessions & Pricing</a>
-      <a href="#faq">Common Questions</a>
-      <a href="/blog/">Blog</a>
-      <a href="#contact" class="book">Enquire now</a>
-    </div>
-    <button class="hamburger" id="ham" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-  <button class="menu-close" id="menu-close" aria-label="Close menu"></button>
+  <nav id="nav" data-sg-nav></nav>
 
   <!-- INTRO -->
   <div id="intro">
@@ -1329,13 +1316,7 @@
   </section>
 
   <!-- FOOTER -->
-  <footer>
-    <span class="footer-logo">Still & Golden</span>
-    <span class="footer-copy">© 2026 Still & Golden Photography · ABN 37 280 912 036</span>
-    <span class="footer-area">Frankston · Chelsea · Seaford · Langwarrin · Mt Eliza</span>
-    <span class="footer-copy"><a href="/glimpse-mini-sessions" style="color:var(--mid);text-decoration:none;border-bottom:1px solid rgba(138,126,120,0.3);">Glimpse Minis</a> &nbsp;&middot;&nbsp; <a href="/golden-family-photography" style="color:var(--mid);text-decoration:none;border-bottom:1px solid rgba(138,126,120,0.3);">Golden Family</a> &nbsp;·&nbsp; <a href="/gathered-newborn-photography" style="color:var(--mid);text-decoration:none;border-bottom:1px solid rgba(138,126,120,0.3);">Gathered Newborn</a> &nbsp;·&nbsp; <a href="/blog/" style="color:var(--mid);text-decoration:none;border-bottom:1px solid rgba(138,126,120,0.3);">Blog</a></span>
-    <a href="/privacy" class="footer-copy" style="color:var(--mid);text-decoration:none;border-bottom:1px solid rgba(138,126,120,0.3);">Privacy Policy</a>
-  </footer>
+  <footer data-sg-footer></footer>
 
   <script>
     // Fix hash navigation: re-scroll after images load to prevent lazy-load layout shift
@@ -1354,15 +1335,6 @@
     const nav = document.getElementById('nav');
     addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 50));
 
-    // Mobile menu
-    const closeMenu = () => document.body.classList.remove('menu-open');
-    document.getElementById('ham').addEventListener('click', () => {
-      document.body.classList.toggle('menu-open');
-    });
-    document.getElementById('menu-close').addEventListener('click', closeMenu);
-    document.querySelectorAll('.nav-right a').forEach(a =>
-      a.addEventListener('click', closeMenu)
-    );
 
     // Scroll reveal
     const io = new IntersectionObserver(entries => {
