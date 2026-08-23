@@ -12,5 +12,7 @@ Disallow: /business-card.html
 Disallow: /card-front-export.html
 Disallow: /card-back-export.html
 Disallow: /print/
+Disallow: /unsubscribe
+Disallow: /unsubscribe.html
 
 Sitemap: https://stillandgolden.com.au/sitemap.xml
