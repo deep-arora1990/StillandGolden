@@ -147,7 +147,7 @@
       <p class="venue-label">Where &amp; when</p>
       <p class="venue-name">Baxter Community Hall</p>
       <p class="venue-address">211 Baxter-Tooradin Rd, Baxter VIC 3911</p>
-      <p class="venue-when">Sunday 8 November &middot; sessions from 10:30am, last session 4:30pm</p>
+      <p class="venue-when">Sunday 8 November &middot; 13 sessions, half-hourly from 10:30am &mdash; last session 4:30pm</p>
     </div>
 
     <div id="notice" class="notice" role="alert" hidden></div>
@@ -221,11 +221,12 @@
     // Same key as the 'christmas-minis' entry in netlify/functions/lib/setmore.js
     var SERVICE_KEY = 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82';
     var SESSION_DATE = '2026-11-08';
-    // No TOTAL_SPOTS counterpart to the Father's Day page: that day had exactly
-    // ten hand-listed times, whereas this one takes whatever Setmore lays down
-    // on its 25-minute cadence inside the 10:30–4:30 window. Hardcoding a total
-    // here would go stale the moment the Setmore hours or buffer change, so the
-    // counter reports what's actually left instead of a fraction of a guess.
+    // Thirteen half-hourly sessions, mirroring the slotTimes list in
+    // netlify/functions/lib/setmore.js — keep the two in step. Half-hourly
+    // rather than tighter because a booking occupies 25 minutes (15-min
+    // session + 10-min changeover) and Setmore only offers start times on a
+    // 15-minute grid, so 30 is the smallest spacing that fits both.
+    var TOTAL_SPOTS = 13;
 
     var state = { time: null, restoreTime: null };
 
@@ -299,12 +300,9 @@
       $('sold-out').hidden = true;
       var counter = $('counter');
       counter.hidden = false;
-      // "times available", not "spots left". Setmore offers a start time every
-      // 15 minutes, but a booking occupies 25 (15-min session + 10-min
-      // changeover), so taking one also consumes the next — roughly half these
-      // will actually be booked. Counting them as spots would overstate how
-      // many families can come.
-      counter.textContent = slots.length === 1 ? '1 time available' : slots.length + ' times available';
+      // Now a genuine fraction: the session times are fixed, so a total is
+      // meaningful and each booked slot really does remove one spot.
+      counter.textContent = slots.length + ' of ' + TOTAL_SPOTS + ' spots left';
       slots.forEach(function (t) {
         var btn = document.createElement('button');
         btn.type = 'button';

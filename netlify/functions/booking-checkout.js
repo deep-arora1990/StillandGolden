@@ -79,13 +79,6 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Please pick one of the listed session times');
   }
 
-  // Same for a trading window — enforced here as well as in booking-slots so a
-  // crafted request can't book a time outside the advertised hours. The page's
-  // filtering is a convenience; this is the actual guarantee.
-  if (tier.slotWindow && (time < tier.slotWindow.start || time > tier.slotWindow.end)) {
-    return error(400, 'INVALID_DETAILS', 'Please pick one of the listed session times');
-  }
-
   // Campaign pages get their own success/cancel URLs; anything not on the
   // allowlist falls back to the main booking page.
   const returnTo = ['/book.html', '/fathers-day.html', '/christmas-minis.html', '/test-booking.html'].includes(data.returnTo)

@@ -90,12 +90,16 @@ const TIERS = {
     includes: '5 edited photos',
     hidden: true,
     allowedDates: ['2026-11-08'],
-    // A window rather than a fixed slotTimes list. slotTimes is an *intersection*
-    // with what Setmore actually returns, so hardcoding half-hourly times against
-    // a 25-minute cadence would silently filter the day down to almost nothing.
-    // The window keeps Deep's stated 10:30am–4:30pm trading hours without having
-    // to predict where Setmore's cadence happens to land.
-    slotWindow: { start: '10:30', end: '16:30' },
+    // Thirteen fixed sessions, half-hourly from 10:30. Setmore offers a start
+    // time every 15 minutes, but a booking occupies 25 (15-min session +
+    // 10-min after-buffer), so back-to-back sessions need 30-minute spacing —
+    // and 30 is the smallest multiple of Setmore's 15-minute grid that clears
+    // it. A 25-minute cadence would be tighter but lands off that grid: only
+    // 5 of its 15 times exist in Setmore, so most would silently vanish.
+    slotTimes: [
+      '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
+      '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+    ],
   },
   // Permanent $1 test tier for verifying the live booking+payment chain after
   // incidents — hidden from the /book picker, drives /test-booking.html.

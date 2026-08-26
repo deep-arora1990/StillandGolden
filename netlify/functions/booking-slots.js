@@ -24,16 +24,6 @@ exports.handler = async (event) => {
     // Tiers with a fixed slot list (e.g. Father's Day minis) only ever offer
     // their canonical start times; booked ones drop out via Setmore.
     if (tier.slotTimes) slots = slots.filter((s) => tier.slotTimes.includes(s));
-    // Tiers with a trading window (e.g. Christmas minis) keep whatever cadence
-    // Setmore generates and simply trim the ends. This is deliberately not a
-    // fixed list: the service's 15-min duration plus its 10-min after-buffer
-    // put slots on a 25-minute cadence, so an assumed list of round times
-    // would intersect to almost nothing. Both bounds are inclusive — `end` is
-    // the last session's start time, not the day's close.
-    if (tier.slotWindow) {
-      const { start, end } = tier.slotWindow;
-      slots = slots.filter((s) => s >= start && s <= end);
-    }
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
