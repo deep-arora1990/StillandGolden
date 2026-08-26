@@ -90,15 +90,18 @@ const TIERS = {
     includes: '5 edited photos',
     hidden: true,
     allowedDates: ['2026-11-08'],
-    // Thirteen fixed sessions, half-hourly from 10:30. Setmore offers a start
-    // time every 15 minutes, but a booking occupies 25 (15-min session +
-    // 10-min after-buffer), so back-to-back sessions need 30-minute spacing —
-    // and 30 is the smallest multiple of Setmore's 15-minute grid that clears
-    // it. A 25-minute cadence would be tighter but lands off that grid: only
-    // 5 of its 15 times exist in Setmore, so most would silently vanish.
+    // Fifteen fixed sessions, 25 minutes apart from 10:30. That spacing is
+    // exactly the real occupancy — a 15-minute session plus the service's
+    // 10-minute after-buffer — with no rounding waste, which is what makes 15
+    // fit where 13 did before. It depends on Setmore offering start times on a
+    // 5-minute grid: on the 15-minute grid this service used until 26 Aug 2026
+    // only 5 of these times existed, and slotTimes intersects with what
+    // Setmore returns, so the rest would silently disappear. If the interval
+    // is ever widened again, re-check this list against a live booking-slots
+    // call before trusting it.
     slotTimes: [
-      '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-      '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+      '10:30', '10:55', '11:20', '11:45', '12:10', '12:35', '13:00', '13:25',
+      '13:50', '14:15', '14:40', '15:05', '15:30', '15:55', '16:20',
     ],
   },
   // Permanent $1 test tier for verifying the live booking+payment chain after

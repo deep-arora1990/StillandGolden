@@ -147,7 +147,7 @@
       <p class="venue-label">Where &amp; when</p>
       <p class="venue-name">Baxter Community Hall</p>
       <p class="venue-address">211 Baxter-Tooradin Rd, Baxter VIC 3911</p>
-      <p class="venue-when">Sunday 8 November &middot; 13 sessions, half-hourly from 10:30am &mdash; last session 4:30pm</p>
+      <p class="venue-when">Sunday 8 November &middot; 15 sessions from 10:30am &mdash; last session 4:20pm</p>
     </div>
 
     <div id="notice" class="notice" role="alert" hidden></div>
@@ -221,12 +221,10 @@
     // Same key as the 'christmas-minis' entry in netlify/functions/lib/setmore.js
     var SERVICE_KEY = 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82';
     var SESSION_DATE = '2026-11-08';
-    // Thirteen half-hourly sessions, mirroring the slotTimes list in
-    // netlify/functions/lib/setmore.js — keep the two in step. Half-hourly
-    // rather than tighter because a booking occupies 25 minutes (15-min
-    // session + 10-min changeover) and Setmore only offers start times on a
-    // 15-minute grid, so 30 is the smallest spacing that fits both.
-    var TOTAL_SPOTS = 13;
+    // Fifteen sessions, 25 minutes apart — mirrors the slotTimes list in
+    // netlify/functions/lib/setmore.js, keep the two in step. 25 minutes is
+    // the real occupancy: a 15-minute session plus a 10-minute changeover.
+    var TOTAL_SPOTS = 15;
 
     var state = { time: null, restoreTime: null };
 
