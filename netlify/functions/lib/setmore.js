@@ -77,6 +77,26 @@ const TIERS = {
     // Exactly ten spots, half-hourly from 10am (20-min session + 10-min buffer).
     slotTimes: ['10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30'],
   },
+  'christmas-minis': {
+    name: 'Christmas Mini',
+    tagline: 'One day only — Baxter Community Hall',
+    // Read from the live Setmore service record, not guessed: 15-min session
+    // with a 10-minute after-buffer, so Setmore lays slots on a 25-minute
+    // cadence rather than the half-hourly one the Father's Day minis use.
+    serviceKey: 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82',
+    durationMinutes: 25,
+    priceFrom: 150,
+    priceCents: 15000,
+    includes: '5 edited photos',
+    hidden: true,
+    allowedDates: ['2026-11-08'],
+    // A window rather than a fixed slotTimes list. slotTimes is an *intersection*
+    // with what Setmore actually returns, so hardcoding half-hourly times against
+    // a 25-minute cadence would silently filter the day down to almost nothing.
+    // The window keeps Deep's stated 10:30am–4:30pm trading hours without having
+    // to predict where Setmore's cadence happens to land.
+    slotWindow: { start: '10:30', end: '16:30' },
+  },
   // Permanent $1 test tier for verifying the live booking+payment chain after
   // incidents — hidden from the /book picker, drives /test-booking.html.
   test: {

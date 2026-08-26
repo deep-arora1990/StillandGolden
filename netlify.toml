@@ -263,6 +263,12 @@
   force = true
 
 [[redirects]]
+  from = "/christmas-minis.html"
+  to = "/christmas-minis"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/about.html"
   to = "/about"
   status = 301
