@@ -299,7 +299,12 @@
       $('sold-out').hidden = true;
       var counter = $('counter');
       counter.hidden = false;
-      counter.textContent = slots.length === 1 ? '1 spot left' : slots.length + ' spots left';
+      // "times available", not "spots left". Setmore offers a start time every
+      // 15 minutes, but a booking occupies 25 (15-min session + 10-min
+      // changeover), so taking one also consumes the next — roughly half these
+      // will actually be booked. Counting them as spots would overstate how
+      // many families can come.
+      counter.textContent = slots.length === 1 ? '1 time available' : slots.length + ' times available';
       slots.forEach(function (t) {
         var btn = document.createElement('button');
         btn.type = 'button';
