@@ -110,8 +110,12 @@ const TIERS = {
     // same day. Getting to 15 sessions inside 10:30–4:30 needs the service's
     // after-buffer dropped to 0, which would put occupancy back on the grid.
     slotTimes: [
-      '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-      '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+      // TEMPORARY probe: the working 13 plus three 25-minute-cadence
+      // candidates (10:55, 11:20, 16:20). If those come back from
+      // booking-slots now the buffer is 0, the full 25-minute schedule is
+      // available; if not, nothing is lost and the 13 still work.
+      '10:30', '10:55', '11:00', '11:20', '11:30', '12:00', '12:30', '13:00',
+      '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:20', '16:30',
     ],
   },
   // Permanent $1 test tier for verifying the live booking+payment chain after
