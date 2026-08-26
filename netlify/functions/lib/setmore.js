@@ -100,8 +100,8 @@ const TIERS = {
     // is ever widened again, re-check this list against a live booking-slots
     // call before trusting it.
     slotTimes: [
-      '10:30', '10:55', '11:20', '11:45', '12:10', '12:35', '13:00', '13:25',
-      '13:50', '14:15', '14:40', '15:05', '15:30', '15:55', '16:20',
+      '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
+      '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
     ],
   },
   // Permanent $1 test tier for verifying the live booking+payment chain after
