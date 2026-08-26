@@ -80,25 +80,35 @@ const TIERS = {
   'christmas-minis': {
     name: 'Christmas Mini',
     tagline: 'One day only — Baxter Community Hall',
-    // Read from the live Setmore service record, not guessed: 15-min session
-    // with a 10-minute after-buffer, so Setmore lays slots on a 25-minute
-    // cadence rather than the half-hourly one the Father's Day minis use.
     serviceKey: 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82',
+    // The Setmore service is a 15-minute session with a 10-minute
+    // after-buffer, so each booking occupies 25 minutes of the day.
     durationMinutes: 25,
     priceFrom: 150,
     priceCents: 15000,
     includes: '5 edited photos',
     hidden: true,
     allowedDates: ['2026-11-08'],
-    // Fifteen fixed sessions, 25 minutes apart from 10:30. That spacing is
-    // exactly the real occupancy — a 15-minute session plus the service's
-    // 10-minute after-buffer — with no rounding waste, which is what makes 15
-    // fit where 13 did before. It depends on Setmore offering start times on a
-    // 5-minute grid: on the 15-minute grid this service used until 26 Aug 2026
-    // only 5 of these times existed, and slotTimes intersects with what
-    // Setmore returns, so the rest would silently disappear. If the interval
-    // is ever widened again, re-check this list against a live booking-slots
-    // call before trusting it.
+    // Thirteen fixed sessions, half-hourly from 10:30.
+    //
+    // This list is the only thing enforcing the advertised hours: Setmore's
+    // working hours are account-wide, not per service, so the booking page
+    // itself offers the whole day. Everything outside this list is refused in
+    // booking-checkout too, not just hidden here.
+    //
+    // Half-hourly is the tightest spacing available. A booking occupies 25
+    // minutes, and /bookingapi/slots only offers start times on a 15-minute
+    // grid, so 30 is the smallest multiple of that grid which clears the
+    // buffer. 25-minute spacing would fit 15 sessions between 10:30 and 4:20,
+    // but those times are not on the grid: measured 26 Aug 2026, ten of the
+    // fifteen came back unavailable.
+    //
+    // That grid is NOT Setmore's "booking slot size" setting — that only
+    // changes what the customer-facing Booking Page displays, confirmed
+    // against Setmore's own docs and measured directly: the Booking Page
+    // showed 5-minute intervals while the API returned 15-minute ones for the
+    // same day. Getting to 15 sessions inside 10:30–4:30 needs the service's
+    // after-buffer dropped to 0, which would put occupancy back on the grid.
     slotTimes: [
       '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
       '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',

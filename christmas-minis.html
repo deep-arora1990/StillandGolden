@@ -221,9 +221,9 @@
     // Same key as the 'christmas-minis' entry in netlify/functions/lib/setmore.js
     var SERVICE_KEY = 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82';
     var SESSION_DATE = '2026-11-08';
-    // Fifteen sessions, 25 minutes apart — mirrors the slotTimes list in
-    // netlify/functions/lib/setmore.js, keep the two in step. 25 minutes is
-    // the real occupancy: a 15-minute session plus a 10-minute changeover.
+    // Mirrors the slotTimes list in netlify/functions/lib/setmore.js — keep
+    // the two in step. That list, not Setmore's working hours, is what pins
+    // the day to the advertised times.
     var TOTAL_SPOTS = 13;
 
     var state = { time: null, restoreTime: null };
