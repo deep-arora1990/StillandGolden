@@ -1,7 +1,7 @@
 // GET /.netlify/functions/booking-slots?service_key=...&date=YYYY-MM-DD
 // → { slots: ["09:00", "09:30", ...] }  (Australia/Melbourne local times)
 
-const { TIERS, getSlots } = require('./lib/setmore');
+const { TIERS, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'GET') {
@@ -20,6 +20,19 @@ exports.handler = async (event) => {
   }
 
   try {
+    // Tiers whose schedule we set ourselves can't be filtered against
+    // /bookingapi/slots: it derives start times from the service duration, so
+    // it never offers a cadence that differs from it. Availability comes from
+    // the calendar instead — see getFixedScheduleSlots.
+    if (tier.fixedSchedule) {
+      const slots = await getFixedScheduleSlots(tier, date);
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slots }),
+      };
+    }
+
     let slots = await getSlots(serviceKey, date);
     // Tiers with a fixed slot list (e.g. Father's Day minis) only ever offer
     // their canonical start times; booked ones drop out via Setmore.

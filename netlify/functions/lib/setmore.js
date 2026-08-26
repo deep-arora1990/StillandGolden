@@ -81,41 +81,32 @@ const TIERS = {
     name: 'Christmas Mini',
     tagline: 'One day only — Baxter Community Hall',
     serviceKey: 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82',
-    // The Setmore service is a 15-minute session with a 10-minute
-    // after-buffer, so each booking occupies 25 minutes of the day.
+    // What gets written into the calendar: the 15-minute session plus its
+    // 10-minute changeover. The service's own after-buffer is set to 0 in
+    // Setmore because the API doesn't apply buffers when it creates an
+    // appointment — it only writes the service time — so the gap has to be
+    // part of the block we book.
     durationMinutes: 25,
+    // What the customer is actually buying, for anything customer-facing.
+    sessionMinutes: 15,
     priceFrom: 150,
     priceCents: 15000,
     includes: '5 edited photos',
     hidden: true,
     allowedDates: ['2026-11-08'],
-    // Thirteen fixed sessions, half-hourly from 10:30.
+    // Fifteen sessions, 25 minutes apart from 10:30 — the session length plus
+    // its changeover, so they run back to back with no dead time.
     //
-    // This list is the only thing enforcing the advertised hours: Setmore's
-    // working hours are account-wide, not per service, so the booking page
-    // itself offers the whole day. Everything outside this list is refused in
-    // booking-checkout too, not just hidden here.
-    //
-    // Half-hourly is the tightest spacing available. A booking occupies 25
-    // minutes, and /bookingapi/slots only offers start times on a 15-minute
-    // grid, so 30 is the smallest multiple of that grid which clears the
-    // buffer. 25-minute spacing would fit 15 sessions between 10:30 and 4:20,
-    // but those times are not on the grid: measured 26 Aug 2026, ten of the
-    // fifteen came back unavailable.
-    //
-    // That grid is NOT Setmore's "booking slot size" setting — that only
-    // changes what the customer-facing Booking Page displays, confirmed
-    // against Setmore's own docs and measured directly: the Booking Page
-    // showed 5-minute intervals while the API returned 15-minute ones for the
-    // same day. Getting to 15 sessions inside 10:30–4:30 needs the service's
-    // after-buffer dropped to 0, which would put occupancy back on the grid.
+    // These are OUR times, not Setmore's. /bookingapi/slots derives start
+    // times from the service duration (15 min), so it only ever offers a
+    // 15-minute grid and none of the :55/:20/:45 starts below appear in it —
+    // measured 26 Aug 2026, before and after the buffer change. Filtering
+    // against it would throw away ten of these fifteen. fixedSchedule tells
+    // booking-slots to check the calendar directly instead.
+    fixedSchedule: true,
     slotTimes: [
-      // TEMPORARY probe: the working 13 plus three 25-minute-cadence
-      // candidates (10:55, 11:20, 16:20). If those come back from
-      // booking-slots now the buffer is 0, the full 25-minute schedule is
-      // available; if not, nothing is lost and the 13 still work.
-      '10:30', '10:55', '11:00', '11:20', '11:30', '12:00', '12:30', '13:00',
-      '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:20', '16:30',
+      '10:30', '10:55', '11:20', '11:45', '12:10', '12:35', '13:00', '13:25',
+      '13:50', '14:15', '14:40', '15:05', '15:30', '15:55', '16:20',
     ],
   },
   // Permanent $1 test tier for verifying the live booking+payment chain after
@@ -416,6 +407,50 @@ async function createAppointment({ staffKey, serviceKey, customerKey, startTime,
 // Appointments on a single day, with embedded customer records — used by the
 // webhook's duplicate-delivery guard. date: 'YYYY-MM-DD'; the Setmore
 // appointments endpoint wants dd-mm-yyyy.
+/**
+ * Availability for a tier whose session times are fixed by us rather than by
+ * Setmore (see `fixedSchedule`).
+ *
+ * /bookingapi/slots lays start times on a grid derived from the service
+ * duration — 15 minutes here — so it never offers the 25-minute cadence these
+ * sessions actually run on, and filtering against it throws away two thirds of
+ * the day. Bookings themselves are not constrained that way: the API writes an
+ * appointment at whatever start time it's given.
+ *
+ * So availability is computed from what is actually in the calendar. Every
+ * appointment on the date counts, not just this service's — a Golden session
+ * booked over the top would otherwise be invisible here.
+ */
+async function getFixedScheduleSlots(tier, date) {
+  const toMinutes = (hhmm) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return h * 60 + m;
+  };
+
+  const appointments = await getAppointmentsOnDate(date);
+
+  // start_time / end_time are 'yyyy-MM-ddTHH:mm' in the studio's own timezone.
+  const busy = [];
+  for (const appt of appointments) {
+    const start = (appt.start_time || '').split('T')[1];
+    const end = (appt.end_time || '').split('T')[1];
+    if (!start) continue;
+    const from = toMinutes(start);
+    // An appointment with no end time still blocks its own start; assume the
+    // tier's own length rather than treating it as zero-width.
+    const to = end ? toMinutes(end) : from + tier.durationMinutes;
+    busy.push([from, to]);
+  }
+
+  return tier.slotTimes.filter((time) => {
+    const from = toMinutes(time);
+    const to = from + tier.durationMinutes;
+    // Half-open intervals: an appointment ending exactly when this one starts
+    // is not a clash.
+    return !busy.some(([bFrom, bTo]) => from < bTo && to > bFrom);
+  });
+}
+
 async function getAppointmentsOnDate(date) {
   if (MOCK) return [];
   const [y, m, d] = date.split('-');
@@ -471,4 +506,5 @@ module.exports = {
   createAppointment,
   getAppointmentsOnDate,
   getAppointmentsInRange,
+  getFixedScheduleSlots,
 };

@@ -136,7 +136,11 @@ exports.handler = async (event) => {
             unit_amount: tier.priceCents,
             product_data: {
               name: `${tier.name} — photography session`,
-              description: `${date} at ${time} · ${tier.durationMinutes} minutes`,
+              // sessionMinutes where a tier distinguishes it: durationMinutes is
+              // the calendar block, which for the minis includes changeover
+              // time the customer isn't buying. Telling someone paying for a
+              // 15-minute session that it's 25 would be plainly wrong.
+              description: `${date} at ${time} · ${tier.sessionMinutes || tier.durationMinutes} minutes`,
             },
           },
         },
