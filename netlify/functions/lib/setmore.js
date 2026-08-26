@@ -97,8 +97,13 @@ const TIERS = {
     // it. A 25-minute cadence would be tighter but lands off that grid: only
     // 5 of its 15 times exist in Setmore, so most would silently vanish.
     slotTimes: [
-      '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-      '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+      // TEMPORARY probe — union of the half-hourly and 25-minute candidate
+      // schedules, to discover which times Setmore's updated grid actually
+      // offers. Replaced with the final list as soon as that's known.
+      '10:30', '10:55', '11:00', '11:20', '11:30', '11:45', '12:00', '12:10',
+      '12:30', '12:35', '13:00', '13:25', '13:30', '13:50', '14:00', '14:15',
+      '14:30', '14:40', '15:00', '15:05', '15:30', '15:55', '16:00', '16:20',
+      '16:30',
     ],
   },
   // Permanent $1 test tier for verifying the live booking+payment chain after
