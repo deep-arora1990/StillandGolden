@@ -273,3 +273,15 @@
   to = "/about"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/packages.html"
+  to = "/packages"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/bloom-maternity-newborn-photography.html"
+  to = "/bloom-maternity-newborn-photography"
+  status = 301
+  force = true

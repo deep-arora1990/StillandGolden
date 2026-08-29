@@ -933,51 +933,14 @@
     .menu-close::after  { transform: rotate(-45deg); }
     body.menu-open .menu-close { display: flex; }
 
-    /* ═══ MOCKUP: new tier pricing + reviews (scoped, overrides old #sessions) ═══ */
+    /* Services + reviews */
     #sessions { padding: 0; }
     #sessions .sessions-inner { max-width: 1160px; margin: 0 auto; padding: 80px 48px; }
     #sessions .sessions-header { display: block; text-align: center; margin-bottom: 8px; }
     #sessions .sessions-header p { color: var(--mid); max-width: 52ch; margin: 16px auto 0; font-size: 0.95rem; }
 
-    #sessions .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; padding: 44px 0 20px; }
-    #sessions .tier { background: #fff; border: 1px solid var(--border); padding: 40px 32px 32px; display: flex; flex-direction: column; position: relative; transition: transform 0.25s, box-shadow 0.25s; }
-    #sessions .tier:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -24px rgba(26,23,20,0.28); }
-    #sessions .tier.featured { border: 1px solid var(--gold); box-shadow: 0 20px 46px -26px rgba(168,132,90,0.5); }
-    #sessions .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #fff; font-size: 0.62rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 16px; white-space: nowrap; }
-    #sessions .tier-name { font-family: var(--serif); font-size: 1.9rem; font-weight: 400; margin-bottom: 4px; }
-    #sessions .tier-tag { font-family: var(--serif); font-style: italic; color: var(--mid); font-size: 1rem; margin-bottom: 22px; }
-    #sessions .tier-price { font-family: var(--serif); display: flex; align-items: baseline; gap: 6px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
-    #sessions .tier-price .from { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); }
-    #sessions .tier-price .amt { font-size: 2.5rem; line-height: 1; }
-    #sessions .tier-specs { list-style: none; margin: 0 0 24px; padding: 0; flex: 1; }
-    #sessions .tier-specs li { position: relative; padding-left: 22px; margin-bottom: 12px; font-size: 0.88rem; color: #4d453f; }
-    #sessions .tier-specs li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
-    #sessions .tier-specs li.upgrade { color: var(--gold); }
-    #sessions .best { font-size: 0.8rem; color: var(--mid); line-height: 1.6; margin-bottom: 24px; padding: 13px 15px; background: var(--off-white); border-left: 2px solid var(--gold); }
-    #sessions .best b { color: var(--warm-black); font-weight: 400; }
-    #sessions .tbtn { display: block; text-align: center; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 15px 18px; text-decoration: none; transition: background 0.25s; }
+    #sessions .tbtn { display: block; text-align: center; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 15px 18px; text-decoration: none; transition: background 0.25s; max-width: 340px; margin: 0 auto; }
     #sessions .tbtn:hover { background: var(--gold); }
-    #sessions .tbtn.ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); }
-    #sessions .tbtn.ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
-    #sessions .tlearn { display: block; text-align: center; margin-top: 14px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(168,132,90,0.35); padding-bottom: 2px; width: fit-content; margin-left: auto; margin-right: auto; transition: color 0.2s, border-color 0.2s; }
-    #sessions .tlearn:hover { color: var(--warm-black); border-color: var(--warm-black); }
-    #sessions .fineprint { text-align: center; color: var(--mid); font-size: 0.8rem; padding-bottom: 4px; }
-
-    /* Bloom band */
-    #bloom { background: var(--warm-black); color: var(--off-white); padding: 0 48px; }
-    #bloom .bloom-inner { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; padding: 76px 0; }
-    #bloom .eyebrow { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
-    #bloom h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.4rem, 4.5vw, 3.4rem); line-height: 1.05; margin-bottom: 20px; }
-    #bloom h2 em { font-style: italic; color: var(--gold); }
-    #bloom p { color: #cfc7bd; max-width: 46ch; margin-bottom: 16px; font-size: 0.98rem; }
-    #bloom .bloom-card { border: 1px solid rgba(248,245,241,0.16); padding: 40px 38px; background: rgba(248,245,241,0.03); }
-    #bloom .bloom-card .from { font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
-    #bloom .bloom-card .amt { font-family: var(--serif); font-size: 3rem; line-height: 1; margin: 6px 0 24px; }
-    #bloom .bloom-specs { list-style: none; margin: 0 0 30px; padding: 0; }
-    #bloom .bloom-specs li { position: relative; padding-left: 22px; margin-bottom: 12px; font-size: 0.92rem; color: #e6e0d8; }
-    #bloom .bloom-specs li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
-    #bloom .tbtn { display: block; text-align: center; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; background: var(--gold); color: var(--warm-black); padding: 15px 18px; text-decoration: none; transition: background 0.25s; }
-    #bloom .tbtn:hover { background: var(--off-white); }
 
     /* Reviews */
     #reviews { border-top: 1px solid var(--border); padding: 80px 48px; }
@@ -1002,9 +965,6 @@
 
     @media (max-width: 880px) {
       #sessions .sessions-inner { padding: 60px 24px; }
-      #sessions .tiers { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
-      #bloom { padding: 0 24px; }
-      #bloom .bloom-inner { grid-template-columns: 1fr; gap: 36px; padding: 56px 0; }
       #reviews { padding: 60px 24px; }
       #reviews .review-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
     }
@@ -1039,7 +999,7 @@
     </h1>
     <p class="intro-sub">Specialist newborn and family photography. Unhurried. Honest. Warm — the kind of images you'll want on your walls for the rest of your life.</p>
     <div class="intro-actions">
-      <a href="#sessions" class="btn filled">Book a session</a>
+      <a href="/packages" class="btn filled">View my packages</a>
       <a href="/portfolio" class="btn">View work</a>
     </div>
   </div>
@@ -1073,7 +1033,8 @@
     <div class="about-text">
       <p class="label reveal">The photographer</p>
       <h2 class="reveal">A fellow parent,<br>behind the <em>lens</em></h2>
-      <p class="reveal d1">Hi, I'm <strong>Deep</strong> — a dad of two based in Cranbourne East, and the person behind Still &amp; Golden. Gentle, unhurried photography at your place, at your baby's pace.</p>
+      <p class="reveal d1">Hi, I'm <strong>Deep</strong> — a dad of two based in Cranbourne East, and the person behind Still &amp; Golden. There's no studio and no script: I come to your place, work with your light, and photograph your family as it actually is.</p>
+      <p class="reveal d1">I shoot this way because I'm living it. I know what 4pm with a toddler and a newborn looks like, and I know that one day your kids will go looking for a photo of <em>you</em> — the person who takes every photo and appears in none. My job is to make sure it exists.</p>
       <a href="/about" class="btn reveal d2">More about me →</a>
     </div>
   </div>
@@ -1082,80 +1043,10 @@
   <section id="sessions">
     <div class="sessions-inner">
       <div class="sessions-header reveal">
-        <h2>Sessions &amp; <em>pricing</em></h2>
-        <p>Choose by how much time you want together. Every session is in-home or on-location, with the option to unlock your full gallery.</p>
-      </div>
-
-      <div class="tiers">
-        <div class="tier reveal">
-          <div class="tier-name">Glimpse</div>
-          <div class="tier-tag">The quick refresh</div>
-          <div class="tier-price"><span class="from">From</span><span class="amt">$195</span></div>
-          <ul class="tier-specs">
-            <li>30 minutes</li>
-            <li>10 edited images</li>
-            <li>In-home or on-location</li>
-            <li class="upgrade">Upgrade to the full gallery (+$75)</li>
-          </ul>
-          <div class="best"><b>Best for</b> — updated core family photos, a fast and focused sitting.</div>
-          <a class="tbtn ghost" href="/book?service=glimpse">Book Glimpse</a>
-          <a class="tlearn" href="/glimpse-mini-sessions">Learn more →</a>
-        </div>
-
-        <div class="tier featured reveal d1">
-          <span class="badge">Most popular</span>
-          <div class="tier-name">Golden</div>
-          <div class="tier-tag">The signature sitting</div>
-          <div class="tier-price"><span class="from">From</span><span class="amt">$250</span></div>
-          <ul class="tier-specs">
-            <li>60 minutes</li>
-            <li>20 edited images</li>
-            <li>In-home or on-location</li>
-            <li class="upgrade">Upgrade to the full gallery (+$50)</li>
-          </ul>
-          <div class="best"><b>Best for</b> — newborn, maternity, cake smash &amp; splash.</div>
-          <a class="tbtn" href="/book?service=golden">Book Golden</a>
-          <a class="tlearn" href="/golden-family-photography">Learn more →</a>
-        </div>
-
-        <div class="tier reveal d2">
-          <div class="tier-name">Gathered</div>
-          <div class="tier-tag">Room to move</div>
-          <div class="tier-price"><span class="from">From</span><span class="amt">$395</span></div>
-          <ul class="tier-specs">
-            <li>90 minutes</li>
-            <li>30+ edited images</li>
-            <li>In-home or on-location</li>
-            <li class="upgrade">Full gallery included · no restrictions</li>
-          </ul>
-          <div class="best"><b>Best for</b> — extended family, multiple set-ups, bigger groups.</div>
-          <a class="tbtn ghost" href="/book?service=gathered">Book Gathered</a>
-          <a class="tlearn" href="/gathered-newborn-photography">Learn more →</a>
-        </div>
-      </div>
-      <p class="fineprint">All sessions delivered within two weeks. Prices in AUD.</p>
-    </div>
-  </section>
-
-  <!-- BLOOM -->
-  <section id="bloom">
-    <div class="bloom-inner">
-      <div class="reveal">
-        <div class="eyebrow">The bundle</div>
-        <h2>Bloom</h2>
-        <p>Two sittings that follow your family from bump to baby — a maternity or family session while you wait, and a newborn session once they arrive.</p>
-        <p>Booked together at a better rate than two separate sessions.</p>
-      </div>
-      <div class="bloom-card reveal d1">
-        <div class="from">From</div>
-        <div class="amt">$595</div>
-        <ul class="bloom-specs">
-          <li>Two 90-minute sessions</li>
-          <li>Maternity / family + newborn</li>
-          <li>In-home, both sittings</li>
-          <li>Newborn within the first 4 weeks</li>
-        </ul>
-        <a class="tbtn" href="/book?service=bloom">Book Bloom</a>
+        <h2>My <em>services</em></h2>
+        <p>Newborn sessions in the first four weeks. Family sessions for the season you're in right now. Maternity sittings while you wait, cake smashes for first birthdays, and every milestone in between &mdash; all unposed, all at your place or somewhere you love, all delivered within two weeks.</p>
+        <p>Every session includes the whole family, with no per-person charge and nothing required of you.</p>
+        <a href="/packages" class="tbtn" style="display:inline-block;margin-top:22px;text-decoration:none;">Explore my packages</a>
       </div>
     </div>
   </section>

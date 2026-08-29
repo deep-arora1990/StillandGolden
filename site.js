@@ -13,7 +13,8 @@
   var NAV_LINKS = [
     { href: '/portfolio', label: 'Portfolio' },
     { href: '/about', label: 'About' },
-    { href: '/#sessions', label: 'Sessions &amp; Pricing' },
+    { href: '/#sessions', label: 'Services' },
+    { href: '/packages', label: 'Packages' },
     { href: '/#faq', label: 'Common Questions' },
     { href: '/blog/', label: 'Blog' },
     { href: '/#contact', label: 'Enquire now', className: 'book' },
@@ -27,7 +28,7 @@
     '<span class="footer-logo">Still &amp; Golden</span>' +
     '<span class="footer-copy">&copy; 2026 Still &amp; Golden Photography &middot; ABN 37 280 912 036</span>' +
     '<span class="footer-area">Frankston &middot; Chelsea &middot; Seaford &middot; Langwarrin &middot; Mt Eliza</span>' +
-    '<span class="footer-copy"><a href="/glimpse-mini-sessions" style="' + FOOTER_LINK_STYLE + '">Glimpse Minis</a> &middot; <a href="/golden-family-photography" style="' + FOOTER_LINK_STYLE + '">Golden Family</a> &middot; <a href="/gathered-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Gathered Newborn</a> &middot; <a href="/blog/" style="' + FOOTER_LINK_STYLE + '">Blog</a></span>' +
+    '<span class="footer-copy"><a href="/glimpse-mini-sessions" style="' + FOOTER_LINK_STYLE + '">Glimpse Minis</a> &middot; <a href="/golden-family-photography" style="' + FOOTER_LINK_STYLE + '">Golden Family</a> &middot; <a href="/gathered-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Gathered Newborn</a> &middot; <a href="/bloom-maternity-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Bloom Bundle</a> &middot; <a href="/packages" style="' + FOOTER_LINK_STYLE + '">Packages</a> &middot; <a href="/blog/" style="' + FOOTER_LINK_STYLE + '">Blog</a></span>' +
     '<a href="/privacy" class="footer-copy" style="' + FOOTER_LINK_STYLE + '">Privacy Policy</a>';
 
   var path = location.pathname;
@@ -40,12 +41,14 @@
     '/golden-family-photography',
     '/golden-cake-smash-photography',
     '/gathered-newborn-photography',
+    '/bloom-maternity-newborn-photography',
     '/book',
   ];
 
   function isActive(href) {
     if (href === '/portfolio') return path === '/portfolio' || path === '/portfolio.html';
     if (href === '/about') return path === '/about' || path === '/about.html';
+    if (href === '/packages') return path === '/packages' || path === '/packages.html';
     if (href === '/blog/') return path.indexOf('/blog') === 0;
     if (href === '/#sessions') {
       return SESSION_PAGES.some(function (p) { return path === p || path === p + '.html'; });
