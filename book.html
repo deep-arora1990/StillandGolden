@@ -257,7 +257,18 @@
     'use strict';
 
     var FN = '/.netlify/functions/';
-    var MAX_MONTHS_AHEAD = 2; // current month + 2 more
+    // How far ahead the calendar will scroll: the current month plus this many.
+    // Four gives roughly a season's horizon, which is what newborn bookings
+    // (made while pregnant) and Christmas-period family sessions need. It is a
+    // rolling window, so it always means "four months from now", not a fixed
+    // end date.
+    //
+    // Setmore itself imposes no ceiling here — it answers for any month asked,
+    // including well into next year — so this number is the only thing deciding
+    // how far out someone can book. Raising it further is safe mechanically,
+    // but each extra month is one people can commit you to before you have
+    // planned that far.
+    var MAX_MONTHS_AHEAD = 4;
 
     var state = {
       services: [],
