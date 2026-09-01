@@ -339,21 +339,32 @@ exports.handler = async (event) => {
 
   const { names, sessionDate } = data;
 
-  if (!names) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+  // Every field is optional — the questionnaire goes to people who have
+  // already booked, so a half-filled one is still worth having and shouldn't
+  // be blocked behind validation.
+  //
+  // A completely empty submission is a different thing: it tells Deep nothing
+  // and is what a bot or a stray click produces. That's the only rejection
+  // left, and it isn't a required *field* — any one answer satisfies it.
+  const hasAnyAnswer = Object.values(data).some(
+    (v) => typeof v === 'string' && v.trim() !== ''
+  );
+  if (!hasAnyAnswer) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Please fill in at least one answer before sending.' }) };
   }
 
+  // Used for the subject line, the PDF filename and the greeting, none of
+  // which can be blank now that the name can be.
+  const displayName = (names || '').trim();
   const clientEmail = (data.email || '').trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'A valid email address is required' }) };
-  }
+  const canEmailClient = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail);
 
   try {
     const pdfBytes = await generatePDF(data);
     const pdfBase64 = Buffer.from(pdfBytes).toString('base64');
 
     let detailsText = `New Session Questionnaire Submitted\n\n`;
-    detailsText += `Name(s): ${names}\n`;
+    if (displayName) detailsText += `Name(s): ${displayName}\n`;
     if (sessionDate) detailsText += `Session Date: ${sessionDate}\n`;
     if (data.children) detailsText += `Children: ${data.children}\n`;
     if (data.address) detailsText += `Address: ${data.address}\n`;
@@ -368,13 +379,19 @@ exports.handler = async (event) => {
     if (data.bestTime) detailsText += `Best time of day: ${data.bestTime}\n`;
     if (data.anythingElse) detailsText += `Anything else: ${data.anythingElse}\n`;
 
-    const safeName = names.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-    const fileName = `questionnaire-${safeName}.pdf`;
+    const safeName = displayName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+    // Falls back to a timestamp so two anonymous submissions don't arrive as
+    // indistinguishable attachments called questionnaire-.pdf.
+    const fileName = safeName
+      ? `questionnaire-${safeName}.pdf`
+      : `questionnaire-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}.pdf`;
 
     await resend.emails.send({
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: 'hello@stillandgolden.com.au',
-      subject: `Session Questionnaire — ${names}`,
+      subject: displayName
+        ? `Session Questionnaire — ${displayName}`
+        : 'Session Questionnaire — (no name given)',
       text: detailsText,
       attachments: [
         {
@@ -385,12 +402,15 @@ exports.handler = async (event) => {
     });
 
     // The client gets their own copy of the PDF — their answers, in writing.
-    await resend.emails.send({
+    // Skipped when no usable email was given: the submission still reaches
+    // Deep, which is the part that matters. Sending is not worth failing the
+    // whole request over either — see the catch below.
+    if (canEmailClient) await resend.emails.send({
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: clientEmail,
       subject: 'Your session questionnaire — Still & Golden',
       text: [
-        `Hi ${names.split(' ')[0]},`,
+        displayName ? `Hi ${displayName.split(' ')[0]},` : 'Hi there,',
         '',
         `Thank you for sharing all of this with me — it genuinely helps me photograph your family the way this season actually feels. A copy of your answers is attached to keep.`,
         '',
