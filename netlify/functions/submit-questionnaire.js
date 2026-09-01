@@ -33,7 +33,42 @@ const SWATCHES = [
   [0.627, 0.627, 0.659], // #A0A0A8
 ];
 
-async function generatePDF(data) {
+/**
+ * Everything CP1252 (WinAnsi) can represent — the encoding pdf-lib's standard
+ * fonts use. Printable ASCII, the Latin-1 supplement, and the handful of
+ * typographic characters CP1252 puts in 0x80–0x9F: curly quotes, en/em dashes,
+ * the ellipsis, the bullet, the euro. Newline and tab are kept for the
+ * wrapping code.
+ */
+const WINANSI_SAFE = /[\n\t\x20-\x7E\xA0-\xFF\u20AC\u201A\u0192\u201E\u2026\u2020\u2021\u02C6\u2030\u0160\u2039\u0152\u017D\u2018\u2019\u201C\u201D\u2022\u2013\u2014\u02DC\u2122\u0161\u203A\u0153\u017E\u0178]/
+
+/**
+ * Strips what the PDF fonts cannot draw.
+ *
+ * pdf-lib throws on the first unencodable character — `WinAnsi cannot encode
+ * "💖"` — which failed the whole submission with a 500 and lost the client's
+ * answers. Emoji are the common case: people describing their family on a
+ * phone use them freely. Smart quotes, dashes and accented names are all
+ * inside CP1252 and survive untouched.
+ *
+ * Only the PDF is sanitised. The notification email keeps the original text,
+ * so nothing the client wrote is actually lost.
+ */
+function pdfSafe(value) {
+  if (typeof value !== 'string') return value
+  const cleaned = [...value].filter((ch) => WINANSI_SAFE.test(ch)).join('')
+  // Dropping an emoji mid-sentence leaves a double space; tidy it, but keep
+  // newlines, which carry meaning in the textarea answers.
+  return cleaned.replace(/[^\S\n]{2,}/g, ' ').trim()
+}
+
+async function generatePDF(rawData) {
+  // Sanitised once, at the boundary, so no drawText call can be reached with
+  // something the font cannot encode.
+  const data = Object.fromEntries(
+    Object.entries(rawData).map(([k, v]) => [k, pdfSafe(v)])
+  );
+
   const doc = await PDFDocument.create();
   const helvetica = await doc.embedFont(StandardFonts.Helvetica);
   const helveticaBold = await doc.embedFont(StandardFonts.HelveticaBold);
@@ -357,8 +392,16 @@ exports.handler = async (event) => {
   }
 
   try {
-    const pdfBytes = await generatePDF(data);
-    const pdfBase64 = Buffer.from(pdfBytes).toString('base64');
+    // The PDF is a convenience; the answers are the point. If generation fails
+    // for a reason the sanitiser doesn't cover, the submission still goes
+    // through as plain text rather than 500-ing and losing what the client
+    // wrote — they don't get a second chance at a form this long.
+    let pdfBase64 = null;
+    try {
+      pdfBase64 = Buffer.from(await generatePDF(data)).toString('base64');
+    } catch (pdfErr) {
+      console.error('submit-questionnaire: PDF generation failed, sending text only:', pdfErr);
+    }
 
     let detailsText = `New Session Questionnaire Submitted\n\n`;
     detailsText += `Name(s): ${displayName}\n`;
@@ -383,13 +426,10 @@ exports.handler = async (event) => {
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: 'hello@stillandgolden.com.au',
       subject: `Session Questionnaire — ${displayName}`,
-      text: detailsText,
-      attachments: [
-        {
-          filename: fileName,
-          content: pdfBase64,
-        },
-      ],
+      text: pdfBase64
+        ? detailsText
+        : `${detailsText}\n(The PDF could not be generated for this submission — the answers above are complete.)`,
+      ...(pdfBase64 ? { attachments: [{ filename: fileName, content: pdfBase64 }] } : {}),
     });
 
     // The client gets their own copy of the PDF — their answers, in writing.
@@ -400,19 +440,18 @@ exports.handler = async (event) => {
       text: [
         `Hi ${displayName.split(' ')[0]},`,
         '',
-        `Thank you for sharing all of this with me — it genuinely helps me photograph your family the way this season actually feels. A copy of your answers is attached to keep.`,
+        pdfBase64
+          ? `Thank you for sharing all of this with me — it genuinely helps me photograph your family the way this season actually feels. A copy of your answers is attached to keep.`
+          : `Thank you for sharing all of this with me — it genuinely helps me photograph your family the way this season actually feels. I've got everything you sent.`,
         '',
         `I'll be in touch within 24 hours. If anything comes to mind in the meantime, just reply to this email.`,
         '',
         'Deep',
         'Still & Golden Photography',
       ].join('\n'),
-      attachments: [
-        {
-          filename: fileName,
-          content: pdfBase64,
-        },
-      ],
+      // No attachment line when there's no PDF — promising one that isn't
+      // there reads worse than not mentioning it.
+      ...(pdfBase64 ? { attachments: [{ filename: fileName, content: pdfBase64 }] } : {}),
     });
 
     return {
