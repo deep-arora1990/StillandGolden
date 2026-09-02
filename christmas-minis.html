@@ -55,6 +55,21 @@
 
     /* Slots — same pattern as book.html, incl. the loading overlay */
     .counter { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+
+    /* Countdown — deliberately quiet. The brand voice bans manufactured
+       urgency, so this states a real date plainly rather than pulsing red at
+       anyone. No seconds: for a date months out they'd be theatre, and they'd
+       force a repaint every second for nothing. */
+    .countdown { display: flex; gap: 28px; margin: 0 0 40px; padding: 22px 26px; border: 1px solid var(--border); background: #fff; }
+    .countdown[hidden] { display: none; }
+    .cd-unit { text-align: center; min-width: 58px; }
+    .cd-num { font-family: var(--serif); font-size: 1.9rem; line-height: 1; color: var(--warm-black); display: block; }
+    .cd-label { font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); margin-top: 6px; display: block; }
+    .cd-note { align-self: center; font-size: 0.86rem; color: #4d453f; margin-left: 4px; }
+    @media (max-width: 560px) {
+      .countdown { gap: 18px; padding: 18px; flex-wrap: wrap; }
+      .cd-note { flex-basis: 100%; margin: 6px 0 0; }
+    }
     .slots-wrap { position: relative; min-height: 90px; }
     .slots { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; transition: opacity 0.25s; }
     .slots-wrap.loading .slots { opacity: 0.3; pointer-events: none; }
@@ -149,6 +164,13 @@
       <p class="venue-when">Sunday 8 November &middot; 15 sessions from 10:30am &mdash; last session 4:20pm</p>
     </div>
 
+    <div class="countdown" id="countdown" hidden aria-live="polite">
+      <div class="cd-unit"><span class="cd-num" id="cd-days">—</span><span class="cd-label">Days</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-hours">—</span><span class="cd-label">Hours</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-mins">—</span><span class="cd-label">Minutes</span></div>
+      <p class="cd-note" id="cd-note">until the first session on Sunday 8 November</p>
+    </div>
+
     <div id="notice" class="notice" role="alert" hidden></div>
 
     <!-- Step 1: slots -->
@@ -224,6 +246,15 @@
     // the two in step. That list, not Setmore's working hours, is what pins
     // the day to the advertised times.
     var TOTAL_SPOTS = 15;
+    // Below this many remaining, the page starts saying so.
+    var SCARCITY_THRESHOLD = 3;
+
+    // First session, 10:30am on Sunday 8 November 2026, as a fixed UTC
+    // instant. Melbourne is AEDT (UTC+11) by then — daylight saving starts
+    // 4 October — and pinning the instant rather than parsing a local string
+    // means the countdown is identical wherever the reader is, instead of
+    // silently counting to 10:30am in their own timezone.
+    var FIRST_SESSION_UTC = Date.UTC(2026, 10, 7, 23, 30, 0);
 
     var state = { time: null, restoreTime: null };
 
@@ -268,6 +299,38 @@
       return d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' }).toLowerCase().replace(' ', '');
     }
 
+    // --- countdown ---------------------------------------------------------------
+
+    function renderCountdown() {
+      var remaining = FIRST_SESSION_UTC - Date.now();
+      var el = $('countdown');
+
+      // Past the first session the countdown has nothing to say. Hiding it is
+      // better than showing zeroes or a negative number on a page that may
+      // well still be linked from an email.
+      if (remaining <= 0) { el.hidden = true; return false; }
+
+      var mins = Math.floor(remaining / 60000);
+      var days = Math.floor(mins / 1440);
+      var hours = Math.floor((mins % 1440) / 60);
+
+      $('cd-days').textContent = days;
+      $('cd-hours').textContent = hours;
+      $('cd-mins').textContent = mins % 60;
+      el.hidden = false;
+      return true;
+    }
+
+    function startCountdown() {
+      if (!renderCountdown()) return;
+      // Every 30s: the smallest unit shown is minutes, so a tighter interval
+      // would repaint for nothing, and a 60s one can look stuck when the page
+      // is opened just after a minute ticks over.
+      var timer = setInterval(function () {
+        if (!renderCountdown()) clearInterval(timer);
+      }, 30000);
+    }
+
     // --- slots -----------------------------------------------------------------
 
     function loadSlots() {
@@ -295,11 +358,19 @@
         return;
       }
       $('sold-out').hidden = true;
+      // The count only appears once it means something. "13 of 15 spots left"
+      // reads as "nobody has booked this"; at three or fewer it is real
+      // scarcity and worth stating. Deliberately not a fraction at that point
+      // either — "3 of 15" invites the same reading.
       var counter = $('counter');
-      counter.hidden = false;
-      // Now a genuine fraction: the session times are fixed, so a total is
-      // meaningful and each booked slot really does remove one spot.
-      counter.textContent = slots.length + ' of ' + TOTAL_SPOTS + ' spots left';
+      if (slots.length <= SCARCITY_THRESHOLD) {
+        counter.hidden = false;
+        counter.textContent = slots.length === 1
+          ? 'Last spot left'
+          : 'Only ' + slots.length + ' spots left';
+      } else {
+        counter.hidden = true;
+      }
       slots.forEach(function (t) {
         var btn = document.createElement('button');
         btn.type = 'button';
@@ -432,6 +503,7 @@
         showNotice('Payment was cancelled — no charge was made. Pick a time below if you’d like to try again.', true);
       }
 
+      startCountdown();
       loadSlots();
     })();
   })();
