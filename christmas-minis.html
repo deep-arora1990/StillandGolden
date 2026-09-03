@@ -24,7 +24,88 @@
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18178273358"></script>
   <script src="/site-tags.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What do I get for $150?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks. You can add the extended gallery for $50."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is fifteen minutes actually enough?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. The set is already built and lit, so none of your time goes on setting up. Fifteen minutes is also about the honest limit of a toddler's patience."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "When do we get the photos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Within two weeks of the day, in a private online gallery. You download them at full resolution and print them wherever you like."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What should we wear?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Christmas clothes are very welcome, or wear whatever everyone is comfortable in. Neutrals sit beautifully against the set, and textures like knits, cord and wool read better on camera than flat block colour. Pick colours that complement each other rather than matching exactly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What if my child won't play along?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "That is expected. We work with whatever the day gives us, and the frames people end up loving are usually the in-between ones."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How many of us can come?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The set comfortably holds two adults and the kids. If you are a larger group, get in touch before you book and we will work out what is possible."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can we bring the dog?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Not at this one, sorry - it's people only."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where do we park?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "There is ample parking at the community hall, so there is no need to arrive early hunting for a spot."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What if we can't make our time?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Let me know as early as you can. If another time on the day is still free, I will move you across to it. Everything runs on the one day, Sunday 8 November, so there is no other date to move to. If you need to cancel more than seven days before the session, you will be refunded half the fee. Inside seven days, the session is not refundable."
+        }
+      }
+    ]
+  }
+  </script>
   <style>
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
     body {
       background: var(--off-white);
       color: var(--warm-black);
@@ -125,6 +206,58 @@
     .venue-address { font-size: 0.9rem; color: #4d453f; margin: 0 0 10px; }
     .venue-when { font-size: 0.9rem; color: #4d453f; margin: 0; }
 
+    /* Photos. The page had none — these two spots answer "what am I actually
+       booking?". The top one is deliberately short (16/10 rather than the
+       file's native 4:3) so the slot picker stays reachable on a phone
+       instead of sitting under a full-height photo. */
+    .shot { margin: 0 0 40px; overflow: hidden; background: var(--border); }
+    .shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .shot-hero { aspect-ratio: 16 / 10; }
+    /* Faces sit above centre in this frame, so bias the crop upward. */
+    .shot-hero img { object-position: center 42%; }
+
+    /* Below-the-widget sections share one rule so the rhythm stays even. */
+    .after { margin: 60px 0 0; padding-top: 46px; border-top: 1px solid var(--border); }
+    .after > h2 { margin-bottom: 14px; }
+
+    .set-grid { display: grid; grid-template-columns: 290px 1fr; gap: 34px; align-items: start; }
+    .set-grid .shot { margin: 0; aspect-ratio: 944 / 1108; }
+    .set-copy p { margin: 0 0 14px; color: #4d453f; max-width: 52ch; }
+    .set-copy p:last-child { margin: 0; }
+    @media (max-width: 640px) {
+      .set-grid { grid-template-columns: 1fr; gap: 24px; }
+      .set-grid .shot { aspect-ratio: 4 / 3; }
+    }
+
+    /* FAQ — native <details> so it works without JavaScript and stays
+       keyboard-operable. Answers remain in the DOM for search engines. */
+    .faq details { border-bottom: 1px solid var(--border); }
+    .faq summary {
+      cursor: pointer; list-style: none; position: relative;
+      padding: 18px 40px 18px 0; font-size: 1rem; color: var(--warm-black);
+      transition: color 0.15s;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after {
+      content: '+'; position: absolute; right: 6px; top: 50%;
+      transform: translateY(-50%); font-family: var(--serif);
+      font-size: 1.5rem; line-height: 1; color: var(--gold);
+    }
+    .faq details[open] summary::after { content: '\2013'; }
+    .faq summary:hover, .faq summary:focus-visible { color: var(--gold); outline: none; }
+    .faq .answer { padding: 0 0 22px; color: #4d453f; font-size: 0.95rem; max-width: 62ch; }
+    .faq .answer p { margin: 0 0 12px; }
+    .faq .answer p:last-child { margin: 0; }
+    .faq .answer a { color: var(--warm-black); }
+
+    /* Closing CTA. The slot picker stays high on the page for people who
+       arrive ready to book; this catches the ones who came down here to read
+       first and shouldn't have to scroll back up hunting for the times. */
+    .faq-cta { margin: 38px 0 0; text-align: center; }
+    .faq-cta p { font-size: 0.9rem; color: #4d453f; margin: 0 0 16px; }
+    .faq-cta .btn { margin: 0; }
+
+
     .notice {
       border-left: 3px solid var(--gold); background: #fff;
       padding: 14px 18px; margin: 0 0 24px; font-size: 0.9rem; color: #4d453f;
@@ -152,7 +285,16 @@
     <h1>Christmas <em>Mini Sessions</em></h1>
     <p class="sub">Sunday 8 November, at Baxter Community Hall. Fifteen minutes in a warm, festive set &mdash; perfect for this year's cards, prints and the grandparents' gifts.</p>
 
-    <div class="offer">
+    <figure class="shot shot-hero">
+      <picture>
+        <source srcset="/Images/webp/christmas-minis-family.webp" type="image/webp">
+        <img src="/Images/web/christmas-minis-family.jpg"
+             alt="A mother and her baby daughter sitting together on the bed in the Christmas set, lit trees and fairy lights either side"
+             width="1192" height="880" decoding="async">
+      </picture>
+    </figure>
+
+    <div class="offer" id="book">
       <span class="amount">$150</span>
       <span class="detail">15-minute session &middot; 5 edited photos &middot; add the extended gallery for $50 &middot; delivered in time for Christmas cards</span>
     </div>
@@ -215,7 +357,7 @@
         </div>
         <div class="terms">
           <input type="checkbox" id="f-terms" required>
-          <label for="f-terms">I agree to the <a href="/session-contract.html" target="_blank" rel="noopener">session terms and conditions</a>.</label>
+          <label for="f-terms">I agree to the <a href="/christmas-minis-terms" target="_blank" rel="noopener">Christmas minis terms</a>.</label>
         </div>
         <button type="submit" class="btn" id="pay-btn" disabled>Pay &amp; book — $150</button>
         <button type="button" class="btn btn-ghost" id="back-to-slots">Back</button>
@@ -228,6 +370,103 @@
         <div class="tick">Payment received.</div>
         <h2 style="margin-top:6px;">You're booked in</h2>
         <p class="sub" style="margin-bottom:0;">Your Christmas mini is being confirmed and you'll get a confirmation email shortly &mdash; Setmore will send its own confirmation too. See you at Baxter Community Hall on Sunday 8 November.</p>
+      </div>
+    </section>
+
+    <section class="after" aria-labelledby="set-h">
+      <h2 id="set-h">The set</h2>
+      <div class="set-grid">
+        <figure class="shot">
+          <picture>
+            <source srcset="/Images/webp/christmas-minis-set.webp" type="image/webp">
+            <img src="/Images/web/christmas-minis-set.jpg"
+                 alt="The Christmas mini session set: a bed made up in green velvet and cream knit, framed by two lit Christmas trees and a curtain of fairy lights"
+                 width="944" height="1108" loading="lazy" decoding="async">
+          </picture>
+        </figure>
+        <div class="set-copy">
+          <p>One set, built indoors and lit before the first family arrives.</p>
+          <p>Since it's indoors, there's no weather to worry about and no wind chasing anyone around a park. It's warm, which matters if you're bringing a baby.</p>
+          <p>Bring the kids and whatever they need. Everything else is already there.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="after faq" aria-labelledby="faq-h">
+      <h2 id="faq-h">Questions</h2>
+
+      <details>
+        <summary>What do I get for $150?</summary>
+        <div class="answer">
+          <p>A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks &mdash; in good time for cards and printing.</p>
+          <p>If you'd rather have everything from your session than my five picks, you can add the extended gallery for $50.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Is fifteen minutes actually enough?</summary>
+        <div class="answer">
+          <p>For this, yes. The set is already built and lit, so none of your time goes on setting up &mdash; we start the moment you walk in.</p>
+          <p>Fifteen minutes is also about the honest limit of a toddler's patience.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>When do we get the photos?</summary>
+        <div class="answer">
+          <p>Within two weeks of the day, in a private online gallery. You download them at full resolution and print them wherever you like.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>What should we wear?</summary>
+        <div class="answer">
+          <p>Christmas clothes are very welcome &mdash; that's half the fun of it. If that's not your thing, wear whatever everyone is comfortable in instead.</p>
+          <p>Neutrals sit beautifully against the set, and textures like knits, cord and wool read better on camera than flat block colour. Rather than everyone matching exactly, pick colours that complement each other. Unless you're all going in matching Christmas pyjamas, which is its own kind of excellent.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>What if my child won't play along?</summary>
+        <div class="answer">
+          <p>Expected, honestly. I'm a dad of two and most of my working week is spent around small children with their own plans.</p>
+          <p>We work with whatever the day gives us. The frames people end up loving are usually the in-between ones, not the one where everybody finally looked at the camera at once.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>How many of us can come?</summary>
+        <div class="answer">
+          <p>The set comfortably holds two adults and the kids. If you're a larger group, get in touch before you book and we'll work out what's possible.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Can we bring the dog?</summary>
+        <div class="answer">
+          <p>Not at this one, sorry &mdash; it's people only.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Where do we park?</summary>
+        <div class="answer">
+          <p>There's ample parking at the community hall, so there's no need to arrive early hunting for a spot.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>What if we can't make our time?</summary>
+        <div class="answer">
+          <p>Let me know as early as you can. If another time on the day is still free, I'll move you across to it &mdash; that's usually the easiest fix.</p>
+          <p>Everything runs on the one day, Sunday 8 November, so there's no other date to move to.</p>
+          <p>If you need to cancel more than seven days before the session, you'll be refunded half the fee. Inside seven days, the session isn't refundable.</p>
+        </div>
+      </details>
+
+      <div class="faq-cta" id="faq-cta">
+        <p>That's everything. Fifteen spots, one day.</p>
+        <a class="btn" href="#book">Pick your time</a>
       </div>
     </section>
   </main>
@@ -278,6 +517,9 @@
       var steps = document.querySelectorAll('.step');
       for (var i = 0; i < steps.length; i++) steps[i].classList.remove('active');
       $('step-' + name).classList.add('active');
+      // Nothing left to book once they've paid — hide the closing CTA.
+      var cta = $('faq-cta');
+      if (cta) cta.hidden = (name === 'confirm');
     }
 
     function api(path, opts) {
