@@ -422,23 +422,35 @@ async function createAppointment({ staffKey, serviceKey, customerKey, startTime,
  * booked over the top would otherwise be invisible here.
  */
 async function getFixedScheduleSlots(tier, date) {
+  // Setmore returns the time part as 'HH:mm' OR 'HH:mmZ' — the trailing Z is
+  // the same fake-UTC marker the rest of this file works around (the value is
+  // studio-local, not UTC). Splitting on ':' and calling Number() on the tail
+  // turns '30Z' into NaN, and every NaN comparison below is false, so a booked
+  // slot silently stayed on sale. Parse the digits explicitly instead.
   const toMinutes = (hhmm) => {
-    const [h, m] = hhmm.split(':').map(Number);
-    return h * 60 + m;
+    const m = /^(\d{1,2}):(\d{2})/.exec(String(hhmm).trim());
+    return m ? Number(m[1]) * 60 + Number(m[2]) : null;
   };
 
   const appointments = await getAppointmentsOnDate(date);
 
-  // start_time / end_time are 'yyyy-MM-ddTHH:mm' in the studio's own timezone.
+  // start_time / end_time are 'yyyy-MM-ddTHH:mm[Z]' in the studio's own timezone.
   const busy = [];
   for (const appt of appointments) {
     const start = (appt.start_time || '').split('T')[1];
     const end = (appt.end_time || '').split('T')[1];
     if (!start) continue;
     const from = toMinutes(start);
+    if (from === null) {
+      // We know an appointment exists but can't place it on the clock. Failing
+      // the request is recoverable; carrying on would offer a slot that may
+      // already be sold, which is not.
+      throw new SetmoreError(`Unparseable appointment start_time: ${appt.start_time}`, { code: 'BAD_APPOINTMENT_TIME' });
+    }
     // An appointment with no end time still blocks its own start; assume the
     // tier's own length rather than treating it as zero-width.
-    const to = end ? toMinutes(end) : from + tier.durationMinutes;
+    const parsedEnd = end ? toMinutes(end) : null;
+    const to = parsedEnd === null ? from + tier.durationMinutes : parsedEnd;
     busy.push([from, to]);
   }
 
