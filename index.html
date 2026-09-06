@@ -286,6 +286,37 @@
     }
 
     /* ─── INTRO ─── */
+    /* Christmas minis feature. Image on the right so it doesn't read as a
+       repeat of the About teaser directly below, which is image-left. */
+    /* Vertical rhythm matches #about and .sessions-inner (100/72), so the
+       gaps either side of this block read the same as every other section
+       boundary on the page. .rule carries no vertical margin of its own —
+       the space always comes from the section's padding. */
+    .xmas-feature {
+      max-width: 1100px; margin: 0 auto; padding: 100px 48px;
+      display: grid; grid-template-columns: 1fr 0.9fr; gap: 48px; align-items: center;
+    }
+    .xmas-copy .label {
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 14px;
+    }
+    .xmas-copy h2 {
+      font-family: var(--serif); font-weight: 400; line-height: 1.12;
+      font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-bottom: 16px;
+    }
+    .xmas-copy h2 em { font-style: italic; color: var(--gold); }
+    .xmas-copy p { color: #4d453f; margin-bottom: 14px; max-width: 46ch; }
+    .xmas-meta {
+      font-size: 0.8rem; letter-spacing: 0.06em; color: var(--mid);
+      margin-bottom: 24px; line-height: 1.9;
+    }
+    .xmas-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .xmas-photo { aspect-ratio: 4 / 3; overflow: hidden; }
+    @media (max-width: 900px) {
+      .xmas-feature { grid-template-columns: 1fr; gap: 28px; padding: 72px 24px; }
+      .xmas-photo { aspect-ratio: 16 / 10; order: -1; }
+    }
+
     #intro {
       padding: 160px 48px 60px;
       max-width: 900px;
@@ -1019,6 +1050,26 @@
       <a href="/portfolio">View full portfolio →</a>
     </p>
   </div>
+
+  <hr class="rule">
+
+  <!-- CHRISTMAS MINIS (campaign — remove after 8 Nov 2026) -->
+  <section class="xmas-feature" id="christmas-minis-feature" aria-labelledby="xmas-h">
+    <div class="xmas-copy">
+      <p class="label reveal">One day only &middot; Sunday 8 November</p>
+      <h2 class="reveal" id="xmas-h">Christmas <em>Mini Sessions</em></h2>
+      <p class="reveal d1">Fifteen minutes in a warm, festive set at Baxter Community Hall &mdash; enough for this year's cards, a print for the wall, and something for the grandparents.</p>
+      <p class="xmas-meta reveal d1">$150 &middot; 15 minutes &middot; 5 edited photos<br>Limited spots across the day, from 10:30am</p>
+      <a href="/christmas-minis" class="btn filled reveal d2">Pick your time &rarr;</a>
+    </div>
+    <a class="xmas-photo reveal d1" href="/christmas-minis" aria-label="Christmas mini sessions">
+      <picture>
+        <source srcset="/Images/webp/christmas-minis-family.webp" type="image/webp">
+        <img src="/Images/web/christmas-minis-family.jpg" width="1192" height="880" loading="lazy" decoding="async"
+             alt="A mother and her baby daughter on the bed in the Christmas set, lit trees either side">
+      </picture>
+    </a>
+  </section>
 
   <hr class="rule">
 
