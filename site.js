@@ -50,11 +50,30 @@
 
   var path = location.pathname;
 
+  // The tier landing pages and the booking widget all belong to Packages —
+  // it's the page that now carries the full pricing detail they each describe
+  // a slice of. /christmas-minis is deliberately absent: it has its own nav
+  // item while the campaign runs.
+  var PACKAGE_PAGES = [
+    '/packages',
+    '/glimpse-mini-sessions',
+    '/golden-family-photography',
+    '/golden-cake-smash-photography',
+    '/gathered-newborn-photography',
+    '/bloom-maternity-newborn-photography',
+    '/book',
+  ];
+
   function isActive(href) {
     if (href === '/portfolio') return path === '/portfolio' || path === '/portfolio.html';
     if (href === '/about') return path === '/about' || path === '/about.html';
-    if (href === '/packages') return path === '/packages' || path === '/packages.html';
+    if (href === '/packages') {
+      return PACKAGE_PAGES.some(function (p) { return path === p || path === p + '.html'; });
+    }
     if (href === '/blog/') return path.indexOf('/blog') === 0;
+    // Added with the campaign nav item, which otherwise never marked itself
+    // current on its own page. The terms page counts as part of it.
+    if (href === '/christmas-minis') return path.indexOf('/christmas-minis') === 0;
     return false;
   }
 
