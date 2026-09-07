@@ -156,6 +156,8 @@ exports.handler = async (event) => {
         email,
         phone: (phone || '').slice(0, 100),
         notes: (notes || '').slice(0, 500),
+        // Stripe metadata values are strings; the webhook compares to 'yes'.
+        marketingConsent: data.marketingConsent === true ? 'yes' : 'no',
       },
       success_url: `${origin}${returnTo}?booked=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}${returnTo}?${cancelParams.toString()}`,

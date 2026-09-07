@@ -66,6 +66,9 @@ async function addToAudience(meta) {
       firstName: meta.firstName,
       lastName: meta.lastName,
       phone: meta.phone,
+      // Bookings made before the consent tick existed carry no value at all;
+      // absent is treated as "no", never as consent.
+      marketingConsent: meta.marketingConsent === 'yes',
     });
     console.log('Resend contact upsert:', meta.email, result.created ? 'created' : 'updated');
   } catch (err) {

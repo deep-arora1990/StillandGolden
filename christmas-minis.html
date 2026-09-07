@@ -359,6 +359,10 @@
           <input type="checkbox" id="f-terms" required>
           <label for="f-terms">I agree to the <a href="/christmas-minis-terms" target="_blank" rel="noopener">Christmas minis terms</a>.</label>
         </div>
+        <div class="terms">
+          <input type="checkbox" id="f-marketing">
+          <label for="f-marketing">Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</label>
+        </div>
         <button type="submit" class="btn" id="pay-btn" disabled>Pay &amp; book — $150</button>
         <button type="button" class="btn btn-ghost" id="back-to-slots">Back</button>
       </form>
@@ -695,6 +699,7 @@
           email: $('f-email').value.trim(),
           phone: $('f-phone').value.trim(),
           notes: $('f-notes').value.trim(),
+          marketingConsent: $('f-marketing').checked,
           returnTo: '/christmas-minis.html',
         }),
       }).then(function (data) {

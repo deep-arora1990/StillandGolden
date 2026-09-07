@@ -157,11 +157,17 @@ exports.handler = async (event) => {
 
     try {
       const audienceId = await getAudienceId(resend);
+      // The form's marketing tick was being stored and then ignored here —
+      // everyone landed in the audience subscribed regardless of their answer.
+      // Adding them unsubscribed keeps the contact record (transactional mail
+      // and CRM lookups don't consult subscription state) while broadcasts
+      // correctly skip anyone who didn't opt in.
       await resend.contacts.create({
         audienceId,
         email,
         firstName: p1First,
         lastName: p1Last,
+        unsubscribed: body.marketingConsent !== true,
       });
     } catch (err) {
       console.error('Adding to the Father\'s Day audience failed:', err.message);

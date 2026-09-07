@@ -234,6 +234,10 @@
           <label for="f-notes">Anything I should know? (optional)</label>
           <textarea id="f-notes" name="notes" rows="3"></textarea>
         </div>
+        <label style="display:flex;gap:12px;align-items:flex-start;margin:22px 0 6px;font-size:0.85rem;color:#4d453f;">
+          <input type="checkbox" id="f-marketing" style="width:18px;height:18px;margin-top:2px;accent-color:var(--warm-black);flex-shrink:0;">
+          <span>Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</span>
+        </label>
         <p class="sub" style="font-size:0.8rem;">By continuing to payment you agree to the <a href="/session-contract.html" target="_blank" rel="noopener">session terms and conditions</a>.</p>
         <button type="submit" class="btn" id="confirm-btn">Pay &amp; book</button>
         <button type="button" class="btn btn-ghost" id="back-to-slots">Back</button>
@@ -669,6 +673,7 @@
           email: $('f-email').value.trim(),
           phone: $('f-phone').value.trim(),
           notes: $('f-notes').value.trim(),
+          marketingConsent: $('f-marketing').checked,
         }),
       }).then(function (data) {
         if (!data.url) throw new Error('No payment URL returned');

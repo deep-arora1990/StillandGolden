@@ -18,7 +18,21 @@ const API = 'https://api.resend.com';
 // present, the create is always followed by a PATCH, which does store
 // properties. PATCH /contacts/{email} 404s for unknown emails, hence
 // create-first ordering.
-async function upsertResendContact({ email, firstName, lastName, phone }) {
+/**
+ * `marketingConsent` decides the contact's subscription state, and it is
+ * deliberately asymmetric:
+ *
+ *   - On CREATE, a contact with no consent is stored `unsubscribed: true`.
+ *     They still exist as a record (so transactional mail and CRM lookups
+ *     work — those don't consult the audience), but broadcasts skip them.
+ *   - On UPDATE, `unsubscribed` is sent ONLY when consent was explicitly
+ *     given. Previously the field was hardcoded `false` and included in the
+ *     PATCH body, so a customer who had unsubscribed was silently
+ *     re-subscribed the next time they booked — undoing the very choice
+ *     /unsubscribe exists to record. Omitting the field leaves their
+ *     preference untouched.
+ */
+async function upsertResendContact({ email, firstName, lastName, phone, marketingConsent = false }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new Error('RESEND_API_KEY is not set');
 
@@ -26,8 +40,8 @@ async function upsertResendContact({ email, firstName, lastName, phone }) {
     email,
     first_name: firstName || '',
     last_name: lastName || '',
-    unsubscribed: false,
   };
+  const createBody = { ...body, unsubscribed: !marketingConsent };
   // Only send the property when there's a value — never blank out an
   // existing phone with an empty one.
   if (phone) body.properties = { phone };
@@ -37,10 +51,12 @@ async function upsertResendContact({ email, firstName, lastName, phone }) {
     'Content-Type': 'application/json',
   };
 
+  if (phone) createBody.properties = body.properties;
+
   const create = await fetch(`${API}/audiences/${GENERAL_AUDIENCE_ID}/contacts`, {
     method: 'POST',
     headers,
-    body: JSON.stringify(body),
+    body: JSON.stringify(createBody),
   });
 
   let created = false;
@@ -58,10 +74,13 @@ async function upsertResendContact({ email, firstName, lastName, phone }) {
   // PATCH when there's a property to store, or when the create told us this
   // was a duplicate (so name/unsubscribe changes still land).
   if (body.properties || !created) {
+    // Fresh, explicit consent is the only thing that may flip an existing
+    // contact back to subscribed. Silence never changes their state.
+    const patchBody = marketingConsent ? { ...body, unsubscribed: false } : body;
     const update = await fetch(`${API}/contacts/${encodeURIComponent(email)}`, {
       method: 'PATCH',
       headers,
-      body: JSON.stringify(body),
+      body: JSON.stringify(patchBody),
     });
     if (!update.ok) {
       const updateErr = await update.json().catch(() => ({}));
