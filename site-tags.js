@@ -17,6 +17,9 @@ if (SG_PROD_HOSTS.indexOf(location.hostname) === -1) {
   // Non-production: keep the helpers callable (the enquiry redirect must still
   // work) but send nothing anywhere.
   window.sgTrack = function () {};
+  // Stub fbq too: pages call fbq('track','Lead') inline, and without this a
+  // preview or localhost visit would throw a ReferenceError mid-submit.
+  window.fbq = window.fbq || function () {};
   window.gtag_report_conversion = function (url) {
     if (typeof (url) != 'undefined') { window.location = url; }
     return false;
@@ -63,5 +66,33 @@ function gtag_report_conversion(url) {
   });
   return false;
 }
+
+
+/* ── Meta pixel ────────────────────────────────────────────────────────────
+   Two pixels, both firing PageView. Previously inline in index.html and
+   portfolio.html only, so 21 pages carrying Google tags had no Meta coverage
+   at all — including /packages, /book, /christmas-minis and the whole blog.
+   Any Meta ad pointing at those pages produced no PageView, no retargeting
+   audience and no conversion signal.
+
+   It lives here rather than in site.js for two reasons: this file already
+   carries the production-host guard above (the inline pixel had none, so
+   local dev and deploy previews were sending real events), and it loads
+   non-deferred, so fbq exists before the later inline scripts that call
+   fbq('track', 'Lead').
+
+   Note: the old inline <noscript> tracking image is not reproduced — a JS
+   file cannot provide one. JS-disabled visitors are no longer counted. */
+!function (f, b, e, v, n, t, s) {
+  if (f.fbq) return;
+  n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
+  if (!f._fbq) f._fbq = n;
+  n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+  t = b.createElement(e); t.async = !0; t.src = v;
+  s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+}(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1985688145374746');
+fbq('init', '1395082849311058');
+fbq('track', 'PageView');
 
 }
