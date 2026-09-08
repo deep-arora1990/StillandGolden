@@ -95,4 +95,24 @@ fbq('init', '1985688145374746');
 fbq('init', '1395082849311058');
 fbq('track', 'PageView');
 
+/* ── Microsoft Clarity ─────────────────────────────────────────────────────
+   Heatmaps and session replay (project yf27t5u4de). Inside the production
+   guard with everything else: Clarity records sessions rather than counting
+   them, so a local dev session or a deploy preview would land in the replay
+   list as though it were a visitor and skew the heatmaps.
+
+   Scope follows this file — the 26 public marketing pages. The pages where
+   clients type personal details (questionnaire, questionnaire-mini, contract,
+   contract-mini, book-mini) do not load site-tags.js and so are not recorded.
+   book.html IS in scope by choice; Clarity masks input values by default, and
+   card details are entered on Stripe's own domain, never on ours.
+
+   Campaign pages must load this file to be covered. See CAMPAIGN-PAGES.md in
+   the docs repo. */
+(function (c, l, a, r, i, t, y) {
+  c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+  t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+  y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+})(window, document, "clarity", "script", "yf27t5u4de");
+
 }
