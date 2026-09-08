@@ -12,6 +12,9 @@ Disallow: /business-card.html
 Disallow: /card-front-export.html
 Disallow: /card-back-export.html
 Disallow: /print/
+Disallow: /brand/
+Disallow: /questionnaire-mini
+Disallow: /questionnaire-mini.html
 Disallow: /unsubscribe
 Disallow: /unsubscribe.html
 

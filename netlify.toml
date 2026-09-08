@@ -280,6 +280,16 @@
   status = 301
   force = true
 
+# Working files, not web pages. Nothing on the site links into brand/, but
+# publish = "." serves the whole repo, so 783 internal files (email templates,
+# generator output, docs) were reachable and crawlable. 404 rather than a
+# noindex header: these should not be fetchable at all, not merely unlisted.
+[[redirects]]
+  from = "/brand/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 [[redirects]]
   from = "/christmas-minis.html"
   to = "/christmas-minis"
