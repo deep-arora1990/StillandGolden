@@ -280,6 +280,17 @@
   status = 301
   force = true
 
+# Print artefacts — contracts, business cards, flyers. Same reasoning as
+# brand/ below: robots.txt already asked crawlers to skip /print/, but the
+# files stayed fetchable by direct URL. Nothing on the site links into them.
+# The client-facing /contract.html at the root is a separate page and is
+# unaffected by this rule.
+[[redirects]]
+  from = "/print/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # Working files, not web pages. Nothing on the site links into brand/, but
 # publish = "." serves the whole repo, so 783 internal files (email templates,
 # generator output, docs) were reachable and crawlable. 404 rather than a
