@@ -107,8 +107,8 @@ fbq('track', 'PageView');
    book.html IS in scope by choice; Clarity masks input values by default, and
    card details are entered on Stripe's own domain, never on ours.
 
-   Campaign pages must load this file to be covered. See CAMPAIGN-PAGES.md in
-   the docs repo. */
+   Campaign pages must load this file to be covered — see BOOKING.md
+   § Campaign pages in the docs repo. */
 (function (c, l, a, r, i, t, y) {
   c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
   t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
