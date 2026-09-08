@@ -18,6 +18,7 @@ const {
   getAppointmentsOnDate,
 } = require('./lib/setmore');
 const { upsertResendContact } = require('./lib/resend-contacts');
+const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking-confirmation');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
@@ -74,6 +75,28 @@ async function addToAudience(meta) {
   } catch (err) {
     console.error('stripe-webhook Resend audience error (booking already made):', err);
   }
+}
+
+// The customer's "you're booked in" email. Christmas minis also get the venue
+// and the pre-session form; every other tier gets the plain confirmation.
+//
+// Sent from OWNER_EMAIL, not FROM, so a reply lands in Deep's inbox rather
+// than the no-reply notifications address.
+async function sendBookingConfirmation(resend, meta) {
+  const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key);
+  if (!tier) throw new Error(`Unknown service_key for confirmation: ${meta.service_key}`);
+  const { subject, html, text } = renderConfirmation(valuesFromBooking(meta, tier));
+  const { error } = await resend.emails.send({
+    from: `Still & Golden <${OWNER_EMAIL}>`,
+    to: meta.email,
+    subject,
+    html,
+    text,
+  });
+  // The SDK reports API errors in the response rather than throwing, so an
+  // unchecked send fails silently. Raised here so the caller logs it — the
+  // caller swallows it, which is what keeps the booking safe.
+  if (error) throw new Error(`Resend rejected the confirmation: ${error.message || JSON.stringify(error)}`);
 }
 
 async function handleBookingFailure(stripe, resend, session, meta, err) {
@@ -232,7 +255,22 @@ exports.handler = async (event) => {
         console.error('stripe-webhook: could not flag session as booked:', flagErr);
       }
     }
-    if (resend) await addToAudience(meta);
+    // Everything past this point is a side effect of an ALREADY SUCCESSFUL,
+    // already-paid booking. It must never reach the outer catch — that path
+    // refunds the customer. A Resend outage is not a reason to undo a booking.
+    if (resend) {
+      try {
+        await sendBookingConfirmation(resend, meta);
+        console.log(`stripe-webhook: confirmation emailed to ${meta.email}`);
+      } catch (mailErr) {
+        console.error('stripe-webhook: confirmation email failed (booking stands):', mailErr);
+      }
+      try {
+        await addToAudience(meta);
+      } catch (audErr) {
+        console.error('stripe-webhook: audience add failed (booking stands):', audErr);
+      }
+    }
   } catch (err) {
     if (MOCK) {
       // No real payment exists in mock mode — just report it.

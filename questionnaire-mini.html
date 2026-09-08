@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Before your mini session — Still &amp; Golden Photography</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --border: rgba(26,23,20,0.1);
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px;
+      background: rgba(248,245,241,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      letter-spacing: 0.04em;
+      color: var(--warm-black);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-right a {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-right a:hover { color: var(--gold); }
+
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 140px 48px 100px;
+    }
+
+    .page-label {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 22px;
+    }
+    .page-title em { font-style: italic; color: var(--gold); }
+
+    .intro {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--mid);
+      margin-bottom: 14px;
+    }
+
+    .slot-note {
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      color: var(--mid);
+      border-left: 2px solid var(--gold);
+      padding: 4px 0 4px 16px;
+      margin-bottom: 44px;
+    }
+    .slot-note strong { font-weight: 400; color: var(--warm-black); }
+
+    .form-section-heading {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    form { display: flex; flex-direction: column; gap: 2px; }
+    .fg { display: flex; flex-direction: column; margin-bottom: 2px; }
+    .fg label {
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      padding: 10px 14px 0;
+      background: rgba(26,23,20,0.04);
+    }
+    .fg .hint {
+      font-family: var(--serif);
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--mid);
+      padding: 4px 14px 0;
+      background: rgba(26,23,20,0.04);
+    }
+    .fg input, .fg textarea {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--warm-black);
+      background: rgba(26,23,20,0.04);
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 8px 14px 12px;
+      outline: none;
+      appearance: none;
+      border-radius: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .fg input:focus, .fg textarea:focus {
+      background: rgba(168,132,90,0.08);
+      border-bottom-color: var(--gold);
+    }
+    .fg textarea { resize: vertical; min-height: 96px; }
+
+    /* Honeypot — off-screen, never shown to a person. */
+    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+    .guide {
+      margin: 44px 0 8px;
+      border: 1px solid var(--border);
+      padding: 28px 30px;
+    }
+    .guide h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+    .guide p {
+      font-family: var(--serif);
+      font-size: 0.98rem;
+      line-height: 1.75;
+      color: var(--mid);
+      margin-bottom: 14px;
+    }
+    .guide ul { list-style: none; margin: 0 0 14px; }
+    .guide li {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--mid);
+      padding-left: 18px;
+      position: relative;
+      margin-bottom: 7px;
+    }
+    .guide li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.62em;
+      width: 5px; height: 5px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+    .guide .closer {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--warm-black);
+      margin-bottom: 0;
+    }
+
+    .form-submit {
+      margin-top: 24px;
+      align-self: flex-start;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      background: var(--warm-black);
+      border: none;
+      padding: 16px 36px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .form-submit:hover { background: var(--gold); }
+    .form-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .form-error {
+      color: #b54a4a;
+      font-size: 0.85rem;
+      margin-top: 14px;
+      display: none;
+    }
+
+    #form-success {
+      display: none;
+      border-left: 2px solid var(--gold);
+      padding: 8px 0 8px 20px;
+    }
+    #form-success h2 {
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+    }
+    #form-success p {
+      font-family: var(--serif);
+      color: var(--mid);
+      line-height: 1.75;
+    }
+
+    @media (max-width: 700px) {
+      nav { padding: 20px 24px; }
+      .page { padding: 120px 24px 80px; }
+      .guide { padding: 24px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Still &amp; <span>Golden</span></a>
+    <div class="nav-right"><a href="mailto:hello@stillandgolden.com.au">hello@stillandgolden.com.au</a></div>
+  </nav>
+
+  <div class="page">
+    <div id="form-wrap">
+      <p class="page-label">Before your mini</p>
+      <h1 class="page-title">Tell me <em>who's coming</em></h1>
+      <p class="intro">Minis are short and busy, so knowing who I'm photographing before you walk in means we spend your whole slot taking pictures rather than working it out.</p>
+      <p class="slot-note" id="slot-note" style="display:none;">Your session: <strong id="slot-text"></strong></p>
+
+      <form id="mini-form" novalidate>
+        <p class="form-section-heading">Your details</p>
+
+        <div class="fg">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" autocomplete="name" required>
+        </div>
+
+        <div class="fg">
+          <label for="email">Email</label>
+          <span class="hint">So I can send you a copy of this.</span>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </div>
+
+        <div class="fg">
+          <label for="joining">Who's joining you</label>
+          <span class="hint">First names and ages for the little ones — and anyone who'd rather not be photographed.</span>
+          <textarea id="joining" name="joining" required></textarea>
+        </div>
+
+        <div class="fg">
+          <label for="anything_else">Anything I should know</label>
+          <span class="hint">Optional. A shy toddler, a surprise guest, a nap that can't move.</span>
+          <textarea id="anything_else" name="anything_else"></textarea>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label for="company">Company</label>
+          <input type="text" id="company" name="company" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="guide">
+          <h2>What to wear</h2>
+          <p>Christmas outfits are very welcome &mdash; jumpers, Santa hats, red and green, the lot. If that's your family's thing, lean into it.</p>
+          <p>If you'd rather keep it simple, these tend to sit beautifully against the set:</p>
+          <ul>
+            <li>Soft reds, deep greens, cream and warm neutrals</li>
+            <li>Knits, cord and cotton &mdash; texture reads lovely on camera</li>
+            <li>Colours that sit in the same family, rather than everyone matching exactly</li>
+            <li>Big logos, slogans and neon are the only things that fight the set</li>
+          </ul>
+          <p class="closer">And if the morning goes sideways and you arrive in whatever was clean &mdash; that's genuinely fine. I've got two kids. We'll make it work.</p>
+        </div>
+
+        <button type="submit" class="form-submit">Send this through</button>
+        <p class="form-error" id="form-error"></p>
+      </form>
+    </div>
+
+    <div id="form-success">
+      <h2>Got it &mdash; thank you.</h2>
+      <p>That's everything I need. A copy is on its way to your inbox, and I'll see you on the day.</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // The confirmation email links here with the booking already known, so
+      // nobody retypes what I was just paid for. Every field stays editable —
+      // these are conveniences, not a record of truth.
+      var params = new URLSearchParams(window.location.search);
+      var form = document.getElementById('mini-form');
+
+      var prefillName = params.get('name');
+      var prefillEmail = params.get('email');
+      if (prefillName) form.name.value = prefillName;
+      if (prefillEmail) form.email.value = prefillEmail;
+
+      var slot = params.get('time');
+      if (slot) {
+        document.getElementById('slot-text').textContent = slot;
+        document.getElementById('slot-note').style.display = 'block';
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var btn = this.querySelector('.form-submit');
+        var errorEl = document.getElementById('form-error');
+        errorEl.style.display = 'none';
+
+        if (!this.name.value.trim() || !this.email.value.trim() || !this.joining.value.trim()) {
+          errorEl.textContent = 'Please fill in your name, email and who is joining you.';
+          errorEl.style.display = 'block';
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+
+        var payload = {
+          name: this.name.value,
+          email: this.email.value,
+          joining: this.joining.value,
+          anythingElse: this.anything_else.value,
+          slot: slot || '',
+          company: this.company.value
+        };
+
+        try {
+          var res = await fetch('/.netlify/functions/submit-mini-questionnaire', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('Submission failed');
+          document.getElementById('form-wrap').style.display = 'none';
+          var ok = document.getElementById('form-success');
+          ok.style.display = 'block';
+          ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch (err) {
+          errorEl.textContent = 'Something went wrong. Please try again, or email hello@stillandgolden.com.au';
+          errorEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Send this through';
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
