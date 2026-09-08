@@ -263,6 +263,24 @@
   force = true
 
 [[redirects]]
+  from = "/blog/what-happens-at-an-outdoor-mini-session.html"
+  to = "/blog/what-happens-at-an-outdoor-mini-session"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/how-much-does-newborn-photography-cost.html"
+  to = "/blog/how-much-does-newborn-photography-cost"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/how-i-bring-the-studio-to-your-house.html"
+  to = "/blog/how-i-bring-the-studio-to-your-house"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/christmas-minis.html"
   to = "/christmas-minis"
   status = 301
