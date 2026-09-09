@@ -74,7 +74,7 @@
         "name": "How many of us can come?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "The bed set comfortably holds two adults and the kids. The chair set takes up to four adults, so it is the one for grandparents joining in, or for families whose kids are past the being-held stage. If you are a larger group than that, get in touch before you book and we will work out what is possible."
+          "text": "Two adults and the kids is comfortable on either set. The chairs set takes up to four adults, so that is the one if grandparents are coming along too. If you are a larger group than that, get in touch before you book and we will work out what is possible."
         }
       },
       {
@@ -224,10 +224,7 @@
     .set-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0 0 28px; }
     .set-item { margin: 0; }
     .set-grid .shot { margin: 0; aspect-ratio: 806 / 1108; }
-    .set-shots figcaption {
-      font-size: 0.76rem; letter-spacing: 0.02em; color: var(--mid);
-      margin-top: 8px; text-align: center;
-    }
+    .set-intro { margin: 0 0 22px; color: #4d453f; max-width: 52ch; }
     .set-copy p { margin: 0 0 14px; color: #4d453f; max-width: 52ch; }
     .set-copy p:last-child { margin: 0; }
     @media (max-width: 640px) {
@@ -385,8 +382,9 @@
     <section class="after" aria-labelledby="set-h">
       <h2 id="set-h">The sets</h2>
       <div class="set-grid">
+        <p class="set-intro">Two of them, both up all day &mdash; pick one when you get here.</p>
         <div class="set-shots">
-          <figure class="set-item">
+          <div class="set-item">
             <div class="shot">
               <picture>
                 <source srcset="/Images/webp/christmas-minis-set.webp" type="image/webp">
@@ -395,9 +393,8 @@
                      width="806" height="1108" loading="lazy" decoding="async">
               </picture>
             </div>
-            <figcaption>The bed &mdash; babies and little ones</figcaption>
-          </figure>
-          <figure class="set-item">
+          </div>
+          <div class="set-item">
             <div class="shot">
               <picture>
                 <source srcset="/Images/webp/christmas-minis-set-b.webp" type="image/webp">
@@ -406,12 +403,10 @@
                      width="806" height="1108" loading="lazy" decoding="async">
               </picture>
             </div>
-            <figcaption>The chairs &mdash; up to four adults</figcaption>
-          </figure>
+          </div>
         </div>
         <div class="set-copy">
-          <p>Two sets, both built indoors and lit before the first family arrives.</p>
-          <p>Both are up all day, so you choose on arrival. The bed suits babies and little ones who are happier lying down or being held. The chairs take up to four adults and suit kids who are past the being-held stage &mdash; it's the one to pick if grandparents are coming.</p>
+          <p>Both are built indoors and lit before the first family arrives.</p>
           <p>Since it's indoors, there's no weather to worry about and no wind chasing anyone around a park. It's warm, which matters if you're bringing a baby.</p>
           <p>There'll be Christmas tunes playing while you're in, which does more for a shy three-year-old than anything I can say to them.</p>
           <p>Bring the kids and whatever they need. Everything else is already there.</p>
@@ -465,7 +460,7 @@
       <details>
         <summary>How many of us can come?</summary>
         <div class="answer">
-          <p>The bed set comfortably holds two adults and the kids. The chair set takes up to four adults, so it's the one for grandparents joining in, or for families whose kids are past the being-held stage.</p>
+          <p>Two adults and the kids is comfortable on either set. The chairs set takes up to four adults, so that's the one if grandparents are coming along too.</p>
           <p>If you're a larger group than that, get in touch before you book and we'll work out what's possible.</p>
         </div>
       </details>
