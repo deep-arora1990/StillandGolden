@@ -42,7 +42,7 @@
         "name": "Is fifteen minutes actually enough?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. The set is already built and lit, so none of your time goes on setting up. There is also a ten-minute buffer between sessions, so nobody is hurried out and little ones get a moment to warm up first. Fifteen minutes is also about the honest limit of a toddler's patience."
+          "text": "Yes. Both sets are already built and lit, so none of your time goes on setting up. There is also a ten-minute buffer between sessions, so nobody is hurried out and little ones get a moment to warm up first. Fifteen minutes is also about the honest limit of a toddler's patience."
         }
       },
       {
@@ -58,7 +58,7 @@
         "name": "What should we wear?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Christmas clothes are very welcome, or wear whatever everyone is comfortable in. Neutrals sit beautifully against the set, and textures like knits, cord and wool read better on camera than flat block colour. Pick colours that complement each other rather than matching exactly."
+          "text": "Christmas clothes are very welcome, or wear whatever everyone is comfortable in. Neutrals sit beautifully against both sets, and textures like knits, cord and wool read better on camera than flat block colour. Pick colours that complement each other rather than matching exactly."
         }
       },
       {
@@ -74,7 +74,7 @@
         "name": "How many of us can come?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "The set comfortably holds two adults and the kids. If you are a larger group, get in touch before you book and we will work out what is possible."
+          "text": "The bed set comfortably holds two adults and the kids. The chair set takes up to four adults, so it is the one for grandparents joining in, or for families whose kids are past the being-held stage. If you are a larger group than that, get in touch before you book and we will work out what is possible."
         }
       },
       {
@@ -220,13 +220,18 @@
     .after { margin: 60px 0 0; padding-top: 46px; border-top: 1px solid var(--border); }
     .after > h2 { margin-bottom: 14px; }
 
-    .set-grid { display: grid; grid-template-columns: 290px 1fr; gap: 34px; align-items: start; }
-    .set-grid .shot { margin: 0; aspect-ratio: 944 / 1108; }
+    .set-grid { display: block; }
+    .set-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0 0 28px; }
+    .set-item { margin: 0; }
+    .set-grid .shot { margin: 0; aspect-ratio: 806 / 1108; }
+    .set-shots figcaption {
+      font-size: 0.76rem; letter-spacing: 0.02em; color: var(--mid);
+      margin-top: 8px; text-align: center;
+    }
     .set-copy p { margin: 0 0 14px; color: #4d453f; max-width: 52ch; }
     .set-copy p:last-child { margin: 0; }
     @media (max-width: 640px) {
-      .set-grid { grid-template-columns: 1fr; gap: 24px; }
-      .set-grid .shot { aspect-ratio: 4 / 3; }
+      .set-shots { gap: 10px; margin-bottom: 22px; }
     }
 
     /* FAQ — native <details> so it works without JavaScript and stays
@@ -289,7 +294,7 @@
       <picture>
         <source srcset="/Images/webp/christmas-minis-family.webp" type="image/webp">
         <img src="/Images/web/christmas-minis-family.jpg"
-             alt="A mother and her baby daughter sitting together on the bed in the Christmas set, lit trees and fairy lights either side"
+             alt="A mother and her baby daughter sitting together on the bed set, lit trees and fairy lights either side"
              width="1192" height="880" decoding="async">
       </picture>
     </figure>
@@ -378,18 +383,35 @@
     </section>
 
     <section class="after" aria-labelledby="set-h">
-      <h2 id="set-h">The set</h2>
+      <h2 id="set-h">The sets</h2>
       <div class="set-grid">
-        <figure class="shot">
-          <picture>
-            <source srcset="/Images/webp/christmas-minis-set.webp" type="image/webp">
-            <img src="/Images/web/christmas-minis-set.jpg"
-                 alt="The Christmas mini session set: a bed made up in green velvet and cream knit, framed by two lit Christmas trees and a curtain of fairy lights"
-                 width="944" height="1108" loading="lazy" decoding="async">
-          </picture>
-        </figure>
+        <div class="set-shots">
+          <figure class="set-item">
+            <div class="shot">
+              <picture>
+                <source srcset="/Images/webp/christmas-minis-set.webp" type="image/webp">
+                <img src="/Images/web/christmas-minis-set.jpg"
+                     alt="The bed set: a bed made up in green velvet and cream knit, framed by two lit Christmas trees and a curtain of fairy lights"
+                     width="806" height="1108" loading="lazy" decoding="async">
+              </picture>
+            </div>
+            <figcaption>The bed &mdash; babies and little ones</figcaption>
+          </figure>
+          <figure class="set-item">
+            <div class="shot">
+              <picture>
+                <source srcset="/Images/webp/christmas-minis-set-b.webp" type="image/webp">
+                <img src="/Images/web/christmas-minis-set-b.jpg"
+                     alt="The chair set: two red bentwood chairs on a cream drop, beside a lit Christmas tree, with a fairy-light curtain and a wreath behind"
+                     width="806" height="1108" loading="lazy" decoding="async">
+              </picture>
+            </div>
+            <figcaption>The chairs &mdash; up to four adults</figcaption>
+          </figure>
+        </div>
         <div class="set-copy">
-          <p>One set, built indoors and lit before the first family arrives.</p>
+          <p>Two sets, both built indoors and lit before the first family arrives.</p>
+          <p>Both are up all day, so you choose on arrival. The bed suits babies and little ones who are happier lying down or being held. The chairs take up to four adults and suit kids who are past the being-held stage &mdash; it's the one to pick if grandparents are coming.</p>
           <p>Since it's indoors, there's no weather to worry about and no wind chasing anyone around a park. It's warm, which matters if you're bringing a baby.</p>
           <p>There'll be Christmas tunes playing while you're in, which does more for a shy three-year-old than anything I can say to them.</p>
           <p>Bring the kids and whatever they need. Everything else is already there.</p>
@@ -411,7 +433,7 @@
       <details>
         <summary>Is fifteen minutes actually enough?</summary>
         <div class="answer">
-          <p>For this, yes. The set is already built and lit, so none of your time goes on setting up &mdash; we start the moment you walk in.</p>
+          <p>For this, yes. Both sets are already built and lit, so none of your time goes on setting up &mdash; we start the moment you walk in.</p>
           <p>There's also a ten-minute buffer between each session, so nobody is hurried out the door and little ones get a moment to look around and warm up before we start.</p>
           <p>Fifteen minutes is also about the honest limit of a toddler's patience.</p>
         </div>
@@ -428,7 +450,7 @@
         <summary>What should we wear?</summary>
         <div class="answer">
           <p>Christmas clothes are very welcome &mdash; that's half the fun of it. If that's not your thing, wear whatever everyone is comfortable in instead.</p>
-          <p>Neutrals sit beautifully against the set, and textures like knits, cord and wool read better on camera than flat block colour. Rather than everyone matching exactly, pick colours that complement each other. Unless you're all going in matching Christmas pyjamas, which is its own kind of excellent.</p>
+          <p>Neutrals sit beautifully against both sets, and textures like knits, cord and wool read better on camera than flat block colour. Rather than everyone matching exactly, pick colours that complement each other. Unless you're all going in matching Christmas pyjamas, which is its own kind of excellent.</p>
         </div>
       </details>
 
@@ -443,7 +465,8 @@
       <details>
         <summary>How many of us can come?</summary>
         <div class="answer">
-          <p>The set comfortably holds two adults and the kids. If you're a larger group, get in touch before you book and we'll work out what's possible.</p>
+          <p>The bed set comfortably holds two adults and the kids. The chair set takes up to four adults, so it's the one for grandparents joining in, or for families whose kids are past the being-held stage.</p>
+          <p>If you're a larger group than that, get in touch before you book and we'll work out what's possible.</p>
         </div>
       </details>
 
