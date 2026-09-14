@@ -226,6 +226,16 @@
     .set-item { margin: 0; }
     .set-grid .shot { margin: 0; aspect-ratio: 806 / 1108; }
     .set-intro { margin: 0 0 22px; color: #4d453f; max-width: 52ch; }
+
+    /* Two equal CTAs. Equal weight on purpose: neither is the lesser option,
+       and stacking on a phone must not make the second look like a footnote. */
+    .pay-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pay-choice .btn { width: 100%; margin: 0; line-height: 1.35; }
+    .pay-choice .btn small { display: block; font-weight: 400; opacity: 0.85; }
+    .pay-note { margin: 12px 0 0; font-size: 0.78rem; line-height: 1.6; color: #6b625c; max-width: 46ch; }
+    @media (max-width: 560px) {
+      .pay-choice { grid-template-columns: 1fr; }
+    }
     .set-copy p { margin: 0 0 14px; color: #4d453f; max-width: 52ch; }
     .set-copy p:last-child { margin: 0; }
     @media (max-width: 640px) {
@@ -367,7 +377,11 @@
           <input type="checkbox" id="f-marketing">
           <label for="f-marketing">Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</label>
         </div>
-        <button type="submit" class="btn" id="pay-btn" disabled>Pay &amp; book — $150</button>
+        <div class="pay-choice" id="pay-choice">
+          <button type="submit" class="btn" id="pay-btn" disabled data-pay-mode="full">Pay &amp; book — $150</button>
+          <button type="submit" class="btn" id="pay-split-btn" disabled data-pay-mode="split" hidden></button>
+        </div>
+        <p class="pay-note" id="pay-note" hidden></p>
         <button type="button" class="btn btn-ghost" id="back-to-slots">Back</button>
       </form>
     </section>
@@ -609,6 +623,8 @@
           $('slot-loading').hidden = true;
           $('slots-wrap').classList.remove('loading');
           renderSlots(data.slots || []);
+          state.split = data.split || { available: false };
+          renderPayChoice();
         })
         .catch(function (err) {
           $('slot-loading').hidden = true;
@@ -682,7 +698,55 @@
     // The Pay button stays disabled until the terms checkbox is ticked.
     $('f-terms').addEventListener('change', function (e) {
       $('pay-btn').disabled = !e.target.checked;
+      // The split button is gated by the terms tick too — it is the same
+      // agreement, and the deposit clause lives in it.
+      $('pay-split-btn').disabled = !e.target.checked || !(state.split && state.split.available);
     });
+
+    // "21 September" rather than "in 7 days" — a date is a commitment someone
+    // can picture, and it is what they will look for on their statement.
+    function longDate(iso) {
+      var p = iso.split('-');
+      var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
+      return d.toLocaleDateString('en-AU', { timeZone: 'UTC', day: 'numeric', month: 'long' });
+    }
+
+    var money = function (cents) {
+      return '$' + (cents / 100).toFixed(cents % 100 === 0 ? 0 : 2);
+    };
+
+    // Whether part payment is offered comes from the server (booking-slots), so
+    // the 9-day cutoff is never restated here where it could drift.
+    function renderPayChoice() {
+      var split = state.split || { available: false };
+      var splitBtn = $('pay-split-btn');
+      var note = $('pay-note');
+
+      if (!split.available) {
+        // One full-width button, never a disabled second one — a greyed-out
+        // button invites "why can't I?" and there is no good answer to give.
+        splitBtn.hidden = true;
+        $('pay-choice').style.gridTemplateColumns = '1fr';
+        note.hidden = true;
+        return;
+      }
+
+      var when = longDate(split.chargeOn);
+      splitBtn.hidden = false;
+      $('pay-choice').style.gridTemplateColumns = '';
+      splitBtn.innerHTML = 'Pay ' + money(split.depositCents) + ' now' +
+        '<small>' + money(split.balanceCents) + ' on ' + when + '</small>';
+      // Screen readers get the whole commitment, not "Pay $75 now" alone —
+      // that is what is being agreed to.
+      splitBtn.setAttribute('aria-label',
+        'Pay ' + money(split.depositCents) + ' now, then ' + money(split.balanceCents) +
+        ' automatically on ' + when + '. No further payments.');
+
+      note.hidden = false;
+      note.textContent = 'Choosing part payment charges ' + money(split.depositCents) +
+        ' today and the remaining ' + money(split.balanceCents) + ' to the same card on ' +
+        when + '. That is the final payment — nothing is charged after it.';
+    }
 
     $('details-form').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -691,8 +755,11 @@
       if (!form.checkValidity()) { form.reportValidity(); return; }
       if (!$('f-terms').checked) return; // button is disabled; belt-and-braces
 
-      var btn = $('pay-btn');
-      btn.disabled = true;
+      var pressed = (e.submitter && e.submitter.dataset.payMode) || 'full';
+      var btn = e.submitter || $('pay-btn');
+      var restore = btn.innerHTML;
+      $('pay-btn').disabled = true;
+      $('pay-split-btn').disabled = true;
       btn.textContent = 'Redirecting to payment…';
 
       track('begin_checkout', {
@@ -722,14 +789,16 @@
           phone: $('f-phone').value.trim(),
           notes: $('f-notes').value.trim(),
           marketingConsent: $('f-marketing').checked,
+          payMode: pressed,
           returnTo: '/xmas-test.html',
         }),
       }).then(function (data) {
         if (!data.url) throw new Error('No payment URL returned');
         window.location.href = data.url; // Stripe Checkout (or mock success URL)
       }).catch(function (err) {
-        btn.disabled = false;
-        btn.textContent = 'Pay & book — $150';
+        btn.innerHTML = restore;
+        $('pay-btn').disabled = false;
+        $('pay-split-btn').disabled = !(state.split && state.split.available);
         if (err.code === 'INVALID_DETAILS') {
           showNotice(err.message, true);
         } else {

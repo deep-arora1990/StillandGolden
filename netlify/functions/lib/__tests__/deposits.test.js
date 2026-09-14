@@ -135,10 +135,11 @@ describe('subscriptionCancelAt', () => {
     expect(cancelAt).toBeLessThan(thirdCharge)
   })
 
-  it('leaves room for Stripe to retry a declined second charge', () => {
-    // Cancelling at day 8 would stop a third charge but kill the retry window,
-    // losing the balance entirely on a card that would have recovered.
-    expect(CANCEL_AFTER_DAYS - BALANCE_AFTER_DAYS).toBeGreaterThanOrEqual(5)
+  it('leaves at least some room for Stripe to retry a declined second charge', () => {
+    // Deliberately short (2 days, Deep's call 14 Sep): a card that would have
+    // recovered later is chased by hand instead. Cancelling ON the second
+    // charge would be the bug — no retry window at all.
+    expect(CANCEL_AFTER_DAYS - BALANCE_AFTER_DAYS).toBeGreaterThanOrEqual(2)
   })
 
   it('returns whole seconds, which is what Stripe wants', () => {

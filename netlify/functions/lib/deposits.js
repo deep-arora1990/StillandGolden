@@ -28,12 +28,15 @@ const MIN_NOTICE_DAYS = BALANCE_AFTER_DAYS + MIN_DAYS_BEFORE_SESSION; // 9
 
 // When the subscription is told to stop, counted from the deposit.
 //
-// Charges land on day 0 and day 7; a third would land on day 14. Cancelling at
-// day 8 would stop that third charge but would also cut off Stripe's retries if
-// the day-7 charge failed — a declined card is retried over the following days,
-// and killing the subscription mid-retry loses the balance entirely. Day 13
-// leaves the whole retry window open and still lands before day 14.
-const CANCEL_AFTER_DAYS = 13;
+// Charges land on day 0 and day 7; a third would land on day 14, so anything
+// before that prevents an overcharge. Deep's call, 14 Sep: day 9.
+//
+// The tradeoff that buys: a declined second charge gets two days of Stripe
+// retries rather than six. A card that would have recovered on day 11 won't,
+// and that balance is chased by hand off the invoice.payment_failed alert
+// instead. Nothing can overcharge either way — this only moves recovery from
+// automatic to manual in the minority of cases where a retry would have won.
+const CANCEL_AFTER_DAYS = 9;
 
 // The moment a split subscription should stop, as a unix timestamp for
 // Stripe's `cancel_at`. Anchored to when the deposit was taken.
