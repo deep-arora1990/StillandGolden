@@ -35,6 +35,7 @@ const TIERS = {
     durationMinutes: 30,
     priceFrom: 195,
     priceCents: 19500,
+    depositCents: 9750,
     includes: '10 edited images',
   },
   golden: {
@@ -44,6 +45,7 @@ const TIERS = {
     durationMinutes: 60,
     priceFrom: 250,
     priceCents: 25000,
+    depositCents: 12500,
     includes: '20 edited images',
   },
   gathered: {
@@ -53,6 +55,7 @@ const TIERS = {
     durationMinutes: 90,
     priceFrom: 395,
     priceCents: 39500,
+    depositCents: 19750,
     includes: '30+ edited images',
   },
   bloom: {
@@ -62,6 +65,7 @@ const TIERS = {
     durationMinutes: 90,
     priceFrom: 595,
     priceCents: 59500,
+    depositCents: 29750,
     includes: 'Two 90-minute sessions',
   },
   'fathers-day': {
@@ -91,6 +95,7 @@ const TIERS = {
     sessionMinutes: 15,
     priceFrom: 150,
     priceCents: 15000,
+    depositCents: 7500,
     includes: '5 edited photos',
     hidden: true,
     allowedDates: ['2026-11-08'],
