@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>TEST — Christmas Mini booking flow (internal)</title>
+  <meta name="description" content="Christmas mini sessions at Baxter Community Hall, Sunday 8 November 2026. $150, 15 minutes, 5 edited photos — limited spots, in time for Christmas cards and gifting.">
+  <meta property="og:title" content="Christmas Mini Sessions — Sunday 8 November">
+  <meta property="og:description" content="$150 · 15 minutes · 5 edited photos at Baxter Community Hall, Baxter. Limited spots — ready for Christmas cards and gifting.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://stillandgolden.com.au/christmas-minis">
+  <meta property="og:image" content="https://stillandgolden.com.au/Images/christmas-minis-hero.jpg">
+  <meta property="og:site_name" content="Still &amp; Golden Photography">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/site.css">
+  <script src="/site.js" defer></script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18178273358"></script>
+  <script src="/site-tags.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What do I get for $150?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks. You can add the extended gallery for $50 - a fifteen-minute session easily produces around twenty photos worth keeping."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is fifteen minutes actually enough?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Both sets are already built and lit, so none of your time goes on setting up. There is also a ten-minute buffer between sessions, so nobody is hurried out and little ones get a moment to warm up first. Fifteen minutes is also about the honest limit of a toddler's patience."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "When do we get the photos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Within two weeks of the day, in a private online gallery. You download them at full resolution and print them wherever you like."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What should we wear?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Christmas clothes are very welcome, or wear whatever everyone is comfortable in. Neutrals sit beautifully against both sets, and textures like knits, cord and wool read better on camera than flat block colour. Pick colours that complement each other rather than matching exactly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What if my child won't play along?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "That is expected. We work with whatever the day gives us, and the frames people end up loving are usually the in-between ones."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How many of us can come?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Two adults and the kids is comfortable on either set. The chairs set takes up to four adults, so that is the one if grandparents are coming along too. If you are a larger group than that, get in touch before you book and we will work out what is possible."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can we bring the dog?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Not at this one, sorry - it's people only."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where do we park?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "There is ample parking at the community hall, so there is no need to arrive early hunting for a spot."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What if we can't make our time?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Let me know as early as you can. If another time on the day is still free, I will move you across to it. Everything runs on the one day, Sunday 8 November, so there is no other date to move to. If you need to cancel more than seven days before the session, you will be refunded half the fee. Inside seven days, the session is not refundable."
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    main { max-width: 720px; margin: 0 auto; padding: 140px 48px 40px; }
+    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 12px; }
+    h1 em { font-style: italic; color: var(--gold); }
+    h2 { font-family: var(--serif); font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 400; margin: 0 0 18px; }
+    p.sub { color: #4d453f; margin-bottom: 32px; max-width: 60ch; }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    /* Offer card */
+    .offer {
+      border: 1px solid var(--gold); background: #fff;
+      padding: 30px 34px; margin: 0 0 40px;
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 26px;
+    }
+    .offer .amount { font-family: var(--serif); font-size: 2.2rem; }
+    .offer .detail { font-size: 0.84rem; color: var(--mid); letter-spacing: 0.04em; line-height: 1.8; }
+
+    /* Slots — same pattern as book.html, incl. the loading overlay */
+    .counter { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+
+    /* Countdown — deliberately quiet. The brand voice bans manufactured
+       urgency, so this states a real date plainly rather than pulsing red at
+       anyone. No seconds: for a date months out they'd be theatre, and they'd
+       force a repaint every second for nothing. */
+    .countdown { display: flex; gap: 28px; margin: 0 0 40px; padding: 22px 26px; border: 1px solid var(--border); background: #fff; }
+    .countdown[hidden] { display: none; }
+    .cd-unit { text-align: center; min-width: 58px; }
+    .cd-num { font-family: var(--serif); font-size: 1.9rem; line-height: 1; color: var(--warm-black); display: block; }
+    .cd-label { font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); margin-top: 6px; display: block; }
+    .cd-note { align-self: center; font-size: 0.86rem; color: #4d453f; margin-left: 4px; }
+    @media (max-width: 560px) {
+      .countdown { gap: 18px; padding: 18px; flex-wrap: wrap; }
+      .cd-note { flex-basis: 100%; margin: 6px 0 0; }
+    }
+    .slots-wrap { position: relative; min-height: 90px; }
+    .slots { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; transition: opacity 0.25s; }
+    .slots-wrap.loading .slots { opacity: 0.3; pointer-events: none; }
+    .slot-overlay {
+      position: absolute; inset: 0; margin: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(248, 245, 241, 0.55);
+      font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--mid); text-align: center; z-index: 2;
+    }
+    .slot-overlay[hidden] { display: none; }
+    .slot-btn {
+      background: none; border: 1px solid var(--border); cursor: pointer;
+      padding: 12px 20px; font-family: inherit; font-size: 0.95rem; color: var(--warm-black);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .slot-btn:hover, .slot-btn:focus-visible { border-color: var(--gold); outline: none; }
+    .slot-btn.selected { background: var(--warm-black); color: var(--off-white); border-color: var(--warm-black); }
+    .soldout { border: 1px solid var(--border); background: #fff; padding: 26px 30px; font-size: 0.95rem; color: #4d453f; }
+    .soldout a { color: var(--warm-black); }
+
+    /* Details form */
+    .details { max-width: 520px; }
+    .field { margin-bottom: 18px; }
+    .field label { display: block; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    .field input, .field textarea {
+      width: 100%; border: 1px solid var(--border); background: #fff;
+      padding: 12px 14px; font-family: inherit; font-size: 0.95rem; color: var(--warm-black);
+    }
+    .field input:focus, .field textarea:focus { outline: none; border-color: var(--gold); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+    .terms { display: flex; gap: 12px; align-items: flex-start; margin: 22px 0 6px; font-size: 0.85rem; color: #4d453f; }
+    .terms input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--warm-black); flex-shrink: 0; }
+    .terms a { color: var(--warm-black); }
+
+    .btn {
+      display: inline-block; margin: 12px 0 8px; border: none; cursor: pointer;
+      font-family: inherit; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--off-white); background: var(--warm-black);
+      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
+    }
+    .btn:hover:not(:disabled) { background: var(--gold); }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
+    .btn-ghost:hover:not(:disabled) { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
+
+    /* Venue block — the one thing people re-open the page to check, so it gets
+       its own panel rather than being buried in the intro paragraph. */
+    .venue { border-left: 3px solid var(--gold); background: #fff; padding: 22px 26px; margin: 0 0 40px; }
+    .venue-label { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin: 0 0 10px; }
+    .venue-name { font-family: var(--serif); font-size: 1.25rem; margin: 0 0 2px; }
+    .venue-address { font-size: 0.9rem; color: #4d453f; margin: 0 0 10px; }
+    .venue-when { font-size: 0.9rem; color: #4d453f; margin: 0; }
+
+    /* Photos. The page had none — these two spots answer "what am I actually
+       booking?". The top one is deliberately short (16/10 rather than the
+       file's native 4:3) so the slot picker stays reachable on a phone
+       instead of sitting under a full-height photo. */
+    .shot { margin: 0 0 40px; overflow: hidden; background: var(--border); }
+    .shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .shot-hero { aspect-ratio: 16 / 10; }
+    /* Faces sit above centre in this frame, so bias the crop upward. */
+    .shot-hero img { object-position: center 42%; }
+
+    /* Below-the-widget sections share one rule so the rhythm stays even. */
+    .after { margin: 60px 0 0; padding-top: 46px; border-top: 1px solid var(--border); }
+    .after > h2 { margin-bottom: 14px; }
+
+    .set-grid { display: block; }
+    .set-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0 0 28px; }
+    .set-item { margin: 0; }
+    .set-grid .shot { margin: 0; aspect-ratio: 806 / 1108; }
+    .set-intro { margin: 0 0 22px; color: #4d453f; max-width: 52ch; }
+    .set-copy p { margin: 0 0 14px; color: #4d453f; max-width: 52ch; }
+    .set-copy p:last-child { margin: 0; }
+    @media (max-width: 640px) {
+      .set-shots { gap: 10px; margin-bottom: 22px; }
+    }
+
+    /* FAQ — native <details> so it works without JavaScript and stays
+       keyboard-operable. Answers remain in the DOM for search engines. */
+    .faq details { border-bottom: 1px solid var(--border); }
+    .faq summary {
+      cursor: pointer; list-style: none; position: relative;
+      padding: 18px 40px 18px 0; font-size: 1rem; color: var(--warm-black);
+      transition: color 0.15s;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after {
+      content: '+'; position: absolute; right: 6px; top: 50%;
+      transform: translateY(-50%); font-family: var(--serif);
+      font-size: 1.5rem; line-height: 1; color: var(--gold);
+    }
+    .faq details[open] summary::after { content: '\2013'; }
+    .faq summary:hover, .faq summary:focus-visible { color: var(--gold); outline: none; }
+    .faq .answer { padding: 0 0 22px; color: #4d453f; font-size: 0.95rem; max-width: 62ch; }
+    .faq .answer p { margin: 0 0 12px; }
+    .faq .answer p:last-child { margin: 0; }
+    .faq .answer a { color: var(--warm-black); }
+
+    /* Closing CTA. The slot picker stays high on the page for people who
+       arrive ready to book; this catches the ones who came down here to read
+       first and shouldn't have to scroll back up hunting for the times. */
+    .faq-cta { margin: 38px 0 0; text-align: center; }
+    .faq-cta p { font-size: 0.9rem; color: #4d453f; margin: 0 0 16px; }
+    .faq-cta .btn { margin: 0; }
+
+
+    .notice {
+      border-left: 3px solid var(--gold); background: #fff;
+      padding: 14px 18px; margin: 0 0 24px; font-size: 0.9rem; color: #4d453f;
+    }
+    .notice.error { border-left-color: #B4552D; }
+
+    .summary-line { font-size: 0.86rem; color: var(--mid); margin: 0 0 24px; }
+    .summary-line b { color: var(--warm-black); font-weight: 400; }
+
+    /* Confirmation */
+    .confirm-box { border: 1px solid var(--border); padding: 40px 44px; background: #fff; }
+    .confirm-box .tick { font-family: var(--serif); font-size: 2rem; color: var(--gold); }
+
+    @media (max-width: 700px) {
+      main { padding: 120px 24px 32px; }
+      .confirm-box { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+<div style="background:#9A362C;color:#fff;padding:10px 16px;font:600 13px/1.4 system-ui,sans-serif;text-align:center;letter-spacing:.04em;">TEST PAGE — 25 December, Stripe test mode, Setmore “Christmas mini test” service. Not for customers.</div>
+  <nav id="nav" data-sg-nav></nav>
+
+  <main>
+    <div class="label">One day only &middot; Limited spots</div>
+    <h1>Christmas <em>Mini Sessions</em></h1>
+    <p class="sub">Sunday 8 November, at Baxter Community Hall. Fifteen minutes in a warm, festive set &mdash; perfect for this year's cards, prints and the grandparents' gifts.</p>
+
+    <figure class="shot shot-hero">
+      <picture>
+        <source srcset="/Images/webp/christmas-minis-family.webp" type="image/webp">
+        <img src="/Images/web/christmas-minis-family.jpg"
+             alt="A mother and her baby daughter sitting together on the bed set, lit trees and fairy lights either side"
+             width="1192" height="880" decoding="async">
+      </picture>
+    </figure>
+
+    <div class="offer" id="book">
+      <span class="amount">$150</span>
+      <span class="detail">15-minute session &middot; 5 edited photos &middot; add the extended gallery for $50 &middot; delivered in time for Christmas cards</span>
+    </div>
+
+    <div class="venue">
+      <p class="venue-label">Where &amp; when</p>
+      <p class="venue-name">Baxter Community Hall</p>
+      <p class="venue-address">211 Baxter-Tooradin Rd, Baxter VIC 3911</p>
+      <p class="venue-when">Sunday 8 November &middot; 15 sessions from 10:30am &mdash; last session 4:20pm</p>
+    </div>
+
+    <div class="countdown" id="countdown" hidden aria-live="polite">
+      <div class="cd-unit"><span class="cd-num" id="cd-days">—</span><span class="cd-label">Days</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-hours">—</span><span class="cd-label">Hours</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-mins">—</span><span class="cd-label">Minutes</span></div>
+      <p class="cd-note" id="cd-note">until the first session on Sunday 8 November</p>
+    </div>
+
+    <div id="notice" class="notice" role="alert" hidden></div>
+
+    <!-- Step 1: slots -->
+    <section id="step-slots" class="step active" aria-label="Choose a time">
+      <h2>Pick your time</h2>
+      <p class="counter" id="counter" aria-live="polite" hidden></p>
+      <div class="slots-wrap" id="slots-wrap">
+        <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
+        <p id="slot-loading" class="slot-overlay">Checking the day's spots…</p>
+      </div>
+      <div id="sold-out" class="soldout" hidden>
+        All spots are gone. If you'd like to hear about the next mini day &mdash; or book a full session instead &mdash; <a href="/#contact">get in touch here</a>.
+      </div>
+    </section>
+
+    <!-- Step 2: details -->
+    <section id="step-details" class="step" aria-label="Your details">
+      <h2>Your details</h2>
+      <p class="summary-line" id="details-context"></p>
+      <form id="details-form" class="details" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-first">First name</label>
+            <input id="f-first" name="firstName" type="text" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="f-last">Last name</label>
+            <input id="f-last" name="lastName" type="text" autocomplete="family-name" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="f-phone">Phone</label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="f-notes">Anything I should know? (optional)</label>
+          <textarea id="f-notes" name="notes" rows="3"></textarea>
+        </div>
+        <div class="terms">
+          <input type="checkbox" id="f-terms" required>
+          <label for="f-terms">I agree to the <a href="/christmas-minis-terms" target="_blank" rel="noopener">Christmas minis terms</a>.</label>
+        </div>
+        <div class="terms">
+          <input type="checkbox" id="f-marketing">
+          <label for="f-marketing">Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</label>
+        </div>
+        <button type="submit" class="btn" id="pay-btn" disabled>Pay &amp; book — $150</button>
+        <button type="button" class="btn btn-ghost" id="back-to-slots">Back</button>
+      </form>
+    </section>
+
+    <!-- Step 3: confirmation (arrived here via Stripe success redirect) -->
+    <section id="step-confirm" class="step" aria-label="Booking confirmed">
+      <div class="confirm-box">
+        <div class="tick">Payment received.</div>
+        <h2 style="margin-top:6px;">You're booked in</h2>
+        <p class="sub" style="margin-bottom:0;">Your Christmas mini is being confirmed and you'll get a confirmation email shortly &mdash; Setmore will send its own confirmation too. See you at Baxter Community Hall on Sunday 8 November.</p>
+      </div>
+    </section>
+
+    <section class="after" aria-labelledby="set-h">
+      <h2 id="set-h">The sets</h2>
+      <div class="set-grid">
+        <p class="set-intro">Two of them, both up all day &mdash; pick one to start and move between them as you go.</p>
+        <div class="set-shots">
+          <div class="set-item">
+            <div class="shot">
+              <picture>
+                <source srcset="/Images/webp/christmas-minis-set.webp" type="image/webp">
+                <img src="/Images/web/christmas-minis-set.jpg"
+                     alt="The bed set: a bed made up in green velvet and cream knit, framed by two lit Christmas trees and a curtain of fairy lights"
+                     width="806" height="1108" loading="lazy" decoding="async">
+              </picture>
+            </div>
+          </div>
+          <div class="set-item">
+            <div class="shot">
+              <picture>
+                <source srcset="/Images/webp/christmas-minis-set-b.webp" type="image/webp">
+                <img src="/Images/web/christmas-minis-set-b.jpg"
+                     alt="The chair set: two red bentwood chairs on a cream drop, beside a lit Christmas tree, with a fairy-light curtain and a wreath behind"
+                     width="806" height="1108" loading="lazy" decoding="async">
+              </picture>
+            </div>
+          </div>
+        </div>
+        <div class="set-copy">
+          <p>Both are built indoors and lit before the first family arrives.</p>
+          <p>Since it's indoors, there's no weather to worry about and no wind chasing anyone around a park. It's warm, which matters if you're bringing a baby.</p>
+          <p>There'll be Christmas tunes playing while you're in, which does more for a shy three-year-old than anything I can say to them.</p>
+          <p>Bring the kids and whatever they need. Everything else is already there.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="after faq" aria-labelledby="faq-h">
+      <h2 id="faq-h">Questions</h2>
+
+      <details>
+        <summary>What do I get for $150?</summary>
+        <div class="answer">
+          <p>A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks &mdash; in good time for cards and printing.</p>
+          <p>If you'd rather have everything from your session than my five picks, you can add the extended gallery for $50 &mdash; a fifteen-minute session easily produces around twenty photos worth keeping.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Is fifteen minutes actually enough?</summary>
+        <div class="answer">
+          <p>For this, yes. Both sets are already built and lit, so none of your time goes on setting up &mdash; we start the moment you walk in.</p>
+          <p>There's also a ten-minute buffer between each session, so nobody is hurried out the door and little ones get a moment to look around and warm up before we start.</p>
+          <p>Fifteen minutes is also about the honest limit of a toddler's patience.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>When do we get the photos?</summary>
+        <div class="answer">
+          <p>Within two weeks of the day, in a private online gallery. You download them at full resolution and print them wherever you like.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>What should we wear?</summary>
+        <div class="answer">
+          <p>Christmas clothes are very welcome &mdash; that's half the fun of it. If that's not your thing, wear whatever everyone is comfortable in instead.</p>
+          <p>Neutrals sit beautifully against both sets, and textures like knits, cord and wool read better on camera than flat block colour. Rather than everyone matching exactly, pick colours that complement each other. Unless you're all going in matching Christmas pyjamas, which is its own kind of excellent.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>What if my child won't play along?</summary>
+        <div class="answer">
+          <p>Expected, honestly. I'm a dad of two and most of my working week is spent around small children with their own plans.</p>
+          <p>We work with whatever the day gives us. The frames people end up loving are usually the in-between ones, not the one where everybody finally looked at the camera at once.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>How many of us can come?</summary>
+        <div class="answer">
+          <p>Two adults and the kids is comfortable on either set. The chairs set takes up to four adults, so that's the one if grandparents are coming along too.</p>
+          <p>If you're a larger group than that, get in touch before you book and we'll work out what's possible.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Can we bring the dog?</summary>
+        <div class="answer">
+          <p>Not at this one, sorry &mdash; it's people only.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Where do we park?</summary>
+        <div class="answer">
+          <p>There's ample parking at the community hall, so there's no need to arrive early hunting for a spot.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>What if we can't make our time?</summary>
+        <div class="answer">
+          <p>Let me know as early as you can. If another time on the day is still free, I'll move you across to it &mdash; that's usually the easiest fix.</p>
+          <p>Everything runs on the one day, Sunday 8 November, so there's no other date to move to.</p>
+          <p>If you need to cancel more than seven days before the session, you'll be refunded half the fee. Inside seven days, the session isn't refundable.</p>
+        </div>
+      </details>
+
+      <div class="faq-cta" id="faq-cta">
+        <p>That's everything. Limited spots, one day only.</p>
+        <a class="btn" href="#book">Pick your time</a>
+      </div>
+    </section>
+  </main>
+
+  <footer data-sg-footer></footer>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var FN = '/.netlify/functions/';
+    // Same key as the 'christmas-minis' entry in netlify/functions/lib/setmore.js
+    var SERVICE_KEY = '50f47cdc-5d69-4f82-b47c-2300b0dcad33';  // TEST service
+    var SESSION_DATE = '2026-12-25';                          // TEST date
+    // Mirrors the slotTimes list in netlify/functions/lib/setmore.js — keep
+    // the two in step. That list, not Setmore's working hours, is what pins
+    // the day to the advertised times.
+    var TOTAL_SPOTS = 15;
+    // Below this many remaining, the page starts saying so.
+    var SCARCITY_THRESHOLD = 3;
+
+    // First session, 10:30am on Sunday 8 November 2026, as a fixed UTC
+    // instant. Melbourne is AEDT (UTC+11) by then — daylight saving starts
+    // 4 October — and pinning the instant rather than parsing a local string
+    // means the countdown is identical wherever the reader is, instead of
+    // silently counting to 10:30am in their own timezone.
+    var FIRST_SESSION_UTC = Date.UTC(2026, 10, 7, 23, 30, 0);
+
+    var state = { time: null, restoreTime: null };
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    // Analytics must never be able to break a booking (same guard as book.html).
+    function track(name, params) {
+      try { if (window.sgTrack) window.sgTrack(name, params); } catch (e) {}
+    }
+
+    function showNotice(msg, isError) {
+      var n = $('notice');
+      n.textContent = msg;
+      n.className = 'notice' + (isError ? ' error' : '');
+      n.hidden = false;
+      n.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function clearNotice() { $('notice').hidden = true; }
+
+    function showStep(name) {
+      var steps = document.querySelectorAll('.step');
+      for (var i = 0; i < steps.length; i++) steps[i].classList.remove('active');
+      $('step-' + name).classList.add('active');
+      // Nothing left to book once they've paid — hide the closing CTA.
+      var cta = $('faq-cta');
+      if (cta) cta.hidden = (name === 'confirm');
+    }
+
+    function api(path, opts) {
+      return fetch(FN + path, opts).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          if (!res.ok) {
+            var err = new Error((body.error && body.error.message) || 'Something went wrong');
+            err.code = body.error && body.error.code;
+            throw err;
+          }
+          return body;
+        });
+      });
+    }
+
+    function formatTime(hhmm) {
+      var p = hhmm.split(':');
+      var d = new Date(); d.setHours(Number(p[0]), Number(p[1]), 0, 0);
+      return d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' }).toLowerCase().replace(' ', '');
+    }
+
+    // --- countdown ---------------------------------------------------------------
+
+    function renderCountdown() {
+      var remaining = FIRST_SESSION_UTC - Date.now();
+      var el = $('countdown');
+
+      // Past the first session the countdown has nothing to say. Hiding it is
+      // better than showing zeroes or a negative number on a page that may
+      // well still be linked from an email.
+      if (remaining <= 0) { el.hidden = true; return false; }
+
+      var mins = Math.floor(remaining / 60000);
+      var days = Math.floor(mins / 1440);
+      var hours = Math.floor((mins % 1440) / 60);
+
+      $('cd-days').textContent = days;
+      $('cd-hours').textContent = hours;
+      $('cd-mins').textContent = mins % 60;
+      el.hidden = false;
+      return true;
+    }
+
+    function startCountdown() {
+      if (!renderCountdown()) return;
+      // Every 30s: the smallest unit shown is minutes, so a tighter interval
+      // would repaint for nothing, and a 60s one can look stuck when the page
+      // is opened just after a minute ticks over.
+      var timer = setInterval(function () {
+        if (!renderCountdown()) clearInterval(timer);
+      }, 30000);
+    }
+
+    // --- slots -----------------------------------------------------------------
+
+    function loadSlots() {
+      $('slot-loading').hidden = false;
+      $('slots-wrap').classList.add('loading');
+      api('booking-slots?service_key=' + encodeURIComponent(SERVICE_KEY) + '&date=' + SESSION_DATE)
+        .then(function (data) {
+          $('slot-loading').hidden = true;
+          $('slots-wrap').classList.remove('loading');
+          renderSlots(data.slots || []);
+        })
+        .catch(function (err) {
+          $('slot-loading').hidden = true;
+          $('slots-wrap').classList.remove('loading');
+          showNotice(err.message || 'Availability could not be loaded — please refresh the page.', true);
+        });
+    }
+
+    function renderSlots(slots) {
+      var list = $('slot-list');
+      list.innerHTML = '';
+      if (!slots.length) {
+        $('sold-out').hidden = false;
+        $('counter').hidden = true;
+        return;
+      }
+      $('sold-out').hidden = true;
+      // The count only appears once it means something. "13 of 15 spots left"
+      // reads as "nobody has booked this"; at three or fewer it is real
+      // scarcity and worth stating. Deliberately not a fraction at that point
+      // either — "3 of 15" invites the same reading.
+      var counter = $('counter');
+      if (slots.length <= SCARCITY_THRESHOLD) {
+        counter.hidden = false;
+        counter.textContent = slots.length === 1
+          ? 'Last spot left'
+          : 'Only ' + slots.length + ' spots left';
+      } else {
+        counter.hidden = true;
+      }
+      slots.forEach(function (t) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'slot-btn';
+        btn.textContent = formatTime(t);
+        btn.setAttribute('aria-label', formatTime(t) + ' on Sunday 8 November');
+        if (state.restoreTime === t) {
+          btn.classList.add('selected');
+          state.time = t;
+        }
+        btn.addEventListener('click', function () {
+          state.time = t;
+          var all = list.querySelectorAll('.slot-btn');
+          for (var i = 0; i < all.length; i++) all[i].classList.remove('selected');
+          btn.classList.add('selected');
+          track('select_item', {
+            item_list_name: 'Christmas Minis',
+            items: [{ item_id: 'christmas-minis', item_name: 'Christmas Mini', price: 150, currency: 'AUD' }],
+          });
+          goToDetails();
+        });
+        list.appendChild(btn);
+      });
+      state.restoreTime = null;
+    }
+
+    // --- details ---------------------------------------------------------------
+
+    function goToDetails() {
+      var ctx = $('details-context');
+      ctx.innerHTML = '';
+      var b = document.createElement('b');
+      b.textContent = 'Christmas Mini — Sunday 8 November, ' + formatTime(state.time) + ' · Baxter Community Hall';
+      ctx.appendChild(b);
+      showStep('details');
+      $('f-first').focus();
+    }
+
+    $('back-to-slots').addEventListener('click', function () { showStep('slots'); });
+
+    // The Pay button stays disabled until the terms checkbox is ticked.
+    $('f-terms').addEventListener('change', function (e) {
+      $('pay-btn').disabled = !e.target.checked;
+    });
+
+    $('details-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearNotice();
+      var form = e.target;
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      if (!$('f-terms').checked) return; // button is disabled; belt-and-braces
+
+      var btn = $('pay-btn');
+      btn.disabled = true;
+      btn.textContent = 'Redirecting to payment…';
+
+      track('begin_checkout', {
+        currency: 'AUD',
+        value: 150,
+        items: [{ item_id: 'christmas-minis', item_name: 'Christmas Mini', price: 150, currency: 'AUD' }],
+      });
+
+      // Stripe navigates away and back; stash the purchase so the confirmation
+      // step can report it with its real value (same pattern as book.html).
+      try {
+        sessionStorage.setItem('sg_pending_purchase', JSON.stringify({
+          tier: 'christmas-minis', name: 'Christmas Mini', price: 150,
+        }));
+      } catch (e2) {}
+
+      api('booking-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_key: SERVICE_KEY,
+          date: SESSION_DATE,
+          time: state.time,
+          firstName: $('f-first').value.trim(),
+          lastName: $('f-last').value.trim(),
+          email: $('f-email').value.trim(),
+          phone: $('f-phone').value.trim(),
+          notes: $('f-notes').value.trim(),
+          marketingConsent: $('f-marketing').checked,
+          returnTo: '/xmas-test.html',
+        }),
+      }).then(function (data) {
+        if (!data.url) throw new Error('No payment URL returned');
+        window.location.href = data.url; // Stripe Checkout (or mock success URL)
+      }).catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = 'Pay & book — $150';
+        if (err.code === 'INVALID_DETAILS') {
+          showNotice(err.message, true);
+        } else {
+          showNotice('Could not start the payment — please try again shortly, or get in touch.', true);
+        }
+      });
+    });
+
+    // --- init ------------------------------------------------------------------
+
+    (function init() {
+      var params = new URLSearchParams(window.location.search);
+
+      // Returned from Stripe after a successful payment.
+      if (params.get('booked') === '1') {
+        // Report the sale once — sessionStorage stash is cleared on first run,
+        // and GA4 de-duplicates on transaction_id (the checkout session id).
+        var pending = null;
+        try {
+          pending = JSON.parse(sessionStorage.getItem('sg_pending_purchase') || 'null');
+          sessionStorage.removeItem('sg_pending_purchase');
+        } catch (e) {}
+        if (pending) {
+          track('purchase', {
+            transaction_id: params.get('session_id') || undefined,
+            currency: 'AUD',
+            value: pending.price,
+            items: [{ item_id: pending.tier, item_name: pending.name, price: pending.price, currency: 'AUD' }],
+          });
+        }
+        showStep('confirm');
+        window.scrollTo(0, 0);
+        return;
+      }
+
+      // Returned from a cancelled payment — reload the slots, re-highlight the
+      // previously chosen time if it's still free, and say no charge was made.
+      if (params.get('cancelled') === '1') {
+        state.restoreTime = params.get('time');
+        showNotice('Payment was cancelled — no charge was made. Pick a time below if you’d like to try again.', true);
+      }
+
+      startCountdown();
+      loadSlots();
+    })();
+  })();
+  </script>
+</body>
+</html>
