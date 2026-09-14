@@ -44,6 +44,7 @@ const TIERS = {
     durationMinutes: 60,
     priceFrom: 250,
     priceCents: 25000,
+    depositCents: 12500,
     includes: '20 edited images',
   },
   gathered: {
@@ -53,6 +54,7 @@ const TIERS = {
     durationMinutes: 90,
     priceFrom: 395,
     priceCents: 39500,
+    depositCents: 19750,
     includes: '30+ edited images',
   },
   bloom: {
@@ -62,6 +64,7 @@ const TIERS = {
     durationMinutes: 90,
     priceFrom: 595,
     priceCents: 59500,
+    depositCents: 29750,
     includes: 'Two 90-minute sessions',
   },
   'fathers-day': {
@@ -91,6 +94,7 @@ const TIERS = {
     sessionMinutes: 15,
     priceFrom: 150,
     priceCents: 15000,
+    depositCents: 7500,
     includes: '5 edited photos',
     hidden: true,
     allowedDates: ['2026-11-08'],
@@ -103,6 +107,56 @@ const TIERS = {
     // measured 26 Aug 2026, before and after the buffer change. Filtering
     // against it would throw away ten of these fifteen. fixedSchedule tells
     // booking-slots to check the calendar directly instead.
+    fixedSchedule: true,
+    slotTimes: [
+      '10:30', '10:55', '11:20', '11:45', '12:10', '12:35', '13:00', '13:25',
+      '13:50', '14:15', '14:40', '15:05', '15:30', '15:55', '16:20',
+    ],
+  },
+  // Mini-shaped test tier — a copy of christmas-minis moved to 25 December, for
+  // exercising the fixed-date path (allowedDates + fixedSchedule + slotTimes)
+  // that the flat `test` tier below can't reach. Anything it books lands on
+  // Christmas Day, where nothing real could be, so it's unmistakable when
+  // clearing up.
+  //
+  // It MUST have its own Setmore service. booking-checkout resolves the tier by
+  // serviceKey, not by tier name, and takes the first match — so sharing a key
+  // with christmas-minis would resolve every request to that tier instead and
+  // reject 25 December against its allowedDates. Two tiers cannot share a key.
+  //
+  // Hidden: reachable only by a page that posts its service_key directly, the
+  // way christmas-minis.html and test-booking.html do — booking-services.js
+  // filters hidden tiers out, so /book?service=xmas-test cannot find it.
+  //
+  // Don't delete it immediately after a test run: removing a tier while Stripe
+  // may still retry an event throws "unknown service_key", which lands in the
+  // failure path and auto-refunds. That already happened once with the $1 tier.
+  'xmas-test': {
+    name: 'Christmas Mini (test)',
+    tagline: 'Test tier — 25 December',
+    // The dedicated Setmore "Christmas mini test" service (15 min), created
+    // 14 Sep 2026 so this tier has a key of its own.
+    serviceKey: '50f47cdc-5d69-4f82-b47c-2300b0dcad33',
+    durationMinutes: 25,
+    sessionMinutes: 15,
+    priceFrom: 150,
+    priceCents: 15000,
+    // Split payment: 50% now, 50% in seven days (spec 2026-09-14). The presence
+    // of depositCents is what offers the split at all — a tier without it is
+    // pay-in-full only.
+    //
+    // Deliberately ONLY on this test tier for now. The live tiers get it at
+    // rollout, after the terms carry the deposit clause: config alone changes
+    // nothing a customer sees, but once booking-checkout accepts payMode a
+    // hand-made request could reach a split on a tier whose terms don't yet
+    // describe one. Cheap to avoid, awkward to explain.
+    //
+    // Keep it exactly half of priceCents — there is a test that says so, which
+    // is also what will catch a forgotten update when prices change on 1 Oct.
+    depositCents: 7500,
+    includes: '5 edited photos',
+    hidden: true,
+    allowedDates: ['2026-12-25'],
     fixedSchedule: true,
     slotTimes: [
       '10:30', '10:55', '11:20', '11:45', '12:10', '12:35', '13:00', '13:25',

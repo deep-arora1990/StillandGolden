@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Christmas Mini Sessions — 8 November | Still &amp; Golden</title>
+  <meta name="robots" content="noindex, nofollow">
+  <title>TEST — Christmas Mini booking flow (internal)</title>
   <meta name="description" content="Christmas mini sessions at Baxter Community Hall, Sunday 8 November 2026. $150, 15 minutes, 5 edited photos — limited spots, in time for Christmas cards and gifting.">
   <meta property="og:title" content="Christmas Mini Sessions — Sunday 8 November">
   <meta property="og:description" content="$150 · 15 minutes · 5 edited photos at Baxter Community Hall, Baxter. Limited spots — ready for Christmas cards and gifting.">
@@ -290,6 +291,7 @@
   </style>
 </head>
 <body>
+<div style="background:#9A362C;color:#fff;padding:10px 16px;font:600 13px/1.4 system-ui,sans-serif;text-align:center;letter-spacing:.04em;">TEST PAGE — 25 December, Stripe test mode, Setmore “Christmas mini test” service. Not for customers.</div>
   <nav id="nav" data-sg-nav></nav>
 
   <main>
@@ -517,8 +519,8 @@
 
     var FN = '/.netlify/functions/';
     // Same key as the 'christmas-minis' entry in netlify/functions/lib/setmore.js
-    var SERVICE_KEY = 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82';
-    var SESSION_DATE = '2026-11-08';
+    var SERVICE_KEY = '50f47cdc-5d69-4f82-b47c-2300b0dcad33';  // TEST service
+    var SESSION_DATE = '2026-12-25';                          // TEST date
     // Mirrors the slotTimes list in netlify/functions/lib/setmore.js — keep
     // the two in step. That list, not Setmore's working hours, is what pins
     // the day to the advertised times.
@@ -788,7 +790,7 @@
           notes: $('f-notes').value.trim(),
           marketingConsent: $('f-marketing').checked,
           payMode: pressed,
-          returnTo: '/christmas-minis.html',
+          returnTo: '/xmas-test.html',
         }),
       }).then(function (data) {
         if (!data.url) throw new Error('No payment URL returned');

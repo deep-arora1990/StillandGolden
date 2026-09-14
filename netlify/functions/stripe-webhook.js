@@ -17,6 +17,9 @@ const {
   createAppointment,
   getAppointmentsOnDate,
 } = require('./lib/setmore');
+
+// Split payment (spec 2026-09-14): when the subscription must stop.
+const { subscriptionCancelAt } = require('./lib/deposits');
 const { upsertResendContact } = require('./lib/resend-contacts');
 const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking-confirmation');
 
@@ -148,6 +151,193 @@ async function handleBookingFailure(stripe, resend, session, meta, err) {
   }
 }
 
+// Where the subscription id lives on an Invoice depends on the API version the
+// account is pinned to. Recent versions moved it from `invoice.subscription`
+// to `invoice.parent.subscription_details.subscription`; the old field is kept
+// on older ones. Checking both means this keeps working across a version bump
+// instead of going quiet — and going quiet is the failure mode that matters
+// here, because no email is indistinguishable from nothing having happened.
+function subscriptionIdFromInvoice(invoice) {
+  const candidates = [
+    invoice.subscription,
+    invoice.parent && invoice.parent.subscription_details && invoice.parent.subscription_details.subscription,
+    invoice.subscription_details && invoice.subscription_details.subscription,
+  ];
+  for (const c of candidates) {
+    if (typeof c === 'string' && c) return c;
+    if (c && typeof c === 'object' && c.id) return c.id;
+  }
+  return null;
+}
+
+// Reads the split-payment metadata off the subscription behind an invoice,
+// or null if this invoice is nothing to do with us. Shared by the reminder and
+// the failure alert so both are narrow in exactly the same way: only
+// subscriptions this site created carry pay_mode, and anything else is left
+// alone rather than guessed at.
+async function splitMetaForInvoice(stripe, invoice) {
+  if (!stripe || !invoice) return null;
+  const subId = subscriptionIdFromInvoice(invoice);
+  if (!subId) {
+    console.log('stripe-webhook: invoice carries no subscription id — ignoring');
+    return null;
+  }
+  try {
+    const sub = await stripe.subscriptions.retrieve(subId);
+    const meta = sub.metadata || {};
+    if (meta.pay_mode !== 'split') {
+      console.log(`stripe-webhook: ignoring ${invoice.id || 'upcoming invoice'} for ${subId} — not one of ours`);
+      return null;
+    }
+    return { subId, meta };
+  } catch (err) {
+    console.error('stripe-webhook: could not read subscription for invoice:', err);
+    return null;
+  }
+}
+
+// "Monday 21 September", in Melbourne. The customer is being told when money
+// leaves their account, so it has to be their date, not UTC's.
+function melbourneLongDate(unixSeconds) {
+  return new Intl.DateTimeFormat('en-AU', {
+    timeZone: 'Australia/Melbourne', weekday: 'long', day: 'numeric', month: 'long',
+  }).format(new Date(unixSeconds * 1000));
+}
+
+// Three days before the balance is taken. Goes to the customer, from Deep.
+async function sendBalanceReminder(stripe, invoice) {
+  const found = await splitMetaForInvoice(stripe, invoice);
+  if (!found) return;
+  const { meta } = found;
+
+  const to = meta.email || invoice.customer_email;
+  if (!to) {
+    console.error('stripe-webhook: upcoming balance has no address to remind');
+    return;
+  }
+
+  const amount = `$${((invoice.amount_due || 0) / 100).toFixed(2)}`;
+  const whenTs = invoice.next_payment_attempt || invoice.period_end || invoice.created;
+  const when = whenTs ? melbourneLongDate(whenTs) : 'shortly';
+
+  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+  if (!resend) {
+    console.error(`stripe-webhook: WOULD have reminded ${to} of ${amount} on ${when}, but RESEND_API_KEY is not set`);
+    return;
+  }
+  try {
+    const { error } = await resend.emails.send({
+      from: `Still & Golden <${OWNER_EMAIL}>`,
+      to,
+      subject: `Your session balance — ${amount} on ${when.split(' ')[0]}`,
+      text: [
+        `Hi ${meta.firstName || 'there'},`,
+        '',
+        `Just a heads-up: the remaining ${amount} for your session on ${meta.date}${meta.time ? ` at ${meta.time}` : ''} comes off the same card on ${when}.`,
+        '',
+        `Nothing for you to do — it happens automatically, and that is the final payment.`,
+        '',
+        `If you would rather use a different card, or anything has changed, just reply to this email and I will sort it out.`,
+        '',
+        'Deep',
+        'Still & Golden Photography',
+      ].join('\n'),
+    });
+    if (error) console.error('stripe-webhook: balance reminder rejected:', error);
+    else console.log(`stripe-webhook: balance reminder sent to ${to} for ${when}`);
+  } catch (mailErr) {
+    console.error('stripe-webhook: balance reminder could not be sent:', mailErr);
+  }
+}
+
+// The second half of a split payment failed to collect.
+//
+// Deliberately narrow: only subscriptions this site created carry pay_mode in
+// their metadata, so anything else — a manual subscription, another product,
+// an invoice unrelated to a booking — is ignored rather than guessed at. Same
+// reasoning as the service_key guard on checkout sessions, which exists
+// because a payment link once fell into the refund path.
+async function alertBalanceFailed(stripe, invoice) {
+  const found = await splitMetaForInvoice(stripe, invoice);
+  if (!found) return;
+  const { subId, meta } = found;
+
+  const amount = typeof invoice.amount_due === 'number' ? `$${(invoice.amount_due / 100).toFixed(2)}` : 'the balance';
+  console.error(`stripe-webhook: BALANCE FAILED for ${subId} (${meta.date} ${meta.time})`);
+
+  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+  if (!resend) return;
+  try {
+    const { error } = await resend.emails.send({
+      // From Deep's own address, not the notifications sender: this one ends in
+      // him asking someone for money, so replies should reach him.
+      from: `Still & Golden <${OWNER_EMAIL}>`,
+      to: OWNER_EMAIL,
+      subject: `Balance payment failed — ${meta.date || 'session'} ${meta.time || ''}`.trim(),
+      text: [
+        `The second payment on a split booking did not go through.`,
+        '',
+        `Amount: ${amount}`,
+        `Session: ${meta.date || '?'} at ${meta.time || '?'} (service_key ${meta.service_key || '?'})`,
+        `Customer: ${invoice.customer_email || '(see Stripe)'}`,
+        `Subscription: ${subId}`,
+        '',
+        `They have been emailed a link to pay with another card, and Stripe will`,
+        `retry on its own for the next couple of days.`,
+        '',
+        `The session IS still booked — the deposit was paid and the appointment exists.`,
+        `Nothing has been refunded and nothing needs undoing.`,
+        '',
+        `If it has not cleared by the time the subscription ends, chase it directly.`,
+      ].join('\n'),
+    });
+    // Resend reports API errors in the response rather than throwing.
+    if (error) console.error('stripe-webhook: balance-failure alert rejected:', error);
+  } catch (mailErr) {
+    console.error('stripe-webhook: balance-failure alert could not be sent:', mailErr);
+  }
+
+  // And tell the customer, ourselves.
+  //
+  // Stripe can send its own dunning mail, but it is a Billing setting and it is
+  // suppressed in test mode — so it could not be verified before going live,
+  // and a silent one would leave a customer with a failed payment and no idea.
+  // Sending our own makes it certain, puts it in Deep's voice beside the
+  // reminder they already had, and carries Stripe's hosted invoice page so they
+  // can pay with another card in one click.
+  const payUrl = invoice.hosted_invoice_url;
+  const to = meta.email || invoice.customer_email;
+  if (!to) {
+    console.error('stripe-webhook: failed balance has no customer address to write to');
+    return;
+  }
+  try {
+    const { error } = await resend.emails.send({
+      from: `Still & Golden <${OWNER_EMAIL}>`,
+      to,
+      subject: 'That last payment did not go through',
+      text: [
+        `Hi ${meta.firstName || 'there'},`,
+        '',
+        `The remaining ${amount} for your session did not go through — usually just an expired card, or a bank being cautious about an automatic payment.`,
+        '',
+        payUrl ? `You can pay it here with any card: ${payUrl}` : `If you reply to this email I will send you a payment link.`,
+        '',
+        `Your session is still booked and nothing has been cancelled — this is only the balance.`,
+        '',
+        `If it is easier to sort another way, or something has changed, just reply and I will work around it.`,
+        '',
+        'Deep',
+        'Still & Golden Photography',
+      ].join('\n'),
+    });
+    if (error) console.error('stripe-webhook: customer balance-failure email rejected:', error);
+    else console.log(`stripe-webhook: balance-failure email sent to ${to}`);
+  } catch (mailErr) {
+    console.error('stripe-webhook: customer balance-failure email could not be sent:', mailErr);
+  }
+}
+
 // Idempotency guard 2: Stripe redelivers events (at-least-once). If the slot
 // is already held by this same customer, the original delivery succeeded and
 // this one is a duplicate — never refund in that case.
@@ -209,6 +399,27 @@ exports.handler = async (event) => {
     }
   }
 
+  // A split payment's SECOND charge failing. Stripe has already emailed the
+  // customer and given them a hosted page to pay on; this is only so Deep
+  // knows to follow up, because the appointment is booked and the balance is
+  // not in.
+  //
+  // Nothing in this branch may call handleBookingFailure. That refunds the
+  // deposit, which is the opposite of what a missing balance calls for.
+  // Stripe fires this 3 days before it creates the next invoice (Billing
+  // setting, confirmed in test mode 14 Sep). A heads-up before money leaves
+  // someone's account costs nothing and saves both failed payments — a dying
+  // card can be replaced in time — and "what is this charge?" emails.
+  if (stripeEvent.type === 'invoice.upcoming') {
+    await sendBalanceReminder(stripe, stripeEvent.data.object);
+    return json(200, { received: true, handled: 'invoice.upcoming' });
+  }
+
+  if (stripeEvent.type === 'invoice.payment_failed') {
+    await alertBalanceFailed(stripe, stripeEvent.data.object);
+    return json(200, { received: true, handled: 'invoice.payment_failed' });
+  }
+
   if (stripeEvent.type !== 'checkout.session.completed') {
     return json(200, { received: true, ignored: stripeEvent.type });
   }
@@ -258,6 +469,57 @@ exports.handler = async (event) => {
     // Everything past this point is a side effect of an ALREADY SUCCESSFUL,
     // already-paid booking. It must never reach the outer catch — that path
     // refunds the customer. A Resend outage is not a reason to undo a booking.
+
+    // Stop a split subscription after its second payment. Checkout rejects
+    // cancel_at when the session is created (probed 14 Sep 2026), so the cap
+    // can only be applied here, once the subscription exists. Without it the
+    // customer is billed weekly forever.
+    //
+    // In its own try/catch like everything else in this block: an unguarded
+    // throw here would refund a booking that has just succeeded, which is a
+    // far worse outcome than a subscription that needs capping by hand.
+    if (stripe && meta.pay_mode === 'split' && session.subscription) {
+      const subId = typeof session.subscription === 'string'
+        ? session.subscription
+        : session.subscription.id;
+      try {
+        // Retrieved rather than assumed: the cancellation has to sit exactly on
+        // a billing-period boundary, and only Stripe knows where that falls.
+        const sub = await stripe.subscriptions.retrieve(subId);
+        const cancelAt = subscriptionCancelAt(sub);
+        await stripe.subscriptions.update(subId, { cancel_at: cancelAt });
+        console.log(`stripe-webhook: ${subId} will cancel at ${new Date(cancelAt * 1000).toISOString()} (end of 2nd period)`);
+      } catch (capErr) {
+        // Recoverable, and there is time: the second charge is 7 days out and a
+        // third would be 14, so this can be capped by hand well before anyone
+        // is overcharged. Shout about it anyway.
+        console.error('stripe-webhook: FAILED to cap split subscription:', capErr);
+        if (resend) {
+          try {
+            await resend.emails.send({
+              from: FROM,
+              to: OWNER_EMAIL,
+              subject: `ACTION NEEDED — uncapped subscription ${subId}`,
+              text: [
+                `The split-payment subscription for ${meta.firstName} ${meta.lastName} could not be capped.`,
+                '',
+                `It will keep billing weekly until someone stops it.`,
+                '',
+                `Fix: Stripe dashboard → Subscriptions → ${subId} → cancel it after the second payment lands.`,
+                `There is no rush of minutes — the second payment is 7 days away and a third would be 14.`,
+                '',
+                `Session: ${meta.date} at ${meta.time} (service_key ${meta.service_key})`,
+                `Customer: ${meta.email}`,
+                `Error: ${capErr.message}`,
+              ].join('\n'),
+            });
+          } catch (mailErr) {
+            console.error('stripe-webhook: cap-failure alert could not be sent:', mailErr);
+          }
+        }
+      }
+    }
+
     if (resend) {
       try {
         await sendBookingConfirmation(resend, meta);

@@ -1,7 +1,27 @@
 // GET /.netlify/functions/booking-slots?service_key=...&date=YYYY-MM-DD
-// → { slots: ["09:00", "09:30", ...] }  (Australia/Melbourne local times)
+// → { slots: ["09:00", "09:30", ...], split }  (Australia/Melbourne local times)
+//
+// `split` tells the page whether to offer part payment for THIS date, and with
+// what amounts — so the 9-day cutoff is never restated in page JavaScript where
+// it could drift from the server's copy. Same inputs as the slot lookup, so it
+// rides along rather than needing a call of its own. booking-checkout re-checks
+// it regardless: this decides what is shown, not what is allowed.
 
 const { TIERS, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
+const { balancePlan, todayInMelbourne } = require('./lib/deposits');
+
+// Only what the buttons need to render. `reason` is deliberately not sent —
+// the page has nothing useful to do with it and it only describes our rules.
+function splitOffer(tier, date) {
+  const plan = balancePlan(tier, date, todayInMelbourne());
+  if (!plan.eligible) return { available: false };
+  return {
+    available: true,
+    depositCents: plan.depositCents,
+    balanceCents: plan.balanceCents,
+    chargeOn: plan.chargeOn,
+  };
+}
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'GET') {
@@ -29,7 +49,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slots }),
+        body: JSON.stringify({ slots, split: splitOffer(tier, date) }),
       };
     }
 
@@ -40,7 +60,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slots }),
+      body: JSON.stringify({ slots, split: splitOffer(tier, date) }),
     };
   } catch (err) {
     console.error('booking-slots error:', err);
