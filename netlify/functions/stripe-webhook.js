@@ -17,6 +17,9 @@ const {
   createAppointment,
   getAppointmentsOnDate,
 } = require('./lib/setmore');
+
+// Split payment (spec 2026-09-14): when the subscription must stop.
+const { subscriptionCancelAt } = require('./lib/deposits');
 const { upsertResendContact } = require('./lib/resend-contacts');
 const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking-confirmation');
 
@@ -258,6 +261,54 @@ exports.handler = async (event) => {
     // Everything past this point is a side effect of an ALREADY SUCCESSFUL,
     // already-paid booking. It must never reach the outer catch — that path
     // refunds the customer. A Resend outage is not a reason to undo a booking.
+
+    // Stop a split subscription after its second payment. Checkout rejects
+    // cancel_at when the session is created (probed 14 Sep 2026), so the cap
+    // can only be applied here, once the subscription exists. Without it the
+    // customer is billed weekly forever.
+    //
+    // In its own try/catch like everything else in this block: an unguarded
+    // throw here would refund a booking that has just succeeded, which is a
+    // far worse outcome than a subscription that needs capping by hand.
+    if (stripe && meta.pay_mode === 'split' && session.subscription) {
+      const subId = typeof session.subscription === 'string'
+        ? session.subscription
+        : session.subscription.id;
+      try {
+        const cancelAt = subscriptionCancelAt();
+        await stripe.subscriptions.update(subId, { cancel_at: cancelAt });
+        console.log(`stripe-webhook: ${subId} will cancel at ${new Date(cancelAt * 1000).toISOString()}`);
+      } catch (capErr) {
+        // Recoverable, and there is time: the second charge is 7 days out and a
+        // third would be 14, so this can be capped by hand well before anyone
+        // is overcharged. Shout about it anyway.
+        console.error('stripe-webhook: FAILED to cap split subscription:', capErr);
+        if (resend) {
+          try {
+            await resend.emails.send({
+              from: FROM,
+              to: OWNER_EMAIL,
+              subject: `ACTION NEEDED — uncapped subscription ${subId}`,
+              text: [
+                `The split-payment subscription for ${meta.firstName} ${meta.lastName} could not be capped.`,
+                '',
+                `It will keep billing weekly until someone stops it.`,
+                '',
+                `Fix: Stripe dashboard → Subscriptions → ${subId} → cancel it after the second payment lands.`,
+                `There is no rush of minutes — the second payment is 7 days away and a third would be 14.`,
+                '',
+                `Session: ${meta.date} at ${meta.time} (service_key ${meta.service_key})`,
+                `Customer: ${meta.email}`,
+                `Error: ${capErr.message}`,
+              ].join('\n'),
+            });
+          } catch (mailErr) {
+            console.error('stripe-webhook: cap-failure alert could not be sent:', mailErr);
+          }
+        }
+      }
+    }
+
     if (resend) {
       try {
         await sendBookingConfirmation(resend, meta);

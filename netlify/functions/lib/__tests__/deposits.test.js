@@ -121,3 +121,27 @@ describe('todayInMelbourne', () => {
     expect(todayInMelbourne(new Date('2026-06-01T03:00:00Z'))).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 })
+
+const { subscriptionCancelAt, CANCEL_AFTER_DAYS, BALANCE_AFTER_DAYS } = require('../deposits')
+
+describe('subscriptionCancelAt', () => {
+  const deposit = Date.parse('2026-10-02T09:00:00Z')
+
+  it('lands after the second charge and before a third', () => {
+    const cancelAt = subscriptionCancelAt(deposit)
+    const secondCharge = deposit / 1000 + BALANCE_AFTER_DAYS * 86400
+    const thirdCharge = deposit / 1000 + 14 * 86400
+    expect(cancelAt).toBeGreaterThan(secondCharge)
+    expect(cancelAt).toBeLessThan(thirdCharge)
+  })
+
+  it('leaves room for Stripe to retry a declined second charge', () => {
+    // Cancelling at day 8 would stop a third charge but kill the retry window,
+    // losing the balance entirely on a card that would have recovered.
+    expect(CANCEL_AFTER_DAYS - BALANCE_AFTER_DAYS).toBeGreaterThanOrEqual(5)
+  })
+
+  it('returns whole seconds, which is what Stripe wants', () => {
+    expect(Number.isInteger(subscriptionCancelAt(deposit))).toBe(true)
+  })
+})

@@ -26,6 +26,21 @@ const MIN_DAYS_BEFORE_SESSION = 2;
 
 const MIN_NOTICE_DAYS = BALANCE_AFTER_DAYS + MIN_DAYS_BEFORE_SESSION; // 9
 
+// When the subscription is told to stop, counted from the deposit.
+//
+// Charges land on day 0 and day 7; a third would land on day 14. Cancelling at
+// day 8 would stop that third charge but would also cut off Stripe's retries if
+// the day-7 charge failed — a declined card is retried over the following days,
+// and killing the subscription mid-retry loses the balance entirely. Day 13
+// leaves the whole retry window open and still lands before day 14.
+const CANCEL_AFTER_DAYS = 13;
+
+// The moment a split subscription should stop, as a unix timestamp for
+// Stripe's `cancel_at`. Anchored to when the deposit was taken.
+function subscriptionCancelAt(depositAtMs = Date.now()) {
+  return Math.floor(depositAtMs / 1000) + CANCEL_AFTER_DAYS * 86400;
+}
+
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 // Calendar-date maths in UTC, never local time. These are dates, not moments:
@@ -145,7 +160,9 @@ function splitCheckoutParams(tier, plan, { date, time, firstName, lastName }) {
 module.exports = {
   balancePlan,
   splitCheckoutParams,
+  subscriptionCancelAt,
   todayInMelbourne,
+  CANCEL_AFTER_DAYS,
   BALANCE_AFTER_DAYS,
   MIN_DAYS_BEFORE_SESSION,
   MIN_NOTICE_DAYS,
