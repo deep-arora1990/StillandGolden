@@ -151,6 +151,66 @@ async function handleBookingFailure(stripe, resend, session, meta, err) {
   }
 }
 
+// The second half of a split payment failed to collect.
+//
+// Deliberately narrow: only subscriptions this site created carry pay_mode in
+// their metadata, so anything else — a manual subscription, another product,
+// an invoice unrelated to a booking — is ignored rather than guessed at. Same
+// reasoning as the service_key guard on checkout sessions, which exists
+// because a payment link once fell into the refund path.
+async function alertBalanceFailed(stripe, invoice) {
+  if (!stripe || !invoice || !invoice.subscription) return;
+  const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
+
+  let meta = {};
+  try {
+    const sub = await stripe.subscriptions.retrieve(subId);
+    meta = sub.metadata || {};
+  } catch (err) {
+    console.error('stripe-webhook: could not read subscription for failed invoice:', err);
+    return;
+  }
+  if (meta.pay_mode !== 'split') {
+    console.log(`stripe-webhook: ignoring invoice.payment_failed for ${subId} — not one of ours`);
+    return;
+  }
+
+  const amount = typeof invoice.amount_due === 'number' ? `$${(invoice.amount_due / 100).toFixed(2)}` : 'the balance';
+  console.error(`stripe-webhook: BALANCE FAILED for ${subId} (${meta.date} ${meta.time})`);
+
+  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+  if (!resend) return;
+  try {
+    const { error } = await resend.emails.send({
+      // From Deep's own address, not the notifications sender: this one ends in
+      // him asking someone for money, so replies should reach him.
+      from: `Still & Golden <${OWNER_EMAIL}>`,
+      to: OWNER_EMAIL,
+      subject: `Balance payment failed — ${meta.date || 'session'} ${meta.time || ''}`.trim(),
+      text: [
+        `The second payment on a split booking did not go through.`,
+        '',
+        `Amount: ${amount}`,
+        `Session: ${meta.date || '?'} at ${meta.time || '?'} (service_key ${meta.service_key || '?'})`,
+        `Customer: ${invoice.customer_email || '(see Stripe)'}`,
+        `Subscription: ${subId}`,
+        '',
+        `Stripe has emailed them and given them a link to pay with another card,`,
+        `and will retry on its own for the next couple of days.`,
+        '',
+        `The session IS still booked — the deposit was paid and the appointment exists.`,
+        `Nothing has been refunded and nothing needs undoing.`,
+        '',
+        `If it has not cleared by the time the subscription ends, chase it directly.`,
+      ].join('\n'),
+    });
+    // Resend reports API errors in the response rather than throwing.
+    if (error) console.error('stripe-webhook: balance-failure alert rejected:', error);
+  } catch (mailErr) {
+    console.error('stripe-webhook: balance-failure alert could not be sent:', mailErr);
+  }
+}
+
 // Idempotency guard 2: Stripe redelivers events (at-least-once). If the slot
 // is already held by this same customer, the original delivery succeeded and
 // this one is a duplicate — never refund in that case.
@@ -210,6 +270,18 @@ exports.handler = async (event) => {
       console.error('stripe-webhook signature verification failed:', err.message);
       return json(400, { error: 'Invalid signature' });
     }
+  }
+
+  // A split payment's SECOND charge failing. Stripe has already emailed the
+  // customer and given them a hosted page to pay on; this is only so Deep
+  // knows to follow up, because the appointment is booked and the balance is
+  // not in.
+  //
+  // Nothing in this branch may call handleBookingFailure. That refunds the
+  // deposit, which is the opposite of what a missing balance calls for.
+  if (stripeEvent.type === 'invoice.payment_failed') {
+    await alertBalanceFailed(stripe, stripeEvent.data.object);
+    return json(200, { received: true, handled: 'invoice.payment_failed' });
   }
 
   if (stripeEvent.type !== 'checkout.session.completed') {
