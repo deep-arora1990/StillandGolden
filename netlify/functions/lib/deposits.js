@@ -26,22 +26,35 @@ const MIN_DAYS_BEFORE_SESSION = 2;
 
 const MIN_NOTICE_DAYS = BALANCE_AFTER_DAYS + MIN_DAYS_BEFORE_SESSION; // 9
 
-// When the subscription is told to stop, counted from the deposit.
+// When a split subscription should stop.
 //
-// Charges land on day 0 and day 7; a third would land on day 14, so anything
-// before that prevents an overcharge. Deep's call, 14 Sep: day 9.
+// It MUST land exactly on a billing-period boundary. Stripe bills a shortened
+// final period pro rata: a cancel_at inside period 2 makes the 21 Sept invoice
+// cover only 21->23 Sept and charge $21.43 instead of $75, so the customer pays
+// $96.43 for a $150 session. Observed in test mode 14 Sep 2026 — the first
+// version of this used deposit + 9 days, which is mid-period, and the upcoming
+// invoice showed the prorated amount.
 //
-// The tradeoff that buys: a declined second charge gets two days of Stripe
-// retries rather than six. A card that would have recovered on day 11 won't,
-// and that balance is chased by hand off the invoice.payment_failed alert
-// instead. Nothing can overcharge either way — this only moves recovery from
-// automatic to manual in the minority of cases where a retry would have won.
-const CANCEL_AFTER_DAYS = 9;
+// The boundary we want is the end of the SECOND period: period 2 then bills in
+// full and the subscription ends before a third begins. Anchored to Stripe's
+// own period, not to our clock, so it cannot drift from the billing cycle by
+// the seconds between payment and this call.
+//
+// Note the period lives on the subscription ITEM in current API versions, with
+// the subscription-level field kept as a fallback for older ones.
+function subscriptionCancelAt(subscription) {
+  const item = subscription && subscription.items && subscription.items.data && subscription.items.data[0];
+  const periodEnd = (item && item.current_period_end) || subscription.current_period_end;
+  const periodStart = (item && item.current_period_start) || subscription.current_period_start;
 
-// The moment a split subscription should stop, as a unix timestamp for
-// Stripe's `cancel_at`. Anchored to when the deposit was taken.
-function subscriptionCancelAt(depositAtMs = Date.now()) {
-  return Math.floor(depositAtMs / 1000) + CANCEL_AFTER_DAYS * 86400;
+  if (!periodEnd || !periodStart || periodEnd <= periodStart) {
+    throw new Error('subscriptionCancelAt: subscription has no usable billing period');
+  }
+
+  // Exactly one more period after the one now running. Using the measured
+  // length rather than a hardcoded week keeps this correct if the interval
+  // ever changes.
+  return periodEnd + (periodEnd - periodStart);
 }
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -165,7 +178,6 @@ module.exports = {
   splitCheckoutParams,
   subscriptionCancelAt,
   todayInMelbourne,
-  CANCEL_AFTER_DAYS,
   BALANCE_AFTER_DAYS,
   MIN_DAYS_BEFORE_SESSION,
   MIN_NOTICE_DAYS,

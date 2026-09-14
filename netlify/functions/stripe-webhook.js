@@ -275,9 +275,12 @@ exports.handler = async (event) => {
         ? session.subscription
         : session.subscription.id;
       try {
-        const cancelAt = subscriptionCancelAt();
+        // Retrieved rather than assumed: the cancellation has to sit exactly on
+        // a billing-period boundary, and only Stripe knows where that falls.
+        const sub = await stripe.subscriptions.retrieve(subId);
+        const cancelAt = subscriptionCancelAt(sub);
         await stripe.subscriptions.update(subId, { cancel_at: cancelAt });
-        console.log(`stripe-webhook: ${subId} will cancel at ${new Date(cancelAt * 1000).toISOString()}`);
+        console.log(`stripe-webhook: ${subId} will cancel at ${new Date(cancelAt * 1000).toISOString()} (end of 2nd period)`);
       } catch (capErr) {
         // Recoverable, and there is time: the second charge is 7 days out and a
         // third would be 14, so this can be capped by hand well before anyone

@@ -122,27 +122,54 @@ describe('todayInMelbourne', () => {
   })
 })
 
-const { subscriptionCancelAt, CANCEL_AFTER_DAYS, BALANCE_AFTER_DAYS } = require('../deposits')
+const { subscriptionCancelAt } = require('../deposits')
+
+// A subscription as Stripe returns it: weekly periods, the period living on the
+// item (where current API versions put it).
+const WEEK = 7 * 86400
+const startedAt = Date.parse('2026-09-14T11:00:00Z') / 1000
+const subscription = {
+  current_period_start: startedAt,
+  current_period_end: startedAt + WEEK,
+  items: { data: [{ current_period_start: startedAt, current_period_end: startedAt + WEEK }] },
+}
 
 describe('subscriptionCancelAt', () => {
-  const deposit = Date.parse('2026-10-02T09:00:00Z')
-
-  it('lands after the second charge and before a third', () => {
-    const cancelAt = subscriptionCancelAt(deposit)
-    const secondCharge = deposit / 1000 + BALANCE_AFTER_DAYS * 86400
-    const thirdCharge = deposit / 1000 + 14 * 86400
-    expect(cancelAt).toBeGreaterThan(secondCharge)
-    expect(cancelAt).toBeLessThan(thirdCharge)
+  it('lands exactly on a period boundary, never inside one', () => {
+    // The whole point. Stripe prorates a shortened final period: a cancel_at
+    // mid-period made the second invoice $21.43 instead of $75 in test mode on
+    // 14 Sep 2026, so the customer would have paid $96.43 for a $150 session.
+    const cancelAt = subscriptionCancelAt(subscription)
+    expect((cancelAt - startedAt) % WEEK).toBe(0)
   })
 
-  it('leaves at least some room for Stripe to retry a declined second charge', () => {
-    // Deliberately short (2 days, Deep's call 14 Sep): a card that would have
-    // recovered later is chased by hand instead. Cancelling ON the second
-    // charge would be the bug — no retry window at all.
-    expect(CANCEL_AFTER_DAYS - BALANCE_AFTER_DAYS).toBeGreaterThanOrEqual(2)
+  it('ends after the second charge and before a third', () => {
+    const cancelAt = subscriptionCancelAt(subscription)
+    expect(cancelAt).toBe(startedAt + 2 * WEEK)
+    expect(cancelAt).toBeGreaterThan(startedAt + WEEK)   // the second charge
+  })
+
+  it('prefers the item period over the subscription-level one', () => {
+    // Current API versions carry the period on the item; the subscription-level
+    // field is a fallback for older ones. If both are present the item wins.
+    const mixed = {
+      current_period_start: startedAt - 999, current_period_end: startedAt + 999,
+      items: { data: [{ current_period_start: startedAt, current_period_end: startedAt + WEEK }] },
+    }
+    expect(subscriptionCancelAt(mixed)).toBe(startedAt + 2 * WEEK)
+  })
+
+  it('falls back to the subscription-level period when there is no item', () => {
+    expect(subscriptionCancelAt({ current_period_start: startedAt, current_period_end: startedAt + WEEK }))
+      .toBe(startedAt + 2 * WEEK)
+  })
+
+  it('refuses to guess when the period is missing', () => {
+    // Better to alert and cap by hand than to invent a boundary and prorate.
+    expect(() => subscriptionCancelAt({})).toThrow(/billing period/)
   })
 
   it('returns whole seconds, which is what Stripe wants', () => {
-    expect(Number.isInteger(subscriptionCancelAt(deposit))).toBe(true)
+    expect(Number.isInteger(subscriptionCancelAt(subscription))).toBe(true)
   })
 })
