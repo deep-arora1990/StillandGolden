@@ -282,8 +282,8 @@ async function alertBalanceFailed(stripe, invoice) {
         `Customer: ${invoice.customer_email || '(see Stripe)'}`,
         `Subscription: ${subId}`,
         '',
-        `Stripe has emailed them and given them a link to pay with another card,`,
-        `and will retry on its own for the next couple of days.`,
+        `They have been emailed a link to pay with another card, and Stripe will`,
+        `retry on its own for the next couple of days.`,
         '',
         `The session IS still booked — the deposit was paid and the appointment exists.`,
         `Nothing has been refunded and nothing needs undoing.`,
@@ -295,6 +295,46 @@ async function alertBalanceFailed(stripe, invoice) {
     if (error) console.error('stripe-webhook: balance-failure alert rejected:', error);
   } catch (mailErr) {
     console.error('stripe-webhook: balance-failure alert could not be sent:', mailErr);
+  }
+
+  // And tell the customer, ourselves.
+  //
+  // Stripe can send its own dunning mail, but it is a Billing setting and it is
+  // suppressed in test mode — so it could not be verified before going live,
+  // and a silent one would leave a customer with a failed payment and no idea.
+  // Sending our own makes it certain, puts it in Deep's voice beside the
+  // reminder they already had, and carries Stripe's hosted invoice page so they
+  // can pay with another card in one click.
+  const payUrl = invoice.hosted_invoice_url;
+  const to = meta.email || invoice.customer_email;
+  if (!to) {
+    console.error('stripe-webhook: failed balance has no customer address to write to');
+    return;
+  }
+  try {
+    const { error } = await resend.emails.send({
+      from: `Still & Golden <${OWNER_EMAIL}>`,
+      to,
+      subject: 'That last payment did not go through',
+      text: [
+        `Hi ${meta.firstName || 'there'},`,
+        '',
+        `The remaining ${amount} for your session did not go through — usually just an expired card, or a bank being cautious about an automatic payment.`,
+        '',
+        payUrl ? `You can pay it here with any card: ${payUrl}` : `If you reply to this email I will send you a payment link.`,
+        '',
+        `Your session is still booked and nothing has been cancelled — this is only the balance.`,
+        '',
+        `If it is easier to sort another way, or something has changed, just reply and I will work around it.`,
+        '',
+        'Deep',
+        'Still & Golden Photography',
+      ].join('\n'),
+    });
+    if (error) console.error('stripe-webhook: customer balance-failure email rejected:', error);
+    else console.log(`stripe-webhook: balance-failure email sent to ${to}`);
+  } catch (mailErr) {
+    console.error('stripe-webhook: customer balance-failure email could not be sent:', mailErr);
   }
 }
 
