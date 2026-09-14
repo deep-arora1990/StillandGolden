@@ -35,7 +35,6 @@ const TIERS = {
     durationMinutes: 30,
     priceFrom: 195,
     priceCents: 19500,
-    depositCents: 9750,
     includes: '10 edited images',
   },
   golden: {
