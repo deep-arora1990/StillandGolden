@@ -128,7 +128,7 @@ function todayInMelbourne(now = new Date()) {
  * No `customer_creation` here: subscription mode always creates a customer,
  * and passing it is an error.
  */
-function splitCheckoutParams(tier, plan, { date, time, firstName, lastName }) {
+function splitCheckoutParams(tier, plan, { date, time, firstName, lastName, email }) {
   const who = [firstName, lastName].filter(Boolean).join(' ').trim();
   const sessionLabel = `${date} at ${time}`;
   const balance = (plan.balanceCents / 100).toFixed(2);
@@ -168,6 +168,11 @@ function splitCheckoutParams(tier, plan, { date, time, firstName, lastName }) {
         pay_mode: 'split',
         balance_cents: String(plan.balanceCents),
         charge_on: plan.chargeOn,
+        // Carried so the reminder and failure emails can address the customer
+        // by name without a second lookup, and so the dashboard list can be
+        // searched by email when a charge needs cancelling.
+        email: email || '',
+        firstName: firstName || '',
       },
     },
   };

@@ -151,6 +151,79 @@ async function handleBookingFailure(stripe, resend, session, meta, err) {
   }
 }
 
+// Reads the split-payment metadata off the subscription behind an invoice,
+// or null if this invoice is nothing to do with us. Shared by the reminder and
+// the failure alert so both are narrow in exactly the same way: only
+// subscriptions this site created carry pay_mode, and anything else is left
+// alone rather than guessed at.
+async function splitMetaForInvoice(stripe, invoice) {
+  if (!stripe || !invoice || !invoice.subscription) return null;
+  const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
+  try {
+    const sub = await stripe.subscriptions.retrieve(subId);
+    const meta = sub.metadata || {};
+    if (meta.pay_mode !== 'split') {
+      console.log(`stripe-webhook: ignoring ${invoice.id || 'upcoming invoice'} for ${subId} — not one of ours`);
+      return null;
+    }
+    return { subId, meta };
+  } catch (err) {
+    console.error('stripe-webhook: could not read subscription for invoice:', err);
+    return null;
+  }
+}
+
+// "Monday 21 September", in Melbourne. The customer is being told when money
+// leaves their account, so it has to be their date, not UTC's.
+function melbourneLongDate(unixSeconds) {
+  return new Intl.DateTimeFormat('en-AU', {
+    timeZone: 'Australia/Melbourne', weekday: 'long', day: 'numeric', month: 'long',
+  }).format(new Date(unixSeconds * 1000));
+}
+
+// Three days before the balance is taken. Goes to the customer, from Deep.
+async function sendBalanceReminder(stripe, invoice) {
+  const found = await splitMetaForInvoice(stripe, invoice);
+  if (!found) return;
+  const { meta } = found;
+
+  const to = meta.email || invoice.customer_email;
+  if (!to) {
+    console.error('stripe-webhook: upcoming balance has no address to remind');
+    return;
+  }
+
+  const amount = `$${((invoice.amount_due || 0) / 100).toFixed(2)}`;
+  const whenTs = invoice.next_payment_attempt || invoice.period_end || invoice.created;
+  const when = whenTs ? melbourneLongDate(whenTs) : 'shortly';
+
+  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+  if (!resend) return;
+  try {
+    const { error } = await resend.emails.send({
+      from: `Still & Golden <${OWNER_EMAIL}>`,
+      to,
+      subject: `Your session balance — ${amount} on ${when.split(' ')[0]}`,
+      text: [
+        `Hi ${meta.firstName || 'there'},`,
+        '',
+        `Just a heads-up: the remaining ${amount} for your session on ${meta.date}${meta.time ? ` at ${meta.time}` : ''} comes off the same card on ${when}.`,
+        '',
+        `Nothing for you to do — it happens automatically, and that is the final payment.`,
+        '',
+        `If you would rather use a different card, or anything has changed, just reply to this email and I will sort it out.`,
+        '',
+        'Deep',
+        'Still & Golden Photography',
+      ].join('\n'),
+    });
+    if (error) console.error('stripe-webhook: balance reminder rejected:', error);
+    else console.log(`stripe-webhook: balance reminder sent to ${to} for ${when}`);
+  } catch (mailErr) {
+    console.error('stripe-webhook: balance reminder could not be sent:', mailErr);
+  }
+}
+
 // The second half of a split payment failed to collect.
 //
 // Deliberately narrow: only subscriptions this site created carry pay_mode in
@@ -159,21 +232,9 @@ async function handleBookingFailure(stripe, resend, session, meta, err) {
 // reasoning as the service_key guard on checkout sessions, which exists
 // because a payment link once fell into the refund path.
 async function alertBalanceFailed(stripe, invoice) {
-  if (!stripe || !invoice || !invoice.subscription) return;
-  const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
-
-  let meta = {};
-  try {
-    const sub = await stripe.subscriptions.retrieve(subId);
-    meta = sub.metadata || {};
-  } catch (err) {
-    console.error('stripe-webhook: could not read subscription for failed invoice:', err);
-    return;
-  }
-  if (meta.pay_mode !== 'split') {
-    console.log(`stripe-webhook: ignoring invoice.payment_failed for ${subId} — not one of ours`);
-    return;
-  }
+  const found = await splitMetaForInvoice(stripe, invoice);
+  if (!found) return;
+  const { subId, meta } = found;
 
   const amount = typeof invoice.amount_due === 'number' ? `$${(invoice.amount_due / 100).toFixed(2)}` : 'the balance';
   console.error(`stripe-webhook: BALANCE FAILED for ${subId} (${meta.date} ${meta.time})`);
@@ -279,6 +340,15 @@ exports.handler = async (event) => {
   //
   // Nothing in this branch may call handleBookingFailure. That refunds the
   // deposit, which is the opposite of what a missing balance calls for.
+  // Stripe fires this 3 days before it creates the next invoice (Billing
+  // setting, confirmed in test mode 14 Sep). A heads-up before money leaves
+  // someone's account costs nothing and saves both failed payments — a dying
+  // card can be replaced in time — and "what is this charge?" emails.
+  if (stripeEvent.type === 'invoice.upcoming') {
+    await sendBalanceReminder(stripe, stripeEvent.data.object);
+    return json(200, { received: true, handled: 'invoice.upcoming' });
+  }
+
   if (stripeEvent.type === 'invoice.payment_failed') {
     await alertBalanceFailed(stripe, stripeEvent.data.object);
     return json(200, { received: true, handled: 'invoice.payment_failed' });

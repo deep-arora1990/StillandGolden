@@ -143,7 +143,7 @@ exports.handler = async (event) => {
   // in metadata either way, so stripe-webhook books the appointment by the
   // same path in both cases.
   const payment = wantsSplit
-    ? splitCheckoutParams(tier, plan, { date, time, firstName, lastName })
+    ? splitCheckoutParams(tier, plan, { date, time, firstName, lastName, email })
     : {
         mode: 'payment',
         line_items: [

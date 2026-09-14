@@ -79,7 +79,7 @@ const { splitCheckoutParams, todayInMelbourne } = require('../deposits')
 describe('splitCheckoutParams', () => {
   const tier = { name: 'Christmas Mini', serviceKey: 'svc_1', priceCents: 15000, depositCents: 7500, sessionMinutes: 15, durationMinutes: 25 }
   const plan = balancePlan(tier, '2026-12-25', '2026-10-02')
-  const params = splitCheckoutParams(tier, plan, { date: '2026-12-25', time: '10:30', firstName: 'Tara', lastName: 'Smith' })
+  const params = splitCheckoutParams(tier, plan, { date: '2026-12-25', time: '10:30', firstName: 'Tara', lastName: 'Smith', email: 'tara@example.com' })
 
   it('charges the deposit, not the full price', () => {
     expect(params.line_items[0].price_data.unit_amount).toBe(7500)
@@ -102,6 +102,7 @@ describe('splitCheckoutParams', () => {
     expect(params.subscription_data.description).toBe('Christmas Mini — 2026-12-25 at 10:30 — Tara Smith')
     expect(params.subscription_data.metadata).toMatchObject({
       service_key: 'svc_1', date: '2026-12-25', time: '10:30', pay_mode: 'split',
+      email: 'tara@example.com', firstName: 'Tara',
     })
   })
 
