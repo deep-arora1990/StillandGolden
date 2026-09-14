@@ -72,11 +72,18 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Please check the booking details and try again');
   }
 
-  // Test-only tiers never take a booking on the production deploy, where the
-  // Stripe key is live. Netlify sets CONTEXT; anything that is not 'production'
-  // — local dev, deploy previews, branch deploys — is free to use them.
-  if (tier.testOnly && process.env.CONTEXT === 'production') {
-    console.warn(`booking-checkout: refused test-only tier ${tierName} in production`);
+  // Test-only tiers must never take a payment with the LIVE Stripe key.
+  //
+  // Keyed on the live key rather than on Netlify's CONTEXT, which is a BUILD
+  // variable and is absent from function runtime — the first version of this
+  // guard checked CONTEXT and did nothing at all, and production happily
+  // returned a cs_live_ checkout URL for the test tier.
+  //
+  // The live key is the right condition anyway: it is exactly "real money is
+  // possible here", which is the thing being guarded against. Local dev blanks
+  // it, so the test tier keeps working where it is meant to.
+  if (tier.testOnly && process.env.STRIPE_SECRET_KEY) {
+    console.warn(`booking-checkout: refused test-only tier ${tierName} — live Stripe key is active`);
     return error(400, 'INVALID_DETAILS', 'This session is not available');
   }
 
