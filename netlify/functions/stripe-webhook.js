@@ -151,14 +151,37 @@ async function handleBookingFailure(stripe, resend, session, meta, err) {
   }
 }
 
+// Where the subscription id lives on an Invoice depends on the API version the
+// account is pinned to. Recent versions moved it from `invoice.subscription`
+// to `invoice.parent.subscription_details.subscription`; the old field is kept
+// on older ones. Checking both means this keeps working across a version bump
+// instead of going quiet — and going quiet is the failure mode that matters
+// here, because no email is indistinguishable from nothing having happened.
+function subscriptionIdFromInvoice(invoice) {
+  const candidates = [
+    invoice.subscription,
+    invoice.parent && invoice.parent.subscription_details && invoice.parent.subscription_details.subscription,
+    invoice.subscription_details && invoice.subscription_details.subscription,
+  ];
+  for (const c of candidates) {
+    if (typeof c === 'string' && c) return c;
+    if (c && typeof c === 'object' && c.id) return c.id;
+  }
+  return null;
+}
+
 // Reads the split-payment metadata off the subscription behind an invoice,
 // or null if this invoice is nothing to do with us. Shared by the reminder and
 // the failure alert so both are narrow in exactly the same way: only
 // subscriptions this site created carry pay_mode, and anything else is left
 // alone rather than guessed at.
 async function splitMetaForInvoice(stripe, invoice) {
-  if (!stripe || !invoice || !invoice.subscription) return null;
-  const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
+  if (!stripe || !invoice) return null;
+  const subId = subscriptionIdFromInvoice(invoice);
+  if (!subId) {
+    console.log('stripe-webhook: invoice carries no subscription id — ignoring');
+    return null;
+  }
   try {
     const sub = await stripe.subscriptions.retrieve(subId);
     const meta = sub.metadata || {};
@@ -198,7 +221,10 @@ async function sendBalanceReminder(stripe, invoice) {
   const when = whenTs ? melbourneLongDate(whenTs) : 'shortly';
 
   const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-  if (!resend) return;
+  if (!resend) {
+    console.error(`stripe-webhook: WOULD have reminded ${to} of ${amount} on ${when}, but RESEND_API_KEY is not set`);
+    return;
+  }
   try {
     const { error } = await resend.emails.send({
       from: `Still & Golden <${OWNER_EMAIL}>`,
