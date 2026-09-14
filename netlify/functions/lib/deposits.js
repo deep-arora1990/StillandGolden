@@ -70,8 +70,82 @@ function balancePlan(tier, sessionDate, today) {
   };
 }
 
+// "Today" as a Melbourne calendar date, not a UTC one. Tier dates, session
+// dates and the cutoff are all Melbourne dates; for most of the day UTC is
+// already on the previous date there, so using it would let a booking through
+// the cutoff a day early. Kept out of balancePlan so that stays pure.
+function todayInMelbourne(now = new Date()) {
+  // en-CA formats as YYYY-MM-DD, which is the shape the rest of this uses.
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Australia/Melbourne',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(now);
+}
+
+/**
+ * The Stripe Checkout parameters that turn a booking into a two-payment
+ * subscription. Returned as a patch for the session the caller is already
+ * building, so booking-checkout.js gains a branch rather than a second copy of
+ * the checkout logic.
+ *
+ * A weekly recurring price charges now and again in seven days. It does NOT
+ * stop on its own — the subscription is capped in stripe-webhook.js once it
+ * exists, because Checkout rejects cancel_at at session-creation time (probed
+ * 14 Sep 2026). Until that cap lands the subscription would bill weekly, so
+ * the two changes belong in the same release.
+ *
+ * No `customer_creation` here: subscription mode always creates a customer,
+ * and passing it is an error.
+ */
+function splitCheckoutParams(tier, plan, { date, time, firstName, lastName }) {
+  const who = [firstName, lastName].filter(Boolean).join(' ').trim();
+  const sessionLabel = `${date} at ${time}`;
+  const balance = (plan.balanceCents / 100).toFixed(2);
+
+  return {
+    mode: 'subscription',
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'aud',
+          unit_amount: plan.depositCents,
+          recurring: { interval: 'week' },
+          product_data: {
+            name: `${tier.name} — half now, half in ${BALANCE_AFTER_DAYS} days`,
+            // Customer-facing, and load-bearing: Stripe's page says
+            // "subscription", and this is the line that stops that alarming
+            // anyone. It states the second payment and that nothing follows it.
+            description:
+              `${sessionLabel} · ${tier.sessionMinutes || tier.durationMinutes} minutes. ` +
+              `$${balance} will be charged to the same card on ${plan.chargeOn}. ` +
+              'That is the final payment — nothing is charged after it.',
+          },
+        },
+      },
+    ],
+    subscription_data: {
+      // The Stripe dashboard is the admin surface for these: cancelling a
+      // charge is cancelling the subscription. It has to be identifiable at a
+      // glance, and searchable, or finding the right one means matching on
+      // customer email alone.
+      description: `${tier.name} — ${sessionLabel}${who ? ` — ${who}` : ''}`,
+      metadata: {
+        service_key: tier.serviceKey,
+        date,
+        time,
+        pay_mode: 'split',
+        balance_cents: String(plan.balanceCents),
+        charge_on: plan.chargeOn,
+      },
+    },
+  };
+}
+
 module.exports = {
   balancePlan,
+  splitCheckoutParams,
+  todayInMelbourne,
   BALANCE_AFTER_DAYS,
   MIN_DAYS_BEFORE_SESSION,
   MIN_NOTICE_DAYS,

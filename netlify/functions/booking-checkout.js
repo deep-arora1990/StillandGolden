@@ -18,6 +18,10 @@ const {
   createAppointment,
 } = require('./lib/setmore');
 
+// Split payment (spec 2026-09-14). All of the rules and all of the Stripe
+// shaping live in the module; this file only decides whether to ask for them.
+const { balancePlan, splitCheckoutParams, todayInMelbourne } = require('./lib/deposits');
+
 const json = (statusCode, body) => ({
   statusCode,
   headers: { 'Content-Type': 'application/json' },
@@ -79,6 +83,15 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Please pick one of the listed session times');
   }
 
+  // Split payment is opt-in per request and validated here, never trusted from
+  // the page: the CTAs are HTML and a request can arrive asking for a split on
+  // a session two days away. A tier without depositCents always refuses.
+  const wantsSplit = data.payMode === 'split';
+  const plan = wantsSplit ? balancePlan(tier, date, todayInMelbourne()) : null;
+  if (wantsSplit && !plan.eligible) {
+    return error(400, 'INVALID_DETAILS', 'Part payment is not available for this session');
+  }
+
   // Campaign pages get their own success/cancel URLs; anything not on the
   // allowlist falls back to the main booking page.
   const returnTo = ['/book.html', '/fathers-day.html', '/christmas-minis.html', '/test-booking.html', '/xmas-test.html'].includes(data.returnTo)
@@ -125,26 +138,36 @@ exports.handler = async (event) => {
 
   const cancelParams = new URLSearchParams({ service: tierName, date, time, cancelled: '1' });
 
-  try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: 'aud',
-            unit_amount: tier.priceCents,
-            product_data: {
-              name: `${tier.name} — photography session`,
-              // sessionMinutes where a tier distinguishes it: durationMinutes is
-              // the calendar block, which for the minis includes changeover
-              // time the customer isn't buying. Telling someone paying for a
-              // 15-minute session that it's 25 would be plainly wrong.
-              description: `${date} at ${time} · ${tier.sessionMinutes || tier.durationMinutes} minutes`,
+  // Pay in full: one charge, exactly as before. Split: a two-payment
+  // subscription, shaped entirely by the deposits module. `service_key` stays
+  // in metadata either way, so stripe-webhook books the appointment by the
+  // same path in both cases.
+  const payment = wantsSplit
+    ? splitCheckoutParams(tier, plan, { date, time, firstName, lastName })
+    : {
+        mode: 'payment',
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency: 'aud',
+              unit_amount: tier.priceCents,
+              product_data: {
+                name: `${tier.name} — photography session`,
+                // sessionMinutes where a tier distinguishes it: durationMinutes is
+                // the calendar block, which for the minis includes changeover
+                // time the customer isn't buying. Telling someone paying for a
+                // 15-minute session that it's 25 would be plainly wrong.
+                description: `${date} at ${time} · ${tier.sessionMinutes || tier.durationMinutes} minutes`,
+              },
             },
           },
-        },
-      ],
+        ],
+      };
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ...payment,
       customer_email: email,
       client_reference_id: `${tierName}:${date}:${time}`,
       metadata: {
@@ -158,6 +181,11 @@ exports.handler = async (event) => {
         notes: (notes || '').slice(0, 500),
         // Stripe metadata values are strings; the webhook compares to 'yes'.
         marketingConsent: data.marketingConsent === true ? 'yes' : 'no',
+        // Absent on a full payment, so the webhook's split handling is opt-in
+        // and old sessions replayed from Stripe behave exactly as they did.
+        ...(wantsSplit
+          ? { pay_mode: 'split', balance_cents: String(plan.balanceCents), charge_on: plan.chargeOn }
+          : {}),
       },
       success_url: `${origin}${returnTo}?booked=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}${returnTo}?${cancelParams.toString()}`,

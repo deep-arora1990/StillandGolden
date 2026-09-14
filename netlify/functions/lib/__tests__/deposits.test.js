@@ -73,3 +73,51 @@ describe('deposit amounts on the real tiers', () => {
     }
   })
 })
+
+const { splitCheckoutParams, todayInMelbourne } = require('../deposits')
+
+describe('splitCheckoutParams', () => {
+  const tier = { name: 'Christmas Mini', serviceKey: 'svc_1', priceCents: 15000, depositCents: 7500, sessionMinutes: 15, durationMinutes: 25 }
+  const plan = balancePlan(tier, '2026-12-25', '2026-10-02')
+  const params = splitCheckoutParams(tier, plan, { date: '2026-12-25', time: '10:30', firstName: 'Tara', lastName: 'Smith' })
+
+  it('charges the deposit, not the full price', () => {
+    expect(params.line_items[0].price_data.unit_amount).toBe(7500)
+  })
+
+  it('is a weekly subscription so the second payment is seven days later', () => {
+    expect(params.mode).toBe('subscription')
+    expect(params.line_items[0].price_data.recurring).toEqual({ interval: 'week' })
+  })
+
+  it('tells the customer the balance amount, the date, and that nothing follows it', () => {
+    const d = params.line_items[0].price_data.product_data.description
+    expect(d).toContain('$75.00')
+    expect(d).toContain('2026-10-09')
+    expect(d).toMatch(/nothing is charged after it/i)
+  })
+
+  it('describes the subscription so it can be found in the Stripe dashboard', () => {
+    // Cancelling a charge means finding this subscription among others.
+    expect(params.subscription_data.description).toBe('Christmas Mini — 2026-12-25 at 10:30 — Tara Smith')
+    expect(params.subscription_data.metadata).toMatchObject({
+      service_key: 'svc_1', date: '2026-12-25', time: '10:30', pay_mode: 'split',
+    })
+  })
+
+  it('never sets customer_creation, which subscription mode rejects', () => {
+    expect(params).not.toHaveProperty('customer_creation')
+  })
+})
+
+describe('todayInMelbourne', () => {
+  it('uses the Melbourne date, not the UTC one', () => {
+    // 2026-10-02T22:00Z is already 3 October in Melbourne (UTC+10). Using UTC
+    // here would let a booking through the cutoff a day early.
+    expect(todayInMelbourne(new Date('2026-10-02T22:00:00Z'))).toBe('2026-10-03')
+  })
+
+  it('returns YYYY-MM-DD', () => {
+    expect(todayInMelbourne(new Date('2026-06-01T03:00:00Z'))).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+  })
+})
