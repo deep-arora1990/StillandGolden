@@ -52,3 +52,25 @@ describe('tier config', () => {
     }
   })
 })
+
+describe('test-only tiers', () => {
+  it('marks the 25 December test tier as test-only', () => {
+    // Its page ships with the site and production uses the LIVE Stripe key, so
+    // booking-checkout refuses it when CONTEXT=production. Losing this flag
+    // would make a real charge for a session that does not exist possible.
+    expect(TIERS['xmas-test'].testOnly).toBe(true)
+  })
+
+  it('leaves the $1 verification tier bookable in production', () => {
+    // Deliberately live: it exists to verify the real payment chain after an
+    // incident (BOOKING.md, Ops runbook).
+    expect(TIERS.test.testOnly).toBeUndefined()
+  })
+
+  it('never marks a customer-facing tier as test-only', () => {
+    for (const [name, tier] of Object.entries(TIERS)) {
+      if (tier.hidden) continue
+      expect(tier.testOnly, `${name} is customer-facing and must not be test-only`).toBeUndefined()
+    }
+  })
+})

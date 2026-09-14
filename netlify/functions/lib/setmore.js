@@ -134,6 +134,12 @@ const TIERS = {
   'xmas-test': {
     name: 'Christmas Mini (test)',
     tagline: 'Test tier — 25 December',
+    // Refused outright on the production deploy. The page that drives this tier
+    // ships with the site (publish = "."), and in production the Stripe key is
+    // LIVE — so without this, anyone who found /xmas-test could be charged real
+    // money for a 25 December slot that does not exist. Unlisted and noindex is
+    // not protection when money is involved.
+    testOnly: true,
     // The dedicated Setmore "Christmas mini test" service (15 min), created
     // 14 Sep 2026 so this tier has a key of its own.
     serviceKey: '50f47cdc-5d69-4f82-b47c-2300b0dcad33',

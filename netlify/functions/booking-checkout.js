@@ -72,6 +72,14 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Please check the booking details and try again');
   }
 
+  // Test-only tiers never take a booking on the production deploy, where the
+  // Stripe key is live. Netlify sets CONTEXT; anything that is not 'production'
+  // — local dev, deploy previews, branch deploys — is free to use them.
+  if (tier.testOnly && process.env.CONTEXT === 'production') {
+    console.warn(`booking-checkout: refused test-only tier ${tierName} in production`);
+    return error(400, 'INVALID_DETAILS', 'This session is not available');
+  }
+
   // Fixed-date offers (allowedDates in the tier config) only take their
   // advertised date.
   if (tier.allowedDates && !tier.allowedDates.includes(date)) {
