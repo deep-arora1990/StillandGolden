@@ -62,6 +62,44 @@ function pdfSafe(value) {
   return cleaned.replace(/[^\S\n]{2,}/g, ' ').trim()
 }
 
+/**
+ * Image sharing consent, as three states rather than a yes/no.
+ *
+ * "Faceless only" is the one that needs the loudest treatment, not the
+ * quietest: a flat no is memorable, whereas a restriction is easy to agree to
+ * and then forget halfway through an edit. It gets its own amber band and says
+ * what it forbids, not just what it permits.
+ *
+ * Anything unrecognised — an empty value, or an option added to the form but
+ * not here — falls to the most restrictive reading. A consent record that is
+ * ambiguous must never resolve to "allowed".
+ */
+function consentState(raw) {
+  const v = String(raw || '').trim().toLowerCase();
+  if (v.startsWith('y')) {
+    return {
+      pdf: 'YES — may be used on social media and for marketing',
+      email: 'YES — may be used publicly',
+      band: [0.95, 0.94, 0.91],
+      ink: [0.10, 0.09, 0.08],
+    };
+  }
+  if (v.startsWith('f') || v.includes('non-identifying') || v.includes('faceless')) {
+    return {
+      pdf: 'FACELESS ONLY — no faces, nothing identifying',
+      email: 'FACELESS ONLY — no faces, nothing identifying',
+      band: [0.99, 0.95, 0.85],
+      ink: [0.70, 0.45, 0.05],
+    };
+  }
+  return {
+    pdf: 'NO — KEEP PRIVATE. Do not publish these images anywhere.',
+    email: 'NO — KEEP PRIVATE',
+    band: [0.99, 0.93, 0.93],
+    ink: [0.65, 0.11, 0.11],
+  };
+}
+
 async function generatePDF(rawData) {
   // Sanitised once, at the boundary, so no drawText call can be reached with
   // something the font cannot encode.
@@ -288,25 +326,19 @@ async function generatePDF(rawData) {
   // the previous arrangement — an opt-out email sitting in an inbox — is
   // exactly how one gets missed. It should be impossible to skim past.
   ensureSpace(64);
-  const consentYes = String(data.imageConsent || '').toLowerCase().startsWith('y');
-  const band = consentYes ? rgb(0.95, 0.94, 0.91) : rgb(0.99, 0.93, 0.93);
+  const consent = consentState(data.imageConsent);
   y -= 6;
   page.drawRectangle({
     x: margin, y: y - 44, width: maxW, height: 44,
-    color: band,
+    color: rgb(...consent.band),
   });
   page.drawText('IMAGE SHARING CONSENT', {
     x: margin + 12, y: y - 17, size: 6.5, font: helveticaBold, color: rgb(...BRAND.gold),
   });
-  page.drawText(
-    consentYes
-      ? 'YES — may be used on social media and for marketing'
-      : 'NO — KEEP PRIVATE. Do not publish these images anywhere.',
-    {
-      x: margin + 12, y: y - 33, size: 10, font: helveticaBold,
-      color: consentYes ? rgb(...BRAND.black) : rgb(0.65, 0.11, 0.11),
-    },
-  );
+  page.drawText(consent.pdf, {
+    x: margin + 12, y: y - 33, size: 10, font: helveticaBold,
+    color: rgb(...consent.ink),
+  });
   y -= 56;
 
   // ── Colour Palette ──
@@ -450,11 +482,7 @@ exports.handler = async (event) => {
     // Always included, never conditional on being truthy — a consent line
     // missing from the email is indistinguishable from a "no", and that
     // ambiguity is the whole problem this question was added to remove.
-    detailsText += `Image sharing consent: ${
-      String(data.imageConsent || '').toLowerCase().startsWith('y')
-        ? 'YES — may be used publicly'
-        : 'NO — KEEP PRIVATE'
-    }\n`;
+    detailsText += `Image sharing consent: ${consentState(data.imageConsent).email}\n`;
 
     const safeName = displayName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
     const fileName = `questionnaire-${safeName}.pdf`;
