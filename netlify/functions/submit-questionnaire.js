@@ -76,7 +76,11 @@ function pdfSafe(value) {
  */
 function consentState(raw) {
   const v = String(raw || '').trim().toLowerCase();
-  if (v.startsWith('y')) {
+  // Anchored on the whole word rather than the first letter: startsWith('y')
+  // looks equivalent and grants permission for "Y E S", or anything else
+  // beginning with y. Erring toward "allowed" is the one direction this must
+  // never fail in. Mirrors normaliseConsent() in the Studio repo.
+  if (/^yes\b/.test(v)) {
     return {
       pdf: 'YES — may be used on social media and for marketing',
       email: 'YES — may be used publicly',
@@ -84,7 +88,7 @@ function consentState(raw) {
       ink: [0.10, 0.09, 0.08],
     };
   }
-  if (v.startsWith('f') || v.includes('non-identifying') || v.includes('faceless')) {
+  if (/^faceless\b/.test(v) || v.includes('non-identifying') || v.includes('faceless')) {
     return {
       pdf: 'FACELESS ONLY — no faces, nothing identifying',
       email: 'FACELESS ONLY — no faces, nothing identifying',
@@ -98,6 +102,43 @@ function consentState(raw) {
     band: [0.99, 0.93, 0.93],
     ink: [0.65, 0.11, 0.11],
   };
+}
+
+/**
+ * Push the questionnaire's image-consent answer into Studio.
+ *
+ * Server-to-server with a shared secret, same shape as submit-event-signup.
+ * Never throws: every failure path is logged and swallowed, because by the time
+ * this runs the caller has already delivered what the client asked for.
+ */
+async function syncConsentToStudio({ email, firstName, lastName, imageConsent }) {
+  const url = process.env.STUDIO_QUESTIONNAIRE_INGEST_URL;
+  const secret = process.env.QUESTIONNAIRE_INGEST_SECRET;
+  if (!url || !secret) {
+    // Not an error: a deployment without Studio configured should still accept
+    // questionnaires. Logged so a missing variable is findable.
+    console.log('questionnaire: Studio sync skipped - ingest URL or secret not set');
+    return;
+  }
+  if (!imageConsent) {
+    console.log('questionnaire: no consent answer to sync');
+    return;
+  }
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-ingest-secret': secret },
+      body: JSON.stringify({ email, firstName, lastName, imageConsent }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok || !body.ok) {
+      console.error(`questionnaire: Studio sync failed (${res.status}): ${body.error || 'no detail'}`);
+      return;
+    }
+    console.log(`questionnaire: consent "${body.consent}" recorded for contact ${body.contactId}`);
+  } catch (err) {
+    console.error('questionnaire: Studio sync threw:', err.message);
+  }
 }
 
 async function generatePDF(rawData) {
@@ -517,6 +558,26 @@ exports.handler = async (event) => {
       // No attachment line when there's no PDF — promising one that isn't
       // there reads worse than not mentioning it.
       ...(pdfBase64 ? { attachments: [{ filename: fileName, content: pdfBase64 }] } : {}),
+    });
+
+    // Record the consent answer in Studio, so it can be looked up against a
+    // contact instead of remembered or dug out of an inbox.
+    //
+    // Best-effort on purpose, and the opposite call to submit-event-signup:
+    // there, storage WAS the deliverable, so a failure returned an error. Here
+    // the PDF and both emails are what the client and Deep actually need, and
+    // they have already gone by this point. Failing now would show an error for
+    // something that worked, and invite a resubmission that duplicates both
+    // emails.
+    //
+    // The cost is that a sync can silently miss one, so Studio is the
+    // convenient place to check rather than the authoritative one — the PDF and
+    // the notification email remain the record.
+    await syncConsentToStudio({
+      email: clientEmail,
+      firstName: displayName.split(' ')[0] || null,
+      lastName: displayName.split(' ').slice(1).join(' ') || null,
+      imageConsent: data.imageConsent,
     });
 
     return {
