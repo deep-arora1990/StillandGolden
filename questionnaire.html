@@ -164,6 +164,63 @@
     }
     .fg textarea { resize: vertical; min-height: 100px; }
 
+    /* Consent choice. Built as radios rather than a single tick-box on
+       purpose: a box left unticked is ambiguous — it could mean "no" or
+       "didn't notice" — and this is the one answer that must not be guessed
+       at later. Two explicit options, one of which must be chosen. */
+    .consent {
+      background: rgba(26,23,20,0.04);
+      padding: 14px 14px 16px;
+      margin-bottom: 2px;
+    }
+    .consent > span.q {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 4px;
+    }
+    .consent .hint {
+      display: block;
+      font-family: var(--serif);
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--mid);
+      margin-bottom: 12px;
+    }
+    .consent label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--warm-black);
+      padding: 9px 0;
+      cursor: pointer;
+    }
+    .consent input[type="radio"] {
+      appearance: none;
+      width: 16px; height: 16px;
+      margin: 2px 0 0;
+      flex: none;
+      border: 1px solid var(--mid);
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .consent input[type="radio"]:checked {
+      border-color: var(--gold);
+      box-shadow: inset 0 0 0 4px var(--gold);
+    }
+    .consent input[type="radio"]:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+
     .form-submit {
       margin-top: 16px;
       align-self: flex-start;
@@ -418,10 +475,31 @@
             <input type="text" id="best_time" name="best_time">
           </div>
           <div class="fg">
-            <label for="anything_else">Anything else we should know?</label>
-            <span class="hint">Temperaments, fears, allergies, things to avoid.</span>
-            <textarea id="anything_else" name="anything_else" style="min-height:70px;"></textarea>
+            <label for="shy">Is anyone coming who's shy in front of the camera?</label>
+            <span class="hint">Good to know early — it changes how I start the session.</span>
+            <input type="text" id="shy" name="shy">
           </div>
+        </div>
+        <div class="fg">
+          <label for="anything_else">Is there anything else you'd like me to know?</label>
+          <span class="hint">Temperaments, fears, allergies, things to avoid.</span>
+          <textarea id="anything_else" name="anything_else" style="min-height:70px;"></textarea>
+        </div>
+
+        <div class="form-section" style="margin-top:34px;">
+          <div class="form-section-heading">Sharing Your Images</div>
+        </div>
+        <div class="consent">
+          <span class="q">Do I have your permission to share images on social media and use them for marketing purposes? *</span>
+          <span class="hint">Either answer is completely fine, and it won't change your session or your gallery.</span>
+          <label>
+            <input type="radio" name="image_consent" value="Yes" required>
+            <span>Yes, you have my permission.</span>
+          </label>
+          <label>
+            <input type="radio" name="image_consent" value="No">
+            <span>No, please keep images private.</span>
+          </label>
         </div>
 
         <button type="submit" class="form-submit">Submit questionnaire</button>
@@ -504,7 +582,13 @@
         specialToy: this.special_toy.value,
         together: this.together.value,
         bestTime: this.best_time.value,
-        anythingElse: this.anything_else.value
+        shy: this.shy.value,
+        anythingElse: this.anything_else.value,
+        // Required in the markup, so the browser blocks submit before this
+        // reads null. Sent as the literal Yes/No the client picked rather than
+        // a boolean — this is a consent record, and it should read back as the
+        // words they were shown.
+        imageConsent: (this.image_consent.value || '')
       };
 
       try {

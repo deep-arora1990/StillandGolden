@@ -279,7 +279,35 @@ async function generatePDF(rawData) {
   y -= 18;
 
   drawQA('Best time of day', data.bestTime);
+  drawQA('Shy in front of the camera', data.shy);
   drawQA('Anything else', data.anythingElse);
+
+  // ── Image consent ──
+  // Drawn as its own banded block rather than another Q&A row. This is the
+  // record that decides whether a family's photos can ever be published, and
+  // the previous arrangement — an opt-out email sitting in an inbox — is
+  // exactly how one gets missed. It should be impossible to skim past.
+  ensureSpace(64);
+  const consentYes = String(data.imageConsent || '').toLowerCase().startsWith('y');
+  const band = consentYes ? rgb(0.95, 0.94, 0.91) : rgb(0.99, 0.93, 0.93);
+  y -= 6;
+  page.drawRectangle({
+    x: margin, y: y - 44, width: maxW, height: 44,
+    color: band,
+  });
+  page.drawText('IMAGE SHARING CONSENT', {
+    x: margin + 12, y: y - 17, size: 6.5, font: helveticaBold, color: rgb(...BRAND.gold),
+  });
+  page.drawText(
+    consentYes
+      ? 'YES — may be used on social media and for marketing'
+      : 'NO — KEEP PRIVATE. Do not publish these images anywhere.',
+    {
+      x: margin + 12, y: y - 33, size: 10, font: helveticaBold,
+      color: consentYes ? rgb(...BRAND.black) : rgb(0.65, 0.11, 0.11),
+    },
+  );
+  y -= 56;
 
   // ── Colour Palette ──
   ensureSpace(140);
@@ -417,7 +445,16 @@ exports.handler = async (event) => {
     if (data.specialToy) detailsText += `Special toy/blanket: ${data.specialToy}\n`;
     if (data.together) detailsText += `Together activity: ${data.together}\n`;
     if (data.bestTime) detailsText += `Best time of day: ${data.bestTime}\n`;
+    if (data.shy) detailsText += `Shy in front of the camera: ${data.shy}\n`;
     if (data.anythingElse) detailsText += `Anything else: ${data.anythingElse}\n`;
+    // Always included, never conditional on being truthy — a consent line
+    // missing from the email is indistinguishable from a "no", and that
+    // ambiguity is the whole problem this question was added to remove.
+    detailsText += `Image sharing consent: ${
+      String(data.imageConsent || '').toLowerCase().startsWith('y')
+        ? 'YES — may be used publicly'
+        : 'NO — KEEP PRIVATE'
+    }\n`;
 
     const safeName = displayName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
     const fileName = `questionnaire-${safeName}.pdf`;
