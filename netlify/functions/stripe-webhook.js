@@ -17,6 +17,8 @@ const {
   createAppointment,
   getAppointmentsOnDate,
 } = require('./lib/setmore');
+const { connectStore } = require('./lib/shared-store');
+const { clearMonth } = require('./lib/availability-cache');
 
 // Split payment (spec 2026-09-14): when the subscription must stop.
 const { subscriptionCancelAt } = require('./lib/deposits');
@@ -51,7 +53,7 @@ async function bookAppointment(meta) {
     });
   }
 
-  return createAppointment({
+  const appointment = await createAppointment({
     staffKey,
     serviceKey: meta.service_key,
     customerKey: customer.key,
@@ -59,6 +61,16 @@ async function bookAppointment(meta) {
     endTime: `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(end.getDate())}T${pad(end.getHours())}:${pad(end.getMinutes())}`,
     comment: meta.notes || '',
   });
+
+  // That day is now taken, for every package — they share one calendar — so
+  // drop the booked month from the shared availability cache. Otherwise a far
+  // month could keep showing the day as open for up to 24 hours. Never throws:
+  // the booking has succeeded, and a stale cache is only an inconvenience,
+  // since the time-slot step re-checks Setmore before anyone can pay.
+  const [bookedYear, bookedMonth] = meta.date.split('-').map(Number);
+  await clearMonth(bookedYear, bookedMonth);
+
+  return appointment;
 }
 
 async function addToAudience(meta) {
@@ -355,6 +367,8 @@ async function findExistingBooking(meta) {
 }
 
 exports.handler = async (event) => {
+  // Share one Setmore token with every other running copy (lib/shared-store.js).
+  connectStore(event);
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }

@@ -2,7 +2,8 @@
 // check failed. On 24 Sep 2026 rate-limited probes were treated as "no slots",
 // the month was returned with bookable days missing, and the gap was cached for
 // 30 minutes — a weekend showed as fully booked to every visitor.
-import { describe, it, expect, afterEach, vi } from 'vitest'
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
+import { installFreshBlobs, removeBlobs } from './helpers/blobs.js'
 
 const GOLDEN = 'cbad199e-41dd-4572-803b-7f27ae3e2bb3'
 const reply = (body, status = 200) =>
@@ -37,6 +38,8 @@ const none = reply({ response: true, data: { slots: [] } })
 const ev = { httpMethod: 'GET', queryStringParameters: { service_key: GOLDEN, year: '2027', month: '3' } }
 
 describe('booking-availability failure handling', () => {
+  beforeEach(() => { installFreshBlobs() })
+  afterEach(() => { removeBlobs() })
   afterEach(() => vi.unstubAllGlobals())
 
   it('returns a retryable error, not a month with holes, when Setmore is throttling', async () => {
@@ -95,4 +98,60 @@ describe('booking-availability failure handling', () => {
     await handler(ev)
     expect(calls.slots).toBe(before)
   })
+})
+
+describe('booking-availability shared cache', () => {
+  let blobs
+  beforeEach(() => { blobs = installFreshBlobs() })
+  afterEach(() => { vi.unstubAllGlobals(); removeBlobs() })
+
+  const MIN = 60 * 1000
+  const seed = (month, minutesAgo, dates = ['2027-03-06']) =>
+    blobs('availability').setJSON(`${GOLDEN}/${month}`, { availableDates: dates, fetchedAt: Date.now() - minutesAgo * MIN })
+
+  it('serves a second container from the first one\'s answer, without asking Setmore', async () => {
+    const calls = stub(() => ok)
+    const a = await freshHandler()
+    expect((await a(ev)).statusCode).toBe(200)
+    const afterA = calls.slots
+    const b = await freshHandler()                       // a different, cold container
+    const res = await b(ev)
+    expect(res.statusCode).toBe(200)
+    expect(calls.slots).toBe(afterA)
+    expect(JSON.parse(res.body).availableDates).toHaveLength(31)
+  })
+
+  it('keeps a far-off month for longer than a near one', async () => {
+    // Both cached 20 minutes ago: stale for a near month (15-minute window),
+    // still fresh for a far one (24-hour window).
+    const now = new Date()
+    const near = { year: now.getFullYear() + (now.getMonth() === 11 ? 1 : 0), month: (now.getMonth() + 1) % 12 + 1 }
+    const nearKey = `${near.year}-${String(near.month).padStart(2, '0')}`
+    await seed(nearKey, 20)
+    await seed('2027-03', 20)
+    const calls = stub(() => ok)
+    const handler = await freshHandler()
+
+    await handler(ev)                                    // 2027-03: fresh, no probes
+    expect(calls.slots).toBe(0)
+    await handler({ httpMethod: 'GET', queryStringParameters: { service_key: GOLDEN, year: String(near.year), month: String(near.month) } })
+    expect(calls.slots).toBeGreaterThan(0)               // near month: re-checked
+  })
+
+  it('serves the last good copy when Setmore is throttling, instead of an error', async () => {
+    await seed('2027-03', 48 * 60, ['2027-03-06', '2027-03-07'])   // two days old: stale
+    stub(() => reply({ error: 'too_many_requests' }, 429))
+    const handler = await freshHandler()
+    const res = await handler(ev)
+    expect(res.statusCode).toBe(200)
+    const body = JSON.parse(res.body)
+    expect(body.stale).toBe(true)
+    expect(body.availableDates).toEqual(['2027-03-06', '2027-03-07'])
+  }, 15000)
+
+  it('still reports busy when throttled and there is no earlier copy at all', async () => {
+    stub(() => reply({ error: 'too_many_requests' }, 429))
+    const handler = await freshHandler()
+    expect((await handler(ev)).statusCode).toBe(503)
+  }, 15000)
 })

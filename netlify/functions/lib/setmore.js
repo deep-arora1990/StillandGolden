@@ -10,6 +10,7 @@
 // retry on 401 (expired cached token).
 
 const BASE = 'https://developer.setmore.com/api/v1';
+const { tokenStore } = require('./shared-store');
 const TIMEZONE = 'Australia/Melbourne';
 
 // Dev-only mock mode (SETMORE_MOCK=1): the domain helpers return canned data
@@ -273,22 +274,78 @@ let tokenInFlight = null;
 const EXCHANGE_COOLDOWN_MS = 20 * 1000;
 let exchangeCooldownUntil = 0;
 
+// The token that most recently failed with a 401 here. Used so that a
+// rejected token is never adopted back out of the shared store.
+let lastFailedToken = null;
+
+// --- shared token, across every running copy ----------------------------
+//
+// In-flight sharing (above) stops the copies *within* one container from
+// stampeding. It does nothing across containers, and that turned out to be the
+// bigger problem: each container fetched its own token, and a new Setmore
+// token appears to cancel the last — so containers kept invalidating each
+// other, re-fetching, and throttling the account. The fix is one token for
+// everyone, kept in the shared store and replaced only when it genuinely
+// expires or is rejected.
+//
+// The cooldown is shared too. A throttle is account-wide, so every container
+// should back off together rather than each discovering it the slow way.
+
+const TOKEN_KEY = 'access-token';
+const COOLDOWN_KEY = 'exchange-cooldown';
+
+async function readShared(key) {
+  try {
+    return await tokenStore().get(key, { type: 'json' });
+  } catch (err) {
+    console.warn(`setmore: shared ${key} read failed:`, err.message);
+    return null;
+  }
+}
+
+async function writeShared(key, value) {
+  try {
+    await tokenStore().setJSON(key, value);
+  } catch (err) {
+    console.warn(`setmore: shared ${key} write failed:`, err.message);
+  }
+}
+
+function rateLimited() {
+  return new SetmoreError('Setmore rate limit hit during token exchange', { status: 429, code: 'RATE_LIMITED' });
+}
+
 async function getAccessToken() {
   if (cachedToken && cachedToken.expiresAt > Date.now()) return cachedToken.value;
   if (tokenInFlight) return tokenInFlight;
-  if (Date.now() < exchangeCooldownUntil) {
-    throw new SetmoreError('Setmore rate limit hit during token exchange', {
-      status: 429,
-      code: 'RATE_LIMITED',
-    });
-  }
-  tokenInFlight = exchangeRefreshToken()
-    .then((token) => {
-      cachedToken = token;
-      return token.value;
-    })
-    .catch((err) => {
-      if (err.code === 'RATE_LIMITED') exchangeCooldownUntil = Date.now() + EXCHANGE_COOLDOWN_MS;
+  if (Date.now() < exchangeCooldownUntil) throw rateLimited();
+
+  tokenInFlight = (async () => {
+    // Another copy may already hold a good token. Adopt it — unless it is the
+    // very one that just failed here, in which case it needs replacing.
+    const shared = await readShared(TOKEN_KEY);
+    if (shared && shared.value && shared.expiresAt > Date.now() && shared.value !== lastFailedToken) {
+      cachedToken = shared;
+      return shared.value;
+    }
+
+    const cooldown = await readShared(COOLDOWN_KEY);
+    if (cooldown && cooldown.until > Date.now()) {
+      exchangeCooldownUntil = cooldown.until;
+      throw rateLimited();
+    }
+
+    const fresh = await exchangeRefreshToken();
+    cachedToken = fresh;
+    lastFailedToken = null;
+    await writeShared(TOKEN_KEY, fresh);
+    return fresh.value;
+  })()
+    .catch(async (err) => {
+      if (err.code === 'RATE_LIMITED') {
+        exchangeCooldownUntil = Math.max(exchangeCooldownUntil, Date.now() + EXCHANGE_COOLDOWN_MS);
+        await writeShared(COOLDOWN_KEY, { until: exchangeCooldownUntil });
+      }
       throw err;
     })
     .finally(() => {
@@ -298,9 +355,10 @@ async function getAccessToken() {
 }
 
 // Discard only the token that actually failed. A probe holding an older token
-// can get its 401 after another probe has already fetched a fresh one; wiping
-// the cache then throws away a good token and starts yet another exchange.
+// can get its 401 after another has already fetched a fresh one; wiping the
+// cache then would throw away a good token and start yet another exchange.
 function invalidateToken(failedValue) {
+  if (failedValue) lastFailedToken = failedValue;
   if (!failedValue || (cachedToken && cachedToken.value === failedValue)) cachedToken = null;
 }
 

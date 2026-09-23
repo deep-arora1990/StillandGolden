@@ -4,6 +4,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@netlify/blobs": "^11.1.0",
     "@netlify/functions": "^6.0.0",
     "pdf-lib": "^1.17.1",
     "resend": "^4.0.0",

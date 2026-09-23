@@ -8,6 +8,7 @@
 // it regardless: this decides what is shown, not what is allowed.
 
 const { TIERS, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
+const { connectStore } = require('./lib/shared-store');
 const { balancePlan, todayInMelbourne } = require('./lib/deposits');
 
 // Only what the buttons need to render. `reason` is deliberately not sent —
@@ -24,6 +25,8 @@ function splitOffer(tier, date) {
 }
 
 exports.handler = async (event) => {
+  // Share one Setmore token with every other running copy (lib/shared-store.js).
+  connectStore(event);
   if (event.httpMethod !== 'GET') {
     return { statusCode: 405, body: 'Method not allowed' };
   }

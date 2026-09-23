@@ -17,6 +17,7 @@ const {
   createCustomer,
   createAppointment,
 } = require('./lib/setmore');
+const { connectStore } = require('./lib/shared-store');
 
 // Split payment (spec 2026-09-14). All of the rules and all of the Stripe
 // shaping live in the module; this file only decides whether to ask for them.
@@ -42,6 +43,8 @@ function requestOrigin(event) {
 }
 
 exports.handler = async (event) => {
+  // Share one Setmore token with every other running copy (lib/shared-store.js).
+  connectStore(event);
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }

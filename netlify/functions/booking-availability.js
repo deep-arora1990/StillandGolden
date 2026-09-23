@@ -3,12 +3,19 @@
 //
 // Setmore has no "available dates in a month" endpoint, so this fans out one
 // slots call per remaining day of the month (parallel batches of 5 to stay
-// rate-limit friendly) and caches the result in memory for 30 minutes.
+// rate-limit friendly).
+//
+// The result is cached in the SHARED store (Netlify Blobs), so a month is
+// checked once for every visitor and every running copy of this function,
+// rather than once per container as it used to be. How long a month stays
+// fresh depends on how far out it is — see lib/availability-ttl.js. Before
+// 24 Sep 2026 the cache was per-container and 30 minutes flat, so calls grew
+// with visitors instead of with time.
 
 const { TIERS, TIMEZONE, getSlots } = require('./lib/setmore');
-
-const CACHE_TTL_MS = 30 * 60 * 1000;
-const cache = new Map(); // key: `${serviceKey}:${year}:${month}` → { expiresAt, availableDates }
+const { connectStore } = require('./lib/shared-store');
+const { readMonth, writeMonth } = require('./lib/availability-cache');
+const { ttlForMonth, isFresh } = require('./lib/availability-ttl');
 
 const BATCH_SIZE = 5;
 
@@ -30,6 +37,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'GET') {
     return { statusCode: 405, body: 'Method not allowed' };
   }
+  connectStore(event);
 
   const { service_key: serviceKey, year: yearRaw, month: monthRaw } = event.queryStringParameters || {};
   const year = Number(yearRaw);
@@ -44,19 +52,18 @@ exports.handler = async (event) => {
     };
   }
 
-  const cacheKey = `${serviceKey}:${year}:${pad(month)}`;
-  const hit = cache.get(cacheKey);
-  if (hit && hit.expiresAt > Date.now()) {
+  const today = melbourneToday();
+  const cached = await readMonth(serviceKey, year, month);
+  if (isFresh(cached, ttlForMonth(year, month, today))) {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ availableDates: hit.availableDates, cached: true }),
+      body: JSON.stringify({ availableDates: cached.availableDates, cached: true }),
     };
   }
 
   // Days to probe: from today (Melbourne) through the end of the requested
   // month. A month fully in the past returns empty without any API calls.
-  const today = melbourneToday();
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const isCurrentMonth = today.year === year && today.month === month;
   const firstDay = isCurrentMonth ? today.day : 1;
@@ -120,6 +127,18 @@ exports.handler = async (event) => {
   }
 
   if (systemic) {
+    // Setmore refused, but we hold an earlier good answer for this month: serve
+    // it. Somewhat out of date beats "try again", and nothing can be booked off
+    // it unchecked — the time-slot step asks Setmore live. This is what keeps a
+    // throttle like 24 Sep's from being visible to visitors at all.
+    if (cached && Array.isArray(cached.availableDates)) {
+      console.warn(`booking-availability: ${year}-${pad(month)} serving stale copy (${systemic.message})`);
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ availableDates: cached.availableDates, cached: true, stale: true }),
+      };
+    }
     console.error(`booking-availability: ${year}-${pad(month)} not served:`, systemic.message);
     return {
       statusCode: 503,
@@ -133,7 +152,7 @@ exports.handler = async (event) => {
   // Retries append out of order; ISO dates sort correctly as strings.
   availableDates.sort();
 
-  cache.set(cacheKey, { expiresAt: Date.now() + CACHE_TTL_MS, availableDates });
+  await writeMonth(serviceKey, year, month, availableDates);
 
   return {
     statusCode: 200,

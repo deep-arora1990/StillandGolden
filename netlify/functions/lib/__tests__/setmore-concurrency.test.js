@@ -9,6 +9,7 @@
 // These tests pin call counts rather than returned data: a regression here is
 // invisible until it throttles production.
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { installFreshBlobs, removeBlobs } from './helpers/blobs.js'
 
 const TOKEN_URL = '/o/oauth2/token'
 
@@ -45,6 +46,8 @@ function stubSetmore({ tokenReply } = {}) {
 }
 
 describe('Setmore token and staff key under parallel probes', () => {
+  beforeEach(() => { installFreshBlobs() })
+  afterEach(() => { removeBlobs() })
   afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers() })
 
   it('shares one token exchange between five parallel probes', async () => {
