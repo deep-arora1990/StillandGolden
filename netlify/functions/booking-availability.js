@@ -5,7 +5,7 @@
 // slots call per remaining day of the month (parallel batches of 5 to stay
 // rate-limit friendly) and caches the result in memory for 30 minutes.
 
-const { TIERS, TIMEZONE, getSlots, SetmoreError } = require('./lib/setmore');
+const { TIERS, TIMEZONE, getSlots } = require('./lib/setmore');
 
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const cache = new Map(); // key: `${serviceKey}:${year}:${month}` → { expiresAt, availableDates }
@@ -67,9 +67,24 @@ exports.handler = async (event) => {
     }
   }
 
+  // A probe that fails is NOT the same as a day with no slots, and treating it
+  // as one was a real bug: under Setmore rate limiting some probes failed, the
+  // month was returned with those days missing, and the gap was cached for 30
+  // minutes — so a bookable weekend showed as fully booked to every visitor.
+  // Seen on 24 Sep 2026 (3–4 Oct dropped). Wrong availability loses a booking
+  // silently; an honest "try again" does not.
+  //
+  // So: a systemic failure (rate limit, auth) stops the month straight away —
+  // every further probe would fail the same way and only deepen the throttle.
+  // An isolated failure gets one quiet retry. Nothing incomplete is cached.
+  const isSystemic = (err) =>
+    err && (err.code === 'RATE_LIMITED' || err.code === 'too_many_requests' || err.status === 429 || err.status === 401);
+
   const availableDates = [];
+  const isolatedFailures = [];
+  let systemic = null;
   try {
-    for (let i = 0; i < dates.length; i += BATCH_SIZE) {
+    for (let i = 0; i < dates.length && !systemic; i += BATCH_SIZE) {
       const batch = dates.slice(i, i + BATCH_SIZE);
       const results = await Promise.all(
         batch.map(async (date) => {
@@ -77,37 +92,46 @@ exports.handler = async (event) => {
             const slots = await getSlots(serviceKey, date);
             return slots.length ? date : null;
           } catch (err) {
-            // A single day's failure shouldn't blank the whole calendar —
-            // treat it as unavailable unless everything fails (caught below).
             console.warn(`slots probe failed for ${date}:`, err.message);
+            if (isSystemic(err)) systemic = systemic || err;
+            else isolatedFailures.push(date);
             return null;
           }
         })
       );
       for (const r of results) if (r) availableDates.push(r);
     }
+
+    // One sequential retry per isolated failure. If it still fails, the month
+    // is reported as unavailable rather than shown with a hole in it.
+    for (const date of isolatedFailures) {
+      if (systemic) break;
+      try {
+        const slots = await getSlots(serviceKey, date);
+        if (slots.length) availableDates.push(date);
+      } catch (err) {
+        console.warn(`slots retry failed for ${date}:`, err.message);
+        systemic = err;
+      }
+    }
   } catch (err) {
     console.error('booking-availability error:', err);
+    systemic = err;
+  }
+
+  if (systemic) {
+    console.error(`booking-availability: ${year}-${pad(month)} not served:`, systemic.message);
     return {
-      statusCode: 502,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: { code: 'SETMORE_DOWN', message: 'Availability is unavailable right now' } }),
+      statusCode: 503,
+      headers: { 'Content-Type': 'application/json', 'Retry-After': '20' },
+      body: JSON.stringify({
+        error: { code: 'SETMORE_BUSY', message: 'Availability is busy right now — please try again in a moment.' },
+      }),
     };
   }
 
-  // If every single probe errored we likely have an auth/outage problem, not
-  // a genuinely empty calendar — surface that instead of a silent empty month.
-  if (dates.length && !availableDates.length) {
-    const staffProbe = await getSlots(serviceKey, dates[dates.length - 1]).catch((e) => e);
-    if (staffProbe instanceof SetmoreError) {
-      console.error('booking-availability: all probes failed:', staffProbe.message);
-      return {
-        statusCode: 502,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: { code: 'SETMORE_DOWN', message: 'Availability is unavailable right now' } }),
-      };
-    }
-  }
+  // Retries append out of order; ISO dates sort correctly as strings.
+  availableDates.sort();
 
   cache.set(cacheKey, { expiresAt: Date.now() + CACHE_TTL_MS, availableDates });
 

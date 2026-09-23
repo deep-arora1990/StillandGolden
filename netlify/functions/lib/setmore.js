@@ -259,14 +259,49 @@ async function exchangeRefreshTokenOnce() {
   });
 }
 
+// Concurrent callers share one exchange. Without this, a cold container's first
+// batch of parallel slot probes each found the cache empty and each started its
+// own exchange — five token requests at once, which Setmore throttles. Every
+// probe then retried independently with backoff, and every later batch did the
+// same, so one calendar month could fire dozens of token requests. Seen in
+// production on 24 Sep 2026: months taking 17–28s and then failing outright.
+let tokenInFlight = null;
+
+// After a rate-limited exchange, stop asking for a short while and fail fast.
+// Retrying immediately only extends the throttle, and a caller waiting through
+// another full backoff cycle is a visitor staring at a spinner.
+const EXCHANGE_COOLDOWN_MS = 20 * 1000;
+let exchangeCooldownUntil = 0;
+
 async function getAccessToken() {
   if (cachedToken && cachedToken.expiresAt > Date.now()) return cachedToken.value;
-  cachedToken = await exchangeRefreshToken();
-  return cachedToken.value;
+  if (tokenInFlight) return tokenInFlight;
+  if (Date.now() < exchangeCooldownUntil) {
+    throw new SetmoreError('Setmore rate limit hit during token exchange', {
+      status: 429,
+      code: 'RATE_LIMITED',
+    });
+  }
+  tokenInFlight = exchangeRefreshToken()
+    .then((token) => {
+      cachedToken = token;
+      return token.value;
+    })
+    .catch((err) => {
+      if (err.code === 'RATE_LIMITED') exchangeCooldownUntil = Date.now() + EXCHANGE_COOLDOWN_MS;
+      throw err;
+    })
+    .finally(() => {
+      tokenInFlight = null;
+    });
+  return tokenInFlight;
 }
 
-function invalidateToken() {
-  cachedToken = null;
+// Discard only the token that actually failed. A probe holding an older token
+// can get its 401 after another probe has already fetched a fresh one; wiping
+// the cache then throws away a good token and starts yet another exchange.
+function invalidateToken(failedValue) {
+  if (!failedValue || (cachedToken && cachedToken.value === failedValue)) cachedToken = null;
 }
 
 // --- authed request wrapper -------------------------------------------------
@@ -308,7 +343,7 @@ async function setmoreFetch(path, { method = 'GET', body, query } = {}, { retry 
 
   if (res.status === 401 && retry && !envVarIsAccessToken) {
     // cached token rejected — force re-exchange and try once more
-    invalidateToken();
+    invalidateToken(token);
     return setmoreFetch(path, { method, body, query }, { retry: false });
   }
 
@@ -326,14 +361,25 @@ async function setmoreFetch(path, { method = 'GET', body, query } = {}, { retry 
 
 let cachedStaffKey = null;
 
+// Shared between concurrent callers for the same reason as the token: every
+// parallel slot probe asks for the staff key first, and on a cold container
+// each one used to fetch it separately.
+let staffKeyInFlight = null;
+
 async function getStaffKey() {
   if (MOCK) return 'mock-staff-key';
   if (cachedStaffKey) return cachedStaffKey;
-  const data = await setmoreFetch('/bookingapi/staffs');
-  const staff = (data && data.staffs) || [];
-  if (!staff.length) throw new SetmoreError('No staff members found in Setmore account');
-  cachedStaffKey = staff[0].key;
-  return cachedStaffKey;
+  if (staffKeyInFlight) return staffKeyInFlight;
+  staffKeyInFlight = (async () => {
+    const data = await setmoreFetch('/bookingapi/staffs');
+    const staff = (data && data.staffs) || [];
+    if (!staff.length) throw new SetmoreError('No staff members found in Setmore account');
+    cachedStaffKey = staff[0].key;
+    return cachedStaffKey;
+  })().finally(() => {
+    staffKeyInFlight = null;
+  });
+  return staffKeyInFlight;
 }
 
 // Setmore slot times arrive as "9:00 AM" / "4:45 PM" (12-hour) in current
