@@ -276,17 +276,20 @@
 
     var FN = '/.netlify/functions/';
     // How far ahead the calendar will scroll: the current month plus this many.
-    // Four gives roughly a season's horizon, which is what newborn bookings
-    // (made while pregnant) and Christmas-period family sessions need. It is a
-    // rolling window, so it always means "four months from now", not a fixed
-    // end date.
+    // Twelve, so a visitor can gauge a full year of availability from today
+    // (Deep, 24 Sep 2026; previously four). It is a rolling window, so it always
+    // means "a year from now", not a fixed end date.
     //
     // Setmore itself imposes no ceiling here — it answers for any month asked,
     // including well into next year — so this number is the only thing deciding
-    // how far out someone can book. Raising it further is safe mechanically,
-    // but each extra month is one people can commit you to before you have
-    // planned that far.
-    var MAX_MONTHS_AHEAD = 4;
+    // how far out someone can book. Each extra month is one people can commit
+    // Deep to before he has planned that far; a year was chosen knowingly.
+    //
+    // Cost: availability has no month-level endpoint, so each month a visitor
+    // opens fans out to roughly thirty Setmore calls (cached 30 minutes per
+    // service). Nothing is prefetched, so distant months only cost anything
+    // when someone actually scrolls to them.
+    var MAX_MONTHS_AHEAD = 12;
 
     var state = {
       services: [],
