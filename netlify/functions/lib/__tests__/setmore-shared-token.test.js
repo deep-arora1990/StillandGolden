@@ -97,3 +97,20 @@ describe('shared Setmore token across containers', () => {
     expect(calls.token).toBe(afterA)                  // b never asked Setmore
   })
 })
+
+describe('shared store works within the platform\'s limits', () => {
+  afterEach(() => { vi.unstubAllGlobals(); removeBlobs() })
+
+  // Regression guard for 24 Sep 2026: the token store asked for strong
+  // consistency, which these handlers cannot have, so every shared read and
+  // write failed live while this suite stayed green.
+  it('shares a token end to end without needing strong consistency', async () => {
+    installFreshBlobs()
+    const calls = stubSetmore()
+    const a = await container()
+    await a.getSlots('svc', '2026-10-03')
+    const b = await container()
+    await b.getSlots('svc', '2026-10-04')
+    expect(calls.token).toBe(1)
+  })
+})

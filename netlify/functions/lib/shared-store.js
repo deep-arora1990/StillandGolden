@@ -58,7 +58,7 @@ function memoryStore(name) {
 
 function store(name, opts) {
   const injected = injectedFactory();
-  if (injected) return injected(name);
+  if (injected) return injected(name, opts);
   if (!connected) return memoryStore(name);
   try {
     return getStore({ name, ...opts });
@@ -68,11 +68,23 @@ function store(name, opts) {
   }
 }
 
-// The token is read with strong consistency: an instance that picks up a token
-// another has already replaced would use a dead one, get a 401, and start the
-// very churn this exists to stop. Availability can tolerate Blobs' default
-// eventual consistency (changes visible within 60 seconds).
-const tokenStore = () => store('setmore-token', { consistency: 'strong' });
+// Both stores use Blobs' default EVENTUAL consistency: reads may lag a change
+// by up to 60 seconds, including a cached "not found" for a key just written.
+//
+// The token was first read with strong consistency, and that failed on every
+// call in production (24 Sep 2026): strong reads need an `uncachedEdgeURL`, and
+// connectLambda() — the only way to configure Blobs in these Lambda-
+// compatibility handlers — never provides one (confirmed in the library
+// source). Rather than every read failing and falling back per-container,
+// eventual consistency gets the main benefit: a new container adopts the
+// existing token instead of fetching its own, which was the bulk of the churn.
+//
+// The cost is bounded: when a shared token is genuinely rejected (Studio or the
+// 5am contact sync issuing their own, say), instances can disagree for up to a
+// minute and replace it a few extra times before settling. Moving the busiest
+// handlers to Netlify's current function format would allow strong reads and
+// remove even that.
+const tokenStore = () => store('setmore-token');
 const availabilityStore = () => store('availability');
 
 // Tests inject a store shared between two "instances" to prove they share.
