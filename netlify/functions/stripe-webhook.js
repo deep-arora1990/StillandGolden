@@ -1,8 +1,12 @@
 // POST /.netlify/functions/stripe-webhook
 // Stripe → here on checkout.session.completed. The customer has PAID at this
 // point; this function creates the Setmore appointment. If the booking fails
-// (slot taken, Setmore down), the payment is refunded in full and both Deep
-// and the customer are emailed — no silent failures with money involved.
+// (slot taken, Setmore down), the payment is HELD — nothing is refunded — and
+// Deep is emailed everything he needs to rebook by hand, while the customer gets
+// an honest note that their time will be confirmed personally. No silent
+// failures with money involved, and no automatic refunds either (Deep's call,
+// 25 Sep 2026: a failed booking is usually a Setmore glitch he can rebook, and
+// a refund he didn't choose is harder to undo than one he did).
 //
 // Mock mode (SETMORE_MOCK=1): signature verification is skipped and the body
 // is treated as the event object directly, for local harness testing.
@@ -114,34 +118,99 @@ async function sendBookingConfirmation(resend, meta) {
   if (error) throw new Error(`Resend rejected the confirmation: ${error.message || JSON.stringify(error)}`);
 }
 
-async function handleBookingFailure(stripe, resend, session, meta, err) {
-  console.error('stripe-webhook: Setmore booking failed after payment:', err);
-
-  let refundStatus = 'refund failed — MANUAL REFUND REQUIRED';
+// Split payments are a subscription, and nothing stops a subscription except
+// cancel_at. Applied on BOTH paths — a successful booking and a held one —
+// because a held booking that is later rebooked by hand should still stop after
+// its second payment, and one that isn't can be cancelled by hand. Before
+// 25 Sep 2026 this ran only after a successful booking, so a failed one left
+// the customer's subscription billing weekly with nothing to stop it.
+async function capSplitSubscription(stripe, resend, session, meta) {
+  if (!(stripe && meta.pay_mode === 'split' && session.subscription)) return;
+  const subId = typeof session.subscription === 'string'
+    ? session.subscription
+    : session.subscription.id;
   try {
-    const refund = await stripe.refunds.create({ payment_intent: session.payment_intent });
-    refundStatus = `refund issued (${refund.id}, status ${refund.status})`;
-  } catch (refundErr) {
-    console.error('stripe-webhook: refund failed:', refundErr);
+    // Retrieved rather than assumed: the cancellation has to sit exactly on a
+    // billing-period boundary, and only Stripe knows where that falls.
+    const sub = await stripe.subscriptions.retrieve(subId);
+    const cancelAt = subscriptionCancelAt(sub);
+    await stripe.subscriptions.update(subId, { cancel_at: cancelAt });
+    console.log(`stripe-webhook: ${subId} will cancel at ${new Date(cancelAt * 1000).toISOString()} (end of 2nd period)`);
+  } catch (capErr) {
+    // Recoverable, and there is time: the second charge is 7 days out and a
+    // third would be 14, so this can be capped by hand well before anyone is
+    // overcharged. Shout about it anyway.
+    console.error('stripe-webhook: FAILED to cap split subscription:', capErr);
+    if (!resend) return;
+    try {
+      await resend.emails.send({
+        from: FROM,
+        to: OWNER_EMAIL,
+        subject: `ACTION NEEDED — uncapped subscription ${subId}`,
+        text: [
+          `The split-payment subscription for ${meta.firstName} ${meta.lastName} could not be capped.`,
+          '',
+          `It will keep billing weekly until someone stops it.`,
+          '',
+          `Fix: Stripe dashboard → Subscriptions → ${subId}. AFTER the second payment has gone through, choose Cancel subscription → "End of current period".`,
+          `Don't cancel before the second payment (the balance would never be taken), and don't pick a custom date (it prorates).`,
+          '',
+          `Session: ${meta.date} at ${meta.time} (service_key ${meta.service_key})`,
+          `Customer: ${meta.email}`,
+          `Error: ${capErr.message}`,
+        ].join('\n'),
+      });
+    } catch (mailErr) {
+      console.error('stripe-webhook: cap-failure alert could not be sent:', mailErr);
+    }
   }
+}
 
+// A booking that could not be written to Setmore after the customer paid.
+// Nothing is refunded (see the header): the payment is held and Deep rebooks by
+// hand. The split cap is still applied, so a held split booking can't bill
+// weekly forever.
+//
+// The customer email promises only what is true. The version before 25 Sep
+// 2026 said "I've issued a full refund" whether or not a refund had worked —
+// and for split payments it never could, since it tried to refund
+// session.payment_intent, which is empty in subscription mode. A client was told
+// she had been refunded when she hadn't, and that her booking had failed when
+// Deep had already rebooked her.
+async function holdFailedBooking(stripe, resend, session, meta, err) {
+  console.error('stripe-webhook: Setmore booking failed after payment — payment HELD, no refund:', err);
+
+  await capSplitSubscription(stripe, resend, session, meta);
+
+  const split = meta.pay_mode === 'split';
   const detail = [
     `Customer: ${meta.firstName} ${meta.lastName} <${meta.email}>`,
     meta.phone ? `Phone: ${meta.phone}` : null,
     `Session: service_key ${meta.service_key} on ${meta.date} at ${meta.time}`,
+    `Payment: ${split ? 'split — first half taken, second half due in 7 days (subscription capped after it)' : 'paid in full'}`,
     meta.notes ? `Notes: ${meta.notes}` : null,
     `Stripe session: ${session.id}`,
+    split && session.subscription ? `Subscription: ${typeof session.subscription === 'string' ? session.subscription : session.subscription.id}` : null,
     `Error: ${err.message}`,
-    `Refund: ${refundStatus}`,
   ].filter(Boolean).join('\n');
+
+  const nextSteps = [
+    'Nothing has been refunded. The payment is held until you decide.',
+    '',
+    'To keep the booking: add the appointment in Setmore by hand, then let the customer know it is confirmed. They were told you would be in touch personally.',
+    '',
+    split
+      ? "To cancel instead: Stripe → Payments → refund the first payment, then Subscriptions → this subscription → Cancel subscription → Immediately, so the second half is never taken."
+      : 'To cancel instead: Stripe → Payments → this payment → Refund.',
+  ].join('\n');
 
   if (!resend) return;
   try {
     await resend.emails.send({
       from: FROM,
       to: OWNER_EMAIL,
-      subject: `ACTION NEEDED — paid booking failed (${meta.firstName} ${meta.lastName}, ${meta.date} ${meta.time})`,
-      text: `A customer paid but the Setmore appointment could not be created.\n\n${detail}`,
+      subject: `ACTION NEEDED — paid booking not in the calendar (${meta.firstName} ${meta.lastName}, ${meta.date} ${meta.time})`,
+      text: `A customer paid but the Setmore appointment could not be created.\n\n${detail}\n\n${nextSteps}`,
     });
     await resend.emails.send({
       from: FROM,
@@ -150,16 +219,16 @@ async function handleBookingFailure(stripe, resend, session, meta, err) {
       text: [
         `Hi ${meta.firstName},`,
         '',
-        `Thank you for your payment — unfortunately the time you chose (${meta.date} at ${meta.time}) couldn't be secured at our end, so I've issued a full refund. It should land back on your card within a few business days.`,
+        `Thank you — your payment has come through. I wasn't able to lock your time (${meta.date} at ${meta.time}) into my calendar automatically, so I'll confirm it with you personally, usually within 24 hours.`,
         '',
-        `I'm really sorry for the hassle. If you'd still like that session, just reply to this email and I'll sort a time for you personally.`,
+        `There's nothing you need to do in the meantime. If you have any questions, just reply to this email.`,
         '',
         'Deep',
         'Still & Golden Photography',
       ].join('\n'),
     });
   } catch (emailErr) {
-    console.error('stripe-webhook: failure-notification emails failed:', emailErr);
+    console.error('stripe-webhook: held-booking emails failed:', emailErr);
   }
 }
 
@@ -418,8 +487,9 @@ exports.handler = async (event) => {
   // knows to follow up, because the appointment is booked and the balance is
   // not in.
   //
-  // Nothing in this branch may call handleBookingFailure. That refunds the
-  // deposit, which is the opposite of what a missing balance calls for.
+  // Nothing in this branch may call holdFailedBooking. That tells the customer
+  // their time couldn't be booked — untrue here, where the appointment exists
+  // and only the balance is missing.
   // Stripe fires this 3 days before it creates the next invoice (Billing
   // setting, confirmed in test mode 14 Sep). A heads-up before money leaves
   // someone's account costs nothing and saves both failed payments — a dying
@@ -492,47 +562,7 @@ exports.handler = async (event) => {
     // In its own try/catch like everything else in this block: an unguarded
     // throw here would refund a booking that has just succeeded, which is a
     // far worse outcome than a subscription that needs capping by hand.
-    if (stripe && meta.pay_mode === 'split' && session.subscription) {
-      const subId = typeof session.subscription === 'string'
-        ? session.subscription
-        : session.subscription.id;
-      try {
-        // Retrieved rather than assumed: the cancellation has to sit exactly on
-        // a billing-period boundary, and only Stripe knows where that falls.
-        const sub = await stripe.subscriptions.retrieve(subId);
-        const cancelAt = subscriptionCancelAt(sub);
-        await stripe.subscriptions.update(subId, { cancel_at: cancelAt });
-        console.log(`stripe-webhook: ${subId} will cancel at ${new Date(cancelAt * 1000).toISOString()} (end of 2nd period)`);
-      } catch (capErr) {
-        // Recoverable, and there is time: the second charge is 7 days out and a
-        // third would be 14, so this can be capped by hand well before anyone
-        // is overcharged. Shout about it anyway.
-        console.error('stripe-webhook: FAILED to cap split subscription:', capErr);
-        if (resend) {
-          try {
-            await resend.emails.send({
-              from: FROM,
-              to: OWNER_EMAIL,
-              subject: `ACTION NEEDED — uncapped subscription ${subId}`,
-              text: [
-                `The split-payment subscription for ${meta.firstName} ${meta.lastName} could not be capped.`,
-                '',
-                `It will keep billing weekly until someone stops it.`,
-                '',
-                `Fix: Stripe dashboard → Subscriptions → ${subId} → cancel it after the second payment lands.`,
-                `There is no rush of minutes — the second payment is 7 days away and a third would be 14.`,
-                '',
-                `Session: ${meta.date} at ${meta.time} (service_key ${meta.service_key})`,
-                `Customer: ${meta.email}`,
-                `Error: ${capErr.message}`,
-              ].join('\n'),
-            });
-          } catch (mailErr) {
-            console.error('stripe-webhook: cap-failure alert could not be sent:', mailErr);
-          }
-        }
-      }
-    }
+    await capSplitSubscription(stripe, resend, session, meta);
 
     if (resend) {
       try {
@@ -560,9 +590,13 @@ exports.handler = async (event) => {
       console.log(`stripe-webhook: slot already held by this customer (${existing.key}); treating as duplicate delivery, no refund`);
       return json(200, { received: true, alreadyBooked: true });
     }
-    await handleBookingFailure(stripe, resend, session, meta, err);
-    return json(200, { received: true, booked: false, refunded: true });
+    await holdFailedBooking(stripe, resend, session, meta, err);
+    return json(200, { received: true, booked: false, held: true });
   }
 
   return json(200, { received: true, booked: true });
 };
+
+// Exposed for tests only — the held-booking path handles real money and is
+// otherwise reachable only through a signed Stripe event.
+exports._test = { holdFailedBooking, capSplitSubscription };

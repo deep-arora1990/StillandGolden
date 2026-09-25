@@ -509,9 +509,28 @@ function mockSlots(date) {
 
 async function findCustomer(firstName, email) {
   if (MOCK) return null;
-  const data = await setmoreFetch('/bookingapi/customer', {
-    query: { firstname: firstName, email },
-  });
+
+  // Setmore's search breaks on a space in the first name: "Mary Jane"
+  // returns HTTP 500 "Unable to fetch customer!" instead of an empty result
+  // (reproduced 25 Sep 2026, after a client who typed two first names paid for
+  // a session that was never booked). The match below is by email anyway, so
+  // searching on the first word alone loses nothing. The full name is still
+  // what gets written when the customer is created.
+  const searchName = String(firstName || '').trim().split(/\s+/)[0] || firstName;
+
+  let data;
+  try {
+    data = await setmoreFetch('/bookingapi/customer', {
+      query: { firstname: searchName, email },
+    });
+  } catch (err) {
+    // A failed search must never cost a paid booking. The worst outcome of
+    // treating it as "not found" is a duplicate customer record in Setmore,
+    // which Deep can merge; the alternative was a paid session with no booking.
+    // A genuine outage still surfaces, because creating the customer fails too.
+    console.warn(`setmore: customer search failed, creating instead (${err.message})`);
+    return null;
+  }
   // Setmore returns matches as data.customer — an ARRAY of customer objects
   // (per the API docs). Only accept an exact email match; falling back to the
   // first record would book against the wrong customer.
