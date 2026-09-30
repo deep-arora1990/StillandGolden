@@ -12,7 +12,7 @@
 // 24 Sep 2026 the cache was per-container and 30 minutes flat, so calls grew
 // with visitors instead of with time.
 
-const { TIERS, TIMEZONE, getSlots } = require('./lib/setmore');
+const { TIERS, TIMEZONE, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
 const { connectStore } = require('./lib/shared-store');
 const { readMonth, writeMonth } = require('./lib/availability-cache');
 const { ttlForMonth, isFresh } = require('./lib/availability-ttl');
@@ -70,9 +70,18 @@ exports.handler = async (event) => {
   const dates = [];
   if (year > today.year || (year === today.year && month >= today.month)) {
     for (let d = firstDay; d <= daysInMonth; d++) {
-      dates.push(`${year}-${pad(month)}-${pad(d)}`);
+      const iso = `${year}-${pad(month)}-${pad(d)}`;
+      // A tier with a date window (seasonal offers) only ever offers those
+      // dates — and not probing the rest also saves Setmore calls.
+      if (tier.allowedDates && !tier.allowedDates.includes(iso)) continue;
+      dates.push(iso);
     }
   }
+
+  // Tiers whose schedule we set ourselves (one-per-day offers, fixed minis) are
+  // checked against the calendar, not Setmore's slot generator — the same split
+  // booking-slots makes, so the month view and the day view can't disagree.
+  const probe = (date) => (tier.fixedSchedule ? getFixedScheduleSlots(tier, date) : getSlots(serviceKey, date));
 
   // A probe that fails is NOT the same as a day with no slots, and treating it
   // as one was a real bug: under Setmore rate limiting some probes failed, the
@@ -96,7 +105,7 @@ exports.handler = async (event) => {
       const results = await Promise.all(
         batch.map(async (date) => {
           try {
-            const slots = await getSlots(serviceKey, date);
+            const slots = await probe(date);
             return slots.length ? date : null;
           } catch (err) {
             console.warn(`slots probe failed for ${date}:`, err.message);
@@ -114,7 +123,7 @@ exports.handler = async (event) => {
     for (const date of isolatedFailures) {
       if (systemic) break;
       try {
-        const slots = await getSlots(serviceKey, date);
+        const slots = await probe(date);
         if (slots.length) availableDates.push(date);
       } catch (err) {
         console.warn(`slots retry failed for ${date}:`, err.message);

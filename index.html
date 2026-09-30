@@ -30,7 +30,7 @@
     "image": "https://stillandgolden.com.au/og-image.jpg",
     "telephone": "+61426834359",
     "email": "hello@stillandgolden.com.au",
-    "priceRange": "$195-$595",
+    "priceRange": "$250-$950",
     "identifier": {
       "@type": "PropertyValue",
       "name": "ABN",
@@ -64,19 +64,7 @@
       {
         "@type": "Offer",
         "name": "Glimpse Session",
-        "description": "30-minute in-home or on-location photography session with 10 edited images. Option to upgrade to the full gallery. Suits updated core family photos.",
-        "price": "195",
-        "priceCurrency": "AUD",
-        "priceSpecification": {
-          "@type": "PriceSpecification",
-          "minPrice": "195",
-          "priceCurrency": "AUD"
-        }
-      },
-      {
-        "@type": "Offer",
-        "name": "Golden Session",
-        "description": "60-minute in-home or on-location photography session with 20 edited images. Option to upgrade to the full gallery. Suits family, newborn, maternity and cake smash sessions.",
+        "description": "Up to 45-minute in-home or on-location photography session with 10 edited images. Option to upgrade to the full gallery. Suits updated core family photos.",
         "price": "250",
         "priceCurrency": "AUD",
         "priceSpecification": {
@@ -87,13 +75,25 @@
       },
       {
         "@type": "Offer",
-        "name": "Gathered Session",
-        "description": "90-minute in-home or on-location photography session with 30+ edited images and the full gallery included. Suits newborn, extended family and larger groups.",
-        "price": "395",
+        "name": "Golden Session",
+        "description": "Up to 90-minute in-home or on-location photography session with 20 edited images. Option to upgrade to the full gallery. Suits family, newborn, maternity and cake smash sessions.",
+        "price": "475",
         "priceCurrency": "AUD",
         "priceSpecification": {
           "@type": "PriceSpecification",
-          "minPrice": "395",
+          "minPrice": "475",
+          "priceCurrency": "AUD"
+        }
+      },
+      {
+        "@type": "Offer",
+        "name": "Gathered Session",
+        "description": "90-minute in-home or on-location photography session with 30+ edited images and the full gallery included. Suits newborn, extended family and larger groups.",
+        "price": "595",
+        "priceCurrency": "AUD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "minPrice": "595",
           "priceCurrency": "AUD"
         }
       },
@@ -101,11 +101,11 @@
         "@type": "Offer",
         "name": "Bloom Bundle",
         "description": "Two 90-minute in-home sessions combining a maternity or family session with a newborn session, booked together at a better rate.",
-        "price": "595",
+        "price": "950",
         "priceCurrency": "AUD",
         "priceSpecification": {
           "@type": "PriceSpecification",
-          "minPrice": "595",
+          "minPrice": "950",
           "priceCurrency": "AUD"
         }
       }
@@ -151,7 +151,7 @@
       {
         "@type": "Question",
         "name": "How much does a session cost?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from $195 (30 minutes, 10 edited images), Golden from $250 (60 minutes, 20 edited images) and Gathered from $395 (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from $595. Glimpse and Golden can both be upgraded to the full gallery afterwards — $75 on Glimpse, $50 on Golden — and Gathered and Bloom include it." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from $250 (up to 45 minutes, 10 edited images), Golden from $475 (up to 90 minutes, 20 edited images) and Gathered from $595 (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from $950. Glimpse and Golden can both be upgraded to the full gallery afterwards for $150 — and Gathered and Bloom include it." }
       },
       {
         "@type": "Question",
@@ -1158,7 +1158,7 @@
       </details>
       <details class="faq-item reveal d3">
         <summary>How much does a session cost?</summary>
-        <p>Sessions are grouped by how much time you want together. Glimpse is from $195 (30 minutes, 10 edited images), Golden from $250 (60 minutes, 20 edited images) and Gathered from $395 (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from $595. Glimpse and Golden can both be upgraded to the full gallery afterwards — $75 on Glimpse, $50 on Golden — and Gathered and Bloom include it. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
+        <p>Sessions are grouped by how much time you want together. Glimpse is from $250 (up to 45 minutes, 10 edited images), Golden from $475 (up to 90 minutes, 20 edited images) and Gathered from $595 (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from $950. Glimpse and Golden can both be upgraded to the full gallery afterwards for $150 — and Gathered and Bloom include it. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
       </details>
       <details class="faq-item reveal d3">
         <summary>Do you provide the cake for cake smash sessions?</summary>
@@ -1217,8 +1217,8 @@
           <label for="st">Session type</label>
           <select id="st" name="session_type" required>
             <option value="" disabled selected>Select a session</option>
-            <option value="glimpse">Glimpse &mdash; 30 min, 10 images</option>
-            <option value="golden">Golden &mdash; 60 min, 20 images</option>
+            <option value="glimpse">Glimpse &mdash; up to 45 min, 10 images</option>
+            <option value="golden">Golden &mdash; up to 90 min, 20 images</option>
             <option value="gathered">Gathered &mdash; 90 min, 30+ images</option>
             <option value="bloom">Bloom &mdash; two sessions</option>
             <option value="unsure">Not sure yet &mdash; help me choose</option>

@@ -33,7 +33,7 @@
     { href: '/packages', label: 'Packages' },
     { href: '/#faq', label: 'Common Questions' },
     { href: '/blog/', label: 'Blog' },
-    { href: '/christmas-minis', label: 'Christmas Minis', campaignOnly: true },
+    { href: '/offers', label: 'Offers' },
     { href: '/#contact', label: 'Enquire now', className: 'book' },
   ];
 
@@ -45,35 +45,28 @@
     '<span class="footer-logo">Still &amp; Golden</span>' +
     '<span class="footer-copy">&copy; 2026 Still &amp; Golden Photography &middot; ABN 37 280 912 036</span>' +
     '<span class="footer-area">Frankston &middot; Chelsea &middot; Seaford &middot; Langwarrin &middot; Mt Eliza</span>' +
-    '<span class="footer-copy">' + (campaignRunning() ? '<a href="/christmas-minis" style="' + FOOTER_LINK_STYLE + '">Christmas Minis</a> &middot; ' : '') + '<a href="/glimpse-mini-sessions" style="' + FOOTER_LINK_STYLE + '">Glimpse Minis</a> &middot; <a href="/golden-family-photography" style="' + FOOTER_LINK_STYLE + '">Golden Family</a> &middot; <a href="/gathered-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Gathered Newborn</a> &middot; <a href="/bloom-maternity-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Bloom Bundle</a> &middot; <a href="/packages" style="' + FOOTER_LINK_STYLE + '">Packages</a> &middot; <a href="/blog/" style="' + FOOTER_LINK_STYLE + '">Blog</a></span>' +
+    '<span class="footer-copy">' + '<a href="/offers" style="' + FOOTER_LINK_STYLE + '">Offers</a> &middot; ' + '<a href="/packages/glimpse-mini-sessions" style="' + FOOTER_LINK_STYLE + '">Glimpse Minis</a> &middot; <a href="/packages/golden-family-photography" style="' + FOOTER_LINK_STYLE + '">Golden Family</a> &middot; <a href="/packages/gathered-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Gathered Newborn</a> &middot; <a href="/packages/bloom-maternity-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Bloom Bundle</a> &middot; <a href="/packages" style="' + FOOTER_LINK_STYLE + '">Packages</a> &middot; <a href="/blog/" style="' + FOOTER_LINK_STYLE + '">Blog</a></span>' +
     '<a href="/privacy" class="footer-copy" style="' + FOOTER_LINK_STYLE + '">Privacy Policy</a>';
 
   var path = location.pathname;
 
-  // The tier landing pages and the booking widget all belong to Packages —
-  // it's the page that now carries the full pricing detail they each describe
-  // a slice of. /christmas-minis is deliberately absent: it has its own nav
-  // item while the campaign runs.
-  var PACKAGE_PAGES = [
-    '/packages',
-    '/glimpse-mini-sessions',
-    '/golden-family-photography',
-    '/golden-cake-smash-photography',
-    '/gathered-newborn-photography',
-    '/bloom-maternity-newborn-photography',
-    '/book',
-  ];
+  // The tier landing pages live under /packages/ (30 Sep 2026), so the
+  // prefix covers them all; the booking widget belongs to Packages too.
+  // Seasonal pages — /offers and the Christmas minis campaign it lists —
+  // mark Offers instead.
+  var OFFER_PAGES = ['/offers', '/christmas-minis', '/christmas-minis-terms'];
 
   function isActive(href) {
     if (href === '/portfolio') return path === '/portfolio' || path === '/portfolio.html';
     if (href === '/about') return path === '/about' || path === '/about.html';
     if (href === '/packages') {
-      return PACKAGE_PAGES.some(function (p) { return path === p || path === p + '.html'; });
+      return path === '/packages' || path === '/packages.html' ||
+        path.indexOf('/packages/') === 0 || path === '/book' || path === '/book.html';
+    }
+    if (href === '/offers') {
+      return OFFER_PAGES.some(function (p) { return path === p || path === p + '.html'; });
     }
     if (href === '/blog/') return path.indexOf('/blog') === 0;
-    // Added with the campaign nav item, which otherwise never marked itself
-    // current on its own page. The terms page counts as part of it.
-    if (href === '/christmas-minis') return path.indexOf('/christmas-minis') === 0;
     return false;
   }
 

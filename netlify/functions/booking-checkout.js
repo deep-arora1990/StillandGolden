@@ -56,7 +56,7 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Invalid request');
   }
 
-  const { service_key: serviceKey, date, time, firstName, lastName, email, phone, notes } = data || {};
+  const { service_key: serviceKey, date, time, firstName, lastName, email, phone, notes, location } = data || {};
 
   const tierEntry = Object.entries(TIERS).find(([, t]) => t.serviceKey === serviceKey);
   if (
@@ -70,6 +70,17 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Please check the booking details and try again');
   }
   const [tierName, tier] = tierEntry;
+
+  // Offers with a choice of location (the beach minis) need one of theirs.
+  // Validated against the tier rather than trusted from the page, and folded
+  // into the notes so it reaches Setmore's appointment comment and Deep's
+  // emails through the path every booking already uses.
+  if (tier.locations && !tier.locations.includes(location)) {
+    return error(400, 'INVALID_DETAILS', 'Please choose a location');
+  }
+  const bookingNotes = tier.locations
+    ? [`Location: ${location}`, notes || ''].filter(Boolean).join('\n')
+    : notes;
 
   if (Number.isNaN(new Date(`${date}T${time}:00`).getTime())) {
     return error(400, 'INVALID_DETAILS', 'Please check the booking details and try again');
@@ -135,7 +146,7 @@ exports.handler = async (event) => {
         customerKey: customer.key,
         startTime: `${date}T${pad(hh)}:${pad(mm)}`,
         endTime: `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(end.getDate())}T${pad(end.getHours())}:${pad(end.getMinutes())}`,
-        comment: notes || '',
+        comment: bookingNotes || '',
       });
       return json(200, { url: `${origin}${returnTo}?booked=1&mock=1` });
     } catch (err) {
@@ -176,7 +187,11 @@ exports.handler = async (event) => {
                 // the calendar block, which for the minis includes changeover
                 // time the customer isn't buying. Telling someone paying for a
                 // 15-minute session that it's 25 would be plainly wrong.
-                description: `${date} at ${time} · ${tier.sessionMinutes || tier.durationMinutes} minutes`,
+                // timeTbc offers carry a placeholder time Deep moves later;
+                // it must not appear on the checkout page or the receipt.
+                description: tier.timeTbc
+                  ? `${date} · time to be confirmed · ${tier.sessionMinutes || tier.durationMinutes} minutes${tier.locations ? ` · ${location}` : ''}`
+                  : `${date} at ${time} · ${tier.sessionMinutes || tier.durationMinutes} minutes`,
               },
             },
           },
@@ -196,7 +211,7 @@ exports.handler = async (event) => {
         lastName,
         email,
         phone: (phone || '').slice(0, 100),
-        notes: (notes || '').slice(0, 500),
+        notes: (bookingNotes || '').slice(0, 500),
         // Stripe metadata values are strings; the webhook compares to 'yes'.
         marketingConsent: data.marketingConsent === true ? 'yes' : 'no',
         // Absent on a full payment, so the webhook's split handling is opt-in

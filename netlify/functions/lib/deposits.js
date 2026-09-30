@@ -130,7 +130,9 @@ function todayInMelbourne(now = new Date()) {
  */
 function splitCheckoutParams(tier, plan, { date, time, firstName, lastName, email }) {
   const who = [firstName, lastName].filter(Boolean).join(' ').trim();
-  const sessionLabel = `${date} at ${time}`;
+  // timeTbc offers (beach minis) carry a placeholder time Deep confirms later —
+  // it must not reach the customer's payment page as if it were agreed.
+  const sessionLabel = tier.timeTbc ? `${date}, time to be confirmed` : `${date} at ${time}`;
   const balance = (plan.balanceCents / 100).toFixed(2);
 
   return {

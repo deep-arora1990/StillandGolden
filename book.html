@@ -40,6 +40,9 @@
     .pay-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .pay-choice .btn { width: 100%; margin: 0; line-height: 1.35; }
     .pay-choice .btn small { display: block; font-weight: 400; opacity: 0.85; }
+    /* .btn sets display, which beats the hidden attribute — without this the
+       unoffered split button showed as an empty black bar. */
+    .pay-choice .btn[hidden] { display: none; }
     .pay-note { margin: 12px 0 0; font-size: 0.78rem; line-height: 1.6; color: #6b625c; max-width: 46ch; }
     @media (max-width: 560px) {
       .pay-choice { grid-template-columns: 1fr; }
@@ -126,11 +129,16 @@
     .details { max-width: 520px; }
     .field { margin-bottom: 18px; }
     .field label { display: block; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
-    .field input, .field textarea {
+    .field input, .field textarea, .field select {
       width: 100%; border: 1px solid var(--border); background: #fff;
       padding: 12px 14px; font-family: inherit; font-size: 0.95rem; color: var(--warm-black);
+      border-radius: 0;
     }
-    .field input:focus, .field textarea:focus { outline: none; border-color: var(--gold); }
+    .field select {
+      -webkit-appearance: none; appearance: none; padding-right: 40px;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231A1714' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 16px center;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--gold); }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
 
@@ -209,7 +217,7 @@
 
       <!-- Step 3: slots, shown under the calendar once a date is picked -->
       <div id="slot-area" hidden>
-        <h2 style="margin-top:32px;">Pick a time</h2>
+        <h2 style="margin-top:32px;" id="slot-heading">Pick a time</h2>
         <p class="summary-line" id="slot-context"></p>
         <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
         <p id="slot-loading" class="loading" hidden>Loading times…</p>
@@ -239,6 +247,10 @@
         <div class="field">
           <label for="f-phone">Phone</label>
           <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+        </div>
+        <div class="field" id="f-location-field" hidden>
+          <label for="f-location">Which beach?</label>
+          <select id="f-location" name="location"></select>
         </div>
         <div class="field">
           <label for="f-notes">Anything I should know? (optional)</label>
@@ -381,6 +393,8 @@
       var grid = $('svc-grid');
       grid.innerHTML = '';
       state.services.forEach(function (s) {
+        // Seasonal offers are booked from /offers via ?service= — never listed here.
+        if (s.unlisted) return;
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'svc-card';
@@ -477,7 +491,10 @@
       name.textContent = state.service.name;
       var meta = document.createElement('span');
       meta.className = 'sum-meta';
-      meta.textContent = state.service.durationMinutes + ' min · ' + state.service.includes + ' · from $' + state.service.priceFrom;
+      meta.textContent = state.service.durationMinutes + ' min · ' + state.service.includes + ' · ' +
+        (state.service.valuedAt
+          ? '$' + state.service.priceFrom + ' (valued at $' + state.service.valuedAt + ')'
+          : 'from $' + state.service.priceFrom);
       var change = document.createElement('button');
       change.type = 'button';
       change.className = 'change';
@@ -609,7 +626,32 @@
     function renderSlots(slots) {
       var list = $('slot-list');
       list.innerHTML = '';
-      if (!slots.length) { $('slot-none').hidden = false; return; }
+      $('slot-heading').textContent = state.service.timeTbc ? 'Your day' : 'Pick a time';
+      if (!slots.length) {
+        $('slot-none').textContent = state.service.timeTbc
+          ? "That day's already taken — please pick another."
+          : 'No times left on that date — please pick another.';
+        $('slot-none').hidden = false;
+        return;
+      }
+      // One session a day, time agreed directly with Deep: the server returns
+      // a single placeholder slot. It is selected silently and never shown —
+      // showing it would read as a promised start time.
+      if (state.service.timeTbc) {
+        $('slot-none').hidden = true;
+        state.time = slots[0];
+        var note = document.createElement('p');
+        note.className = 'summary-line';
+        note.textContent = "That day is yours — I'll confirm the exact time with you, close to sunset.";
+        var go = document.createElement('button');
+        go.type = 'button';
+        go.className = 'btn';
+        go.textContent = 'Continue';
+        go.addEventListener('click', goToDetails);
+        list.appendChild(note);
+        list.appendChild(go);
+        return;
+      }
       $('slot-none').hidden = true;
       slots.forEach(function (t) {
         var btn = document.createElement('button');
@@ -638,7 +680,20 @@
     function goToDetails() {
       $('details-context').innerHTML = '';
       var b = document.createElement('b');
-      b.textContent = state.service.name + ' — ' + formatDate(state.date) + ', ' + formatTime(state.time);
+      b.textContent = state.service.name + ' — ' + formatDate(state.date) + ', ' +
+        (state.service.timeTbc ? 'time to be confirmed' : formatTime(state.time));
+      var locs = state.service.locations;
+      var sel = $('f-location');
+      $('f-location-field').hidden = !locs;
+      sel.required = Boolean(locs);
+      if (locs && sel.options.length !== locs.length + 1) {
+        sel.innerHTML = '<option value="">Choose a beach</option>';
+        locs.forEach(function (l) {
+          var o = document.createElement('option');
+          o.value = l; o.textContent = l + ' beach';
+          sel.appendChild(o);
+        });
+      }
       $('details-context').appendChild(b);
       $('confirm-btn').textContent = 'Pay & book — $' + state.service.priceFrom;
       showStep('details');
@@ -739,6 +794,7 @@
           email: $('f-email').value.trim(),
           phone: $('f-phone').value.trim(),
           notes: $('f-notes').value.trim(),
+          location: state.service.locations ? $('f-location').value : undefined,
           marketingConsent: $('f-marketing').checked,
           payMode: pressed,
         }),

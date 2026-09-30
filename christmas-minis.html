@@ -34,7 +34,7 @@
         "name": "What do I get for $150?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks. You can add the extended gallery for $50 - a fifteen-minute session easily produces around twenty photos worth keeping."
+          "text": "A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks. You can add the full gallery for $50 - a fifteen-minute session easily produces around twenty photos worth keeping."
         }
       },
       {
@@ -231,6 +231,9 @@
     .pay-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .pay-choice .btn { width: 100%; margin: 0; line-height: 1.35; }
     .pay-choice .btn small { display: block; font-weight: 400; opacity: 0.85; }
+    /* .btn sets display, which beats the hidden attribute — without this the
+       unoffered split button showed as an empty black bar. */
+    .pay-choice .btn[hidden] { display: none; }
     .pay-note { margin: 12px 0 0; font-size: 0.78rem; line-height: 1.6; color: #6b625c; max-width: 46ch; }
     @media (max-width: 560px) {
       .pay-choice { grid-template-columns: 1fr; }
@@ -308,7 +311,7 @@
 
     <div class="offer" id="book">
       <span class="amount">$150</span>
-      <span class="detail">15-minute session &middot; 5 edited photos &middot; add the extended gallery for $50 &middot; delivered in time for Christmas cards</span>
+      <span class="detail">15-minute session &middot; 5 edited photos &middot; add the full gallery for $50 &middot; delivered in time for Christmas cards</span>
     </div>
 
     <div class="venue">
@@ -435,7 +438,7 @@
         <summary>What do I get for $150?</summary>
         <div class="answer">
           <p>A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks &mdash; in good time for cards and printing.</p>
-          <p>If you'd rather have everything from your session than my five picks, you can add the extended gallery for $50 &mdash; a fifteen-minute session easily produces around twenty photos worth keeping.</p>
+          <p>If you'd rather have everything from your session than my five picks, you can add the full gallery for $50 &mdash; a fifteen-minute session easily produces around twenty photos worth keeping.</p>
         </div>
       </details>
 

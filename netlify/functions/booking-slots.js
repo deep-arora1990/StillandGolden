@@ -42,6 +42,16 @@ exports.handler = async (event) => {
     };
   }
 
+  // Outside a seasonal offer's window there is nothing to offer — answered
+  // before any Setmore call. Checkout enforces the same list.
+  if (tier.allowedDates && !tier.allowedDates.includes(date)) {
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slots: [], split: null }),
+    };
+  }
+
   try {
     // Tiers whose schedule we set ourselves can't be filtered against
     // /bookingapi/slots: it derives start times from the service duration, so

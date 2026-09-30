@@ -23,6 +23,12 @@ exports.handler = async (event) => {
       priceFrom: cfg.priceFrom,
       includes: cfg.includes,
       serviceKey: cfg.serviceKey,
+      // Seasonal offers: reachable by /book?service=<tier> but kept out of the
+      // picker, plus what the widget needs to handle them.
+      unlisted: Boolean(cfg.unlisted),
+      timeTbc: Boolean(cfg.timeTbc),
+      locations: cfg.locations || null,
+      valuedAt: cfg.valuedAt || null,
     }));
 
   return {

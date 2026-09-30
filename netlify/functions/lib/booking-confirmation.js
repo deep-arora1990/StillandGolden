@@ -246,7 +246,10 @@ ${venueBlock}${formBlock}
 function valuesFromBooking(meta, tier) {
   const minutes = tier.sessionMinutes || tier.durationMinutes;
   const dateLabel = formatDate(meta.date);
-  const timeLabel = formatTime(meta.time);
+  // timeTbc offers (the beach minis) are written with a placeholder time Deep
+  // moves once he has agreed the real one with the client. Printing it here
+  // would send someone to the beach at the wrong hour.
+  const timeLabel = tier.timeTbc ? 'Time to be confirmed — I\u2019ll be in touch' : formatTime(meta.time);
 
   // Carry the booking into the form so nobody retypes what was just paid for.
   // The form treats these as conveniences and leaves every field editable —
@@ -259,7 +262,12 @@ function valuesFromBooking(meta, tier) {
 
   return {
     firstName: meta.firstName,
-    sessionName: tier.name,
+    // Offers with a location choice name it, e.g. "Sunset beach mini — Carrum beach".
+    // Read back from the notes, where checkout validated and recorded it.
+    sessionName: (() => {
+      const loc = tier.locations && ((meta.notes || '').match(/^Location: (.+)$/m) || [])[1];
+      return loc ? `${tier.name} — ${loc} beach` : tier.name;
+    })(),
     sessionLength: `${minutes}-minute session`,
     includes: tier.includes,
     dateLabel,

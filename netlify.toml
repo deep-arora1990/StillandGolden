@@ -92,49 +92,121 @@
 # chain runs through a .html URL (see URL consolidation redirects below).
 [[redirects]]
   from = "/mini-sessions.html"
-  to = "/glimpse-mini-sessions"
+  to = "/packages/glimpse-mini-sessions"
   status = 301
   force = true
 
 [[redirects]]
   from = "/mini-sessions"
-  to = "/glimpse-mini-sessions"
+  to = "/packages/glimpse-mini-sessions"
   status = 301
   force = true
 
 [[redirects]]
   from = "/family-photography.html"
-  to = "/golden-family-photography"
+  to = "/packages/golden-family-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/family-photography"
-  to = "/golden-family-photography"
+  to = "/packages/golden-family-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/cake-smash-photography.html"
-  to = "/golden-cake-smash-photography"
+  to = "/packages/golden-cake-smash-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/cake-smash-photography"
-  to = "/golden-cake-smash-photography"
+  to = "/packages/golden-cake-smash-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/newborn-photography.html"
-  to = "/gathered-newborn-photography"
+  to = "/packages/gathered-newborn-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/newborn-photography"
-  to = "/gathered-newborn-photography"
+  to = "/packages/gathered-newborn-photography"
+  status = 301
+  force = true
+
+# Session pages moved under /packages/ (30 Sep 2026) so the tier pages sit in
+# one tree with the packages overview. The old addresses — extensionless and
+# .html — 301 straight to the new ones; the older 25 Jul rules above were
+# repointed at the same targets so nothing chains.
+
+[[redirects]]
+  from = "/glimpse-mini-sessions"
+  to = "/packages/glimpse-mini-sessions"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/packages/glimpse-mini-sessions.html"
+  to = "/packages/glimpse-mini-sessions"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/golden-family-photography"
+  to = "/packages/golden-family-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/packages/golden-family-photography.html"
+  to = "/packages/golden-family-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/gathered-newborn-photography"
+  to = "/packages/gathered-newborn-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/packages/gathered-newborn-photography.html"
+  to = "/packages/gathered-newborn-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/bloom-maternity-newborn-photography"
+  to = "/packages/bloom-maternity-newborn-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/packages/bloom-maternity-newborn-photography.html"
+  to = "/packages/bloom-maternity-newborn-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/golden-cake-smash-photography"
+  to = "/packages/golden-cake-smash-photography"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/packages/golden-cake-smash-photography.html"
+  to = "/packages/golden-cake-smash-photography"
+  status = 301
+  force = true
+
+# Seasonal offers page (30 Sep 2026).
+[[redirects]]
+  from = "/offers.html"
+  to = "/offers"
   status = 301
   force = true
 
@@ -157,25 +229,25 @@
 
 [[redirects]]
   from = "/gathered-newborn-photography.html"
-  to = "/gathered-newborn-photography"
+  to = "/packages/gathered-newborn-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/golden-family-photography.html"
-  to = "/golden-family-photography"
+  to = "/packages/golden-family-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/golden-cake-smash-photography.html"
-  to = "/golden-cake-smash-photography"
+  to = "/packages/golden-cake-smash-photography"
   status = 301
   force = true
 
 [[redirects]]
   from = "/glimpse-mini-sessions.html"
-  to = "/glimpse-mini-sessions"
+  to = "/packages/glimpse-mini-sessions"
   status = 301
   force = true
 
@@ -327,6 +399,6 @@
 
 [[redirects]]
   from = "/bloom-maternity-newborn-photography.html"
-  to = "/bloom-maternity-newborn-photography"
+  to = "/packages/bloom-maternity-newborn-photography"
   status = 301
   force = true

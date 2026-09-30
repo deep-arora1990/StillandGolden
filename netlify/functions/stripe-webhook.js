@@ -183,6 +183,7 @@ async function holdFailedBooking(stripe, resend, session, meta, err) {
   await capSplitSubscription(stripe, resend, session, meta);
 
   const split = meta.pay_mode === 'split';
+  const held = Object.values(TIERS).find((x) => x.serviceKey === meta.service_key) || {};
   const detail = [
     `Customer: ${meta.firstName} ${meta.lastName} <${meta.email}>`,
     meta.phone ? `Phone: ${meta.phone}` : null,
@@ -219,7 +220,7 @@ async function holdFailedBooking(stripe, resend, session, meta, err) {
       text: [
         `Hi ${meta.firstName},`,
         '',
-        `Thank you — your payment has come through. I wasn't able to lock your time (${meta.date} at ${meta.time}) into my calendar automatically, so I'll confirm it with you personally, usually within 24 hours.`,
+        `Thank you — your payment has come through. I wasn't able to lock your ${held.timeTbc ? `date (${meta.date})` : `time (${meta.date} at ${meta.time})`} into my calendar automatically, so I'll confirm it with you personally, usually within 24 hours.`,
         '',
         `There's nothing you need to do in the meantime. If you have any questions, just reply to this email.`,
         '',
@@ -285,6 +286,26 @@ function melbourneLongDate(unixSeconds) {
   }).format(new Date(unixSeconds * 1000));
 }
 
+// The reminder's words, apart from the sending so they can be tested. A
+// timeTbc offer (beach minis) books a placeholder time Deep moves later, so
+// the time is left out rather than stated as if it were agreed.
+function balanceReminderText(meta, amount, when) {
+  const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key) || {};
+  const at = meta.time && !tier.timeTbc ? ` at ${meta.time}` : '';
+  return [
+    `Hi ${meta.firstName || 'there'},`,
+    '',
+    `Just a heads-up: the remaining ${amount} for your session on ${meta.date}${at} comes off the same card on ${when}.`,
+    '',
+    `Nothing for you to do — it happens automatically, and that is the final payment.`,
+    '',
+    `If you would rather use a different card, or anything has changed, just reply to this email and I will sort it out.`,
+    '',
+    'Deep',
+    'Still & Golden Photography',
+  ].join('\n');
+}
+
 // Three days before the balance is taken. Goes to the customer, from Deep.
 async function sendBalanceReminder(stripe, invoice) {
   const found = await splitMetaForInvoice(stripe, invoice);
@@ -311,18 +332,7 @@ async function sendBalanceReminder(stripe, invoice) {
       from: `Still & Golden <${OWNER_EMAIL}>`,
       to,
       subject: `Your session balance — ${amount} on ${when.split(' ')[0]}`,
-      text: [
-        `Hi ${meta.firstName || 'there'},`,
-        '',
-        `Just a heads-up: the remaining ${amount} for your session on ${meta.date}${meta.time ? ` at ${meta.time}` : ''} comes off the same card on ${when}.`,
-        '',
-        `Nothing for you to do — it happens automatically, and that is the final payment.`,
-        '',
-        `If you would rather use a different card, or anything has changed, just reply to this email and I will sort it out.`,
-        '',
-        'Deep',
-        'Still & Golden Photography',
-      ].join('\n'),
+      text: balanceReminderText(meta, amount, when),
     });
     if (error) console.error('stripe-webhook: balance reminder rejected:', error);
     else console.log(`stripe-webhook: balance reminder sent to ${to} for ${when}`);
@@ -599,4 +609,4 @@ exports.handler = async (event) => {
 
 // Exposed for tests only — the held-booking path handles real money and is
 // otherwise reachable only through a signed Stripe event.
-exports._test = { holdFailedBooking, capSplitSubscription };
+exports._test = { holdFailedBooking, capSplitSubscription, balanceReminderText };

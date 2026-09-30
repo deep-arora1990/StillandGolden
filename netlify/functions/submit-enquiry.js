@@ -4,8 +4,8 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const GENERAL_AUDIENCE_ID = '09483754-cd3f-4537-9990-001237752466';
 
 const SESSION_LABELS = {
-  glimpse: 'Glimpse — 30 min, 10 images',
-  golden: 'Golden — 60 min, 20 images',
+  glimpse: 'Glimpse — up to 45 min, 10 images',
+  golden: 'Golden — up to 90 min, 20 images',
   gathered: 'Gathered — 90 min, 30+ images',
   bloom: 'Bloom — two sessions, maternity/family + newborn',
   unsure: 'Not sure yet — help me choose',

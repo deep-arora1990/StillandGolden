@@ -28,24 +28,41 @@ const REFRESH_TOKEN = (process.env.SETMORE_API_KEY || '').replace(/\s+/g, '');
 // STAFF_KEY left null: the solo staff member is resolved from the API once
 // per cold start and cached (see getStaffKey).
 // ---------------------------------------------------------------------------
+// Every date from `from` to `to` inclusive (YYYY-MM-DD), optionally only on
+// certain weekdays (0 = Sunday) and skipping named dates. Dates are calendar
+// dates, not moments, so the maths is done in UTC — Melbourne changes to
+// daylight saving on 4 Oct 2026, and local-time date arithmetic across that
+// boundary is the classic way to skip or repeat a day.
+function datesBetween(from, to, { weekdays = null, except = [] } = {}) {
+  const out = [];
+  const end = new Date(`${to}T00:00:00Z`);
+  for (let d = new Date(`${from}T00:00:00Z`); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+    const iso = d.toISOString().slice(0, 10);
+    if (weekdays && !weekdays.includes(d.getUTCDay())) continue;
+    if (except.includes(iso)) continue;
+    out.push(iso);
+  }
+  return out;
+}
+
 const TIERS = {
   glimpse: {
     name: 'Glimpse',
     tagline: 'The quick refresh',
     serviceKey: 'd6e1959f-dde0-4785-a0b1-8249d1305c7d',
-    durationMinutes: 30,
-    priceFrom: 195,
-    priceCents: 19500,
+    durationMinutes: 45,
+    priceFrom: 250,
+    priceCents: 25000,
     includes: '10 edited images',
   },
   golden: {
     name: 'Golden',
     tagline: 'The signature sitting',
     serviceKey: 'cbad199e-41dd-4572-803b-7f27ae3e2bb3',
-    durationMinutes: 60,
-    priceFrom: 250,
-    priceCents: 25000,
-    depositCents: 12500,
+    durationMinutes: 90,
+    priceFrom: 475,
+    priceCents: 47500,
+    depositCents: 23750,
     includes: '20 edited images',
   },
   gathered: {
@@ -53,9 +70,9 @@ const TIERS = {
     tagline: 'Room to move',
     serviceKey: 'fe328a93-6db2-41d2-9a7d-4e7d4b4bf9e3',
     durationMinutes: 90,
-    priceFrom: 395,
-    priceCents: 39500,
-    depositCents: 19750,
+    priceFrom: 595,
+    priceCents: 59500,
+    depositCents: 29750,
     includes: '30+ edited images',
   },
   bloom: {
@@ -63,9 +80,9 @@ const TIERS = {
     tagline: 'The bundle — bump to baby',
     serviceKey: 'd05d6d95-7e5c-4af6-8067-c25bcc55702b',
     durationMinutes: 90,
-    priceFrom: 595,
-    priceCents: 59500,
-    depositCents: 29750,
+    priceFrom: 950,
+    priceCents: 95000,
+    depositCents: 47500,
     includes: 'Two 90-minute sessions',
   },
   'fathers-day': {
@@ -181,6 +198,66 @@ const TIERS = {
     priceCents: 100,
     includes: 'Test booking',
     hidden: true,
+  },
+
+  // --- Seasonal offers, Oct–Dec 2026 (listed on /offers) --------------------
+  //
+  // `unlisted`: bookable through /book?service=<tier>, but NOT shown in the
+  // /book picker — people arrive from /offers, which carries the detail and the
+  // valued-at comparison. Different from `hidden`, which removes a tier from
+  // booking-services entirely because it has its own campaign page.
+  //
+  // valuedAt: $400 is a Glimpse session ($250 from 1 Oct) plus its full gallery
+  // ($150) — the real price of the nearest regular equivalent, which is what a
+  // "valued at" claim needs behind it.
+
+  // Normal calendar availability, limited to 1 Oct – the first weekend of
+  // December (Deep, 30 Sep 2026). allowedDates is what enforces the window, in
+  // availability, slots and checkout alike.
+  'in-home-christmas': {
+    name: 'In-home Christmas session',
+    tagline: 'Christmas at home, in your own light',
+    serviceKey: '60614953-538c-4c46-86d2-a7dfcae8f3a7',
+    durationMinutes: 45,
+    priceFrom: 295,
+    priceCents: 29500,
+    depositCents: 14750, // half, like every split tier (Deep, 30 Sep 2026)
+    valuedAt: 400,
+    includes: 'Full gallery included',
+    unlisted: true,
+    allowedDates: datesBetween('2026-10-01', '2026-12-06'),
+  },
+
+  // Mon / Wed / Fri / Sat / Sun through October and November, never 8 Nov
+  // (Christmas minis day), one session a day, time confirmed by Deep directly.
+  //
+  // The booking still needs A time for the Setmore appointment, so it is
+  // written at slotTimes[0] as a placeholder Deep moves once he has agreed the
+  // real one. `timeTbc` keeps that placeholder away from every client-facing
+  // surface — confirmation email, Stripe checkout, the /book summary — where a
+  // client could otherwise turn up at it.
+  //
+  // `onePerDay`: the day closes once any Sunset beach mini exists on it, at any
+  // time. The ordinary overlap check isn't enough here, because Deep moves the
+  // appointment to the agreed time — sunset drifts later through spring — and
+  // once it no longer overlaps the placeholder the day would reopen.
+  'sunset-beach-minis': {
+    name: 'Sunset beach mini',
+    tagline: 'Golden hour at Frankston, Seaford or Carrum',
+    serviceKey: '40b4d796-6949-4812-adfd-8ea896db36b2',
+    durationMinutes: 45,
+    priceFrom: 295,
+    priceCents: 29500,
+    depositCents: 14750, // half, like every split tier (Deep, 30 Sep 2026)
+    valuedAt: 400,
+    includes: 'Full gallery included',
+    unlisted: true,
+    allowedDates: datesBetween('2026-10-01', '2026-11-30', { weekdays: [1, 3, 5, 6, 0], except: ['2026-11-08'] }),
+    fixedSchedule: true,
+    slotTimes: ['18:30'],
+    onePerDay: true,
+    timeTbc: true,
+    locations: ['Frankston', 'Seaford', 'Carrum'],
   },
 };
 
@@ -471,10 +548,12 @@ function toSetmoreDate(date) {
 
 async function getSlots(serviceKey, date /* YYYY-MM-DD */) {
   if (MOCK) {
-    // Fixed-date offers (e.g. Father's Day) mock to their advertised date even
+    // One-day events (e.g. Father's Day) mock to their advertised date even
     // when it falls on a mock-closed day — ten slots, matching the real cap.
+    // A date *window* (In-home Christmas) follows the regular mock calendar,
+    // as the live service follows Setmore.
     const tier = Object.values(TIERS).find((t) => t.serviceKey === serviceKey);
-    if (tier && tier.allowedDates && tier.allowedDates.includes(date)) {
+    if (tier && tier.allowedDates && tier.allowedDates.length === 1 && tier.allowedDates[0] === date) {
       return ['10:00', '10:20', '10:40', '11:00', '11:20', '11:40', '12:00', '12:20', '12:40', '13:00'];
     }
     return mockSlots(date);
@@ -616,6 +695,12 @@ async function getFixedScheduleSlots(tier, date) {
   };
 
   const appointments = await getAppointmentsOnDate(date);
+
+  // One session a day: any appointment of this service on the date closes the
+  // day, wherever Deep has since moved it to.
+  if (tier.onePerDay && appointments.some((a) => a.service_key === tier.serviceKey)) {
+    return [];
+  }
 
   // start_time / end_time are 'yyyy-MM-ddTHH:mm[Z]' in the studio's own timezone.
   const busy = [];
