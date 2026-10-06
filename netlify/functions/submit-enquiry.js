@@ -1,7 +1,7 @@
 const { Resend } = require('resend');
+const { upsertResendContact } = require('./lib/resend-contacts');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const GENERAL_AUDIENCE_ID = '09483754-cd3f-4537-9990-001237752466';
 
 const SESSION_LABELS = {
   glimpse: 'Glimpse — up to 45 min, 10 images',
@@ -9,6 +9,10 @@ const SESSION_LABELS = {
   gathered: 'Gathered — 90 min, 30+ images',
   bloom: 'Bloom — two sessions, maternity/family + newborn',
   unsure: 'Not sure yet — help me choose',
+
+  // Seasonal offers — reachable from the booking page's "dates don't suit" form.
+  'in-home-christmas': 'In-home Christmas session',
+  'sunset-beach-minis': 'Sunset beach mini',
 
   // Session names used before the tier restructure. Kept so an enquiry sent
   // from a cached page still reads properly in the notification email.
@@ -87,6 +91,12 @@ exports.handler = async (event) => {
   }
 
   if (!RESEND_API_KEY) {
+    // Local preview (netlify dev, no keys): log what would happen so the form
+    // can be reviewed end to end. Never true on the live site.
+    if (process.env.NETLIFY_DEV === 'true') {
+      console.log('submit-enquiry [dev, nothing sent]:', event.body);
+      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ success: true, dev: true }) };
+    }
     console.error('RESEND_API_KEY is not set in the environment.');
     return { statusCode: 500, body: 'Email service is not configured.' };
   }
@@ -101,6 +111,12 @@ exports.handler = async (event) => {
   }
 
   const { first_name, last_name, email, phone, session_type, preferred_date, message } = data;
+  // Only a real tick is consent. A missing field (a page cached from before the
+  // checkbox) or anything that isn't boolean true reads as "no".
+  const marketingConsent = data.marketing_consent === true;
+  // 'book' = the booking page's "none of these dates work" form: someone who
+  // wanted to book and couldn't find a date. Anything else is the homepage form.
+  const fromBookingPage = data.source === 'book';
 
   if (!first_name || !email || !session_type) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
@@ -119,13 +135,17 @@ exports.handler = async (event) => {
       resend.emails.send({
         from: 'Still & Golden <notifications@stillandgolden.com.au>',
         to: 'hello@stillandgolden.com.au',
-        subject: `New enquiry — ${fullName} (${sessionLabel})`,
+        subject: fromBookingPage
+          ? `New enquiry from the booking page — ${fullName} (${sessionLabel})`
+          : `New enquiry — ${fullName} (${sessionLabel})`,
         text: [
           `New booking enquiry from ${fullName}`,
+          fromBookingPage ? 'From the booking page — none of the available dates suited.' : null,
           `Email: ${email}`,
           phone ? `Phone: ${phone}` : null,
           `Session: ${sessionLabel}`,
-          preferred_date ? `Preferred date: ${preferred_date}` : null,
+          preferred_date ? `${fromBookingPage ? 'Dates that would suit' : 'Preferred date'}: ${preferred_date}` : null,
+          `Marketing emails: ${marketingConsent ? 'yes' : 'no'}`,
           message ? `\nMessage:\n${message}` : null,
         ].filter(Boolean).join('\n'),
       }),
@@ -137,16 +157,21 @@ exports.handler = async (event) => {
       }),
     ]);
 
-    // 3. Add to audience — delay to avoid hitting 2 req/s rate limit after Promise.all emails
+    // 3. Save the contact — delay to avoid hitting 2 req/s rate limit after
+    // the two emails. Subscribed only if they ticked the box; an existing
+    // contact who didn't tick keeps whatever they chose before (see
+    // lib/resend-contacts.js). Before 6 Oct 2026 every enquirer was added
+    // subscribed without being asked.
+    //
+    // The enquiry has already reached Deep by this point, so a list failure is
+    // logged, not reported — an error message here would invite a resend of
+    // an enquiry that arrived.
     await new Promise(resolve => setTimeout(resolve, 1100));
-    const contactResult = await resend.contacts.create({
-      audienceId: GENERAL_AUDIENCE_ID,
-      email,
-      firstName: first_name,
-      lastName: last_name || '',
-      unsubscribed: false,
-    });
-    console.log('Contact result:', JSON.stringify(contactResult));
+    try {
+      await upsertResendContact({ email, firstName: first_name, lastName: last_name, phone, marketingConsent });
+    } catch (contactErr) {
+      console.error('submit-enquiry: contact not saved:', contactErr.message);
+    }
 
     return {
       statusCode: 200,

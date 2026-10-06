@@ -799,6 +799,17 @@
       padding: 0 14px 12px;
       margin-bottom: 2px;
     }
+    /* Marketing opt-in (6 Oct 2026). Not a .fg — the .fg input rule would
+       stretch the box to full width. Unticked by default: only a tick subscribes. */
+    .fg-consent {
+      display: flex; gap: 12px; align-items: flex-start;
+      margin: 4px 0 24px; cursor: pointer;
+      font-size: 13px; line-height: 1.6; color: var(--mid);
+    }
+    .fg-consent input {
+      width: 18px; height: 18px; margin: 2px 0 0; flex-shrink: 0;
+      accent-color: var(--warm-black);
+    }
     .form-submit {
       margin-top: 16px;
       align-self: flex-start;
@@ -1233,6 +1244,10 @@
           <label for="msg">Anything else</label>
           <textarea id="msg" name="message" placeholder="Tell me about your family, any questions, or special requests…"></textarea>
         </div>
+        <label class="fg-consent" for="mk">
+          <input type="checkbox" id="mk" name="marketing_consent">
+          <span>Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</span>
+        </label>
         <button type="submit" class="form-submit" id="enquiry-submit">Send enquiry</button>
         <p id="enquiry-success" style="display:none;margin-top:16px;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:var(--gold);">Thanks — I'll be in touch within 24 hours.</p>
         <p id="enquiry-error" style="display:none;margin-top:16px;font-size:13px;color:#b04040;">Something went wrong — please email me directly at hello@stillandgolden.com.au</p>
@@ -1292,6 +1307,7 @@
         session_type: document.getElementById('st').value,
         preferred_date: document.getElementById('dt').value.trim(),
         message: document.getElementById('msg').value.trim(),
+        marketing_consent: document.getElementById('mk').checked,
         'bot-field': document.getElementById('bot-field').value,
       };
       try {

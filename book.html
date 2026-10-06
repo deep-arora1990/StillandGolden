@@ -43,6 +43,21 @@
     /* .btn sets display, which beats the hidden attribute — without this the
        unoffered split button showed as an empty black bar. */
     .pay-choice .btn[hidden] { display: none; }
+
+    /* "None of these dates work?" enquiry under the calendar */
+    .alt-enquiry { margin-top: 36px; padding-top: 22px; border-top: 1px solid var(--border); }
+    .alt-lead { font-size: 0.92rem; color: #4d453f; margin: 0 0 4px; }
+    .link-btn {
+      background: none; border: none; padding: 0; cursor: pointer;
+      font: inherit; color: var(--warm-black); text-decoration: underline; text-underline-offset: 3px;
+    }
+    .link-btn:hover { color: var(--gold); }
+    #alt-form { margin-top: 20px; }
+    #alt-form[hidden], .alt-done[hidden], .alt-fail[hidden] { display: none; }
+    .consent-check { display: flex; gap: 12px; align-items: flex-start; margin: 22px 0 6px; font-size: 0.85rem; color: #4d453f; cursor: pointer; }
+    .consent-check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--warm-black); flex-shrink: 0; }
+    .alt-done { font-family: var(--serif, Georgia, serif); font-style: italic; color: var(--gold); margin: 14px 0 0; }
+    .alt-fail { font-size: 0.85rem; color: #b04040; margin: 14px 0 0; }
     .pay-note { margin: 12px 0 0; font-size: 0.78rem; line-height: 1.6; color: #6b625c; max-width: 46ch; }
     @media (max-width: 560px) {
       .pay-choice { grid-template-columns: 1fr; }
@@ -222,6 +237,63 @@
         <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
         <p id="slot-loading" class="loading" hidden>Loading times…</p>
         <p id="slot-none" class="loading" hidden>No times left on that date — please pick another.</p>
+      </div>
+
+      <!-- "None of these dates work?" — a copy of the homepage enquiry form for
+           someone who wanted to book and couldn't find a date (6 Oct 2026).
+           Same endpoint; source: 'book' flags it in Deep's notification. -->
+      <div class="alt-enquiry" id="alt-enquiry">
+        <p class="alt-lead"><button type="button" class="link-btn" id="alt-open" aria-expanded="false" aria-controls="alt-form">None of these dates work?</button> Tell me what would suit and I'll see what I can do.</p>
+        <form id="alt-form" class="details" hidden>
+          <p style="display:none"><label>Don't fill: <input name="bot-field" id="alt-bot" tabindex="-1" autocomplete="off"></label></p>
+          <div class="field-row">
+            <div class="field">
+              <label for="alt-first">First name</label>
+              <input id="alt-first" type="text" autocomplete="given-name" required>
+            </div>
+            <div class="field">
+              <label for="alt-last">Last name</label>
+              <input id="alt-last" type="text" autocomplete="family-name" required>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="alt-email">Email</label>
+              <input id="alt-email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="alt-phone">Phone</label>
+              <input id="alt-phone" type="tel" autocomplete="tel">
+            </div>
+          </div>
+          <div class="field">
+            <label for="alt-session">Session</label>
+            <select id="alt-session" required>
+              <option value="glimpse">Glimpse — up to 45 min, 10 images</option>
+              <option value="golden">Golden — up to 90 min, 20 images</option>
+              <option value="gathered">Gathered — 90 min, 30+ images</option>
+              <option value="bloom">Bloom — two sessions</option>
+              <option value="in-home-christmas">In-home Christmas session</option>
+              <option value="sunset-beach-minis">Sunset beach mini</option>
+              <option value="unsure">Not sure yet — help me choose</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="alt-dates">Dates or days that would suit</label>
+            <input id="alt-dates" type="text" placeholder="e.g. any weekday evening in late October">
+          </div>
+          <div class="field">
+            <label for="alt-msg">Anything else (optional)</label>
+            <textarea id="alt-msg" rows="3"></textarea>
+          </div>
+          <label class="consent-check" for="alt-marketing">
+            <input type="checkbox" id="alt-marketing">
+            <span>Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</span>
+          </label>
+          <button type="submit" class="btn" id="alt-submit">Send enquiry</button>
+          <p class="alt-done" id="alt-success" hidden>Thanks — I'll be in touch within 24 hours.</p>
+          <p class="alt-fail" id="alt-error" hidden>Something went wrong — please email me directly at <a href="mailto:hello@stillandgolden.com.au">hello@stillandgolden.com.au</a></p>
+        </form>
       </div>
     </section>
 
@@ -530,6 +602,9 @@
           $('cal-loading').hidden = true;
           $('cal-wrap').classList.remove('loading');
           renderCalendar();
+          // A month with nothing free is the moment someone gives up — offer
+          // the enquiry form straight away (once; never re-open one they closed).
+          if (!state.availableDates[key].length) openAltEnquiry(true);
         })
         .catch(function (err) {
           $('cal-loading').hidden = true;
@@ -594,6 +669,68 @@
         grid.appendChild(btn);
       }
     }
+
+    // --- "none of these dates work?" ---------------------------------------------
+
+    var altClosedByVisitor = false;
+    function openAltEnquiry(auto) {
+      var form = $('alt-form');
+      if (auto && (altClosedByVisitor || !form.hidden)) return;
+      // Pre-select the session they were looking at; they can still change it.
+      var sel = $('alt-session');
+      if (state.service && sel.querySelector('option[value="' + state.service.tier + '"]')) sel.value = state.service.tier;
+      form.hidden = false;
+      $('alt-open').setAttribute('aria-expanded', 'true');
+      if (!auto) $('alt-first').focus();
+    }
+    $('alt-open').addEventListener('click', function () {
+      if ($('alt-form').hidden) { openAltEnquiry(false); return; }
+      $('alt-form').hidden = true;
+      altClosedByVisitor = true;
+      $('alt-open').setAttribute('aria-expanded', 'false');
+    });
+
+    $('alt-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var form = e.target;
+      if (!form.reportValidity()) return;
+      var btn = $('alt-submit');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      $('alt-success').hidden = true;
+      $('alt-error').hidden = true;
+      api('submit-enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: $('alt-first').value.trim(),
+          last_name: $('alt-last').value.trim(),
+          email: $('alt-email').value.trim(),
+          phone: $('alt-phone').value.trim(),
+          session_type: $('alt-session').value,
+          preferred_date: $('alt-dates').value.trim(),
+          message: $('alt-msg').value.trim(),
+          marketing_consent: $('alt-marketing').checked,
+          source: 'book',
+          'bot-field': $('alt-bot').value,
+        }),
+      })
+        .then(function () {
+          form.reset();
+          btn.textContent = 'Sent';
+          $('alt-success').hidden = false;
+          // Same conversions as the homepage form; each wrapped so a blocked
+          // tracker can never turn a delivered enquiry into an error.
+          try { window.gtag_report_conversion(); } catch (err) {}
+          try { window.fbq('track', 'Lead'); } catch (err) {}
+          track('generate_lead', { currency: 'AUD', value: 1.0, source: 'book' });
+        })
+        .catch(function () {
+          btn.disabled = false;
+          btn.textContent = 'Send enquiry';
+          $('alt-error').hidden = false;
+        });
+    });
 
     $('cal-prev').addEventListener('click', function () { shiftCursor(-1); });
     $('cal-next').addEventListener('click', function () { shiftCursor(1); });

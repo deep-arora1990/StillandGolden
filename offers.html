@@ -106,6 +106,20 @@
     .pkg-price .was { font-size: 1.15rem; color: var(--mid); margin-right: 12px; }
     .pkg-price .was s { text-decoration-thickness: 1.5px; }
     .value-note { font-size: 0.82rem; color: var(--mid); margin: -8px 0 18px; }
+    .signup { margin-top: 64px; padding: 36px 32px; border: 1px solid var(--border); background: rgba(26,23,20,0.03); }
+    .signup h2 { margin-top: 0; }
+    .signup p { max-width: 560px; }
+    .su-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 10px; margin-top: 18px; }
+    .su-row input {
+      font: inherit; font-size: 0.95rem; color: var(--warm-black); background: #fff;
+      border: 1px solid var(--border); border-radius: 0; padding: 13px 14px; min-width: 0;
+    }
+    .su-row input:focus { outline: none; border-color: var(--gold); }
+    .su-row .btn { margin: 0; white-space: nowrap; }
+    .su-msg { margin: 14px 0 0; font-size: 0.9rem; color: var(--gold); }
+    .su-msg[hidden] { display: none; }
+    .su-err { color: #b04040; }
+    @media (max-width: 640px) { .signup { padding: 28px 20px; } .su-row { grid-template-columns: 1fr; } }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   </style>
 </head>
@@ -163,8 +177,69 @@
       <a href="/book?service=sunset-beach-minis" class="btn">Choose your evening</a>
     </div>
 
+    <section class="signup" id="signup" aria-labelledby="signup-title">
+      <h2 id="signup-title">Hear about the next one <em>first</em></h2>
+      <p>Offers like these don't run for long. Leave your email and I'll let you know when the next one opens. Occasional emails only, and you can unsubscribe any time.</p>
+      <form id="signup-form" novalidate>
+        <p style="display:none"><label>Don't fill: <input name="bot-field" id="su-bot" tabindex="-1" autocomplete="off"></label></p>
+        <div class="su-row">
+          <label class="sr-only" for="su-name">First name</label>
+          <input id="su-name" type="text" autocomplete="given-name" placeholder="First name">
+          <label class="sr-only" for="su-email">Email</label>
+          <input id="su-email" type="email" autocomplete="email" placeholder="Email address" required>
+          <button type="submit" class="btn" id="su-submit">Sign up</button>
+        </div>
+        <p class="su-msg" id="su-success" hidden>Thanks — you're on the list. Check your inbox for a quick hello.</p>
+        <p class="su-msg su-err" id="su-error" hidden></p>
+      </form>
+    </section>
   </main>
 
   <footer data-sg-footer></footer>
+  <script>
+    // Email-list sign-up (6 Oct 2026). Signing up is the consent; the function
+    // stores the contact subscribed, welcomes them and notifies Deep.
+    (function () {
+      var form = document.getElementById('signup-form');
+      var btn = document.getElementById('su-submit');
+      var ok = document.getElementById('su-success');
+      var bad = document.getElementById('su-error');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = document.getElementById('su-email').value.trim();
+        ok.hidden = true; bad.hidden = true;
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+          bad.textContent = 'Please enter a valid email address.';
+          bad.hidden = false;
+          return;
+        }
+        btn.disabled = true; btn.textContent = 'Signing up…';
+        fetch('/.netlify/functions/submit-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first_name: document.getElementById('su-name').value.trim(),
+            email: email,
+            source: 'offers',
+            'bot-field': document.getElementById('su-bot').value,
+          }),
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('non-200');
+            form.reset();
+            btn.textContent = 'Signed up';
+            ok.hidden = false;
+            // Counted as a sign-up, not a lead, so the two never mix.
+            try { if (window.sgTrack) window.sgTrack('sign_up', { method: 'offers' }); } catch (err) {}
+            try { window.fbq('track', 'CompleteRegistration'); } catch (err) {}
+          })
+          .catch(function () {
+            btn.disabled = false; btn.textContent = 'Sign up';
+            bad.textContent = 'Something went wrong — please try again, or email hello@stillandgolden.com.au.';
+            bad.hidden = false;
+          });
+      });
+    })();
+  </script>
 </body>
 </html>
