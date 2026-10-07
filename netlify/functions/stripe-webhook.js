@@ -72,7 +72,11 @@ async function bookAppointment(meta) {
   // the booking has succeeded, and a stale cache is only an inconvenience,
   // since the time-slot step re-checks Setmore before anyone can pay.
   const [bookedYear, bookedMonth] = meta.date.split('-').map(Number);
-  await clearMonth(bookedYear, bookedMonth);
+  const cleared = await clearMonth(bookedYear, bookedMonth);
+  // The clear runs silently otherwise; this line is how a real booking proves
+  // it happened (Netlify function log). 0 is normal if nobody had viewed that
+  // month since it last expired.
+  console.log(`stripe-webhook: cleared ${meta.date.slice(0, 7)} availability (${cleared} saved months) after booking`);
 
   return appointment;
 }
@@ -609,4 +613,4 @@ exports.handler = async (event) => {
 
 // Exposed for tests only — the held-booking path handles real money and is
 // otherwise reachable only through a signed Stripe event.
-exports._test = { holdFailedBooking, capSplitSubscription, balanceReminderText };
+exports._test = { holdFailedBooking, capSplitSubscription, balanceReminderText, bookAppointment };

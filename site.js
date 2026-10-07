@@ -64,7 +64,8 @@
         path.indexOf('/packages/') === 0 || path === '/book' || path === '/book.html';
     }
     if (href === '/offers') {
-      return OFFER_PAGES.some(function (p) { return path === p || path === p + '.html'; });
+      return path.indexOf('/offers/') === 0 ||
+        OFFER_PAGES.some(function (p) { return path === p || path === p + '.html'; });
     }
     if (href === '/blog/') return path.indexOf('/blog') === 0;
     return false;

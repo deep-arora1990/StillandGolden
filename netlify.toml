@@ -210,6 +210,18 @@
   status = 301
   force = true
 
+[[redirects]]
+  from = "/offers/in-home-christmas-photos.html"
+  to = "/offers/in-home-christmas-photos"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/offers/sunset-beach-mini-sessions.html"
+  to = "/offers/sunset-beach-mini-sessions"
+  status = 301
+  force = true
+
 # URL consolidation for SEO (3 Aug 2026): the site standardised on
 # extensionless URLs. Canonical tags, internal links and the sitemap all use
 # the extensionless form, but Netlify also serves each page at its .html path
