@@ -29,6 +29,7 @@ const { subscriptionCancelAt } = require('./lib/deposits');
 const { upsertResendContact } = require('./lib/resend-contacts');
 const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking-confirmation');
 const { tokenForBooking, linkFor } = require('./lib/booking-links');
+const { postBookingEvent } = require('./lib/studio-sync');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
@@ -359,14 +360,44 @@ async function notifyOwnerOfBooking(resend, meta, appointment) {
   if (error) throw new Error(`Resend rejected the booking notice: ${error.message || JSON.stringify(error)}`);
 }
 
+// The booking, as Studio's Bookings screen shows it (booking workflow stage B).
+async function reportBookingToStudio(session, meta, appointment) {
+  const tierKey = Object.keys(TIERS).find((k) => TIERS[k].serviceKey === meta.service_key);
+  const tier = tierKey ? TIERS[tierKey] : {};
+  const beach = tier.locations && ((meta.notes || '').match(/^Location: (.+)$/m) || [])[1];
+  const split = meta.pay_mode === 'split' && Number(meta.balance_cents) > 0;
+  await postBookingEvent({
+    type: 'booked',
+    appointmentId: (appointment && appointment.key) || '',
+    email: meta.email || '',
+    firstName: meta.firstName || '',
+    lastName: meta.lastName || '',
+    phone: meta.phone || '',
+    tierKey: tierKey || '',
+    sessionDate: meta.date || '',
+    sessionTime: tier.timeTbc ? '' : meta.time || '',
+    timeTbc: Boolean(tier.timeTbc),
+    location: beach || null,
+    payMode: split ? 'split' : 'full',
+    amountCents: tier.priceCents || null,
+    balanceCents: split ? Number(meta.balance_cents) : null,
+    balanceDue: split ? meta.charge_on || null : null,
+    stripeSessionId: (session && session.id) || null,
+  });
+}
+
 // "[S&G] Balance paid" — the second half of a split payment went through.
 // The deposit is invoiced too (billing_reason 'subscription_create') and is
 // already covered by the booking notice, so only the cycle invoice counts.
 async function notifyBalancePaid(stripe, resend, invoice) {
-  if (!resend || !invoice || invoice.billing_reason !== 'subscription_cycle') return;
+  if (!invoice || invoice.billing_reason !== 'subscription_cycle') return;
   const found = await splitMetaForInvoice(stripe, invoice);
   if (!found) return;
   const { meta } = found;
+  // The subscription knows the email and date, not the appointment — Studio
+  // matches on those.
+  await postBookingEvent({ type: 'balance_paid', email: meta.email, sessionDate: meta.date });
+  if (!resend) return;
   const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || meta.email || 'client';
   const amount = dollars(invoice.amount_paid || 0);
   const { error } = await resend.emails.send({
@@ -432,6 +463,7 @@ async function alertBalanceFailed(stripe, invoice) {
 
   const amount = typeof invoice.amount_due === 'number' ? `$${(invoice.amount_due / 100).toFixed(2)}` : 'the balance';
   console.error(`stripe-webhook: BALANCE FAILED for ${subId} (${meta.date} ${meta.time})`);
+  await postBookingEvent({ type: 'balance_failed', email: meta.email, sessionDate: meta.date });
 
   const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
   if (!resend) return;
@@ -670,6 +702,8 @@ exports.handler = async (event) => {
       } catch (noteErr) {
         console.error('stripe-webhook: owner booking notice failed (booking stands):', noteErr);
       }
+      // Studio's Bookings screen. Never throws (lib/studio-sync.js).
+      await reportBookingToStudio(session, meta, appointment);
       try {
         await addToAudience(meta);
       } catch (audErr) {
@@ -698,4 +732,4 @@ exports.handler = async (event) => {
 
 // Exposed for tests only — the held-booking path handles real money and is
 // otherwise reachable only through a signed Stripe event.
-exports._test = { holdFailedBooking, capSplitSubscription, balanceReminderText, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid };
+exports._test = { holdFailedBooking, capSplitSubscription, balanceReminderText, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid, reportBookingToStudio };

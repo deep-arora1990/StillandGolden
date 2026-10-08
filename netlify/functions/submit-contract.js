@@ -1,6 +1,7 @@
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const { Resend } = require('resend');
 const { verify: verifyBookingLink, linkFor } = require('./lib/booking-links');
+const { postBookingEvent } = require('./lib/studio-sync');
 
 const BRAND = {
   gold: [0.659, 0.518, 0.353],   // #A8845A
@@ -425,6 +426,10 @@ exports.handler = async (event) => {
       </div>`,
       attachments: [attachment],
     });
+
+    // Studio's Bookings screen: terms signed. Matched on the link's
+    // appointment, else the email + session date. Never throws.
+    await postBookingEvent({ type: 'terms_signed', appointmentId: (link && link.a) || undefined, email, sessionDate: sessionDate || undefined });
 
     return {
       statusCode: 200,

@@ -1,4 +1,6 @@
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
+const { verify: verifyBookingLink } = require('./lib/booking-links');
+const { postBookingEvent } = require('./lib/studio-sync');
 const { Resend } = require('resend');
 
 const BRAND = {
@@ -573,6 +575,16 @@ exports.handler = async (event) => {
     // The cost is that a sync can silently miss one, so Studio is the
     // convenient place to check rather than the authoritative one — the PDF and
     // the notification email remain the record.
+    // Studio's Bookings screen: the questionnaire, its answers and address.
+    // The signed link (from the terms-signed email) names the booking; without
+    // it Studio matches on email + session date. Never throws.
+    {
+      const link = data.token ? verifyBookingLink(data.token) : null;
+      const { token: _t, 'bot-field': _b, ...answers } = data;
+      await postBookingEvent({ type: 'questionnaire', appointmentId: (link && link.a) || undefined, email: clientEmail,
+        sessionDate: sessionDate || (link && link.d) || undefined, address: data.address || null, answers });
+    }
+
     await syncConsentToStudio({
       email: clientEmail,
       firstName: displayName.split(' ')[0] || null,
