@@ -175,6 +175,7 @@ function splitCheckoutParams(tier, plan, { date, time, firstName, lastName, emai
         // searched by email when a charge needs cancelling.
         email: email || '',
         firstName: firstName || '',
+        lastName: lastName || '',
       },
     },
   };

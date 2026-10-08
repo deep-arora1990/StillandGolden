@@ -40,6 +40,17 @@ function formatDate(iso) {
   return `${weekday}, ${d} ${MONTHS[mo - 1]} ${y}`;
 }
 
+// 'YYYY-MM-DD' -> 'Thursday 15 October' — for the balance date, where the year
+// would only be noise.
+function formatShortDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+  if (!m) return String(iso || '');
+  const [, y, mo, d] = m.map(Number);
+  return `${DAYS[new Date(Date.UTC(y, mo - 1, d)).getUTCDay()]} ${d} ${MONTHS[mo - 1]}`;
+}
+
+const money = (cents) => `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
+
 // '13:25' -> '1:25pm'
 function formatTime(hhmm) {
   const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || ''));
@@ -118,6 +129,29 @@ function render(v) {
           </td>
         </tr>` : '';
 
+  // The session terms ride in the confirmation (Deep, 8 Oct 2026): one email,
+  // not two. Christmas minis keep their own flow — they have their own terms
+  // and the pre-session form above.
+  const termsBlock = !christmas && v.termsUrl ? `
+        <tr>
+          <td style="background-color:${C.cream};padding:28px 48px 8px;">
+            <p style="margin:0 0 8px;font-family:${SANS};font-size:11px;letter-spacing:0.18em;color:${C.gold};text-transform:uppercase;">One last step</p>
+            ${p('', 'Your session terms. It takes a minute &mdash; your details are already filled in, so just check them and sign.')}
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="background-color:${C.black};">
+                  <a href="${esc(v.termsUrl)}" style="display:inline-block;padding:14px 32px;font-family:${SANS};font-size:11px;font-weight:bold;letter-spacing:0.12em;color:${C.cream};text-decoration:none;text-transform:uppercase;">Review &amp; sign your session terms</a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:14px 0 0;font-family:${SANS};font-size:13px;line-height:1.8;color:${C.muted};">Once that's done I'll send a short questionnaire so I can plan your session around your family.</p>
+          </td>
+        </tr>` : '';
+
+  const paymentLine = v.paymentLine
+    ? `<p style="margin:14px 0 0;font-family:${SANS};font-size:13px;line-height:1.8;color:${C.muted};">${esc(v.paymentLine)}</p>`
+    : '';
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -164,12 +198,13 @@ function render(v) {
                   <p style="margin:0;font-family:${SERIF};font-size:18px;line-height:1.5;color:${C.black};">
                     ${esc(v.dateLabel)}<br>${esc(v.timeLabel)}
                   </p>
+                  ${paymentLine}
                 </td>
               </tr>
             </table>
           </td>
         </tr>
-${venueBlock}${formBlock}
+${venueBlock}${formBlock}${termsBlock}
         <tr>
           <td style="background-color:${C.cream};padding:28px 48px 8px;">
             ${p('', 'Need to change something, or just thought of a question? Reply straight to this email — it comes to me.')}
@@ -217,6 +252,7 @@ ${venueBlock}${formBlock}
     `${v.includes}, delivered within 2 weeks`,
     `${v.dateLabel}, ${v.timeLabel}`,
   ];
+  if (v.paymentLine) textLines.push(v.paymentLine);
   if (christmas) {
     textLines.push(
       '',
@@ -224,6 +260,14 @@ ${venueBlock}${formBlock}
       'Come a few minutes early if you can — the day runs back to back.',
       '',
       `Tell me who's coming (takes about a minute, and there's a note about Christmas outfits): ${formUrl}`,
+    );
+  }
+  if (!christmas && v.termsUrl) {
+    textLines.push(
+      '',
+      'One last step — your session terms. Your details are already filled in, so just check them and sign:',
+      v.termsUrl,
+      "Once that's done I'll send a short questionnaire so I can plan your session around your family.",
     );
   }
   textLines.push(
@@ -243,7 +287,10 @@ ${venueBlock}${formBlock}
 }
 
 // Build the value bag from Stripe session metadata + the matched tier.
-function valuesFromBooking(meta, tier) {
+//
+// opts.termsUrl — the signed link to the prefilled terms page (see
+// booking-links.js); omitted, the email has no terms block.
+function valuesFromBooking(meta, tier, opts = {}) {
   const minutes = tier.sessionMinutes || tier.durationMinutes;
   const dateLabel = formatDate(meta.date);
   // timeTbc offers (the beach minis) are written with a placeholder time Deep
@@ -274,6 +321,18 @@ function valuesFromBooking(meta, tier) {
     timeLabel,
     christmas: tier.serviceKey === CHRISTMAS_TIER_KEY_SERVICE,
     formUrl: `${MINI_FORM_URL}?${params.toString()}`,
+    termsUrl: opts.termsUrl || '',
+    // What was paid: in full, or the split and the day the balance comes off
+    // (the same card, automatically — the split terms say so).
+    paymentLine: (() => {
+      // Christmas minis keep their confirmation exactly as it was (Deep, 8 Oct).
+      if (!tier.priceCents || tier.serviceKey === CHRISTMAS_TIER_KEY_SERVICE) return '';
+      const balance = Number(meta.balance_cents);
+      if (meta.pay_mode === 'split' && balance > 0) {
+        return `${money(tier.priceCents - balance)} paid today · ${money(balance)} on ${formatShortDate(meta.charge_on)}`;
+      }
+      return `Paid ${money(tier.priceCents)}`;
+    })(),
   };
 }
 

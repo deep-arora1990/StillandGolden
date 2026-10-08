@@ -563,6 +563,34 @@
   </footer>
 
   <script>
+    // Signed link from the booking email (?t=…). The page only READS the
+    // payload to prefill; submit-contract verifies the signature before trusting
+    // it. No link, or an unreadable one: the page works exactly as before.
+    function readBookingLink() {
+      try {
+        var t = new URLSearchParams(location.search).get('t');
+        if (!t) return null;
+        var data = t.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+        while (data.length % 4) data += '=';
+        var json = decodeURIComponent(Array.prototype.map.call(atob(data), function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        var p = JSON.parse(json);
+        p.token = t;
+        return p;
+      } catch (e) { return null; }
+    }
+
+    // Prefill from the terms-signed email's link (8 Oct 2026). Everything stays
+    // editable — the questionnaire is the client's own words.
+    var booking = readBookingLink();
+    if (booking) {
+      var qf = document.getElementById('questionnaire-form');
+      if (!qf.names.value) qf.names.value = [booking.f, booking.l].filter(Boolean).join(' ');
+      if (!qf.email.value) qf.email.value = booking.e || '';
+      if (booking.d && !qf.session_date.value) qf.session_date.value = booking.d;
+    }
+
     document.getElementById('questionnaire-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = this.querySelector('.form-submit');
@@ -574,6 +602,7 @@
       const payload = {
         names: this.names.value,
         sessionDate: this.session_date.value,
+        token: booking ? booking.token : undefined,
         email: this.email.value,
         address: this.address.value,
         children: this.children.value,

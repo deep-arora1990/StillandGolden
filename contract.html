@@ -271,6 +271,8 @@
       .acceptance-form { padding: 28px 20px; }
       footer { padding: 28px 24px; }
     }
+      .booking-ref { font-size: 0.9rem; line-height: 1.6; color: #4d453f; border-left: 3px solid #A8845A; padding: 10px 14px; background: #fff; margin: 0 0 22px; }
+    .booking-ref[hidden] { display: none; }
   </style>
 </head>
 <body>
@@ -291,27 +293,32 @@
 
     <div class="section">
       <h2>What's Included</h2>
-      <p>Every session is delivered as a private online gallery within 2 weeks of the session date. The gallery allows the client to download all images as high-resolution JPEG files for personal use. The number of professionally edited photographs depends on the session booked:</p>
+      <p>Every session is delivered as a private online gallery within 2 weeks of the session date. The gallery stays online for 2 months, and images download as high-resolution JPEG files for personal use. The number of professionally edited photographs included depends on the session booked:</p>
       <ul>
         <li><strong>Glimpse</strong> &mdash; up to 45 minutes, 10 edited photographs. The full gallery may be added for $150.</li>
         <li><strong>Golden</strong> &mdash; up to 90 minutes, 20 edited photographs. The full gallery may be added for $125.</li>
         <li><strong>Gathered</strong> &mdash; 90 minutes, 30 or more edited photographs, with the full gallery included.</li>
         <li><strong>Bloom</strong> &mdash; two separate 90-minute sessions (a maternity or family session, and a newborn session), each delivered as its own gallery of 30 or more edited photographs, with the full gallery included.</li>
+        <li><strong>Seasonal offers</strong> (In-home Christmas session, Sunset beach mini) &mdash; 45 minutes, with the full gallery included. A beach mini takes place at the beach chosen at booking, timed around sunset, with the start time confirmed by the photographer.</li>
       </ul>
-      <p style="margin-top:14px;"><strong>Image selection:</strong> For Glimpse and Golden sessions, the photographer selects the images that make up the gallery, choosing the strongest frames from the session. Clients who would prefer to see everything can add the full gallery.</p>
-      <p style="margin-top:14px;">Where a full gallery upgrade applies, please advise the photographer within 7 days of receiving your gallery if you would like to purchase the full set.</p>
+      <p style="margin-top:14px;"><strong>Choosing your images:</strong> Your online gallery shows every edited image from your session. For Glimpse and Golden sessions, you choose the images included in your session (10 or 20) and download those at no extra cost. The full gallery can be added through your online gallery at any time within the 2 months it is online. Gathered, Bloom and seasonal offer sessions include the full gallery, so every image can be downloaded.</p>
     </div>
 
     <div class="section">
       <h2>Payment Terms</h2>
-      <p>A non-refundable deposit of 50% of the session fee is required at the time of booking to secure the session date. The remaining balance is due in full no later than 2 days prior to the session.</p>
-      <p>Failure to pay the remaining balance by the due date may result in the session being cancelled and the deposit forfeited.</p>
+      <p>Payment is required at the time of booking to secure the session date. All payments are non-refundable in the event of a change of mind or cancellation within 7 days of the scheduled session date.</p>
+      <p><strong>Paying in two parts.</strong> Where it is offered at the time of booking, you may pay half the session fee to secure your date and the remaining half seven days later, charged automatically to the same card. You will be reminded three days beforehand, and nothing is charged after the second payment. Part payment is only available when your session is more than nine days away.</p>
+      <p>If the second payment does not go through, your session is still booked. You will be emailed a link to pay with another card, and the balance remains due before the session.</p>
+      <p><strong>The full fee must be paid before your session takes place.</strong> If the second payment has not cleared by then, the session cannot go ahead until it has.</p>
+      <p><strong>If you cancel having paid only the first half</strong>, the same terms apply as to any other payment: more than 7 days before your session it is refunded, and within 7 days it is not. Either way the second payment is simply not taken, so cancelling never costs more than you have already paid.</p>
+      <p>If the photographer cancels or cannot deliver the session, everything you have paid is refunded in full, and any payment still to come is cancelled.</p>
     </div>
 
     <div class="section">
       <h2>Cancellation & Rescheduling</h2>
-      <p>The deposit is non-refundable in the event of a change of mind, or if the client cancels within 7 days of the scheduled session date.</p>
-      <p>Rescheduling is available at no additional charge and is subject to mutual agreement between the client and photographer. The photographer reserves the right to reschedule in the event of illness, extreme weather, or other unforeseen circumstances, with an alternative date offered at no extra cost.</p>
+      <p>All payments are non-refundable in the event of a change of mind or cancellation within 7 days of the scheduled session date.</p>
+      <p>Rescheduling is available at no additional charge and is subject to mutual agreement between the client and photographer. The photographer reserves the right to reschedule in the event of illness, extreme weather, or other unforeseen circumstances, with an alternative date offered at no extra cost. Rescheduling does not change when a second payment is taken.</p>
+      <p><strong>Newborn sessions:</strong> Rescheduling is available at no charge if baby has not yet arrived by the scheduled date, or if baby, the client, or a member of the immediate household is unwell. Please notify the photographer as soon as possible so an alternative date can be arranged within the newborn window.</p>
     </div>
 
     <div class="section">
@@ -328,6 +335,7 @@
     <!-- Acceptance form -->
     <div class="acceptance-form" id="acceptance-form">
       <h2>Accept Agreement</h2>
+      <p class="booking-ref" id="booking-ref" hidden></p>
       <form id="contract-form">
         <div class="frow">
           <div class="fg">
@@ -351,6 +359,8 @@
             <option value="Golden">Golden — up to 90 min, 20 images</option>
             <option value="Gathered">Gathered — 90 min, 30+ images</option>
             <option value="Bloom">Bloom — two 90 min sessions</option>
+            <option value="in-home-christmas">In-home Christmas session — 45 min, full gallery</option>
+            <option value="sunset-beach-minis">Sunset beach mini — 45 min, full gallery</option>
           </select>
         </div>
         <div class="frow">
@@ -375,7 +385,7 @@
     <!-- Success (hidden by default) -->
     <div class="acceptance-form form-success" id="form-success" style="display:none;">
       <h2>Thank you</h2>
-      <p>Deep will be in touch within 24 hours.</p>
+      <p>Your signed copy is on its way to your inbox, with a short questionnaire to fill in next.</p>
     </div>
 
   </div>
@@ -388,6 +398,47 @@
   <script>
     // Auto-fill today's date
     document.getElementById('dt').valueAsDate = new Date();
+
+    // Signed link from the booking email (?t=…). The page only READS the
+    // payload to prefill; submit-contract verifies the signature before trusting
+    // it. No link, or an unreadable one: the page works exactly as before.
+    function readBookingLink() {
+      try {
+        var t = new URLSearchParams(location.search).get('t');
+        if (!t) return null;
+        var data = t.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+        while (data.length % 4) data += '=';
+        var json = decodeURIComponent(Array.prototype.map.call(atob(data), function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        var p = JSON.parse(json);
+        p.token = t;
+        return p;
+      } catch (e) { return null; }
+    }
+
+    // Prefill from the booking (8 Oct 2026). Package and date are locked — they
+    // describe the session that was paid for; name and email stay editable.
+    var booking = readBookingLink();
+    if (booking) {
+      var form = document.getElementById('contract-form');
+      form.firstname.value = booking.f || '';
+      form.lastname.value = booking.l || '';
+      form.email.value = booking.e || '';
+      var sel = form.session_type;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value.toLowerCase() === String(booking.s || '').toLowerCase()) { sel.selectedIndex = i; break; }
+      }
+      if (sel.selectedIndex > 0) sel.disabled = true;
+      if (booking.d) { form.session_date.value = booking.d; form.session_date.readOnly = true; }
+      var label = sel.selectedIndex > 0 ? sel.options[sel.selectedIndex].text.split(' — ')[0] : '';
+      var when = booking.d ? new Date(booking.d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '';
+      var time = booking.h ? (function (h) { var p = h.split(':'), n = +p[0]; return (n % 12 || 12) + ':' + p[1] + (n < 12 ? 'am' : 'pm'); })(booking.h) : 'time to be confirmed';
+      var ref = document.getElementById('booking-ref');
+      ref.textContent = 'Your booking: ' + [label, when, time, booking.loc ? booking.loc + ' beach' : ''].filter(Boolean).join(' · ') +
+        '. Check your details below and sign. If anything is wrong, reply to your booking email.';
+      ref.hidden = false;
+    }
 
     document.getElementById('contract-form').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -403,7 +454,8 @@
         email: this.email.value,
         sessionType: this.session_type.value,
         sessionDate: this.session_date.value,
-        agreementDate: this.agreement_date.value
+        agreementDate: this.agreement_date.value,
+        token: booking ? booking.token : undefined
       };
 
       try {
@@ -418,10 +470,13 @@
           document.getElementById('form-success').style.display = 'block';
           document.getElementById('form-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
-          throw new Error('Submission failed');
+          var body = await res.json().catch(function () { return {}; });
+          throw new Error(body.error || 'Submission failed');
         }
       } catch (err) {
-        errorEl.textContent = 'Something went wrong. Please try again or email hello@stillandgolden.com.au';
+        errorEl.textContent = err.message && err.message !== 'Submission failed' && err.message !== 'Failed to fetch'
+          ? err.message
+          : 'Something went wrong. Please try again or email hello@stillandgolden.com.au';
         errorEl.style.display = 'block';
         btn.disabled = false;
         btn.textContent = 'Submit Agreement';

@@ -136,8 +136,8 @@ exports.handler = async (event) => {
         from: 'Still & Golden <notifications@stillandgolden.com.au>',
         to: 'hello@stillandgolden.com.au',
         subject: fromBookingPage
-          ? `New enquiry from the booking page — ${fullName} (${sessionLabel})`
-          : `New enquiry — ${fullName} (${sessionLabel})`,
+          ? `[S&G] New enquiry from the booking page — ${fullName} (${sessionLabel})`
+          : `[S&G] New enquiry — ${fullName} (${sessionLabel})`,
         text: [
           `New booking enquiry from ${fullName}`,
           fromBookingPage ? 'From the booking page — none of the available dates suited.' : null,

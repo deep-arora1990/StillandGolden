@@ -78,7 +78,7 @@ exports.handler = async (event) => {
       from: FROM,
       to: OWNER_EMAIL,
       replyTo: clientEmail,
-      subject: `Mini pre-session form — ${name}${slot ? ` (${slot})` : ''}`,
+      subject: `[S&G] Mini pre-session form — ${name}${slot ? ` (${slot})` : ''}`,
       text: ownerLines.join('\n'),
     });
 

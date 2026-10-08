@@ -28,6 +28,7 @@ const { clearMonth } = require('./lib/availability-cache');
 const { subscriptionCancelAt } = require('./lib/deposits');
 const { upsertResendContact } = require('./lib/resend-contacts');
 const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking-confirmation');
+const { tokenForBooking, linkFor } = require('./lib/booking-links');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
@@ -105,10 +106,15 @@ async function addToAudience(meta) {
 //
 // Sent from OWNER_EMAIL, not FROM, so a reply lands in Deep's inbox rather
 // than the no-reply notifications address.
-async function sendBookingConfirmation(resend, meta) {
-  const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key);
+//
+// Since 8 Oct 2026 the confirmation also carries the session terms: a button to
+// /contract with a signed link that opens it prefilled for this booking.
+async function sendBookingConfirmation(resend, meta, appointmentKey) {
+  const tierKey = Object.keys(TIERS).find((k) => TIERS[k].serviceKey === meta.service_key);
+  const tier = tierKey && TIERS[tierKey];
   if (!tier) throw new Error(`Unknown service_key for confirmation: ${meta.service_key}`);
-  const { subject, html, text } = renderConfirmation(valuesFromBooking(meta, tier));
+  const termsUrl = linkFor('/contract', tokenForBooking(meta, tierKey, tier, appointmentKey));
+  const { subject, html, text } = renderConfirmation(valuesFromBooking(meta, tier, { termsUrl }));
   const { error } = await resend.emails.send({
     from: `Still & Golden <${OWNER_EMAIL}>`,
     to: meta.email,
@@ -150,7 +156,7 @@ async function capSplitSubscription(stripe, resend, session, meta) {
       await resend.emails.send({
         from: FROM,
         to: OWNER_EMAIL,
-        subject: `ACTION NEEDED — uncapped subscription ${subId}`,
+        subject: `[S&G] ACTION NEEDED — uncapped subscription ${subId}`,
         text: [
           `The split-payment subscription for ${meta.firstName} ${meta.lastName} could not be capped.`,
           '',
@@ -214,7 +220,7 @@ async function holdFailedBooking(stripe, resend, session, meta, err) {
     await resend.emails.send({
       from: FROM,
       to: OWNER_EMAIL,
-      subject: `ACTION NEEDED — paid booking not in the calendar (${meta.firstName} ${meta.lastName}, ${meta.date} ${meta.time})`,
+      subject: `[S&G] ACTION NEEDED — paid booking not in the calendar (${meta.firstName} ${meta.lastName}, ${meta.date} ${meta.time})`,
       text: `A customer paid but the Setmore appointment could not be created.\n\n${detail}\n\n${nextSteps}`,
     });
     await resend.emails.send({
@@ -310,6 +316,73 @@ function balanceReminderText(meta, amount, when) {
   ].join('\n');
 }
 
+const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// 'YYYY-MM-DD' -> 'Fri 20 Nov', field by field so a UTC server can't shift it.
+function shortDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+  if (!m) return String(iso || '');
+  const [, y, mo, d] = m.map(Number);
+  return `${DAY_SHORT[new Date(Date.UTC(y, mo - 1, d)).getUTCDay()]} ${d} ${MONTH_SHORT[mo - 1]}`;
+}
+const dollars = (cents) => `$${(Number(cents) / 100).toFixed(2)}`;
+const resendClient = () => (process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null);
+
+// "[S&G] New booking" to Deep (8 Oct 2026) — everything needed to review the
+// booking without opening Setmore or Stripe. A beach mini shows no time: the
+// placeholder is Deep's to move.
+async function notifyOwnerOfBooking(resend, meta, appointment) {
+  if (!resend) return;
+  const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key) || { name: meta.service_key };
+  const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ');
+  const when = tier.timeTbc ? shortDate(meta.date) : `${shortDate(meta.date)}, ${meta.time}`;
+  const balance = Number(meta.balance_cents);
+  const paid = meta.pay_mode === 'split' && balance > 0 && tier.priceCents
+    ? `Split: ${dollars(tier.priceCents - balance)} now, ${dollars(balance)} on ${meta.charge_on}`
+    : `Paid in full${tier.priceCents ? `: ${dollars(tier.priceCents)}` : ''}`;
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: OWNER_EMAIL,
+    subject: `[S&G] New booking — ${name} · ${tier.name} · ${when}`,
+    text: [
+      `New booking: ${tier.name}`,
+      `When: ${meta.date}${tier.timeTbc ? ' (time to be confirmed — move the 18:30 placeholder in Setmore)' : ` at ${meta.time}`}`,
+      `Client: ${name}`,
+      `Email: ${meta.email}`,
+      meta.phone ? `Phone: ${meta.phone}` : null,
+      paid,
+      meta.notes ? `\nNotes:\n${meta.notes}` : null,
+      `\nSetmore appointment: ${(appointment && appointment.key) || '(none)'}`,
+      'They have been sent the confirmation with the session terms to sign.',
+    ].filter(Boolean).join('\n'),
+  });
+  if (error) throw new Error(`Resend rejected the booking notice: ${error.message || JSON.stringify(error)}`);
+}
+
+// "[S&G] Balance paid" — the second half of a split payment went through.
+// The deposit is invoiced too (billing_reason 'subscription_create') and is
+// already covered by the booking notice, so only the cycle invoice counts.
+async function notifyBalancePaid(stripe, resend, invoice) {
+  if (!resend || !invoice || invoice.billing_reason !== 'subscription_cycle') return;
+  const found = await splitMetaForInvoice(stripe, invoice);
+  if (!found) return;
+  const { meta } = found;
+  const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || meta.email || 'client';
+  const amount = dollars(invoice.amount_paid || 0);
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: OWNER_EMAIL,
+    subject: `[S&G] Balance paid — ${name} · ${amount}`,
+    text: [
+      `The balance for ${name}'s session has been paid: ${amount}.`,
+      `Session: ${meta.date || '?'}${meta.time ? ` at ${meta.time}` : ''}`,
+      meta.email ? `Email: ${meta.email}` : null,
+      'That was the final payment — the subscription ends on its own.',
+    ].filter(Boolean).join('\n'),
+  });
+  if (error) console.error('stripe-webhook: balance-paid notice rejected:', error);
+}
+
 // Three days before the balance is taken. Goes to the customer, from Deep.
 async function sendBalanceReminder(stripe, invoice) {
   const found = await splitMetaForInvoice(stripe, invoice);
@@ -368,7 +441,7 @@ async function alertBalanceFailed(stripe, invoice) {
       // him asking someone for money, so replies should reach him.
       from: `Still & Golden <${OWNER_EMAIL}>`,
       to: OWNER_EMAIL,
-      subject: `Balance payment failed — ${meta.date || 'session'} ${meta.time || ''}`.trim(),
+      subject: `[S&G] Balance FAILED — ${meta.date || 'session'} ${meta.time || ''}`.trim(),
       text: [
         `The second payment on a split booking did not go through.`,
         '',
@@ -513,6 +586,13 @@ exports.handler = async (event) => {
     return json(200, { received: true, handled: 'invoice.upcoming' });
   }
 
+  // The second half of a split payment going through (8 Oct 2026). Needs
+  // `invoice.paid` ticked on the webhook endpoint in Stripe.
+  if (stripeEvent.type === 'invoice.paid') {
+    await notifyBalancePaid(stripe, resendClient(), stripeEvent.data.object);
+    return json(200, { received: true, handled: 'invoice.paid' });
+  }
+
   if (stripeEvent.type === 'invoice.payment_failed') {
     await alertBalanceFailed(stripe, stripeEvent.data.object);
     return json(200, { received: true, handled: 'invoice.payment_failed' });
@@ -580,10 +660,15 @@ exports.handler = async (event) => {
 
     if (resend) {
       try {
-        await sendBookingConfirmation(resend, meta);
+        await sendBookingConfirmation(resend, meta, appointment.key);
         console.log(`stripe-webhook: confirmation emailed to ${meta.email}`);
       } catch (mailErr) {
         console.error('stripe-webhook: confirmation email failed (booking stands):', mailErr);
+      }
+      try {
+        await notifyOwnerOfBooking(resend, meta, appointment);
+      } catch (noteErr) {
+        console.error('stripe-webhook: owner booking notice failed (booking stands):', noteErr);
       }
       try {
         await addToAudience(meta);
@@ -613,4 +698,4 @@ exports.handler = async (event) => {
 
 // Exposed for tests only — the held-booking path handles real money and is
 // otherwise reachable only through a signed Stripe event.
-exports._test = { holdFailedBooking, capSplitSubscription, balanceReminderText, bookAppointment };
+exports._test = { holdFailedBooking, capSplitSubscription, balanceReminderText, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid };

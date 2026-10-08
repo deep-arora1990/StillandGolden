@@ -134,7 +134,7 @@ exports.handler = async (event) => {
     resend.emails.send({
       from: FROM,
       to: OWNER,
-      subject: `New email sign-up — ${firstName || email}`,
+      subject: `[S&G] New email sign-up — ${firstName || email}`,
       text: [
         `New sign-up to the email list`,
         firstName ? `Name: ${firstName}` : null,

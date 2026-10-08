@@ -531,7 +531,7 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: 'hello@stillandgolden.com.au',
-      subject: `Session Questionnaire — ${displayName}`,
+      subject: `[S&G] Questionnaire — ${displayName}`,
       text: pdfBase64
         ? detailsText
         : `${detailsText}\n(The PDF could not be generated for this submission — the answers above are complete.)`,
