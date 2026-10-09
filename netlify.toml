@@ -210,6 +210,13 @@
   status = 301
   force = true
 
+# Style guide (9 Oct 2026) — hidden for now: noindex, not linked, not in the sitemap.
+[[redirects]]
+  from = "/style-guide.html"
+  to = "/style-guide"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/offers/in-home-christmas-photos.html"
   to = "/offers/in-home-christmas-photos"

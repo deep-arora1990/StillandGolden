@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style Guide — What to Wear | Still &amp; Golden</title>
+  <!-- Hidden for now (Deep, 9 Oct 2026): not linked, not in the sitemap, not indexed.
+       Shared directly with clients. To publish: drop the robots meta, add to the
+       sitemap, and link it from the booking emails. -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="What to wear for your Still &amp; Golden session: the colour palette and what photographs well.">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site.css">
+  <script src="/site.js" defer></script>
+  <style>
+    body { background: var(--off-white); color: var(--warm-black); font-family: var(--sans); font-weight: 300; font-size: 15px; line-height: 1.65; overflow-x: hidden; }
+    main { max-width: 920px; margin: 0 auto; padding: 130px 40px 60px; }
+    .label { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+    h1 { font-family: var(--serif); font-size: clamp(2.3rem, 5vw, 3.4rem); font-weight: 400; line-height: 1.1; margin: 0 0 18px; }
+    h1 em, h2 em { font-style: italic; color: var(--gold); }
+    h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.8vw, 2rem); font-weight: 400; margin: 52px 0 14px; }
+    h3 { font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 400; margin: 0 0 10px; }
+    main strong { font-weight: 600; color: var(--warm-black); }
+    p { color: #4d453f; max-width: 66ch; margin: 0 0 16px; }
+    .lead { font-family: var(--serif); font-size: 1.3rem; font-style: italic; color: var(--mid); max-width: 60ch; }
+    .moodboard { margin: 34px 0 8px; }
+    .moodboard img { width: 100%; height: auto; display: block; }
+    .pal-intro { margin-bottom: 26px; }
+    .pal-group { margin: 0 0 22px; }
+    .swatches { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 150px)); gap: 12px 12px; }
+    .sw { display: flex; flex-direction: column; gap: 6px; }
+    .chip { display: block; aspect-ratio: 1 / 1; border-radius: 6px; border: 1px solid rgba(26,23,20,0.08); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sw-name { font-size: 0.78rem; color: #4d453f; }
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; }
+    ul.list { margin: 0 0 18px; padding-left: 20px; color: #4d453f; max-width: 66ch; }
+    ul.list li { margin-bottom: 8px; }
+    .box { border: 1px solid rgba(26,23,20,0.12); padding: 26px 30px; margin: 30px 0; background: #fff; }
+    .box h2 { margin-top: 0; }
+    .sign { font-family: var(--serif); font-size: 1.2rem; margin-top: 26px; }
+    .pdf-link { display: inline-block; margin-top: 8px; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 14px 28px; text-decoration: none; }
+    .pdf-link:hover { background: var(--gold); }
+    @media (max-width: 680px) {
+      main { padding: 110px 20px 40px; }
+      .cols { grid-template-columns: 1fr; }
+      .swatches { grid-template-columns: repeat(4, 1fr); gap: 10px 8px; }
+      .box { padding: 22px 20px; }
+    }
+    /* The PDF: A4 portrait. Page 1 is the moodboard and palette, like the
+       reference guide; the advice follows. */
+    @page { size: A4; margin: 12mm 13mm 12mm; }
+    main a { color: inherit; }
+    @media print {
+      nav, footer, .sg-strip, .pdf-link, .no-print { display: none !important; }
+      body { background: #fff; font-size: 9pt; line-height: 1.45; }
+      main { max-width: none; padding: 0; }
+      .label { margin-bottom: 4px; font-size: 6.5pt; }
+      h1 { font-size: 21pt; margin: 0 0 4px; }
+      .lead { font-size: 11pt; margin-bottom: 2px; }
+      p { margin: 0 0 5px; max-width: none; }
+      .moodboard { margin: 6px 0 0; text-align: center; }
+      .moodboard img { max-height: 92mm; width: auto; max-width: 100%; margin: 0 auto; }
+      .palette h2 { margin: 6px 0 2px; }
+      .pal-intro { margin-bottom: 6px; }
+      .pal-group { margin-bottom: 5px; }
+      .pal-group h3 { margin: 0 0 3px; font-size: 6pt; }
+      .swatches { grid-template-columns: repeat(4, 1fr); gap: 3px 8px; }
+      .chip { aspect-ratio: 3 / 1; border-radius: 3px; }
+      .pal-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
+      .sw { gap: 1px; }
+      .sw-name { font-size: 6.3pt; }
+      .guide { display: grid; grid-template-columns: 1.15fr 1fr; gap: 0 26px; margin-top: 4px; }
+      .guide h2:first-child, .guide .tip-col h2 { margin-top: 6px; }
+      h2 { font-size: 14pt; margin: 10px 0 5px; }
+      .cols { gap: 0 24px; }
+      .cols h2:first-child { margin-top: 0; }
+      .box { break-inside: avoid; padding: 9px 14px 4px; margin: 8px 0; }
+      .box h2 { margin-bottom: 4px; }
+      ul.list { margin-bottom: 6px; padding-left: 15px; }
+      ul.list li { margin-bottom: 2px; }
+      .sign { font-size: 11pt; margin-top: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <nav id="nav" data-sg-nav></nav>
+
+  <main>
+    <div class="label">Style guide &middot; Still &amp; Golden Photography</div>
+    <h1>What to wear, <em>and why it matters</em></h1>
+    <p class="lead">The best photos happen when everyone feels like themselves.</p>
+    <p>Being comfortable in your clothes shapes how you feel in front of the camera. Choose clothes that you feel free, comfortable and you can be yourself in.</p>
+    <p>Below is a collection of photos and art styles that have influenced my photography and editing style over the years.</p>
+    <a class="pdf-link" href="/Images/style-guide/still-and-golden-style-guide.pdf" download>Download the PDF</a>
+
+    <figure class="moodboard">
+      <picture>
+        <source srcset="/Images/style-guide/moodboard.webp" type="image/webp">
+        <img src="/Images/style-guide/moodboard.jpg" width="1600" height="1240" alt="Moodboard of soft, natural family, newborn and travel photographs in warm, earthy tones">
+      </picture>
+    </figure>
+
+    <section class="palette">
+      <h2>The <em>palette</em></h2>
+      <p class="pal-intro">These are the colours my editing loves: soft earth tones, olives, dusty blues and clay pinks, with a few bolder accents. Pick two or three for each person and let them sit together rather than match, with a bold accent or pattern if you love one.</p>
+      <div class="pal-groups">
+      <div class="pal-group">
+        <h3>Neutrals</h3>
+        <ul class="swatches"><li class="sw"><span class="chip" style="background:#F1E7D8"></span><span class="sw-name">Cream</span></li><li class="sw"><span class="chip" style="background:#DDB28F"></span><span class="sw-name">Sand</span></li><li class="sw"><span class="chip" style="background:#A06B2B"></span><span class="sw-name">Ochre</span></li><li class="sw"><span class="chip" style="background:#523115"></span><span class="sw-name">Chocolate</span></li></ul>
+      </div>
+      <div class="pal-group">
+        <h3>Greens</h3>
+        <ul class="swatches"><li class="sw"><span class="chip" style="background:#959B17"></span><span class="sw-name">Chartreuse</span></li><li class="sw"><span class="chip" style="background:#4F7C07"></span><span class="sw-name">Fern</span></li><li class="sw"><span class="chip" style="background:#4A6420"></span><span class="sw-name">Olive</span></li><li class="sw"><span class="chip" style="background:#253920"></span><span class="sw-name">Forest</span></li></ul>
+      </div>
+      <div class="pal-group">
+        <h3>Blues</h3>
+        <ul class="swatches"><li class="sw"><span class="chip" style="background:#A0B9DA"></span><span class="sw-name">Sky</span></li><li class="sw"><span class="chip" style="background:#7089AA"></span><span class="sw-name">Dusty blue</span></li><li class="sw"><span class="chip" style="background:#3D5D86"></span><span class="sw-name">Denim</span></li><li class="sw"><span class="chip" style="background:#232E32"></span><span class="sw-name">Charcoal</span></li></ul>
+      </div>
+      <div class="pal-group">
+        <h3>Clay &amp; rose</h3>
+        <ul class="swatches"><li class="sw"><span class="chip" style="background:#F0BACB"></span><span class="sw-name">Blush</span></li><li class="sw"><span class="chip" style="background:#C08268"></span><span class="sw-name">Clay</span></li><li class="sw"><span class="chip" style="background:#A13E38"></span><span class="sw-name">Brick</span></li><li class="sw"><span class="chip" style="background:#714136"></span><span class="sw-name">Chestnut</span></li></ul>
+      </div>
+      <div class="pal-group">
+        <h3>Bold accents</h3>
+        <ul class="swatches"><li class="sw"><span class="chip" style="background:#C99A2E"></span><span class="sw-name">Mustard</span></li><li class="sw"><span class="chip" style="background:#C2612C"></span><span class="sw-name">Burnt orange</span></li><li class="sw"><span class="chip" style="background:#1F5C5E"></span><span class="sw-name">Deep teal</span></li><li class="sw"><span class="chip" style="background:#6B1E2B"></span><span class="sw-name">Maroon</span></li></ul>
+      </div>
+      </div>
+    </section>
+
+    <section class="guide">
+      <div>
+      <h2>What photographs <em>well</em></h2>
+      <p>To start, anything you feel the most <strong>you</strong> in. If you&rsquo;d like a bit of guidance, below are suggestions, not hard rules.</p>
+      <ul class="list">
+        <li>Textures</li>
+        <li>Denim</li>
+        <li>Dresses you feel you in</li>
+        <li>Bold, complementary colours and patterns</li>
+        <li>Sneakers, sandals and even bare feet</li>
+        <li>If you have tattoos and you&rsquo;re comfortable, flaunt them</li>
+      </ul>
+      </div>
+
+      <div class="tip-col">
+        <h2><em>Tips</em></h2>
+        <p>Wear what you feel comfortable in. If you think something might not work or are still looking for ideas, send me a message and we can talk it through.</p>
+        <p class="sign">Deep</p>
+      </div>
+    </section>
+  </main>
+
+  <footer data-sg-footer></footer>
+</body>
+</html>
