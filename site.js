@@ -44,7 +44,7 @@
   var FOOTER_HTML =
     '<span class="footer-logo">Still &amp; Golden</span>' +
     '<span class="footer-copy">&copy; 2026 Still &amp; Golden Photography &middot; ABN 37 280 912 036</span>' +
-    '<span class="footer-area">Frankston &middot; Chelsea &middot; Seaford &middot; Langwarrin &middot; Mt Eliza</span>' +
+    '<span class="footer-area">Cranbourne &middot; Clyde North &middot; Berwick &middot; Narre Warren &middot; Frankston &middot; Langwarrin &middot; Mt Eliza</span>' +
     '<span class="footer-copy">' + '<a href="/offers" style="' + FOOTER_LINK_STYLE + '">Offers</a> &middot; ' + '<a href="/packages/glimpse-mini-sessions" style="' + FOOTER_LINK_STYLE + '">Glimpse Minis</a> &middot; <a href="/packages/golden-family-photography" style="' + FOOTER_LINK_STYLE + '">Golden Family</a> &middot; <a href="/packages/gathered-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Gathered Newborn</a> &middot; <a href="/packages/bloom-maternity-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Bloom Bundle</a> &middot; <a href="/packages" style="' + FOOTER_LINK_STYLE + '">Packages</a> &middot; <a href="/blog/" style="' + FOOTER_LINK_STYLE + '">Blog</a></span>' +
     '<a href="/privacy" class="footer-copy" style="' + FOOTER_LINK_STYLE + '">Privacy Policy</a>';
 

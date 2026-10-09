@@ -40,7 +40,7 @@ const TIERS = {
     duration: '90 minutes per session',
     images: '30 or more per session',
     upgrade: null,
-    note: 'Bloom covers two separate 90-minute sessions — a maternity or family session, and a newborn session — each delivered as its own gallery. The newborn session takes place within the first 4 weeks after birth.',
+    note: 'Bloom covers two separate 90-minute sessions — a maternity or family session, and a newborn session — each delivered as its own gallery. The newborn session takes place once the baby has arrived, usually within the first few weeks.',
   },
   // Seasonal offers (30 Sep 2026), booked on /book like the packages and so
   // signed against the same agreement. Keys match the booking tiers, so the
@@ -273,7 +273,7 @@ async function generatePDF(data) {
   y = drawSection(page1, 'Cancellation & Rescheduling', [
     'All payments are non-refundable in the event of a change of mind or cancellation within 7 days of the scheduled session date.',
     'Rescheduling is available at no additional charge and is subject to mutual agreement between the client and photographer. The photographer reserves the right to reschedule in the event of illness, extreme weather, or other unforeseen circumstances, with an alternative date offered at no extra cost. Rescheduling does not change when a second payment is taken.',
-    'Newborn sessions: rescheduling is available at no charge if baby has not yet arrived by the scheduled date, or if baby, the client, or a member of the immediate household is unwell. Please notify the photographer as soon as possible so an alternative date can be arranged within the newborn window.',
+    'Newborn sessions: rescheduling is available at no charge if baby has not yet arrived by the scheduled date, or if baby, the client, or a member of the immediate household is unwell. Please notify the photographer as soon as possible so an alternative date can be arranged that suits the family and the baby.',
   ], y);
 
   // Image Usage
