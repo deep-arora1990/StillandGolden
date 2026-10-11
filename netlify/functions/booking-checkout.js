@@ -16,6 +16,7 @@ const {
   findCustomer,
   createCustomer,
   createAppointment,
+  isClosedDate,
 } = require('./lib/setmore');
 const { connectStore } = require('./lib/shared-store');
 
@@ -99,6 +100,11 @@ exports.handler = async (event) => {
   if (tier.testOnly && process.env.STRIPE_SECRET_KEY) {
     console.warn(`booking-checkout: refused test-only tier ${tierName} — live Stripe key is active`);
     return error(400, 'INVALID_DETAILS', 'This session is not available');
+  }
+
+  // Closed dates (Deep's breaks) take no bookings for any session or offer.
+  if (isClosedDate(date)) {
+    return error(400, 'INVALID_DETAILS', "I'm not taking bookings on that date — please pick another.");
   }
 
   // Fixed-date offers (allowedDates in the tier config) only take their

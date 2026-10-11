@@ -45,6 +45,19 @@ function datesBetween(from, to, { weekdays = null, except = [] } = {}) {
   return out;
 }
 
+// Dates the website takes no bookings, for any session or offer — enforced here
+// whatever Setmore says. Deep's break, 11 Dec 2026 – 20 Jan 2027 (12 Oct 2026):
+// his Setmore time off blocked December, but Setmore's API was still offering
+// the January weekends inside it. Inclusive 'YYYY-MM-DD' ranges; add a line
+// for the next break.
+const CLOSED_DATES = [
+  ['2026-12-11', '2027-01-20'],
+];
+
+function isClosedDate(date) {
+  return CLOSED_DATES.some(([from, to]) => date >= from && date <= to);
+}
+
 const TIERS = {
   glimpse: {
     name: 'Glimpse',
@@ -787,4 +800,6 @@ module.exports = {
   getAppointmentsOnDate,
   getAppointmentsInRange,
   getFixedScheduleSlots,
+  isClosedDate,
+  CLOSED_DATES,
 };

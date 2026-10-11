@@ -12,7 +12,7 @@
 // 24 Sep 2026 the cache was per-container and 30 minutes flat, so calls grew
 // with visitors instead of with time.
 
-const { TIERS, TIMEZONE, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
+const { TIERS, TIMEZONE, getSlots, getFixedScheduleSlots, isClosedDate } = require('./lib/setmore');
 const { connectStore } = require('./lib/shared-store');
 const { readMonth, writeMonth } = require('./lib/availability-cache');
 const { ttlForMonth, isFresh } = require('./lib/availability-ttl');
@@ -74,6 +74,8 @@ exports.handler = async (event) => {
       // A tier with a date window (seasonal offers) only ever offers those
       // dates — and not probing the rest also saves Setmore calls.
       if (tier.allowedDates && !tier.allowedDates.includes(iso)) continue;
+      // Closed dates (Deep's breaks) are never offered, nor probed.
+      if (isClosedDate(iso)) continue;
       dates.push(iso);
     }
   }
