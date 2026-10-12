@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seasonal Offers — Christmas &amp; Sunset Beach Minis | Still &amp; Golden</title>
-  <meta name="description" content="Limited seasonal sessions: in-home Christmas sessions, sunset beach minis at Frankston, Seaford and Carrum, and Christmas minis. From $150.">
+  <meta name="description" content="Limited seasonal sessions: in-home Christmas sessions and sunset beach minis at Frankston, Seaford and Carrum. $295, valued at $400.">
   <link rel="canonical" href="https://stillandgolden.com.au/offers">
   <meta property="og:title" content="Seasonal Offers — Still &amp; Golden Photography">
-  <meta property="og:description" content="In-home Christmas sessions, sunset beach minis and Christmas minis — limited spots this spring.">
+  <meta property="og:description" content="In-home Christmas sessions and sunset beach minis, limited spots this spring.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stillandgolden.com.au/offers">
   <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
@@ -105,6 +105,20 @@
        a "valued at" figure needs a real price behind it. */
     .pkg-price .was { font-size: 1.15rem; color: var(--mid); margin-right: 12px; }
     .pkg-price .was s { text-decoration-thickness: 1.5px; }
+    /* Christmas minis: two versions, picked by site.js from the live calendar
+       (<html data-xmas>). Until it answers, the sold-out version shows. */
+    html[data-xmas="open"] .xmas-sold { display: none !important; }
+    html:not([data-xmas="open"]) .xmas-open { display: none !important; }
+    /* Sold out (12 Oct 2026): the card stays, so people see it went, but it
+       recedes and points them at what's still open. */
+    html:not([data-xmas="open"]) .pkg.xmas-card { background: rgba(26, 23, 20, 0.025); }
+    html:not([data-xmas="open"]) .pkg.xmas-card .pkg-name,
+    html:not([data-xmas="open"]) .pkg.xmas-card .pkg-price,
+    html:not([data-xmas="open"]) .pkg.xmas-card ul.list { color: var(--mid); }
+    .sold-badge { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 5px 10px; }
+    .sold-note, .pkg-callout { border-left: 2px solid var(--gold); padding: 4px 0 4px 16px; margin: 18px 0 8px; }
+    .pkg-callout { margin: 4px 0 22px; }
+    .sold-note strong, .pkg-callout strong { color: var(--warm-black); font-weight: 400; font-family: var(--serif); font-size: 1.15rem; display: block; margin-bottom: 4px; }
     .value-note { font-size: 0.82rem; color: var(--mid); margin: -8px 0 18px; }
     .signup { margin-top: 64px; padding: 36px 32px; border: 1px solid var(--border); background: rgba(26,23,20,0.03); }
     .signup h2 { margin-top: 0; }
@@ -131,25 +145,35 @@
     <h1>Offers, <em>this season</em></h1>
     <p class="lead">A few limited sessions for spring and Christmas.</p>
 
-    <h2>Christmas minis <em>— one day only</em></h2>
-    <div class="pkg">
-      <div class="pkg-head"><span class="pkg-name">Christmas minis</span><span class="pkg-tag">15 minutes &middot; 5 images</span></div>
+    <h2>Christmas minis <em class="xmas-open">— one day only</em><em class="xmas-sold">— sold out</em></h2>
+    <div class="pkg xmas-card">
+      <div class="pkg-head"><span class="pkg-name">Christmas minis</span><span class="sold-badge xmas-sold">Sold out</span><span class="pkg-tag">15 minutes &middot; 5 images</span></div>
       <div class="pkg-price">$150</div>
       <p>Fifteen minutes in a festive set at Baxter Community Hall, with everything back in time for Christmas cards.</p>
       <ul class="list">
         <li><strong>Sunday 8 November</strong> &mdash; Baxter Community Hall</li>
         <li><strong>15 minutes</strong>, <strong>5 edited images</strong></li>
         <li>Full gallery available for $50</li>
-        <li>Limited spots</li>
+        <li class="xmas-open">Limited spots</li>
       </ul>
-      <a href="/christmas-minis" class="btn">See the details</a>
+      <div class="sold-note xmas-sold">
+        <strong>Every spot is booked. Thank you!</strong>
+        Still after Christmas photos? The in-home Christmas session below runs until 6 December, or there's a sunset beach mini before the year gets busy.
+      </div>
+      <a href="#in-home-christmas" class="btn xmas-sold">See the in-home session</a>
+      <a href="/christmas-minis" class="btn btn-ghost xmas-sold">Mini day details</a>
+      <a href="/christmas-minis" class="btn xmas-open">See the details</a>
     </div>
-    <h2>In-home Christmas session <em>— in your own light</em></h2>
+    <h2 id="in-home-christmas">In-home Christmas session <em>— in your own light</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">In-home Christmas session</span><span class="pkg-tag">45 minutes &middot; full gallery</span></div>
       <div class="pkg-price"><span class="was"><span class="sr-only">Valued at </span><s>$400</s></span>$295</div>
       <p class="value-note">Valued at $400 &mdash; a Glimpse session ($250) with its full gallery ($150).</p>
       <p>Christmas as it actually looks at your place. Your tree, your couch, the window the afternoon light comes through &mdash; photographed where the season really happens, in your own home and your own light. Nothing staged, nothing borrowed; just your family, as you are this year.</p>
+      <div class="pkg-callout">
+        <strong>Christmas-themed or not, your call</strong>
+        Go all in with the tree, the lights and the matching pyjamas, or leave Christmas out of it and keep it a relaxed family session at home.
+      </div>
       <ul class="list">
         <li><strong>45 minutes</strong> in your home</li>
         <li><strong>Full gallery included</strong> &mdash; every edited image from your session</li>

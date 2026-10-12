@@ -277,35 +277,37 @@
     }
 
     /* ─── INTRO ─── */
-    /* Christmas minis feature. Image on the right so it doesn't read as a
-       repeat of the About teaser directly below, which is image-left. */
-    /* Vertical rhythm matches #about and .sessions-inner (100/72), so the
-       gaps either side of this block read the same as every other section
-       boundary on the page. .rule carries no vertical margin of its own —
-       the space always comes from the section's padding. */
-    .xmas-feature {
-      max-width: 1100px; margin: 0 auto; padding: 100px 48px;
-      display: grid; grid-template-columns: 1fr 0.9fr; gap: 48px; align-items: center;
-    }
-    .xmas-copy .label {
+    /* Current offers (12 Oct 2026, replaced the Christmas minis feature).
+       Vertical rhythm matches #about and .sessions-inner (100/72), so the
+       gaps either side read the same as every other section boundary. Text
+       cards, no photos: the in-home Christmas offer deliberately has none. */
+    .offers-feature { max-width: 1100px; margin: 0 auto; padding: 100px 48px; text-align: center; }
+    .offers-feature .label {
       font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 14px;
     }
-    .xmas-copy h2 {
+    .offers-feature h2 {
       font-family: var(--serif); font-weight: 400; line-height: 1.12;
-      font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-bottom: 16px;
+      font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-bottom: 36px;
     }
-    .xmas-copy h2 em { font-style: italic; color: var(--gold); }
-    .xmas-copy p { color: #4d453f; margin-bottom: 14px; max-width: 46ch; }
-    .xmas-meta {
-      font-size: 0.8rem; letter-spacing: 0.06em; color: var(--mid);
-      margin-bottom: 24px; line-height: 1.9;
+    .offers-feature h2 em { font-style: italic; color: var(--gold); }
+    .offer-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; max-width: 860px; margin: 0 auto 36px; text-align: left; }
+    .offer-cards.single { grid-template-columns: 1fr; max-width: 430px; }
+    .offer-card {
+      display: flex; flex-direction: column; background: #fff; border: 1px solid var(--border);
+      padding: 30px 30px 26px; text-decoration: none; color: var(--warm-black); transition: border-color 0.25s;
     }
-    .xmas-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .xmas-photo { aspect-ratio: 4 / 3; overflow: hidden; }
+    .offer-card:hover, .offer-card:focus-visible { border-color: var(--gold); outline: none; }
+    .offer-card .oc-name { font-family: var(--serif); font-size: 1.5rem; line-height: 1.2; margin-bottom: 8px; }
+    .offer-card .oc-price { font-family: var(--serif); font-size: 1.25rem; margin-bottom: 14px; }
+    .offer-card .oc-price s { color: var(--mid); font-size: 1rem; margin-right: 6px; text-decoration-thickness: 1.5px; }
+    .offer-card .oc-detail { color: #4d453f; font-size: 0.92rem; line-height: 1.65; flex: 1; }
+    .offer-card .oc-when { font-size: 0.78rem; letter-spacing: 0.06em; color: var(--mid); margin-top: 14px; }
+    .offer-card .oc-cta { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-top: 16px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     @media (max-width: 900px) {
-      .xmas-feature { grid-template-columns: 1fr; gap: 28px; padding: 72px 24px; }
-      .xmas-photo { aspect-ratio: 16 / 10; order: -1; }
+      .offers-feature { padding: 72px 24px; }
+      .offer-cards { grid-template-columns: 1fr; max-width: 480px; }
     }
 
     #intro {
@@ -1010,11 +1012,13 @@
     #grid .mosaic .feature { grid-column: span 2; grid-row: span 2; }
     @media (max-width: 820px) {
       #grid .mosaic { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 28vw; }
-      #grid .mosaic .feature { grid-column: span 2; grid-row: span 1; }
+      /* Two rows, not one: a single 28vw row made the lead photo a 3.5:1 strip,
+         which cut the faces out of the portrait group shot (12 Oct 2026). */
+      #grid .mosaic .feature { grid-column: span 2; grid-row: span 2; }
     }
     @media (max-width: 520px) {
       #grid .mosaic { grid-template-columns: 1fr; grid-auto-rows: 77vw; }
-      #grid .mosaic .feature { grid-column: span 1; }
+      #grid .mosaic .feature { grid-column: span 1; grid-row: span 1; }
     }
   </style>
   <script src="/site.js" defer></script>
@@ -1040,7 +1044,7 @@
   <!-- MASONRY PORTFOLIO -->
   <div id="grid">
     <div class="mosaic" id="portfolio">
-      <div class="m-item feature reveal"><picture><source srcset="New%20photos/webp/homepage-1_websize.webp" type="image/webp"><img decoding="async" width="2048" height="1365" style="object-position:center 40%;" src="New%20photos/homepage-1_websize.JPG" alt="A family of five standing together in a park in autumn, outdoor family session South-East Melbourne"></picture></div>
+      <div class="m-item feature reveal"><picture><source srcset="New%20photos/webp/homepage-elly_websize.webp" type="image/webp"><img decoding="async" width="1492" height="2048" style="object-position:center 10%;" src="New%20photos/homepage-elly_websize.jpg" alt="A family laughing and pulling faces together on the bed while the baby cries, black-and-white in-home session in South-East Melbourne"></picture></div>
       <div class="m-item reveal d1"><picture><source srcset="New%20photos/webp/homepage-2_websize.webp" type="image/webp"><img decoding="async" width="2048" height="1365" style="object-position:center 35%;" src="New%20photos/homepage-2_websize.JPG" alt="A newborn baby lying awake along his dad's tattooed forearm, black and white in-home newborn portrait" loading="lazy"></picture></div>
       <div class="m-item reveal d2"><picture><source srcset="New%20photos/webp/homepage-3_websize.webp" type="image/webp"><img decoding="async" width="1365" height="2048" style="object-position:center 42%;" src="New%20photos/homepage-3_websize.JPG" alt="A curly-haired toddler cradling his newborn sibling while his parents look on, black and white in-home family session" loading="lazy"></picture></div>
       <div class="m-item reveal d3"><picture><source srcset="New%20photos/webp/homepage-6_websize.webp" type="image/webp"><img decoding="async" width="1459" height="2048" style="object-position:center 38%;" src="New%20photos/homepage-6_websize.JPG" alt="A family cuddled together on the couch around their newborn baby, in-home family session South-East Melbourne" loading="lazy"></picture></div>
@@ -1055,23 +1059,50 @@
 
   <hr class="rule">
 
-  <!-- CHRISTMAS MINIS (campaign — remove after 8 Nov 2026) -->
-  <section class="xmas-feature" id="christmas-minis-feature" aria-labelledby="xmas-h">
-    <div class="xmas-copy">
-      <p class="label reveal">One day only &middot; Sunday 8 November</p>
-      <h2 class="reveal" id="xmas-h">Christmas <em>Mini Sessions</em></h2>
-      <p class="reveal d1">Fifteen minutes in a warm, festive set at Baxter Community Hall &mdash; enough for this year's cards, a print for the wall, and something for the grandparents.</p>
-      <p class="xmas-meta reveal d1">$150 &middot; 15 minutes &middot; 5 edited photos<br>Limited spots across the day, from 10:30am</p>
-      <a href="/christmas-minis" class="btn filled reveal d2">Pick your time &rarr;</a>
+  <!-- CURRENT OFFERS (12 Oct 2026, replaced the Christmas minis feature).
+       Each card hides itself the day after its offer ends (data-until), and
+       the whole section goes when none are left — update it for the next
+       offer. Prices and dates must match /offers. -->
+  <section class="offers-feature" id="current-offers" aria-labelledby="offers-h">
+    <p class="label reveal">Current offers</p>
+    <h2 class="reveal" id="offers-h">Seasonal sessions, <em>while they last</em></h2>
+    <div class="offer-cards">
+      <a class="offer-card reveal d1" href="/offers/in-home-christmas-photos" data-until="2026-12-06">
+        <span class="oc-name">In-home Christmas session</span>
+        <span class="oc-price"><s><span class="sr-only">Valued at </span>$400</s> $295</span>
+        <span class="oc-detail">45 minutes at your place, the full gallery included. Christmas-themed or not, your call.</span>
+        <span class="oc-when">Until Sunday 6 December</span>
+        <span class="oc-cta">See the session &rarr;</span>
+      </a>
+      <a class="offer-card reveal d1" href="/offers/sunset-beach-mini-sessions" data-until="2026-11-30">
+        <span class="oc-name">Sunset beach mini</span>
+        <span class="oc-price"><s><span class="sr-only">Valued at </span>$400</s> $295</span>
+        <span class="oc-detail">45 minutes at Frankston, Seaford or Carrum beach around sunset, the full gallery included.</span>
+        <span class="oc-when">October and November</span>
+        <span class="oc-cta">Choose your evening &rarr;</span>
+      </a>
     </div>
-    <a class="xmas-photo reveal d1" href="/christmas-minis" aria-label="Christmas mini sessions">
-      <picture>
-        <source srcset="/Images/webp/christmas-minis-family.webp" type="image/webp">
-        <img src="/Images/web/christmas-minis-family.jpg" width="1192" height="880" loading="lazy" decoding="async"
-             alt="A mother and her baby daughter on the bed in the Christmas set, lit trees either side">
-      </picture>
-    </a>
+    <a href="/offers" class="btn reveal d2">See all offers</a>
   </section>
+  <script>
+    (function () {
+      // Melbourne's date, so a card doesn't vanish a day early overnight.
+      var today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Australia/Melbourne' }).format(new Date());
+      var cards = document.querySelectorAll('#current-offers .offer-card');
+      var left = 0;
+      for (var i = 0; i < cards.length; i++) {
+        if (today > cards[i].getAttribute('data-until')) cards[i].remove(); else left++;
+      }
+      var section = document.getElementById('current-offers');
+      if (!left) {
+        // Take the divider above with it, so two rules don't end up touching.
+        var rule = section.previousElementSibling;
+        if (rule && rule.tagName === 'HR') rule.remove();
+        section.remove();
+      }
+      else if (left === 1) section.querySelector('.offer-cards').classList.add('single');
+    })();
+  </script>
 
   <hr class="rule">
 

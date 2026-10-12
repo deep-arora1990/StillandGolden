@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Christmas Mini Sessions — 8 November | Still &amp; Golden</title>
-  <meta name="description" content="Christmas mini sessions at Baxter Community Hall, Sunday 8 November 2026. $150, 15 minutes, 5 edited photos — limited spots, in time for Christmas cards and gifting.">
+  <meta name="description" content="Christmas mini sessions at Baxter Community Hall, Sunday 8 November 2026. $150, 15 minutes, 5 edited photos, in time for Christmas cards and gifting.">
   <meta property="og:title" content="Christmas Mini Sessions — Sunday 8 November">
-  <meta property="og:description" content="$150 · 15 minutes · 5 edited photos at Baxter Community Hall, Baxter. Limited spots — ready for Christmas cards and gifting.">
+  <meta property="og:description" content="$150 · 15 minutes · 5 edited photos at Baxter Community Hall, Baxter. Ready for Christmas cards and gifting.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stillandgolden.com.au/christmas-minis">
   <meta property="og:image" content="https://stillandgolden.com.au/Images/christmas-minis-hero.jpg">
@@ -169,8 +169,25 @@
     }
     .slot-btn:hover, .slot-btn:focus-visible { border-color: var(--gold); outline: none; }
     .slot-btn.selected { background: var(--warm-black); color: var(--off-white); border-color: var(--warm-black); }
-    .soldout { border: 1px solid var(--border); background: #fff; padding: 26px 30px; font-size: 0.95rem; color: #4d453f; }
-    .soldout a { color: var(--warm-black); }
+
+    /* Sold out (12 Oct 2026): first thing on the page, and it points at the
+       offers that are still open rather than leaving people at a dead end. */
+    .sold-callout { border: 1px solid var(--border); border-top: 3px solid var(--gold); background: #fff; padding: 30px 32px; margin: 0 0 40px; }
+    .sold-callout .sold-badge { display: inline-block; font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 5px 10px; margin-bottom: 14px; }
+    .sold-callout h2 { font-family: var(--serif); font-size: 1.7rem; font-weight: 400; margin: 0 0 8px; }
+    .sold-callout > p { color: #4d453f; margin: 0 0 20px; }
+    .sold-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .sold-option { display: block; border: 1px solid var(--border); padding: 20px 22px; text-decoration: none; color: var(--warm-black); transition: border-color 0.2s; }
+    .sold-option:hover, .sold-option:focus-visible { border-color: var(--gold); outline: none; }
+    .sold-option .o-name { font-family: var(--serif); font-size: 1.3rem; display: block; margin-bottom: 4px; }
+    .sold-option .o-price { font-family: var(--serif); font-size: 1.05rem; display: block; margin-bottom: 8px; }
+    .sold-option .o-price s { color: var(--mid); margin-right: 6px; }
+    .sold-option .o-detail { font-size: 0.85rem; color: #4d453f; display: block; line-height: 1.6; }
+    .sold-option .o-cta { display: block; margin-top: 12px; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+    .sold-callout .sold-more { font-size: 0.85rem; color: var(--mid); margin: 18px 0 0; }
+    .sold-callout .sold-more a { color: var(--warm-black); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    @media (max-width: 640px) { .sold-callout { padding: 24px 20px; } .sold-options { grid-template-columns: 1fr; } }
 
     /* Details form */
     .details { max-width: 520px; }
@@ -296,9 +313,32 @@
   <nav id="nav" data-sg-nav></nav>
 
   <main>
-    <div class="label">One day only &middot; Limited spots</div>
+    <div class="label">One day only<span id="spots-label"></span></div>
     <h1>Christmas <em>Mini Sessions</em></h1>
     <p class="sub">Sunday 8 November, at Baxter Community Hall. Fifteen minutes in a warm, festive set &mdash; perfect for this year's cards, prints and the grandparents' gifts.</p>
+
+    <!-- Shown only when the day has no free times left (checked live on load),
+         so a cancellation puts the time picker back by itself. -->
+    <section class="sold-callout" id="sold-callout" aria-labelledby="sold-h" hidden>
+      <span class="sold-badge">Sold out</span>
+      <h2 id="sold-h">Every spot is booked. Thank you!</h2>
+      <p>If you still want Christmas photos this year, these are still open:</p>
+      <div class="sold-options">
+        <a class="sold-option" href="/offers/in-home-christmas-photos">
+          <span class="o-name">In-home Christmas session</span>
+          <span class="o-price"><s><span class="sr-only">Valued at </span>$400</s>$295</span>
+          <span class="o-detail">45 minutes at your place, full gallery included. Christmas-themed or not, your call. Until Sunday 6 December.</span>
+          <span class="o-cta">See the session &rarr;</span>
+        </a>
+        <a class="sold-option" href="/offers/sunset-beach-mini-sessions">
+          <span class="o-name">Sunset beach mini</span>
+          <span class="o-price"><s><span class="sr-only">Valued at </span>$400</s>$295</span>
+          <span class="o-detail">45 minutes at Frankston, Seaford or Carrum beach around sunset, full gallery included. October and November.</span>
+          <span class="o-cta">Choose your evening &rarr;</span>
+        </a>
+      </div>
+      <p class="sold-more">Want to hear when the next mini day opens? <a href="/offers#signup">Join the list</a>.</p>
+    </section>
 
     <figure class="shot shot-hero">
       <picture>
@@ -337,9 +377,6 @@
       <div class="slots-wrap" id="slots-wrap">
         <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
         <p id="slot-loading" class="slot-overlay">Checking the day's spots…</p>
-      </div>
-      <div id="sold-out" class="soldout" hidden>
-        All spots are gone. If you'd like to hear about the next mini day &mdash; or book a full session instead &mdash; <a href="/#contact">get in touch here</a>.
       </div>
     </section>
 
@@ -506,8 +543,8 @@
       </details>
 
       <div class="faq-cta" id="faq-cta">
-        <p>That's everything. Limited spots, one day only.</p>
-        <a class="btn" href="#book">Pick your time</a>
+        <p id="faq-cta-text">That's everything. Limited spots, one day only.</p>
+        <a class="btn" id="faq-cta-btn" href="#book">Pick your time</a>
       </div>
     </section>
   </main>
@@ -536,7 +573,7 @@
     // silently counting to 10:30am in their own timezone.
     var FIRST_SESSION_UTC = Date.UTC(2026, 10, 7, 23, 30, 0);
 
-    var state = { time: null, restoreTime: null };
+    var state = { time: null, restoreTime: null, soldOut: false };
 
     var $ = function (id) { return document.getElementById(id); };
 
@@ -591,7 +628,7 @@
       // Past the first session the countdown has nothing to say. Hiding it is
       // better than showing zeroes or a negative number on a page that may
       // well still be linked from an email.
-      if (remaining <= 0) { el.hidden = true; return false; }
+      if (remaining <= 0 || state.soldOut) { el.hidden = true; return false; }
 
       var mins = Math.floor(remaining / 60000);
       var days = Math.floor(mins / 1440);
@@ -612,6 +649,23 @@
       var timer = setInterval(function () {
         if (!renderCountdown()) clearInterval(timer);
       }, 30000);
+    }
+
+    // --- sold out ----------------------------------------------------------------
+
+    function setSoldOut(sold) {
+      state.soldOut = sold;
+      $('sold-callout').hidden = !sold;
+      $('spots-label').textContent = sold ? ' \u00b7 Sold out' : ' \u00b7 Limited spots';
+      $('step-slots').classList.toggle('active', !sold);
+      $('counter').hidden = true;
+      if (sold) $('countdown').hidden = true;
+      $('faq-cta-text').textContent = sold
+        ? 'The mini day is sold out, but there\u2019s still time for Christmas photos at home.'
+        : 'That\u2019s everything. Limited spots, one day only.';
+      var btn = $('faq-cta-btn');
+      btn.textContent = sold ? 'See the in-home Christmas session' : 'Pick your time';
+      btn.href = sold ? '/offers/in-home-christmas-photos' : '#book';
     }
 
     // --- slots -----------------------------------------------------------------
@@ -637,12 +691,11 @@
     function renderSlots(slots) {
       var list = $('slot-list');
       list.innerHTML = '';
-      if (!slots.length) {
-        $('sold-out').hidden = false;
-        $('counter').hidden = true;
-        return;
-      }
-      $('sold-out').hidden = true;
+      // Sold out is decided here, from the live list, every time the page
+      // loads (12 Oct 2026): when a cancellation frees a time, the picker
+      // simply comes back. The callout points at the offers still open.
+      setSoldOut(!slots.length);
+      if (!slots.length) return;
       // The count only appears once it means something. "13 of 15 spots left"
       // reads as "nobody has booked this"; at three or fewer it is real
       // scarcity and worth stating. Deliberately not a fraction at that point
