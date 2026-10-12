@@ -7,7 +7,8 @@
 // rides along rather than needing a call of its own. booking-checkout re-checks
 // it regardless: this decides what is shown, not what is allowed.
 
-const { TIERS, getSlots, getFixedScheduleSlots, isClosedDate } = require('./lib/setmore');
+const { TIERS, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
+const { loadClosedDates, isClosedIn } = require('./lib/closed-dates');
 const { connectStore } = require('./lib/shared-store');
 const { balancePlan, todayInMelbourne } = require('./lib/deposits');
 
@@ -42,9 +43,10 @@ exports.handler = async (event) => {
     };
   }
 
-  // Outside a seasonal offer's window there is nothing to offer — answered
-  // before any Setmore call. Checkout enforces the same list.
-  if ((tier.allowedDates && !tier.allowedDates.includes(date)) || isClosedDate(date)) {
+  // Outside a seasonal offer's window, or on one of Deep's breaks, there is
+  // nothing to offer — answered before any Setmore call. Checkout enforces both.
+  const closed = await loadClosedDates();
+  if ((tier.allowedDates && !tier.allowedDates.includes(date)) || isClosedIn(closed.ranges, date)) {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },

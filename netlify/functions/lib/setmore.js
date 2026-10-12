@@ -45,19 +45,6 @@ function datesBetween(from, to, { weekdays = null, except = [] } = {}) {
   return out;
 }
 
-// Dates the website takes no bookings, for any session or offer — enforced here
-// whatever Setmore says. Deep's break, 11 Dec 2026 – 20 Jan 2027 (12 Oct 2026):
-// his Setmore time off blocked December, but Setmore's API was still offering
-// the January weekends inside it. Inclusive 'YYYY-MM-DD' ranges; add a line
-// for the next break.
-const CLOSED_DATES = [
-  ['2026-12-11', '2027-01-20'],
-];
-
-function isClosedDate(date) {
-  return CLOSED_DATES.some(([from, to]) => date >= from && date <= to);
-}
-
 const TIERS = {
   glimpse: {
     name: 'Glimpse',
@@ -745,7 +732,12 @@ async function getFixedScheduleSlots(tier, date) {
 }
 
 async function getAppointmentsOnDate(date) {
-  if (MOCK) return [];
+  if (MOCK) {
+    // SETMORE_MOCK_FULL=2026-11-08[,…] books the whole day out, so a local
+    // preview can show the sold-out versions of fixed-schedule pages.
+    const full = (process.env.SETMORE_MOCK_FULL || '').split(',').map((d) => d.trim());
+    return full.includes(date) ? [{ start_time: `${date}T00:00Z`, end_time: `${date}T23:59Z`, service_key: 'mock-full' }] : [];
+  }
   const [y, m, d] = date.split('-');
   const data = await setmoreFetch('/bookingapi/appointments', {
     query: { startDate: `${d}-${m}-${y}`, endDate: `${d}-${m}-${y}`, customerDetails: 'true' },
@@ -800,6 +792,4 @@ module.exports = {
   getAppointmentsOnDate,
   getAppointmentsInRange,
   getFixedScheduleSlots,
-  isClosedDate,
-  CLOSED_DATES,
 };

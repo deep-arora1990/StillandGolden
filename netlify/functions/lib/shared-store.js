@@ -86,6 +86,8 @@ function store(name, opts) {
 // remove even that.
 const tokenStore = () => store('setmore-token');
 const availabilityStore = () => store('availability');
+// Deep's breaks, as Studio last sent them (lib/closed-dates.js).
+const closedDatesStore = () => store('closed-dates');
 
 // Tests inject a store shared between two "instances" to prove they share.
 function __setStoreFactoryForTest(fn) {
@@ -93,4 +95,4 @@ function __setStoreFactoryForTest(fn) {
   else delete globalThis.__sgStoreFactory;
 }
 
-module.exports = { connectStore, tokenStore, availabilityStore, memoryStore, __setStoreFactoryForTest };
+module.exports = { connectStore, tokenStore, availabilityStore, closedDatesStore, memoryStore, __setStoreFactoryForTest };

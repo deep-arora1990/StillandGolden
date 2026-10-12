@@ -12,7 +12,8 @@
 // 24 Sep 2026 the cache was per-container and 30 minutes flat, so calls grew
 // with visitors instead of with time.
 
-const { TIERS, TIMEZONE, getSlots, getFixedScheduleSlots, isClosedDate } = require('./lib/setmore');
+const { TIERS, TIMEZONE, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
+const { loadClosedDates, isClosedIn } = require('./lib/closed-dates');
 const { connectStore } = require('./lib/shared-store');
 const { readMonth, writeMonth } = require('./lib/availability-cache');
 const { ttlForMonth, isFresh } = require('./lib/availability-ttl');
@@ -53,12 +54,16 @@ exports.handler = async (event) => {
   }
 
   const today = melbourneToday();
+  // Deep's breaks are filtered as the month is SERVED, not only when it is
+  // probed, so a break added in Studio applies to months already cached.
+  const { ranges: closedRanges } = await loadClosedDates();
+  const open = (list) => list.filter((d) => !isClosedIn(closedRanges, d));
   const cached = await readMonth(serviceKey, year, month);
   if (isFresh(cached, ttlForMonth(year, month, today))) {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ availableDates: cached.availableDates, cached: true }),
+      body: JSON.stringify({ availableDates: open(cached.availableDates), cached: true }),
     };
   }
 
@@ -75,7 +80,7 @@ exports.handler = async (event) => {
       // dates — and not probing the rest also saves Setmore calls.
       if (tier.allowedDates && !tier.allowedDates.includes(iso)) continue;
       // Closed dates (Deep's breaks) are never offered, nor probed.
-      if (isClosedDate(iso)) continue;
+      if (isClosedIn(closedRanges, iso)) continue;
       dates.push(iso);
     }
   }
@@ -147,7 +152,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ availableDates: cached.availableDates, cached: true, stale: true }),
+        body: JSON.stringify({ availableDates: open(cached.availableDates), cached: true, stale: true }),
       };
     }
     console.error(`booking-availability: ${year}-${pad(month)} not served:`, systemic.message);

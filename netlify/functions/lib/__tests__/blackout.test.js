@@ -25,13 +25,14 @@ function stubOpenSetmore() {
 }
 
 describe('closed dates', () => {
-  beforeEach(() => { installFreshBlobs(); vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-12T00:00:00Z')) })
+  beforeEach(() => { installFreshBlobs(); delete globalThis.__sgClosedDatesMemo; vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-12T00:00:00Z')) })
   afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); removeBlobs() })
 
   it('covers 11 Dec 2026 to 20 Jan 2027 inclusive, and nothing either side', async () => {
-    const { isClosedDate } = await fresh('../setmore.js')
-    for (const d of ['2026-12-11', '2026-12-25', '2027-01-02', '2027-01-17', '2027-01-20']) expect(isClosedDate(d)).toBe(true)
-    for (const d of ['2026-12-10', '2027-01-21', '2027-01-23']) expect(isClosedDate(d)).toBe(false)
+    const { loadClosedDates, isClosedIn } = await fresh('../closed-dates.js')
+    const { ranges } = await loadClosedDates()
+    for (const d of ['2026-12-11', '2026-12-25', '2027-01-02', '2027-01-17', '2027-01-20']) expect(isClosedIn(ranges, d)).toBe(true)
+    for (const d of ['2026-12-10', '2027-01-21', '2027-01-23']) expect(isClosedIn(ranges, d)).toBe(false)
   })
 
   it('the month calendar offers none of them, even when Setmore does', async () => {

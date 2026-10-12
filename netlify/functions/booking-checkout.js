@@ -16,8 +16,8 @@ const {
   findCustomer,
   createCustomer,
   createAppointment,
-  isClosedDate,
 } = require('./lib/setmore');
+const { loadClosedDates, isClosedIn } = require('./lib/closed-dates');
 const { connectStore } = require('./lib/shared-store');
 
 // Split payment (spec 2026-09-14). All of the rules and all of the Stripe
@@ -103,7 +103,13 @@ exports.handler = async (event) => {
   }
 
   // Closed dates (Deep's breaks) take no bookings for any session or offer.
-  if (isClosedDate(date)) {
+  // If the list can't be read, refuse: the visitor can retry in a minute, but
+  // a paid booking inside a break can't be taken back quietly.
+  const closed = await loadClosedDates();
+  if (!closed.known) {
+    return error(503, 'CLOSED_DATES_UNKNOWN', 'Bookings are paused for a moment — please try again shortly.');
+  }
+  if (isClosedIn(closed.ranges, date)) {
     return error(400, 'INVALID_DETAILS', "I'm not taking bookings on that date — please pick another.");
   }
 
