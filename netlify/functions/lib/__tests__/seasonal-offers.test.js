@@ -34,17 +34,7 @@ describe('offer dates', () => {
     const dates = TIERS['in-home-christmas'].allowedDates
     expect(dates[0]).toBe('2026-10-01')
     expect(dates.at(-1)).toBe('2026-12-06')
-    expect(dates).toHaveLength(60) // 67 days, less the paused week
-  })
-
-  it('neither offer takes the week of 12 October (Deep, 12 Oct 2026); the days either side stay', async () => {
-    const { TIERS } = await fresh('../setmore.js')
-    for (const k of ['in-home-christmas', 'sunset-beach-minis']) {
-      const dates = TIERS[k].allowedDates
-      expect(dates.filter((d) => d >= '2026-10-12' && d <= '2026-10-18')).toEqual([])
-      expect(dates).toContain('2026-10-11')
-      expect(dates).toContain('2026-10-19')
-    }
+    expect(dates).toHaveLength(67)
   })
 
   it('both are $295 against a genuine $400 comparison (Glimpse + its full gallery)', async () => {
