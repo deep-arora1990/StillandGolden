@@ -45,6 +45,11 @@ function datesBetween(from, to, { weekdays = null, except = [] } = {}) {
   return out;
 }
 
+// A week the two seasonal offers take no bookings (Deep, 12 Oct 2026). The
+// regular packages stay open, so this is not a closed date (lib/closed-dates.js,
+// managed in Studio) — just dates left out of these two offers' windows.
+const OFFERS_PAUSED = datesBetween('2026-10-12', '2026-10-18');
+
 const TIERS = {
   glimpse: {
     name: 'Glimpse',
@@ -225,7 +230,7 @@ const TIERS = {
     valuedAt: 400,
     includes: 'Full gallery included',
     unlisted: true,
-    allowedDates: datesBetween('2026-10-01', '2026-12-06'),
+    allowedDates: datesBetween('2026-10-01', '2026-12-06', { except: OFFERS_PAUSED }),
   },
 
   // Mon / Wed / Fri / Sat / Sun through October and November, never 8 Nov
@@ -252,7 +257,7 @@ const TIERS = {
     valuedAt: 400,
     includes: 'Full gallery included',
     unlisted: true,
-    allowedDates: datesBetween('2026-10-01', '2026-11-30', { weekdays: [1, 3, 5, 6, 0], except: ['2026-11-08'] }),
+    allowedDates: datesBetween('2026-10-01', '2026-11-30', { weekdays: [1, 3, 5, 6, 0], except: ['2026-11-08', ...OFFERS_PAUSED] }),
     fixedSchedule: true,
     slotTimes: ['18:30'],
     onePerDay: true,
