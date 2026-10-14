@@ -49,6 +49,7 @@ function formatShortDate(iso) {
   return `${DAYS[new Date(Date.UTC(y, mo - 1, d)).getUTCDay()]} ${d} ${MONTHS[mo - 1]}`;
 }
 
+const { clientPaymentLine } = require('./discounts');
 const money = (cents) => `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
 
 // '13:25' -> '1:25pm'
@@ -181,7 +182,7 @@ function render(v) {
           <td style="background-color:${C.cream};padding:8px 48px 8px;">
             <p style="margin:0 0 10px;font-family:${SANS};font-size:11px;letter-spacing:0.18em;color:${C.gold};text-transform:uppercase;">You're booked in</p>
             <p style="margin:0 0 28px;font-family:${SERIF};font-size:26px;font-weight:normal;line-height:1.3;color:${C.black};">That's your spot held, ${name}.</p>
-            ${p('', 'Payment came through and your session is locked into my calendar. Everything you need is below — keep this email somewhere findable.')}
+            ${p('', `${v.free ? 'Your' : 'Payment came through and your'} session is locked into my calendar. Everything you need is below — keep this email somewhere findable.`)}
           </td>
         </tr>
 
@@ -246,7 +247,7 @@ ${venueBlock}${formBlock}${termsBlock}
   const textLines = [
     `That's your spot held, ${v.firstName}.`,
     '',
-    'Payment came through and your session is locked into my calendar.',
+    v.free ? 'Your session is locked into my calendar.' : 'Payment came through and your session is locked into my calendar.',
     '',
     `${v.sessionName} — ${v.sessionLength}`,
     `${v.includes}, delivered within 2 weeks`,
@@ -322,11 +323,16 @@ function valuesFromBooking(meta, tier, opts = {}) {
     christmas: tier.serviceKey === CHRISTMAS_TIER_KEY_SERVICE,
     formUrl: `${MINI_FORM_URL}?${params.toString()}`,
     termsUrl: opts.termsUrl || '',
+    // A promo code took the whole price: nothing was paid, so the email must
+    // not say a payment came through (opts.pricing, from lib/discounts.js).
+    free: Boolean(opts.pricing && opts.pricing.paidCents === 0),
     // What was paid: in full, or the split and the day the balance comes off
-    // (the same card, automatically — the split terms say so).
+    // (the same card, automatically — the split terms say so), or the amount
+    // after a promo code.
     paymentLine: (() => {
       // Christmas minis keep their confirmation exactly as it was (Deep, 8 Oct).
       if (!tier.priceCents || tier.serviceKey === CHRISTMAS_TIER_KEY_SERVICE) return '';
+      if (opts.pricing) return clientPaymentLine(opts.pricing);
       const balance = Number(meta.balance_cents);
       if (meta.pay_mode === 'split' && balance > 0) {
         return `${money(tier.priceCents - balance)} paid today · ${money(balance)} on ${formatShortDate(meta.charge_on)}`;

@@ -30,6 +30,7 @@ const { upsertResendContact } = require('./lib/resend-contacts');
 const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking-confirmation');
 const { tokenForBooking, linkFor } = require('./lib/booking-links');
 const { postBookingEvent } = require('./lib/studio-sync');
+const { pricingFrom } = require('./lib/discounts');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
@@ -110,12 +111,12 @@ async function addToAudience(meta) {
 //
 // Since 8 Oct 2026 the confirmation also carries the session terms: a button to
 // /contract with a signed link that opens it prefilled for this booking.
-async function sendBookingConfirmation(resend, meta, appointmentKey) {
+async function sendBookingConfirmation(resend, meta, appointmentKey, pricing = null) {
   const tierKey = Object.keys(TIERS).find((k) => TIERS[k].serviceKey === meta.service_key);
   const tier = tierKey && TIERS[tierKey];
   if (!tier) throw new Error(`Unknown service_key for confirmation: ${meta.service_key}`);
   const termsUrl = linkFor('/contract', tokenForBooking(meta, tierKey, tier, appointmentKey));
-  const { subject, html, text } = renderConfirmation(valuesFromBooking(meta, tier, { termsUrl }));
+  const { subject, html, text } = renderConfirmation(valuesFromBooking(meta, tier, { termsUrl, pricing }));
   const { error } = await resend.emails.send({
     from: `Still & Golden <${OWNER_EMAIL}>`,
     to: meta.email,
@@ -188,7 +189,7 @@ async function capSplitSubscription(stripe, resend, session, meta) {
 // session.payment_intent, which is empty in subscription mode. A client was told
 // she had been refunded when she hadn't, and that her booking had failed when
 // Deep had already rebooked her.
-async function holdFailedBooking(stripe, resend, session, meta, err) {
+async function holdFailedBooking(stripe, resend, session, meta, err, pricing = null) {
   console.error('stripe-webhook: Setmore booking failed after payment — payment HELD, no refund:', err);
 
   await capSplitSubscription(stripe, resend, session, meta);
@@ -199,7 +200,9 @@ async function holdFailedBooking(stripe, resend, session, meta, err) {
     `Customer: ${meta.firstName} ${meta.lastName} <${meta.email}>`,
     meta.phone ? `Phone: ${meta.phone}` : null,
     `Session: service_key ${meta.service_key} on ${meta.date} at ${meta.time}`,
-    `Payment: ${split ? 'split — first half taken, second half due in 7 days (subscription capped after it)' : 'paid in full'}`,
+    `Payment: ${split ? 'split — first half taken, second half due in 7 days (subscription capped after it)'
+      : pricing ? `${pricing.paidCents === 0 ? 'no charge' : `paid in full, ${dollars(pricing.paidCents)}`} (${pricing.code ? `code ${pricing.code}, ` : ''}${pricing.percentOff}% off)`
+      : 'paid in full'}`,
     meta.notes ? `Notes: ${meta.notes}` : null,
     `Stripe session: ${session.id}`,
     split && session.subscription ? `Subscription: ${typeof session.subscription === 'string' ? session.subscription : session.subscription.id}` : null,
@@ -231,7 +234,7 @@ async function holdFailedBooking(stripe, resend, session, meta, err) {
       text: [
         `Hi ${meta.firstName},`,
         '',
-        `Thank you — your payment has come through. I wasn't able to lock your ${held.timeTbc ? `date (${meta.date})` : `time (${meta.date} at ${meta.time})`} into my calendar automatically, so I'll confirm it with you personally, usually within 24 hours.`,
+        `Thank you${pricing && pricing.paidCents === 0 ? ' for booking' : ' — your payment has come through'}. I wasn't able to lock your ${held.timeTbc ? `date (${meta.date})` : `time (${meta.date} at ${meta.time})`} into my calendar automatically, so I'll confirm it with you personally, usually within 24 hours.`,
         '',
         `There's nothing you need to do in the meantime. If you have any questions, just reply to this email.`,
         '',
@@ -332,15 +335,18 @@ const resendClient = () => (process.env.RESEND_API_KEY ? new Resend(process.env.
 // "[S&G] New booking" to Deep (8 Oct 2026) — everything needed to review the
 // booking without opening Setmore or Stripe. A beach mini shows no time: the
 // placeholder is Deep's to move.
-async function notifyOwnerOfBooking(resend, meta, appointment) {
+async function notifyOwnerOfBooking(resend, meta, appointment, pricing = null) {
   if (!resend) return;
   const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key) || { name: meta.service_key };
   const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ');
   const when = tier.timeTbc ? shortDate(meta.date) : `${shortDate(meta.date)}, ${meta.time}`;
   const balance = Number(meta.balance_cents);
+  const promo = pricing ? `(${pricing.code ? `code ${pricing.code}, ` : 'promo code, '}${pricing.percentOff}% off ${dollars(pricing.listCents)})` : '';
   const paid = meta.pay_mode === 'split' && balance > 0 && tier.priceCents
     ? `Split: ${dollars(tier.priceCents - balance)} now, ${dollars(balance)} on ${meta.charge_on}`
-    : `Paid in full${tier.priceCents ? `: ${dollars(tier.priceCents)}` : ''}`;
+    : pricing
+      ? (pricing.paidCents === 0 ? `No charge ${promo}` : `Paid in full: ${dollars(pricing.paidCents)} ${promo}`)
+      : `Paid in full${tier.priceCents ? `: ${dollars(tier.priceCents)}` : ''}`;
   const { error } = await resend.emails.send({
     from: FROM,
     to: OWNER_EMAIL,
@@ -361,7 +367,7 @@ async function notifyOwnerOfBooking(resend, meta, appointment) {
 }
 
 // The booking, as Studio's Bookings screen shows it (booking workflow stage B).
-async function reportBookingToStudio(session, meta, appointment) {
+async function reportBookingToStudio(session, meta, appointment, pricing = null) {
   const tierKey = Object.keys(TIERS).find((k) => TIERS[k].serviceKey === meta.service_key);
   const tier = tierKey ? TIERS[tierKey] : {};
   const beach = tier.locations && ((meta.notes || '').match(/^Location: (.+)$/m) || [])[1];
@@ -379,7 +385,8 @@ async function reportBookingToStudio(session, meta, appointment) {
     timeTbc: Boolean(tier.timeTbc),
     location: beach || null,
     payMode: split ? 'split' : 'full',
-    amountCents: tier.priceCents || null,
+    // What was actually paid: a promo code can take some or all of the price.
+    amountCents: pricing ? pricing.paidCents : tier.priceCents || null,
     balanceCents: split ? Number(meta.balance_cents) : null,
     balanceDue: split ? meta.charge_on || null : null,
     stripeSessionId: (session && session.id) || null,
@@ -648,9 +655,12 @@ exports.handler = async (event) => {
   // Idempotency guard 1 (live only): a successfully-processed session is
   // flagged in its metadata; a redelivery of the same event exits cleanly
   // instead of double-booking and refunding a legitimate payment.
+  // The same lookup also returns the promo code's name (the event carries only
+  // its id) — see lib/discounts.js.
+  let fresh = null;
   if (stripe) {
     try {
-      const fresh = await stripe.checkout.sessions.retrieve(session.id);
+      fresh = await stripe.checkout.sessions.retrieve(session.id, { expand: ['discounts.promotion_code'] });
       if (fresh.metadata && fresh.metadata.booked) {
         console.log(`stripe-webhook: ${session.id} already booked (${fresh.metadata.booked}), ignoring redelivery`);
         return json(200, { received: true, alreadyBooked: true });
@@ -659,6 +669,10 @@ exports.handler = async (event) => {
       console.error('stripe-webhook: session re-fetch failed (continuing):', err);
     }
   }
+
+  // What was actually paid, when a promo code was used (null otherwise). The
+  // event's own copy of the session has the amounts if the lookup failed.
+  const pricing = pricingFrom(fresh || session);
 
   const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
   if (!resend) console.error('RESEND_API_KEY is not set; audience add and failure emails will be skipped.');
@@ -692,18 +706,18 @@ exports.handler = async (event) => {
 
     if (resend) {
       try {
-        await sendBookingConfirmation(resend, meta, appointment.key);
+        await sendBookingConfirmation(resend, meta, appointment.key, pricing);
         console.log(`stripe-webhook: confirmation emailed to ${meta.email}`);
       } catch (mailErr) {
         console.error('stripe-webhook: confirmation email failed (booking stands):', mailErr);
       }
       try {
-        await notifyOwnerOfBooking(resend, meta, appointment);
+        await notifyOwnerOfBooking(resend, meta, appointment, pricing);
       } catch (noteErr) {
         console.error('stripe-webhook: owner booking notice failed (booking stands):', noteErr);
       }
       // Studio's Bookings screen. Never throws (lib/studio-sync.js).
-      await reportBookingToStudio(session, meta, appointment);
+      await reportBookingToStudio(session, meta, appointment, pricing);
       try {
         await addToAudience(meta);
       } catch (audErr) {
@@ -723,7 +737,7 @@ exports.handler = async (event) => {
       console.log(`stripe-webhook: slot already held by this customer (${existing.key}); treating as duplicate delivery, no refund`);
       return json(200, { received: true, alreadyBooked: true });
     }
-    await holdFailedBooking(stripe, resend, session, meta, err);
+    await holdFailedBooking(stripe, resend, session, meta, err, pricing);
     return json(200, { received: true, booked: false, held: true });
   }
 

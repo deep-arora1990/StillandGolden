@@ -43,6 +43,39 @@ function requestOrigin(event) {
   return `${proto}://${h.host}`;
 }
 
+// "Pay in full": one charge for the package price. The promo code box is on
+// here only (beach minis model call, 14 Oct 2026): a split payment's two
+// halves are fixed amounts, and a "once" coupon would discount the first half
+// and still take the whole second half. Any code works on any package — Deep's
+// codes are single-use and handed out one per person.
+function fullPaymentParams(tier, { date, time, location }) {
+  return {
+    mode: 'payment',
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'aud',
+          unit_amount: tier.priceCents,
+          product_data: {
+            name: `${tier.name} — photography session`,
+            // sessionMinutes where a tier distinguishes it: durationMinutes is
+            // the calendar block, which for the minis includes changeover
+            // time the customer isn't buying. Telling someone paying for a
+            // 15-minute session that it's 25 would be plainly wrong.
+            // timeTbc offers carry a placeholder time Deep moves later;
+            // it must not appear on the checkout page or the receipt.
+            description: tier.timeTbc
+              ? `${date} · time to be confirmed · ${tier.sessionMinutes || tier.durationMinutes} minutes${tier.locations ? ` · ${location}` : ''}`
+              : `${date} at ${time} · ${tier.sessionMinutes || tier.durationMinutes} minutes`,
+          },
+        },
+      },
+    ],
+    allow_promotion_codes: true,
+  };
+}
+
 exports.handler = async (event) => {
   // Share one Setmore token with every other running copy (lib/shared-store.js).
   connectStore(event);
@@ -185,30 +218,7 @@ exports.handler = async (event) => {
   // same path in both cases.
   const payment = wantsSplit
     ? splitCheckoutParams(tier, plan, { date, time, firstName, lastName, email })
-    : {
-        mode: 'payment',
-        line_items: [
-          {
-            quantity: 1,
-            price_data: {
-              currency: 'aud',
-              unit_amount: tier.priceCents,
-              product_data: {
-                name: `${tier.name} — photography session`,
-                // sessionMinutes where a tier distinguishes it: durationMinutes is
-                // the calendar block, which for the minis includes changeover
-                // time the customer isn't buying. Telling someone paying for a
-                // 15-minute session that it's 25 would be plainly wrong.
-                // timeTbc offers carry a placeholder time Deep moves later;
-                // it must not appear on the checkout page or the receipt.
-                description: tier.timeTbc
-                  ? `${date} · time to be confirmed · ${tier.sessionMinutes || tier.durationMinutes} minutes${tier.locations ? ` · ${location}` : ''}`
-                  : `${date} at ${time} · ${tier.sessionMinutes || tier.durationMinutes} minutes`,
-              },
-            },
-          },
-        ],
-      };
+    : fullPaymentParams(tier, { date, time, location });
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -242,3 +252,6 @@ exports.handler = async (event) => {
     return error(502, 'PAYMENT_UNAVAILABLE', 'Could not start the payment — please try again shortly');
   }
 };
+
+// Exposed for tests only.
+exports._test = { fullPaymentParams };
