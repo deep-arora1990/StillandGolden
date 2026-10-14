@@ -178,29 +178,9 @@
       color: var(--mid);
       margin-bottom: 14px;
     }
-    .guide ul { list-style: none; margin: 0 0 14px; }
-    .guide li {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: var(--mid);
-      padding-left: 18px;
-      position: relative;
-      margin-bottom: 7px;
-    }
-    .guide li::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0.62em;
-      width: 5px; height: 5px;
-      background: var(--gold);
-      border-radius: 50%;
-    }
-    .guide .closer {
-      font-family: var(--serif);
-      font-style: italic;
-      color: var(--warm-black);
-      margin-bottom: 0;
-    }
+    .guide p:last-child { margin-bottom: 0; }
+    .guide a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+    .guide a:hover { color: var(--warm-black); }
 
     .form-submit {
       margin-top: 24px;
@@ -285,6 +265,12 @@
         </div>
 
         <div class="fg">
+          <label for="kids_into">What are the kids into at the moment?</label>
+          <span class="hint">Favourite games, songs, characters, what gets them giggling.</span>
+          <textarea id="kids_into" name="kids_into"></textarea>
+        </div>
+
+        <div class="fg">
           <label for="anything_else">Anything I should know</label>
           <span class="hint">Optional. A shy toddler, a surprise guest, a nap that can't move.</span>
           <textarea id="anything_else" name="anything_else"></textarea>
@@ -297,15 +283,7 @@
 
         <div class="guide">
           <h2>What to wear</h2>
-          <p>Christmas outfits are very welcome &mdash; jumpers, Santa hats, red and green, the lot. If that's your family's thing, lean into it.</p>
-          <p>If you'd rather keep it simple, these tend to sit beautifully against the set:</p>
-          <ul>
-            <li>Soft reds, deep greens, cream and warm neutrals</li>
-            <li>Knits, cord and cotton &mdash; texture reads lovely on camera</li>
-            <li>Colours that sit in the same family, rather than everyone matching exactly</li>
-            <li>Big logos, slogans and neon are the only things that fight the set</li>
-          </ul>
-          <p class="closer">And if the morning goes sideways and you arrive in whatever was clean &mdash; that's genuinely fine. I've got two kids. We'll make it work.</p>
+          <p>Wear what you feel most like yourselves in. If you'd like some ideas, my <a href="/style-guide">style guide</a> has the colours and textures I love photographing. It's there for inspiration, not rules.</p>
         </div>
 
         <button type="submit" class="form-submit">Send this through</button>
@@ -359,6 +337,7 @@
           name: this.name.value,
           email: this.email.value,
           joining: this.joining.value,
+          kidsInto: this.kids_into.value,
           anythingElse: this.anything_else.value,
           slot: slot || '',
           company: this.company.value

@@ -10,30 +10,6 @@ const BRAND = {
   cream: [0.973, 0.961, 0.945],  // #F8F5F1
 };
 
-// Colour palette swatches (same as questionnaire.html)
-const SWATCHES = [
-  [0.627, 0.471, 0.188], // #A07830
-  [0.769, 0.604, 0.424], // #C49A6C
-  [0.831, 0.710, 0.604], // #D4B59A
-  [0.910, 0.835, 0.722], // #E8D5B8
-  [0.941, 0.910, 0.847], // #F0E8D8
-  [0.831, 0.659, 0.659], // #D4A8A8
-  [0.753, 0.565, 0.565], // #C09090
-  [0.690, 0.533, 0.596], // #B08898
-  [0.478, 0.620, 0.659], // #7A9EA8
-  [0.373, 0.533, 0.533], // #5F8888
-  [0.416, 0.596, 0.596], // #6A9898
-  [0.659, 0.753, 0.753], // #A8C0C0
-  [0.659, 0.753, 0.627], // #A8C0A0
-  [0.541, 0.686, 0.533], // #8AAF88
-  [0.471, 0.596, 0.408], // #789868
-  [0.290, 0.416, 0.251], // #4A6A40
-  [0.784, 0.471, 0.314], // #C87850
-  [0.722, 0.408, 0.282], // #B86848
-  [0.847, 0.596, 0.471], // #D89878
-  [0.722, 0.722, 0.722], // #B8B8B8
-  [0.627, 0.627, 0.659], // #A0A0A8
-];
 
 /**
  * Everything CP1252 (WinAnsi) can represent — the encoding pdf-lib's standard
@@ -346,6 +322,7 @@ async function generatePDF(rawData) {
   drawQA("What's special about this stage?", data.whatsSpecial);
   drawQA('Special toy, blanket, or comforter', data.specialToy);
   drawQA('Something you do together', data.together);
+  drawQA('What the kids are into at the moment', data.kidsInto);
 
   // ── Section: Practical Notes ──
   ensureSpace(24);
@@ -384,11 +361,12 @@ async function generatePDF(rawData) {
   });
   y -= 56;
 
-  // ── Colour Palette ──
-  ensureSpace(140);
+  // ── What to wear ── (15 Oct 2026: the form now points to the style guide
+  // instead of prescribing a palette, so the PDF says the same.)
+  ensureSpace(80);
 
   y -= 8;
-  page.drawText('OUTFIT & COLOUR GUIDE', {
+  page.drawText('WHAT TO WEAR', {
     x: margin, y, size: 7, font: helveticaBold, color: rgb(...BRAND.gold),
   });
   y -= 8;
@@ -399,57 +377,10 @@ async function generatePDF(rawData) {
   y -= 18;
 
   y = drawWrapped(
-    'For the most timeless images, we recommend choosing outfits from a soft, earthy palette — muted tones that complement natural light and keep the focus on your family rather than the clothing.',
+    "Wear what you feel most like yourselves in. If you'd like some ideas, my style guide has the colours and textures I love photographing. It's there for inspiration, not rules: stillandgolden.com.au/style-guide",
     margin, y, 9, timesItalic, rgb(...BRAND.mid), maxW
   );
   y -= 10;
-
-  page.drawText('RECOMMENDED TONES', {
-    x: margin, y, size: 6.5, font: helvetica, color: rgb(...BRAND.mid),
-  });
-  y -= 16;
-
-  // Draw swatches in rows
-  const swatchSize = 20;
-  const swatchGap = 6;
-  const swatchesPerRow = Math.floor((maxW + swatchGap) / (swatchSize + swatchGap));
-  for (let i = 0; i < SWATCHES.length; i++) {
-    const col = i % swatchesPerRow;
-    const row = Math.floor(i / swatchesPerRow);
-    if (col === 0 && i > 0) {
-      y -= swatchSize + swatchGap;
-      ensureSpace(swatchSize + 10);
-    }
-    page.drawRectangle({
-      x: margin + col * (swatchSize + swatchGap),
-      y: y - swatchSize,
-      width: swatchSize,
-      height: swatchSize,
-      color: rgb(...SWATCHES[i]),
-      borderColor: rgb(0.85, 0.83, 0.8),
-      borderWidth: 0.3,
-    });
-  }
-  y -= swatchSize + swatchGap + 10;
-
-  // Palette notes
-  const notes = [
-    { text: 'Coordinate tones, don\'t match exactly — variety within the palette looks natural', avoid: false },
-    { text: 'Textures like linen, knit, and cotton photograph beautifully in natural light', avoid: false },
-    { text: 'Layers work well — cardigans, wraps, and soft jackets add warmth and dimension', avoid: false },
-    { text: 'Avoid: bright white, black, neon colours, or large bold patterns', avoid: true },
-  ];
-  for (const note of notes) {
-    ensureSpace(30);
-    const noteColor = note.avoid ? rgb(0.769, 0.659, 0.596) : rgb(...BRAND.gold);
-    page.drawLine({
-      start: { x: margin, y: y + 2 }, end: { x: margin, y: y - 14 },
-      thickness: 2, color: noteColor,
-    });
-    const textColor = note.avoid ? rgb(...BRAND.mid) : rgb(...BRAND.black);
-    y = drawWrapped(note.text, margin + 10, y, 8, helvetica, textColor, maxW - 10);
-    y -= 6;
-  }
 
   drawFooter(page);
 
@@ -519,6 +450,7 @@ exports.handler = async (event) => {
     if (data.whatsSpecial) detailsText += `What's special: ${data.whatsSpecial}\n`;
     if (data.specialToy) detailsText += `Special toy/blanket: ${data.specialToy}\n`;
     if (data.together) detailsText += `Together activity: ${data.together}\n`;
+    if (data.kidsInto) detailsText += `Kids are into: ${data.kidsInto}\n`;
     if (data.bestTime) detailsText += `Best time of day: ${data.bestTime}\n`;
     if (data.shy) detailsText += `Shy in front of the camera: ${data.shy}\n`;
     if (data.anythingElse) detailsText += `Anything else: ${data.anythingElse}\n`;

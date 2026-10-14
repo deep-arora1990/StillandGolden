@@ -15,6 +15,10 @@ Disallow: /print/
 Disallow: /brand/
 Disallow: /questionnaire-mini
 Disallow: /questionnaire-mini.html
+Disallow: /model-call-agreement
+Disallow: /model-call-agreement.html
+Disallow: /model-call-questionnaire
+Disallow: /model-call-questionnaire.html
 Disallow: /unsubscribe
 Disallow: /unsubscribe.html
 

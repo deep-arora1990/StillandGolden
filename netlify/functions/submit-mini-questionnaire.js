@@ -3,7 +3,7 @@
 // The short pre-session form for mini sessions (questionnaire-mini.html),
 // linked from the booking confirmation email. Deliberately not the full
 // session questionnaire: a 15-minute mini doesn't warrant seventeen questions
-// or a PDF, so this is four fields and two plain emails.
+// or a PDF, so this is five fields and two plain emails.
 
 const { Resend } = require('resend');
 
@@ -58,6 +58,7 @@ exports.handler = async (event) => {
     return json(400, { error: 'Please tell me who is joining you.' });
   }
 
+  const kidsInto = (data.kidsInto || '').trim();
   const anythingElse = (data.anythingElse || '').trim();
   const slot = (data.slot || '').trim();
 
@@ -72,6 +73,7 @@ exports.handler = async (event) => {
     ];
     if (slot) ownerLines.push(`Session: ${slot}`);
     ownerLines.push('', 'Who\'s joining:', joining);
+    if (kidsInto) ownerLines.push('', 'Kids are into:', kidsInto);
     if (anythingElse) ownerLines.push('', 'Anything to know:', anythingElse);
 
     await resend.emails.send({
@@ -90,6 +92,7 @@ exports.handler = async (event) => {
       '',
       `Who's joining: ${joining}`,
     ];
+    if (kidsInto) clientLines.push('', `What the kids are into: ${kidsInto}`);
     if (anythingElse) clientLines.push('', `Anything to know: ${anythingElse}`);
     clientLines.push(
       '',

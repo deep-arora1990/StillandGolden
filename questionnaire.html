@@ -266,7 +266,7 @@
       line-height: 1.7;
     }
 
-    /* ─── COLOUR PALETTE ─── */
+    /* ─── WHAT TO WEAR ─── */
     .palette {
       background: white;
       border: 1px solid var(--border);
@@ -287,53 +287,10 @@
       font-size: 0.88rem;
       color: var(--warm-black);
       line-height: 1.8;
-      margin-bottom: 20px;
     }
 
-    .palette-intro em { color: var(--gold); font-style: italic; }
-
-    .palette-label {
-      font-size: 0.68rem;
-      font-weight: 400;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--mid);
-      margin-bottom: 12px;
-    }
-
-    .swatches {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-
-    .swatch {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-    }
-
-    .palette-notes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .palette-note {
-      font-size: 0.82rem;
-      color: var(--warm-black);
-      line-height: 1.5;
-      padding: 10px 12px;
-      padding-left: 14px;
-      border-left: 2px solid var(--gold);
-      background: rgba(26,23,20,0.02);
-    }
-
-    .palette-note.avoid {
-      border-left-color: #C4A898;
-      color: var(--mid);
-    }
+    .palette-intro a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+    .palette-intro a:hover { color: var(--warm-black); }
 
     /* ─── FOOTER ─── */
     footer {
@@ -363,7 +320,6 @@
       .page { padding: 120px 24px 80px; }
       .frow { grid-template-columns: 1fr; }
       .palette { padding: 24px 20px; }
-      .palette-notes { grid-template-columns: 1fr; }
       footer { padding: 28px 24px; }
     }
   </style>
@@ -463,6 +419,11 @@
             <input type="text" id="together" name="together">
           </div>
         </div>
+        <div class="fg">
+          <label for="kids_into">What are the kids into at the moment?</label>
+          <span class="hint">Favourite games, toys, songs, characters, the thing they'd do all day if you let them. It helps me get on their level fast, and it often ends up in the photos.</span>
+          <textarea id="kids_into" name="kids_into" style="min-height:70px;"></textarea>
+        </div>
 
         <div class="form-section">
           <div class="form-section-heading">Practical Notes</div>
@@ -517,42 +478,11 @@
       <p>Deep will be in touch within 24 hours.</p>
     </div>
 
-    <!-- Colour palette (always visible) -->
+    <!-- What to wear (always visible). Points to the style guide rather than
+         repeating it, so the advice lives in one place. -->
     <div class="palette">
-      <h2>Outfit & Colour Guide</h2>
-      <p class="palette-intro">For the most timeless images, we recommend choosing outfits from a <em>soft, earthy palette</em> — muted tones that complement natural light and keep the focus on your family rather than the clothing.</p>
-
-      <div class="palette-label">Recommended tones</div>
-      <div class="swatches">
-        <div class="swatch" style="background:#A07830;"></div>
-        <div class="swatch" style="background:#C49A6C;"></div>
-        <div class="swatch" style="background:#D4B59A;"></div>
-        <div class="swatch" style="background:#E8D5B8;"></div>
-        <div class="swatch" style="background:#F0E8D8;"></div>
-        <div class="swatch" style="background:#D4A8A8;"></div>
-        <div class="swatch" style="background:#C09090;"></div>
-        <div class="swatch" style="background:#B08898;"></div>
-        <div class="swatch" style="background:#7A9EA8;"></div>
-        <div class="swatch" style="background:#5F8888;"></div>
-        <div class="swatch" style="background:#6A9898;"></div>
-        <div class="swatch" style="background:#A8C0C0;"></div>
-        <div class="swatch" style="background:#A8C0A0;"></div>
-        <div class="swatch" style="background:#8AAF88;"></div>
-        <div class="swatch" style="background:#789868;"></div>
-        <div class="swatch" style="background:#4A6A40;"></div>
-        <div class="swatch" style="background:#C87850;"></div>
-        <div class="swatch" style="background:#B86848;"></div>
-        <div class="swatch" style="background:#D89878;"></div>
-        <div class="swatch" style="background:#B8B8B8;"></div>
-        <div class="swatch" style="background:#A0A0A8;"></div>
-      </div>
-
-      <div class="palette-notes">
-        <div class="palette-note">Coordinate tones, don't match exactly — variety within the palette looks natural</div>
-        <div class="palette-note">Textures like linen, knit, and cotton photograph beautifully in natural light</div>
-        <div class="palette-note">Layers work well — cardigans, wraps, and soft jackets add warmth and dimension</div>
-        <div class="palette-note avoid">Avoid: bright white, black, neon colours, or large bold patterns</div>
-      </div>
+      <h2>What to wear</h2>
+      <p class="palette-intro">Wear what you feel most like yourselves in. If you'd like some ideas, my <a href="/style-guide">style guide</a> has the colours and textures I love photographing. It's there for inspiration, not rules.</p>
     </div>
 
   </div>
@@ -614,6 +544,7 @@
         whatsSpecial: this.whats_special.value,
         specialToy: this.special_toy.value,
         together: this.together.value,
+        kidsInto: this.kids_into.value,
         bestTime: this.best_time.value,
         shy: this.shy.value,
         anythingElse: this.anything_else.value,

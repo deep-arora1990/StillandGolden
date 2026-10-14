@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Call Session Agreement — Still & Golden Photography</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --border: rgba(26,23,20,0.1);
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px;
+      background: rgba(248,245,241,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--warm-black);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-right a {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-right a:hover { color: var(--gold); }
+
+    /* ─── PAGE ─── */
+    .page {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 140px 48px 100px;
+    }
+
+    .page-label {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--mid);
+      margin-bottom: 56px;
+    }
+
+    .rule {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+      margin-bottom: 56px;
+    }
+
+    /* ─── CONTENT ─── */
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 14px;
+      color: var(--warm-black);
+    }
+
+    .section p {
+      color: var(--warm-black);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .section p:last-child { margin-bottom: 0; }
+
+    /* ─── FORM ─── */
+    .acceptance-form {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 40px;
+      margin-top: 56px;
+    }
+
+    .acceptance-form h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      color: var(--warm-black);
+    }
+
+    form { display: flex; flex-direction: column; gap: 2px; }
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .fg { display: flex; flex-direction: column; margin-bottom: 2px; }
+    .fg label {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      padding: 10px 14px 0;
+      background: rgba(26,23,20,0.04);
+    }
+    .fg input, .fg select, .fg textarea {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--warm-black);
+      background: rgba(26,23,20,0.04);
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 8px 14px 12px;
+      outline: none;
+      appearance: none;
+      border-radius: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      background: rgba(168,132,90,0.08);
+      border-bottom-color: var(--gold);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+      flex-shrink: 0;
+      appearance: auto;
+    }
+    .checkbox-row label {
+      font-size: 0.88rem;
+      color: var(--warm-black);
+      line-height: 1.6;
+      cursor: pointer;
+    }
+
+    .form-submit {
+      margin-top: 16px;
+      align-self: flex-start;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      background: var(--warm-black);
+      border: none;
+      padding: 16px 36px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .form-submit:hover { background: var(--gold); }
+    .form-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .form-success {
+      text-align: center;
+      padding: 48px 24px;
+    }
+    .form-success h2 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: var(--warm-black);
+    }
+    .form-success p {
+      font-size: 0.95rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    .form-error {
+      color: #b54a4a;
+      font-size: 0.82rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--mid);
+    }
+
+    .footer-brand {
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 20px 24px; }
+      .page { padding: 120px 24px 80px; }
+      .frow { grid-template-columns: 1fr; }
+      .acceptance-form { padding: 28px 20px; }
+      footer { padding: 28px 24px; }
+    }
+    .terms-list { margin: 0 0 14px 20px; color: inherit; }
+    .terms-list li { margin-bottom: 6px; }
+    .booking-ref { font-size: 0.9rem; line-height: 1.6; color: #4d453f; border-left: 3px solid #A8845A; padding: 10px 14px; background: #fff; margin: 0 0 22px; }
+    .booking-ref[hidden] { display: none; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Still <span>&</span> Golden</a>
+    <div class="nav-right">
+      <a href="/">← Back to site</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <div class="page-label">Agreement</div>
+    <h1 class="page-title">Model Call Session Agreement</h1>
+    <p class="page-subtitle">This covers the free sessions offered through my model calls. Please read it carefully before your session.</p>
+    <div class="rule"></div>
+
+    <div class="section">
+      <h2>What's Included</h2>
+      <p>A 45-minute session. Every edited image from the session (the full gallery) is delivered in a private online gallery within 2 weeks of the session, as high-resolution JPEG files for personal use. The gallery stays online for 2 months.</p>
+    </div>
+
+    <div class="section">
+      <h2>What I'm Asking in Return</h2>
+      <p>These sessions are offered in exchange for permission to use the images. By booking, you agree that Still &amp; Golden Photography may use images from your session for its portfolio, website, social media and advertising, including paid ads. No fee is payable to you for this use.</p>
+      <p><strong>Children:</strong> you confirm you are the parent or legal guardian of the children attending and give this permission on their behalf. If other adults attend (partners, grandparents), you confirm they also agree.</p>
+      <p><strong>What I won't do:</strong></p>
+      <ul class="terms-list">
+        <li>Publish your surname, address or children's names without asking you first.</li>
+        <li>Publish images where a child is undressed or in swimwear only.</li>
+        <li>Sell or license your images to anyone else.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Timing and Weather</h2>
+      <p>I'll confirm the exact start time after booking. If the weather makes the session unsafe or unworkable, I'll offer a new date at no cost.</p>
+    </div>
+
+    <div class="section">
+      <h2>Cancellation</h2>
+      <p>If you can't make it, let me know as soon as you can and we'll find another time. Rescheduling is free and subject to mutual agreement.</p>
+    </div>
+
+    <div class="section">
+      <h2>Safety</h2>
+      <p>If the session takes place somewhere public, you're responsible for supervising your children at all times.</p>
+    </div>
+
+    <div class="section">
+      <h2>Image Rights</h2>
+      <p>Still &amp; Golden Photography retains copyright of all images. Your images are licensed for personal, non-commercial use: you can print, share and display them. Commercial use needs written consent.</p>
+    </div>
+
+    <div class="section">
+      <h2>General</h2>
+      <p>This agreement is governed by the laws of Victoria, Australia. By booking or ticking the agreement checkbox, you confirm you've read, understood and agree to it.</p>
+    </div>
+
+    <!-- Acceptance form -->
+    <div class="acceptance-form" id="acceptance-form">
+      <h2>Accept Agreement</h2>
+      <form id="contract-form">
+        <div class="frow">
+          <div class="fg">
+            <label for="fn">First name</label>
+            <input type="text" id="fn" name="firstname" required>
+          </div>
+          <div class="fg">
+            <label for="ln">Last name</label>
+            <input type="text" id="ln" name="lastname" required>
+          </div>
+        </div>
+        <div class="fg">
+          <label for="em">Email</label>
+          <input type="email" id="em" name="email" required>
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label for="sd">Session date <span style="color:var(--mid);font-size:0.85em;">(the date we've arranged)</span></label>
+            <input type="date" id="sd" name="session_date" required>
+          </div>
+          <div class="fg">
+            <label for="dt">Today's date</label>
+            <input type="date" id="dt" name="agreement_date" required>
+          </div>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="agree" name="agreement_accepted" required>
+          <label for="agree">I'm the parent or legal guardian of the children attending, and I agree to the terms of this Model Call Session Agreement.</label>
+        </div>
+        <button type="submit" class="form-submit">Submit Agreement</button>
+        <p class="form-error" id="form-error"></p>
+      </form>
+    </div>
+
+    <!-- Success (hidden by default) -->
+    <div class="acceptance-form form-success" id="form-success" style="display:none;">
+      <h2>Thank you</h2>
+      <p>Your signed copy is on its way to your inbox, with a short questionnaire to fill in next.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-copy">© 2026 Still & Golden Photography · ABN 37 280 912 036</span>
+    <span class="footer-brand">Still & Golden</span>
+  </footer>
+
+  <script>
+    // Auto-fill today's date
+    // Today's date in the visitor's own time zone. valueAsDate takes the UTC
+    // date, which in Melbourne is still yesterday until 10 or 11am.
+    (function () { var d = new Date(); document.getElementById('dt').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
+
+    // No booking link here: Deep sends this page to the two free model call
+    // families by hand (15 Oct 2026), so every field is theirs to fill in.
+    document.getElementById('contract-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('.form-submit');
+      const errorEl = document.getElementById('form-error');
+      errorEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      const payload = {
+        firstName: this.firstname.value,
+        lastName: this.lastname.value,
+        email: this.email.value,
+        sessionDate: this.session_date.value,
+        agreementDate: this.agreement_date.value,
+        accepted: this.agreement_accepted.checked
+      };
+
+      try {
+        const res = await fetch('/.netlify/functions/submit-model-call-agreement', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          document.getElementById('acceptance-form').style.display = 'none';
+          document.getElementById('form-success').style.display = 'block';
+          document.getElementById('form-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          var body = await res.json().catch(function () { return {}; });
+          throw new Error(body.error || 'Submission failed');
+        }
+      } catch (err) {
+        errorEl.textContent = err.message && err.message !== 'Submission failed' && err.message !== 'Failed to fetch'
+          ? err.message
+          : 'Something went wrong. Please try again or email hello@stillandgolden.com.au';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Submit Agreement';
+      }
+    });
+  </script>
+
+</body>
+</html>
