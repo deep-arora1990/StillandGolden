@@ -28,7 +28,7 @@ const { clearMonth } = require('./lib/availability-cache');
 const { subscriptionCancelAt } = require('./lib/deposits');
 const { upsertResendContact } = require('./lib/resend-contacts');
 const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking-confirmation');
-const { tokenForBooking, linkFor } = require('./lib/booking-links');
+const { tokenForBooking, linkFor, termsPathFor } = require('./lib/booking-links');
 const { postBookingEvent } = require('./lib/studio-sync');
 const { pricingFrom } = require('./lib/discounts');
 
@@ -115,7 +115,7 @@ async function sendBookingConfirmation(resend, meta, appointmentKey, pricing = n
   const tierKey = Object.keys(TIERS).find((k) => TIERS[k].serviceKey === meta.service_key);
   const tier = tierKey && TIERS[tierKey];
   if (!tier) throw new Error(`Unknown service_key for confirmation: ${meta.service_key}`);
-  const termsUrl = linkFor('/contract', tokenForBooking(meta, tierKey, tier, appointmentKey));
+  const termsUrl = linkFor(termsPathFor(tierKey), tokenForBooking(meta, tierKey, tier, appointmentKey));
   const { subject, html, text } = renderConfirmation(valuesFromBooking(meta, tier, { termsUrl, pricing }));
   const { error } = await resend.emails.send({
     from: `Still & Golden <${OWNER_EMAIL}>`,
@@ -746,4 +746,4 @@ exports.handler = async (event) => {
 
 // Exposed for tests only — the held-booking path handles real money and is
 // otherwise reachable only through a signed Stripe event.
-exports._test = { holdFailedBooking, capSplitSubscription, balanceReminderText, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid, reportBookingToStudio };
+exports._test = { sendBookingConfirmation, holdFailedBooking, capSplitSubscription, balanceReminderText, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid, reportBookingToStudio };

@@ -397,7 +397,9 @@
 
   <script>
     // Auto-fill today's date
-    document.getElementById('dt').valueAsDate = new Date();
+    // Today's date in the visitor's own time zone. valueAsDate takes the UTC
+    // date, which in Melbourne is still yesterday until 10 or 11am.
+    (function () { var d = new Date(); document.getElementById('dt').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
 
     // Signed link from the booking email (?t=…). The page only READS the
     // payload to prefill; submit-contract verifies the signature before trusting

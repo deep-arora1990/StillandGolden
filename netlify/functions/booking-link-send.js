@@ -10,7 +10,7 @@
 const crypto = require('crypto');
 const { Resend } = require('resend');
 const { TIERS } = require('./lib/setmore');
-const { tokenForBooking, linkFor } = require('./lib/booking-links');
+const { tokenForBooking, linkFor, termsPathFor } = require('./lib/booking-links');
 const { formatDate, formatTime } = require('./lib/booking-confirmation');
 
 const FROM = 'Still & Golden <hello@stillandgolden.com.au>';
@@ -67,7 +67,7 @@ exports.handler = async (event) => {
           firstName: meta.firstName,
           intro: `Before your ${esc(tier.name)} session on ${esc(when)}, here are your session terms. It takes a minute &mdash; your details are already filled in, so just check them and sign.`,
           button: 'Review &amp; sign your session terms',
-          url: linkFor('/contract', token),
+          url: linkFor(termsPathFor(data.tierKey), token),
           after: "Once that's done I'll send a short questionnaire so I can plan your session around your family. Any questions, just reply to this email.",
         }),
       }

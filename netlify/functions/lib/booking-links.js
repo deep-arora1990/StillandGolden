@@ -82,4 +82,12 @@ function tokenForBooking(meta, tierKey, tier, appointmentKey) {
   });
 }
 
-module.exports = { sign, verify, linkFor, tokenForBooking, MAX_AGE_DAYS };
+// Which agreement a booking signs (15 Oct 2026): the two seasonal offers sign
+// the Seasonal Mini Session Agreement (contract-mini.html); every package signs
+// the main one. Christmas minis keep their own terms page and never get here.
+const SEASONAL_AGREEMENT_TIERS = ['in-home-christmas', 'sunset-beach-minis'];
+function termsPathFor(tierKey) {
+  return SEASONAL_AGREEMENT_TIERS.includes(tierKey) ? '/contract-mini' : '/contract';
+}
+
+module.exports = { sign, verify, linkFor, tokenForBooking, termsPathFor, MAX_AGE_DAYS };
