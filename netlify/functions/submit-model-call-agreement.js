@@ -13,6 +13,7 @@
 
 const { Resend } = require('resend');
 const { renderAgreementPDF } = require('./lib/agreement-pdf');
+const { brandedEmail } = require('./lib/email-layout');
 const { postBookingEvent } = require('./lib/studio-sync');
 
 const QUESTIONNAIRE_URL = 'https://stillandgolden.com.au/model-call-questionnaire';
@@ -44,7 +45,6 @@ const SECTIONS = [
 ];
 
 const json = (statusCode, body) => ({ statusCode, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 exports.handler = async (event) => {
@@ -102,14 +102,16 @@ exports.handler = async (event) => {
       from: 'Still & Golden <hello@stillandgolden.com.au>',
       to: email,
       subject: 'Thanks for signing — one quick questionnaire',
-      html: `<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1A1714;">
-        <p style="font-size:1.1rem;margin-bottom:8px;">Hi ${esc(firstName)},</p>
-        <p>Thanks for signing. Your copy of the agreement is attached.</p>
-        <p>Last thing: a short questionnaire about who's coming and what the kids are into, so we can spend the session playing, not working things out.</p>
-        <p style="margin:28px 0;"><a href="${QUESTIONNAIRE_URL}" style="display:inline-block;padding:14px 32px;background:#1A1714;color:#F8F5F1;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.12em;text-decoration:none;text-transform:uppercase;">Fill in the questionnaire</a></p>
-        <p>If you have any questions in the meantime, just reply to this email.</p>
-        <p style="margin-top:32px;">Deep<br><span style="color:#A8845A;font-style:italic;">Still &amp; Golden Photography</span></p>
-      </div>`,
+      ...brandedEmail({
+        eyebrow: 'Agreement signed',
+        heading: `Thanks, ${firstName}.`,
+        paragraphs: [
+          'Your copy of the agreement is attached.',
+          "Last thing: a short questionnaire about who's coming and what the kids are into, so we can spend the session playing, not working things out.",
+        ],
+        buttons: [{ label: 'Fill in the questionnaire', url: `${QUESTIONNAIRE_URL}?${new URLSearchParams({ name: `${firstName} ${lastName}`, email, date: sessionDate })}` }],
+        after: ['If you have any questions in the meantime, just reply to this email.'],
+      }),
       attachments: [attachment],
     });
 

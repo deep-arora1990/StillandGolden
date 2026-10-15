@@ -12,6 +12,7 @@ const { Resend } = require('resend');
 const { TIERS } = require('./lib/setmore');
 const { tokenForBooking, linkFor, termsPathFor } = require('./lib/booking-links');
 const { formatDate, formatTime } = require('./lib/booking-confirmation');
+const { brandedEmail } = require('./lib/email-layout');
 
 const FROM = 'Still & Golden <hello@stillandgolden.com.au>';
 const json = (statusCode, body) => ({ statusCode, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -24,15 +25,6 @@ function secretMatches(given, expected) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-function emailHtml({ firstName, intro, button, url, after }) {
-  return `<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1A1714;">
-  <p style="font-size:1.1rem;margin-bottom:8px;">Hi ${esc(firstName) || 'there'},</p>
-  <p>${intro}</p>
-  <p style="margin:28px 0;"><a href="${esc(url)}" style="display:inline-block;padding:14px 32px;background:#1A1714;color:#F8F5F1;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.12em;text-decoration:none;text-transform:uppercase;">${button}</a></p>
-  <p>${after}</p>
-  <p style="margin-top:32px;">Deep<br><span style="color:#A8845A;font-style:italic;">Still &amp; Golden Photography</span></p>
-</div>`;
-}
 
 // "Send model call forms" (15 Oct 2026): a free model call session Deep added
 // by hand gets ONE email with both forms. Any service — the forms are generic.
@@ -46,18 +38,16 @@ async function sendModelCallForms(data, email) {
   const lastName = String(data.lastName || '').trim();
   const agreementUrl = `${SITE}/model-call-agreement?${new URLSearchParams({ f: firstName, l: lastName, e: email, d: data.date })}`;
   const questionnaireUrl = `${SITE}/model-call-questionnaire?${new URLSearchParams({ name: [firstName, lastName].filter(Boolean).join(' '), email, date: data.date })}`;
-  const button = (url, label) => `<p style="margin:18px 0;"><a href="${esc(url)}" style="display:inline-block;padding:14px 32px;background:#1A1714;color:#F8F5F1;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.12em;text-decoration:none;text-transform:uppercase;">${label}</a></p>`;
-  const html = `<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1A1714;">
-  <p style="font-size:1.1rem;margin-bottom:8px;">Hi ${esc(firstName) || 'there'},</p>
-  <p>Two quick things before your session on ${esc(formatDate(data.date))}: the agreement for your model call session, and a short questionnaire about your family. Your details are already filled in, so each one takes a couple of minutes.</p>
-  ${button(agreementUrl, '1. Sign the agreement')}
-  ${button(questionnaireUrl, '2. Fill in the questionnaire')}
-  <p>If anything looks wrong, just reply to this email.</p>
-  <p style="margin-top:32px;">Deep<br><span style="color:#A8845A;font-style:italic;">Still &amp; Golden Photography</span></p>
-</div>`;
+  const { html, text } = brandedEmail({
+    eyebrow: 'Before your session',
+    heading: `Hi ${firstName || 'there'},`,
+    paragraphs: [`Two quick things before your session on ${esc(formatDate(data.date))}: the agreement for your model call session, and a short questionnaire about your family. Your details are already filled in, so each one takes a couple of minutes.`],
+    buttons: [{ label: '1. Sign the agreement', url: agreementUrl }, { label: '2. Fill in the questionnaire', url: questionnaireUrl }],
+    after: ['If anything looks wrong, just reply to this email.'],
+  });
   if (!process.env.RESEND_API_KEY) return json(500, { error: 'RESEND_API_KEY is not configured' });
   const { error } = await new Resend(process.env.RESEND_API_KEY).emails.send({
-    from: FROM, to: email, subject: 'Two quick forms before your session — Still & Golden', html,
+    from: FROM, to: email, subject: 'Two quick forms before your session — Still & Golden', html, text,
   });
   if (error) return json(502, { error: `Email not sent: ${error.message || JSON.stringify(error)}` });
   console.log(`booking-link-send: model call forms emailed to ${email} (appointment ${data.appointmentId || '?'})`);
@@ -94,22 +84,22 @@ exports.handler = async (event) => {
   const mail = kind === 'terms'
     ? {
         subject: 'Your session terms — Still & Golden',
-        html: emailHtml({
-          firstName: meta.firstName,
-          intro: `Before your ${esc(tier.name)} session on ${esc(when)}, here are your session terms. It takes a minute &mdash; your details are already filled in, so just check them and sign.`,
-          button: 'Review &amp; sign your session terms',
-          url: linkFor(termsPathFor(data.tierKey), token),
-          after: "Once that's done I'll send a short questionnaire so I can plan your session around your family. Any questions, just reply to this email.",
+        ...brandedEmail({
+          eyebrow: 'Your session terms',
+          heading: `Hi ${meta.firstName || 'there'},`,
+          paragraphs: [`Before your ${esc(tier.name)} session on ${esc(when)}, here are your session terms. It takes a minute &mdash; your details are already filled in, so just check them and sign.`],
+          buttons: [{ label: 'Review & sign your session terms', url: linkFor(termsPathFor(data.tierKey), token) }],
+          after: ["Once that's done I'll send a short questionnaire so I can plan your session around your family. Any questions, just reply to this email."],
         }),
       }
     : {
         subject: 'One quick questionnaire before your session',
-        html: emailHtml({
-          firstName: meta.firstName,
-          intro: `Ahead of your ${esc(tier.name)} session on ${esc(when)}: a short questionnaire about your family, your place and anything you&rsquo;d love (or would rather avoid) in your photos. It helps me turn up already knowing what matters.`,
-          button: 'Fill in your session questionnaire',
-          url: linkFor('/questionnaire', token),
-          after: 'Any questions, just reply to this email.',
+        ...brandedEmail({
+          eyebrow: 'Before your session',
+          heading: `Hi ${meta.firstName || 'there'},`,
+          paragraphs: [`Ahead of your ${esc(tier.name)} session on ${esc(when)}: a short questionnaire about your family, your place and anything you&rsquo;d love (or would rather avoid) in your photos. It helps me turn up already knowing what matters.`],
+          buttons: [{ label: 'Fill in your session questionnaire', url: linkFor('/questionnaire', token) }],
+          after: ['Any questions, just reply to this email.'],
         }),
       };
 

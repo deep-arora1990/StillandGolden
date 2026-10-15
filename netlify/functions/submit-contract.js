@@ -2,6 +2,7 @@ const { Resend } = require('resend');
 const { verify: verifyBookingLink, linkFor } = require('./lib/booking-links');
 const { postBookingEvent } = require('./lib/studio-sync');
 const { renderAgreementPDF } = require('./lib/agreement-pdf');
+const { brandedEmail } = require('./lib/email-layout');
 
 
 // Session tiers. `upgrade` is the cost of unlocking the full gallery, or null
@@ -145,10 +146,6 @@ async function generatePDF(data) {
   return renderAgreementPDF(data, agreementSections(resolveTier(data.sessionType)));
 }
 
-function escapeHtml(s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-}
-
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
@@ -239,14 +236,16 @@ exports.handler = async (event) => {
       from: 'Still & Golden <hello@stillandgolden.com.au>',
       to: email,
       subject: 'Thanks for signing — one quick questionnaire',
-      html: `<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1A1714;">
-        <p style="font-size:1.1rem;margin-bottom:8px;">Hi ${escapeHtml(firstName)},</p>
-        <p>Thanks for signing &mdash; your copy of the session terms is attached.</p>
-        <p>Last thing: a short questionnaire about your family, your place and anything you&rsquo;d love (or would rather avoid) in your photos. It helps me turn up already knowing what matters.</p>
-        <p style="margin:28px 0;"><a href="${questionnaireUrl}" style="display:inline-block;padding:14px 32px;background:#1A1714;color:#F8F5F1;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.12em;text-decoration:none;text-transform:uppercase;">Fill in your session questionnaire</a></p>
-        <p>If you have any questions in the meantime, just reply to this email.</p>
-        <p style="margin-top:32px;">Deep<br><span style="color:#A8845A;font-style:italic;">Still &amp; Golden Photography</span></p>
-      </div>`,
+      ...brandedEmail({
+        eyebrow: 'Terms signed',
+        heading: `Thanks, ${firstName}.`,
+        paragraphs: [
+          'Your copy of the session terms is attached.',
+          'Last thing: a short questionnaire about your family, your place and anything you&rsquo;d love (or would rather avoid) in your photos. It helps me turn up already knowing what matters.',
+        ],
+        buttons: [{ label: 'Fill in your session questionnaire', url: questionnaireUrl }],
+        after: ['If you have any questions in the meantime, just reply to this email.'],
+      }),
       attachments: [attachment],
     });
 

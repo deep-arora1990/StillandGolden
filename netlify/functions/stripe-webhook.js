@@ -31,6 +31,7 @@ const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking
 const { tokenForBooking, linkFor, termsPathFor } = require('./lib/booking-links');
 const { postBookingEvent } = require('./lib/studio-sync');
 const { pricingFrom } = require('./lib/discounts');
+const { brandedEmail, esc } = require('./lib/email-layout');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
@@ -231,16 +232,14 @@ async function holdFailedBooking(stripe, resend, session, meta, err, pricing = n
       from: FROM,
       to: meta.email,
       subject: 'About your Still & Golden booking',
-      text: [
-        `Hi ${meta.firstName},`,
-        '',
-        `Thank you${pricing && pricing.paidCents === 0 ? ' for booking' : ' — your payment has come through'}. I wasn't able to lock your ${held.timeTbc ? `date (${meta.date})` : `time (${meta.date} at ${meta.time})`} into my calendar automatically, so I'll confirm it with you personally, usually within 24 hours.`,
-        '',
-        `There's nothing you need to do in the meantime. If you have any questions, just reply to this email.`,
-        '',
-        'Deep',
-        'Still & Golden Photography',
-      ].join('\n'),
+      ...brandedEmail({
+        eyebrow: 'Your booking',
+        heading: `Hi ${meta.firstName},`,
+        paragraphs: [
+          esc(`Thank you${pricing && pricing.paidCents === 0 ? ' for booking' : ' — your payment has come through'}. I wasn't able to lock your ${held.timeTbc ? `date (${meta.date})` : `time (${meta.date} at ${meta.time})`} into my calendar automatically, so I'll confirm it with you personally, usually within 24 hours.`),
+          "There's nothing you need to do in the meantime. If you have any questions, just reply to this email.",
+        ],
+      }),
     });
   } catch (emailErr) {
     console.error('stripe-webhook: held-booking emails failed:', emailErr);
@@ -303,21 +302,43 @@ function melbourneLongDate(unixSeconds) {
 // The reminder's words, apart from the sending so they can be tested. A
 // timeTbc offer (beach minis) books a placeholder time Deep moves later, so
 // the time is left out rather than stated as if it were agreed.
-function balanceReminderText(meta, amount, when) {
+function balanceReminderParts(meta, amount, when) {
   const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key) || {};
   const at = meta.time && !tier.timeTbc ? ` at ${meta.time}` : '';
   return [
-    `Hi ${meta.firstName || 'there'},`,
-    '',
     `Just a heads-up: the remaining ${amount} for your session on ${meta.date}${at} comes off the same card on ${when}.`,
-    '',
     `Nothing for you to do — it happens automatically, and that is the final payment.`,
-    '',
     `If you would rather use a different card, or anything has changed, just reply to this email and I will sort it out.`,
-    '',
-    'Deep',
-    'Still & Golden Photography',
-  ].join('\n');
+  ];
+}
+function balanceReminderText(meta, amount, when) {
+  return [`Hi ${meta.firstName || 'there'},`, '', ...balanceReminderParts(meta, amount, when).flatMap((p) => [p, '']), 'Deep', 'Still & Golden Photography'].join('\n');
+}
+// The same words in the brand frame (15 Oct 2026).
+function balanceReminderEmail(meta, amount, when) {
+  return brandedEmail({
+    eyebrow: 'Your session balance',
+    heading: `Hi ${meta.firstName || 'there'},`,
+    paragraphs: balanceReminderParts(meta, amount, when).map(esc),
+  });
+}
+
+// "That last payment did not go through" — in the brand frame, with Stripe's
+// hosted invoice page as the button so they can pay with another card.
+function balanceFailedEmail(meta, amount, payUrl) {
+  return brandedEmail({
+    eyebrow: 'Your session balance',
+    heading: `Hi ${meta.firstName || 'there'},`,
+    paragraphs: [
+      esc(`The remaining ${amount} for your session did not go through — usually just an expired card, or a bank being cautious about an automatic payment.`),
+      ...(payUrl ? ['You can pay it here with any card:'] : ['If you reply to this email I will send you a payment link.']),
+    ],
+    buttons: payUrl ? [{ label: 'Pay the balance', url: payUrl }] : [],
+    after: [
+      'Your session is still booked and nothing has been cancelled — this is only the balance.',
+      'If it is easier to sort another way, or something has changed, just reply and I will work around it.',
+    ],
+  });
 }
 
 const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -447,7 +468,7 @@ async function sendBalanceReminder(stripe, invoice) {
       from: `Still & Golden <${OWNER_EMAIL}>`,
       to,
       subject: `Your session balance — ${amount} on ${when.split(' ')[0]}`,
-      text: balanceReminderText(meta, amount, when),
+      ...balanceReminderEmail(meta, amount, when),
     });
     if (error) console.error('stripe-webhook: balance reminder rejected:', error);
     else console.log(`stripe-webhook: balance reminder sent to ${to} for ${when}`);
@@ -523,20 +544,7 @@ async function alertBalanceFailed(stripe, invoice) {
       from: `Still & Golden <${OWNER_EMAIL}>`,
       to,
       subject: 'That last payment did not go through',
-      text: [
-        `Hi ${meta.firstName || 'there'},`,
-        '',
-        `The remaining ${amount} for your session did not go through — usually just an expired card, or a bank being cautious about an automatic payment.`,
-        '',
-        payUrl ? `You can pay it here with any card: ${payUrl}` : `If you reply to this email I will send you a payment link.`,
-        '',
-        `Your session is still booked and nothing has been cancelled — this is only the balance.`,
-        '',
-        `If it is easier to sort another way, or something has changed, just reply and I will work around it.`,
-        '',
-        'Deep',
-        'Still & Golden Photography',
-      ].join('\n'),
+      ...balanceFailedEmail(meta, amount, payUrl),
     });
     if (error) console.error('stripe-webhook: customer balance-failure email rejected:', error);
     else console.log(`stripe-webhook: balance-failure email sent to ${to}`);
@@ -746,4 +754,4 @@ exports.handler = async (event) => {
 
 // Exposed for tests only — the held-booking path handles real money and is
 // otherwise reachable only through a signed Stripe event.
-exports._test = { sendBookingConfirmation, holdFailedBooking, capSplitSubscription, balanceReminderText, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid, reportBookingToStudio };
+exports._test = { sendBookingConfirmation, holdFailedBooking, capSplitSubscription, balanceReminderText, balanceReminderEmail, balanceFailedEmail, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid, reportBookingToStudio };

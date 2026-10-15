@@ -13,18 +13,6 @@
 const CHRISTMAS_TIER_KEY = 'christmas-minis';
 const MINI_FORM_URL = 'https://stillandgolden.com.au/questionnaire-mini';
 
-const C = {
-  outer: '#E8E3DC',
-  cream: '#F8F5F1',
-  black: '#1A1714',
-  gold: '#A8845A',
-  muted: '#8A7E78',
-  rule: '#D4C4B0',
-  footRule: '#2E2A27',
-  fine: '#4A4440',
-};
-const SERIF = "Georgia,'Times New Roman',serif";
-const SANS = 'Arial,Helvetica,sans-serif';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
   'August', 'September', 'October', 'November', 'December'];
@@ -50,6 +38,7 @@ function formatShortDate(iso) {
 }
 
 const { clientPaymentLine } = require('./discounts');
+const { C, SERIF, SANS, LOGO_SVG, FOOTER_ROW, esc } = require('./email-layout');
 const money = (cents) => `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
 
 // '13:25' -> '1:25pm'
@@ -62,21 +51,7 @@ function formatTime(hhmm) {
   return `${h12}:${m[2]}${suffix}`;
 }
 
-function esc(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
 
-const LOGO_SVG = `<svg width="24" height="48" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;">
-              <path d="M 50 195 C 49 162 45 118 48 78 C 51 42 54 20 52 5" stroke="${C.gold}" stroke-width="4" stroke-linecap="round" fill="none"/>
-              <g transform="translate(49,168) rotate(-28) scale(0.66)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="${C.gold}"/></g>
-              <g transform="translate(47,145) rotate(207) scale(0.70)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="${C.gold}"/></g>
-              <g transform="translate(46,122) rotate(-24) scale(0.72)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="${C.gold}"/></g>
-              <g transform="translate(48,96) rotate(204) scale(0.69)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="${C.gold}"/></g>
-              <g transform="translate(50,70) rotate(-30) scale(0.64)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="${C.gold}"/></g>
-              <g transform="translate(52,47) rotate(210) scale(0.59)"><path d="M 0 0 C 2 -1.5 10 -4.5 18 -4.5 C 30 -4.5 46 -2 55 0 C 46 2 30 4.5 18 4.5 C 10 4.5 2 1.5 0 0 Z" fill="${C.gold}"/></g>
-            </svg>`;
 
 const p = (extra, body) => `<p style="margin:0 0 20px;font-family:${SANS};font-size:14px;line-height:1.8;color:${C.black};${extra}">${body}</p>`;
 
@@ -220,18 +195,7 @@ ${venueBlock}${formBlock}${termsBlock}
           </td>
         </tr>
 
-        <tr>
-          <td style="background-color:${C.black};padding:28px 48px;">
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr><td style="font-family:${SERIF};font-size:12px;letter-spacing:0.14em;color:${C.gold};text-transform:uppercase;padding-bottom:6px;">Still &amp; Golden Photography</td></tr>
-              <tr><td style="font-family:${SANS};font-size:11px;color:${C.muted};padding-bottom:3px;">Newborn &amp; Family &middot; South-east Melbourne</td></tr>
-              <tr><td style="font-family:${SANS};font-size:11px;padding-bottom:3px;"><a href="https://stillandgolden.com.au" style="color:${C.gold};text-decoration:none;">stillandgolden.com.au</a></td></tr>
-              <tr><td style="font-family:${SANS};font-size:11px;color:${C.muted};padding-bottom:20px;"><a href="https://instagram.com/stillandgoldenphotography" style="color:${C.muted};text-decoration:none;">@stillandgoldenphotography</a></td></tr>
-              <tr>
-                <td style="border-top:1px solid ${C.footRule};padding-top:16px;font-family:${SANS};font-size:10px;color:${C.fine};">
-                  ABN 37 280 912 036
-                </td>
-              </tr>
+${FOOTER_ROW}
             </table>
           </td>
         </tr>

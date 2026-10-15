@@ -6,6 +6,7 @@
 // or a PDF, so this is five fields and two plain emails.
 
 const { Resend } = require('resend');
+const { brandedEmail } = require('./lib/email-layout');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
@@ -85,32 +86,27 @@ exports.handler = async (event) => {
     });
 
     // Their own copy, so the answers exist in writing on both sides.
-    const clientLines = [
-      `Hi ${name.split(' ')[0]},`,
-      '',
-      'Thanks — that\'s everything I need before your session. Here\'s what you sent me:',
-      '',
-      `Who's joining: ${joining}`,
-    ];
-    if (kidsInto) clientLines.push('', `What the kids are into: ${kidsInto}`);
-    if (anythingElse) clientLines.push('', `Anything to know: ${anythingElse}`);
-    clientLines.push(
-      '',
-      'Christmas outfits are very welcome, and if the morning goes sideways and you arrive in whatever was clean, that is genuinely fine too.',
-      '',
-      'If anything changes between now and the day, just reply to this email.',
-      '',
-      'See you soon,',
-      'Deep',
-      'Still & Golden Photography',
-    );
+    const details = [['Who\'s joining', joining]];
+    if (kidsInto) details.push(['What the kids are into', kidsInto]);
+    if (anythingElse) details.push(['Anything to know', anythingElse]);
+    const clientMail = brandedEmail({
+      eyebrow: 'Got it',
+      heading: `Thanks, ${name.split(' ')[0]}.`,
+      paragraphs: ['That\'s everything I need before your session. Here\'s what you sent me:'],
+      details,
+      after: [
+        'Christmas outfits are very welcome, and if the morning goes sideways and you arrive in whatever was clean, that is genuinely fine too.',
+        'If anything changes between now and the day, just reply to this email.',
+      ],
+    });
 
     await resend.emails.send({
       from: FROM,
       to: clientEmail,
       replyTo: OWNER_EMAIL,
       subject: 'Your mini session details — Still & Golden',
-      text: clientLines.join('\n'),
+      text: clientMail.text,
+      html: clientMail.html,
     });
 
     return json(200, { success: true });

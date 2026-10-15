@@ -2,6 +2,7 @@ const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const { verify: verifyBookingLink } = require('./lib/booking-links');
 const { postBookingEvent } = require('./lib/studio-sync');
 const { Resend } = require('resend');
+const { brandedEmail } = require('./lib/email-layout');
 
 const BRAND = {
   gold: [0.659, 0.518, 0.353],   // #A8845A
@@ -477,18 +478,16 @@ exports.handler = async (event) => {
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: clientEmail,
       subject: 'Your session questionnaire — Still & Golden',
-      text: [
-        `Hi ${displayName.split(' ')[0]},`,
-        '',
-        pdfBase64
-          ? `Thank you for sharing all of this with me — it genuinely helps me photograph your family the way this season actually feels. A copy of your answers is attached to keep.`
-          : `Thank you for sharing all of this with me — it genuinely helps me photograph your family the way this season actually feels. I've got everything you sent.`,
-        '',
-        `I'll be in touch within 24 hours. If anything comes to mind in the meantime, just reply to this email.`,
-        '',
-        'Deep',
-        'Still & Golden Photography',
-      ].join('\n'),
+      ...brandedEmail({
+        eyebrow: 'Questionnaire received',
+        heading: `Thanks, ${displayName.split(' ')[0]}.`,
+        paragraphs: [
+          pdfBase64
+            ? 'Thank you for sharing all of this with me &mdash; it genuinely helps me photograph your family the way this season actually feels. A copy of your answers is attached to keep.'
+            : 'Thank you for sharing all of this with me &mdash; it genuinely helps me photograph your family the way this season actually feels. I&rsquo;ve got everything you sent.',
+        ],
+        after: ['I&rsquo;ll be in touch within 24 hours. If anything comes to mind in the meantime, just reply to this email.'],
+      }),
       // No attachment line when there's no PDF — promising one that isn't
       // there reads worse than not mentioning it.
       ...(pdfBase64 ? { attachments: [{ filename: fileName, content: pdfBase64 }] } : {}),

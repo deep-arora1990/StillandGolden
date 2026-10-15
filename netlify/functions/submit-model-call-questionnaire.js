@@ -7,6 +7,7 @@
 // Copy: brand/model-call/model-call-forms.md §2.
 
 const { Resend } = require('resend');
+const { brandedEmail } = require('./lib/email-layout');
 const { postBookingEvent } = require('./lib/studio-sync');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
@@ -134,43 +135,31 @@ exports.handler = async (event) => {
     });
 
     // Their own copy, so the answers exist in writing on both sides.
-    const clientRows = [
-      ['', `Hi ${name.split(' ')[0]},`],
-      ['', ''],
-      ['', 'Thanks, that\'s everything I need before your session. Here\'s what you sent me:'],
-      ['', ''],
-    ];
-    if (sessionDate) clientRows.push(['Session date', prettyDate(sessionDate)]);
-    clientRows.push(['Mobile', mobile], ['Who\'s joining', joining]);
-    if (kidsInto) clientRows.push(['What the kids are into', kidsInto]);
-    if (shy) clientRows.push(['Shy, or would rather not be photographed', shy]);
-    if (anythingElse) clientRows.push(['Anything to know', anythingElse]);
+    const details = [];
+    if (sessionDate) details.push(['Session date', prettyDate(sessionDate)]);
+    details.push(['Mobile', mobile], ['Who\'s joining', joining]);
+    if (kidsInto) details.push(['What the kids are into', kidsInto]);
+    if (shy) details.push(['Shy, or would rather not be photographed', shy]);
+    if (anythingElse) details.push(['Anything to know', anythingElse]);
 
-    const clientClose = [
-      '',
-      'Wear what you feel most like yourselves in. If you\'d like some ideas, my style guide has the colours and textures I love photographing. It\'s there for inspiration, not rules.',
-      STYLE_GUIDE_URL,
-      '',
-      'I\'ll text you the exact time closer to the day. If anything changes before then, just reply to this email.',
-      '',
-      'See you soon,',
-      'Deep',
-      'Still & Golden Photography',
-    ];
-
-    const clientHtml = toHtml(clientRows).replace(/\n<\/div>$/, '') + `
-<p style="margin:0 0 12px;">Wear what you feel most like yourselves in. If you'd like some ideas, my <a href="${STYLE_GUIDE_URL}" style="color:#A8845A;">style guide</a> has the colours and textures I love photographing. It's there for inspiration, not rules.</p>
-<p style="margin:0 0 12px;">I'll text you the exact time closer to the day. If anything changes before then, just reply to this email.</p>
-<p style="margin:0;">See you soon,<br>Deep<br>Still &amp; Golden Photography</p>
-</div>`;
+    const clientMail = brandedEmail({
+      eyebrow: 'Got it',
+      heading: `Thanks, ${name.split(' ')[0]}.`,
+      paragraphs: ['That\'s everything I need before your session. Here\'s what you sent me:'],
+      details,
+      after: [
+        `Wear what you feel most like yourselves in. If you'd like some ideas, my <a href="${STYLE_GUIDE_URL}" style="color:#A8845A;">style guide</a> has the colours and textures I love photographing. It's there for inspiration, not rules.`,
+        'I\'ll text you the exact time closer to the day. If anything changes before then, just reply to this email.',
+      ],
+    });
 
     await resend.emails.send({
       from: FROM,
       to: clientEmail,
       replyTo: OWNER_EMAIL,
       subject: 'Your session details from Still & Golden',
-      text: [toText(clientRows), ...clientClose].join('\n'),
-      html: clientHtml,
+      text: clientMail.text.replace('style guide has', `style guide (${STYLE_GUIDE_URL}) has`),
+      html: clientMail.html,
     });
 
     // Studio's Bookings screen: questionnaire received, matched on email +
