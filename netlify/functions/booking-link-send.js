@@ -34,6 +34,36 @@ function emailHtml({ firstName, intro, button, url, after }) {
 </div>`;
 }
 
+// "Send model call forms" (15 Oct 2026): a free model call session Deep added
+// by hand gets ONE email with both forms. Any service — the forms are generic.
+// The links carry plain, editable prefill (name, email, date), not a signed
+// token: nothing here is tied to a payment, and both pages accept edits.
+const SITE = 'https://stillandgolden.com.au';
+async function sendModelCallForms(data, email) {
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(400, { error: 'A valid email is required' });
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data.date || ''))) return json(400, { error: 'date must be YYYY-MM-DD' });
+  const firstName = String(data.firstName || '').trim();
+  const lastName = String(data.lastName || '').trim();
+  const agreementUrl = `${SITE}/model-call-agreement?${new URLSearchParams({ f: firstName, l: lastName, e: email, d: data.date })}`;
+  const questionnaireUrl = `${SITE}/model-call-questionnaire?${new URLSearchParams({ name: [firstName, lastName].filter(Boolean).join(' '), email, date: data.date })}`;
+  const button = (url, label) => `<p style="margin:18px 0;"><a href="${esc(url)}" style="display:inline-block;padding:14px 32px;background:#1A1714;color:#F8F5F1;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.12em;text-decoration:none;text-transform:uppercase;">${label}</a></p>`;
+  const html = `<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1A1714;">
+  <p style="font-size:1.1rem;margin-bottom:8px;">Hi ${esc(firstName) || 'there'},</p>
+  <p>Two quick things before your session on ${esc(formatDate(data.date))}: the agreement for your model call session, and a short questionnaire about your family. Your details are already filled in, so each one takes a couple of minutes.</p>
+  ${button(agreementUrl, '1. Sign the agreement')}
+  ${button(questionnaireUrl, '2. Fill in the questionnaire')}
+  <p>If anything looks wrong, just reply to this email.</p>
+  <p style="margin-top:32px;">Deep<br><span style="color:#A8845A;font-style:italic;">Still &amp; Golden Photography</span></p>
+</div>`;
+  if (!process.env.RESEND_API_KEY) return json(500, { error: 'RESEND_API_KEY is not configured' });
+  const { error } = await new Resend(process.env.RESEND_API_KEY).emails.send({
+    from: FROM, to: email, subject: 'Two quick forms before your session — Still & Golden', html,
+  });
+  if (error) return json(502, { error: `Email not sent: ${error.message || JSON.stringify(error)}` });
+  console.log(`booking-link-send: model call forms emailed to ${email} (appointment ${data.appointmentId || '?'})`);
+  return json(200, { ok: true });
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
   const headers = Object.fromEntries(Object.entries(event.headers || {}).map(([k, v]) => [k.toLowerCase(), v]));
@@ -42,10 +72,11 @@ exports.handler = async (event) => {
   let data;
   try { data = JSON.parse(event.body || '{}'); } catch { return json(400, { error: 'Invalid JSON' }); }
 
-  const kind = data.kind === 'terms' || data.kind === 'questionnaire' ? data.kind : null;
+  const kind = ['terms', 'questionnaire', 'model-call'].includes(data.kind) ? data.kind : null;
   const tier = TIERS[data.tierKey];
   const email = String(data.email || '').trim();
-  if (!kind) return json(400, { error: 'kind must be terms or questionnaire' });
+  if (!kind) return json(400, { error: 'kind must be terms, questionnaire or model-call' });
+  if (kind === 'model-call') return sendModelCallForms(data, email);
   // Christmas minis keep their own terms and pre-session form (Deep, 8 Oct).
   if (!tier || tier.hidden || data.tierKey === 'christmas-minis') return json(400, { error: `Not a package these emails cover: ${data.tierKey}` });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(400, { error: 'A valid email is required' });

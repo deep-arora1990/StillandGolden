@@ -13,6 +13,7 @@
 
 const { Resend } = require('resend');
 const { renderAgreementPDF } = require('./lib/agreement-pdf');
+const { postBookingEvent } = require('./lib/studio-sync');
 
 const QUESTIONNAIRE_URL = 'https://stillandgolden.com.au/model-call-questionnaire';
 
@@ -111,6 +112,10 @@ exports.handler = async (event) => {
       </div>`,
       attachments: [attachment],
     });
+
+    // Studio's Bookings screen: terms signed, matched on email + session date
+    // (Studio's "Send model call forms" prefills both). Never throws.
+    await postBookingEvent({ type: 'terms_signed', email, sessionDate });
 
     return json(200, { success: true });
   } catch (err) {

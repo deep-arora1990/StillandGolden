@@ -7,6 +7,7 @@
 // Copy: brand/model-call/model-call-forms.md §2.
 
 const { Resend } = require('resend');
+const { postBookingEvent } = require('./lib/studio-sync');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
@@ -171,6 +172,11 @@ exports.handler = async (event) => {
       text: [toText(clientRows), ...clientClose].join('\n'),
       html: clientHtml,
     });
+
+    // Studio's Bookings screen: questionnaire received, matched on email +
+    // session date (a hand-added booking has no appointment link). Never throws.
+    await postBookingEvent({ type: 'questionnaire', email: clientEmail, sessionDate: sessionDate || undefined,
+      answers: { name, email: clientEmail, mobile, sessionDate, joining, kidsInto, shy, anythingElse, form: 'model call' } });
 
     return json(200, { success: true });
   } catch (err) {

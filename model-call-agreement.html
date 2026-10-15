@@ -391,8 +391,18 @@
     // date, which in Melbourne is still yesterday until 10 or 11am.
     (function () { var d = new Date(); document.getElementById('dt').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
 
-    // No booking link here: Deep sends this page to the two free model call
-    // families by hand (15 Oct 2026), so every field is theirs to fill in.
+    // No signed booking link here: the forms are sent by hand. Studio's "Send
+    // model call forms" adds plain ?f=&l=&e=&d= to save retyping (15 Oct 2026);
+    // every field stays editable.
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var form = document.getElementById('contract-form');
+      if (params.get('f')) form.firstname.value = params.get('f');
+      if (params.get('l')) form.lastname.value = params.get('l');
+      if (params.get('e')) form.email.value = params.get('e');
+      var d = params.get('d');
+      if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) form.session_date.value = d;
+    })();
     document.getElementById('contract-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = this.querySelector('.form-submit');

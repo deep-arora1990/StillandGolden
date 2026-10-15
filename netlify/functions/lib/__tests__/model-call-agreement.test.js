@@ -87,6 +87,6 @@ describe('the page', () => {
     expect(page).toMatch(/<meta name="robots" content="noindex, nofollow">/)
     expect(page).toMatch(/submit-model-call-agreement/)
     expect(page).toMatch(/I'm the parent or legal guardian of the children attending, and I agree to the terms of this Model Call Session Agreement\./)
-    expect(page).not.toMatch(/14 days|48 hours|forfeit|\$/)
+    expect(page).not.toMatch(/14 days|48 hours|forfeit|\$\d/) // no prices
   })
 })
