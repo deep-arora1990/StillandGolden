@@ -1,6 +1,14 @@
+# A+ build (16 Oct 2026): build.js fills prices from data/prices.json, writes
+# the shared menu and footer into each page, and copies ONLY the site's files
+# into dist/, so function source, tests and package files are no longer served.
 [build]
-  publish = "."
+  command = "node build.js"
+  publish = "dist"
   functions = "netlify/functions"
+
+# The booking functions read every price from data/prices.json.
+[functions]
+  included_files = ["data/prices.json"]
 
 [build.environment]
   NODE_VERSION = "18"
@@ -347,9 +355,17 @@
   status = 301
   force = true
 
+# The Father's Day minis page (Aug 2026) was retired on 16 Oct 2026; anyone
+# with the old link lands on the current offers.
+[[redirects]]
+  from = "/fathers-day"
+  to = "/offers"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/fathers-day.html"
-  to = "/fathers-day"
+  to = "/offers"
   status = 301
   force = true
 

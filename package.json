@@ -1,7 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "build": "node build.js",
+    "dev": "node build.js && netlify dev"
   },
   "dependencies": {
     "@netlify/blobs": "^11.1.0",

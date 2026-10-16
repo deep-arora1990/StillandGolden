@@ -4,7 +4,6 @@ Disallow: /contract.html
 Disallow: /contract-mini.html
 Disallow: /session-contract.html
 Disallow: /questionnaire.html
-Disallow: /book-mini.html
 Disallow: /test-booking
 Disallow: /test-booking.html
 Disallow: /flyers.html

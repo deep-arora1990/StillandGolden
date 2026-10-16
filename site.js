@@ -1,13 +1,11 @@
 // Still & Golden — shared site behaviour.
 //
-// Single source of truth for the nav and footer. Pages carry only mount
-// points — <nav id="nav" data-sg-nav></nav> and <footer data-sg-footer></footer>
-// — and this script fills them. The mount keeps id="nav" because some pages
-// (index, portfolio) attach their own scroll-shrink listener to it.
-//
-// Active link: matched against location.pathname (class="active" +
-// aria-current="page"). Mobile nav: the hamburger toggles a full-screen menu
-// (body.menu-open); it closes via the X button or when any nav link is tapped.
+// The menu and footer are written into every page at build time (build.js,
+// from build/site-chrome.js — the single source since 16 Oct 2026), so search
+// engines see them and nothing flashes in. This script only wires them up:
+// the hamburger toggles a full-screen menu (body.menu-open), which closes via
+// the X button or when any menu link is tapped. It also runs the campaign
+// strip (switched off) and the Christmas minis sold-out check.
 
 (function () {
   // Christmas minis campaign. Everything below keys off CAMPAIGN so the whole
@@ -65,80 +63,7 @@
     return CAMPAIGN.live && new Date().toISOString().slice(0, 10) < CAMPAIGN.endsAt;
   }
 
-  var NAV_LINKS = [
-    { href: '/portfolio', label: 'Portfolio' },
-    { href: '/about', label: 'About' },
-    { href: '/packages', label: 'Packages' },
-    { href: '/#faq', label: 'Common Questions' },
-    { href: '/blog/', label: 'Blog' },
-    { href: '/offers', label: 'Offers' },
-    { href: '/#contact', label: 'Enquire now', className: 'book' },
-  ];
-
-  // The footer markup carries the class names the self-styled pages
-  // (portfolio) use, plus the link styles site.css would otherwise provide —
-  // identical rendering in both worlds.
-  var FOOTER_LINK_STYLE = 'color:var(--mid);text-decoration:none;border-bottom:1px solid rgba(138,126,120,0.3);';
-  var FOOTER_HTML =
-    '<span class="footer-logo">Still &amp; Golden</span>' +
-    '<span class="footer-copy">&copy; 2026 Still &amp; Golden Photography &middot; ABN 37 280 912 036</span>' +
-    '<span class="footer-area">Cranbourne &middot; Clyde North &middot; Berwick &middot; Narre Warren &middot; Frankston &middot; Langwarrin &middot; Mt Eliza</span>' +
-    '<span class="footer-copy">' + '<a href="/offers" style="' + FOOTER_LINK_STYLE + '">Offers</a> &middot; ' + '<a href="/packages/glimpse-mini-sessions" style="' + FOOTER_LINK_STYLE + '">Glimpse Minis</a> &middot; <a href="/packages/golden-family-photography" style="' + FOOTER_LINK_STYLE + '">Golden Family</a> &middot; <a href="/packages/gathered-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Gathered Newborn</a> &middot; <a href="/packages/bloom-maternity-newborn-photography" style="' + FOOTER_LINK_STYLE + '">Bloom Bundle</a> &middot; <a href="/packages" style="' + FOOTER_LINK_STYLE + '">Packages</a> &middot; <a href="/blog/" style="' + FOOTER_LINK_STYLE + '">Blog</a></span>' +
-    '<a href="/privacy" class="footer-copy" style="' + FOOTER_LINK_STYLE + '">Privacy Policy</a>';
-
   var path = location.pathname;
-
-  // The tier landing pages live under /packages/ (30 Sep 2026), so the
-  // prefix covers them all; the booking widget belongs to Packages too.
-  // Seasonal pages — /offers and the Christmas minis campaign it lists —
-  // mark Offers instead.
-  var OFFER_PAGES = ['/offers', '/christmas-minis', '/christmas-minis-terms'];
-
-  function isActive(href) {
-    if (href === '/portfolio') return path === '/portfolio' || path === '/portfolio.html';
-    if (href === '/about') return path === '/about' || path === '/about.html';
-    if (href === '/packages') {
-      return path === '/packages' || path === '/packages.html' ||
-        path.indexOf('/packages/') === 0 || path === '/book' || path === '/book.html';
-    }
-    if (href === '/offers') {
-      return path.indexOf('/offers/') === 0 ||
-        OFFER_PAGES.some(function (p) { return path === p || path === p + '.html'; });
-    }
-    if (href === '/blog/') return path.indexOf('/blog') === 0;
-    return false;
-  }
-
-  function renderNav() {
-    var nav = document.querySelector('[data-sg-nav]');
-    if (!nav) return;
-
-    var links = NAV_LINKS.filter(function (l) {
-      return !l.campaignOnly || campaignRunning();
-    }).map(function (l) {
-      var cls = l.className || '';
-      var active = isActive(l.href);
-      var clsAttr = cls || active ? ' class="' + (active ? (cls ? cls + ' ' : '') + 'active' : cls) + '"' : '';
-      var ariaAttr = active ? ' aria-current="page"' : '';
-      return '<a href="' + l.href + '"' + clsAttr + ariaAttr + '>' + l.label + '</a>';
-    }).join('');
-
-    nav.innerHTML =
-      '<a href="/" class="nav-logo">Still &amp; Golden</a>' +
-      '<div class="nav-right">' + links + '</div>' +
-      '<button class="hamburger" id="ham" aria-label="Menu"><span></span><span></span><span></span></button>';
-
-    // The X button for the mobile menu lives outside the nav element.
-    if (!document.getElementById('menu-close')) {
-      nav.insertAdjacentHTML('afterend', '<button class="menu-close" id="menu-close" aria-label="Close menu"></button>');
-    }
-  }
-
-  function renderFooter() {
-    var footer = document.querySelector('[data-sg-footer]');
-    if (!footer) return;
-    footer.innerHTML = FOOTER_HTML;
-  }
 
   // Sitewide announcement strip. Deliberately not shown on the campaign page
   // itself (they're already there) or its terms page, and never after the
@@ -251,8 +176,6 @@
     link.querySelector('.sg-strip-cta').innerHTML = (open ? CAMPAIGN.stripCta : CAMPAIGN.soldCta) + ' &rarr;';
   }
   if (document.querySelector('.sg-strip, .xmas-open, .xmas-sold')) checkXmas(applyXmas);
-  renderNav();
-  renderFooter();
 
   // Mobile menu (unchanged behaviour; elements now rendered above).
   var closeMenu = function () { document.body.classList.remove('menu-open'); };

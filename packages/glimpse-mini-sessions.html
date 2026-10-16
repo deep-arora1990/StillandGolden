@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mini Photo Sessions Cranbourne & Frankston — From $250 | Still & Golden</title>
-  <meta name="description" content="Glimpse: 45-minute mini sessions across Cranbourne, Frankston & South-East Melbourne — 10 edited images, in-home or on-location, from $250. Book a date in minutes.">
+  <title>Mini Photo Sessions Cranbourne & Frankston — From {{price.glimpse}} | Still & Golden</title>
+  <meta name="description" content="Glimpse: 45-minute mini sessions across Cranbourne, Frankston & South-East Melbourne — 10 edited images, in-home or on-location, from {{price.glimpse}}. Book a date in minutes.">
   <link rel="canonical" href="https://stillandgolden.com.au/packages/glimpse-mini-sessions">
   <meta property="og:title" content="Glimpse Mini Photo Sessions — Cranbourne, Frankston & South-East Melbourne">
-  <meta property="og:description" content="A 45-minute focused session with 10 beautifully edited images — the easiest way to keep your family photos up to date. From $250.">
+  <meta property="og:description" content="A 45-minute focused session with 10 beautifully edited images — the easiest way to keep your family photos up to date. From {{price.glimpse}}.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stillandgolden.com.au/packages/glimpse-mini-sessions">
   <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
@@ -43,7 +43,7 @@
       { "@type": "City", "name": "Mount Eliza" },
       { "@type": "City", "name": "Melbourne" }
     ],
-    "offers": { "@type": "Offer", "price": "250", "priceCurrency": "AUD", "priceSpecification": { "@type": "PriceSpecification", "minPrice": "250", "priceCurrency": "AUD" } }
+    "offers": { "@type": "Offer", "price": "{{price.glimpse.number}}", "priceCurrency": "AUD", "priceSpecification": { "@type": "PriceSpecification", "minPrice": "250", "priceCurrency": "AUD" } }
   }
   </script>
   <script type="application/ld+json">
@@ -118,7 +118,7 @@
   <main>
     <div class="label">Glimpse Sessions &middot; Cranbourne, Frankston &amp; South-East Melbourne</div>
     <h1>Glimpse: small on time, <em>big on memories</em></h1>
-    <p class="lead">Forty-five minutes, ten beautiful images, zero fuss. From $250.</p>
+    <p class="lead">Forty-five minutes, ten beautiful images, zero fuss. From {{price.glimpse}}.</p>
 
     <p>Not every season needs the full production. Sometimes you just want the family photos brought up to date &mdash; the kids as they are right now, before they grow out of this version of themselves. That's exactly what a Glimpse session is for: a short, focused shoot that fits into a busy week and still gives you images you'll love for decades.</p>
 
@@ -156,10 +156,10 @@
 
     <h2>Pricing</h2>
     <div class="price-box">
-      <span class="amount">From $250</span>
-      <span class="detail">Glimpse &middot; up to 45-minute session &middot; 10 edited images &middot; in-home or on location &middot; private online gallery within 2 weeks &middot; upgrade to the full gallery any time (+$150)</span>
+      <span class="amount">From {{price.glimpse}}</span>
+      <span class="detail">Glimpse &middot; up to 45-minute session &middot; 10 edited images &middot; in-home or on location &middot; private online gallery within 2 weeks &middot; upgrade to the full gallery any time (+{{price.glimpse.gallery}})</span>
     </div>
-    <p>See how Glimpse compares with <a href="/packages/golden-family-photography">Golden (from $475)</a> and <a href="/packages/gathered-newborn-photography">Gathered (from $595)</a>, or view every option in full on the <a href="/packages">packages &amp; prices</a> page.</p>
+    <p>See how Glimpse compares with <a href="/packages/golden-family-photography">Golden (from {{price.golden}})</a> and <a href="/packages/gathered-newborn-photography">Gathered (from {{price.gathered}})</a>, or view every option in full on the <a href="/packages">packages &amp; prices</a> page.</p>
 
     <h2>Serving Cranbourne, Frankston &amp; South-East Melbourne</h2>
     <p>Glimpse sessions run across <strong>Cranbourne, Clyde North, Berwick, Narre Warren, Frankston, Chelsea, Seaford, Langwarrin, Mt Eliza</strong> and the surrounding suburbs &mdash; at your place or a location you love. Travel is included.</p>

@@ -2,6 +2,8 @@ const { Resend } = require('resend');
 const { verify: verifyBookingLink, linkFor } = require('./lib/booking-links');
 const { postBookingEvent } = require('./lib/studio-sync');
 const { renderAgreementPDF } = require('./lib/agreement-pdf');
+// Full-gallery prices come from data/prices.json, like every other price.
+const PRICES = require('../../data/prices.json');
 const { brandedEmail } = require('./lib/email-layout');
 
 
@@ -13,14 +15,14 @@ const TIERS = {
     label: 'Glimpse Session Agreement',
     duration: 'up to 45 minutes',
     images: '10',
-    upgrade: 150,
+    upgrade: PRICES.glimpse.gallery,
   },
   golden: {
     name: 'Golden',
     label: 'Golden Session Agreement',
     duration: 'up to 90 minutes',
     images: '20',
-    upgrade: 125,
+    upgrade: PRICES.golden.gallery,
   },
   gathered: {
     name: 'Gathered',

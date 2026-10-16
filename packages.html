@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Photography Packages &amp; Prices Cranbourne & Frankston | Still &amp; Golden</title>
-  <meta name="description" content="Every Still &amp; Golden session in one place — Glimpse, Golden, Gathered and Bloom, from $250. In-home photography across Cranbourne, Frankston &amp; south-east Melbourne.">
+  <meta name="description" content="Every Still &amp; Golden session in one place — Glimpse, Golden, Gathered and Bloom, from {{price.glimpse}}. In-home photography across Cranbourne, Frankston &amp; south-east Melbourne.">
   <link rel="canonical" href="https://stillandgolden.com.au/packages">
   <meta property="og:title" content="Photography Packages &amp; Prices — Cranbourne, Frankston &amp; South-East Melbourne">
-  <meta property="og:description" content="Glimpse, Golden, Gathered and Bloom — every session, every inclusion, one page. In-home newborn and family photography from $250.">
+  <meta property="og:description" content="Glimpse, Golden, Gathered and Bloom — every session, every inclusion, one page. In-home newborn and family photography from {{price.glimpse}}.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stillandgolden.com.au/packages">
   <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
@@ -26,10 +26,10 @@
     "mainEntity": {
       "@type": "ItemList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "item": { "@type": "Service", "name": "Glimpse — up to 45-minute mini session", "url": "https://stillandgolden.com.au/packages/glimpse-mini-sessions", "offers": { "@type": "Offer", "price": "250", "priceCurrency": "AUD" } } },
-        { "@type": "ListItem", "position": 2, "item": { "@type": "Service", "name": "Golden — up to 90-minute session", "url": "https://stillandgolden.com.au/packages/golden-family-photography", "offers": { "@type": "Offer", "price": "475", "priceCurrency": "AUD" } } },
-        { "@type": "ListItem", "position": 3, "item": { "@type": "Service", "name": "Gathered — 90-minute session", "url": "https://stillandgolden.com.au/packages/gathered-newborn-photography", "offers": { "@type": "Offer", "price": "595", "priceCurrency": "AUD" } } },
-        { "@type": "ListItem", "position": 4, "item": { "@type": "Service", "name": "Bloom — bump-to-baby bundle", "url": "https://stillandgolden.com.au/packages/bloom-maternity-newborn-photography", "offers": { "@type": "Offer", "price": "950", "priceCurrency": "AUD" } } }
+        { "@type": "ListItem", "position": 1, "item": { "@type": "Service", "name": "Glimpse — up to 45-minute mini session", "url": "https://stillandgolden.com.au/packages/glimpse-mini-sessions", "offers": { "@type": "Offer", "price": "{{price.glimpse.number}}", "priceCurrency": "AUD" } } },
+        { "@type": "ListItem", "position": 2, "item": { "@type": "Service", "name": "Golden — up to 90-minute session", "url": "https://stillandgolden.com.au/packages/golden-family-photography", "offers": { "@type": "Offer", "price": "{{price.golden.number}}", "priceCurrency": "AUD" } } },
+        { "@type": "ListItem", "position": 3, "item": { "@type": "Service", "name": "Gathered — 90-minute session", "url": "https://stillandgolden.com.au/packages/gathered-newborn-photography", "offers": { "@type": "Offer", "price": "{{price.gathered.number}}", "priceCurrency": "AUD" } } },
+        { "@type": "ListItem", "position": 4, "item": { "@type": "Service", "name": "Bloom — bump-to-baby bundle", "url": "https://stillandgolden.com.au/packages/bloom-maternity-newborn-photography", "offers": { "@type": "Offer", "price": "{{price.bloom.number}}", "priceCurrency": "AUD" } } }
       ]
     }
   }
@@ -141,12 +141,12 @@
     <h2>Glimpse <em>— the quick refresh</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Glimpse</span><span class="pkg-tag">Up to 45 minutes &middot; 10 images</span></div>
-      <div class="pkg-price"><span class="from">From</span>$250</div>
+      <div class="pkg-price"><span class="from">From</span>{{price.glimpse}}</div>
       <p>A short, focused sitting for when you don't need the whole production — updated family photos, a milestone worth marking, or simply proof that you were all in the same place at the same time. Up to forty-five minutes, in your home or at a spot you love, and ten edited images that actually look like your family.</p>
       <ul class="list">
         <li><strong>Up to 45 minutes</strong> — in-home or on-location</li>
         <li><strong>10 edited images</strong>, delivered through a private online gallery</li>
-        <li><strong>Upgrade to the full gallery</strong> afterwards for +$150</li>
+        <li><strong>Upgrade to the full gallery</strong> afterwards for +{{price.glimpse.gallery}}</li>
         <li>Everyone welcome — no per-person charge, ever</li>
       </ul>
       <p>Glimpse is also how a lot of families first try me — low risk, no commitment, and if you love the photos the rest of the gallery is one upgrade away.</p>
@@ -158,12 +158,12 @@
     <h2>Golden <em>— the signature sitting</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Golden</span><span class="pkg-tag">Up to 90 minutes &middot; 20 images</span></div>
-      <div class="pkg-price"><span class="from">From</span>$475</div>
+      <div class="pkg-price"><span class="from">From</span>{{price.golden}}</div>
       <p>Up to an hour and a half together, and the session most families choose. Long enough that everyone stops performing — usually around minute twenty — with room for a break before anyone melts down. Newborn sittings, maternity, cake smash and splash, or the family as it is right now.</p>
       <ul class="list">
         <li><strong>Up to 90 minutes</strong> — in-home or on-location</li>
         <li><strong>20 edited images</strong>, delivered through a private online gallery</li>
-        <li><strong>Upgrade to the full gallery</strong> afterwards for +$125</li>
+        <li><strong>Upgrade to the full gallery</strong> afterwards for +{{price.golden.gallery}}</li>
         <li>Everyone welcome — no per-person charge, ever</li>
       </ul>
       <p>If it's been years since the last proper family photo, this is usually the one.</p>
@@ -175,7 +175,7 @@
     <h2>Gathered <em>— room to move</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Gathered</span><span class="pkg-tag">90 minutes &middot; 30+ images</span></div>
-      <div class="pkg-price"><span class="from">From</span>$595</div>
+      <div class="pkg-price"><span class="from">From</span>{{price.gathered}}</div>
       <p>The longest session, for anything that shouldn't watch the clock. It's the signature newborn sitting — a days-old baby keeps their own schedule, and ninety minutes means nobody hurries a feed or a settle — and equally the session for extended family, milestones and multiple set-ups.</p>
       <ul class="list">
         <li><strong>90 minutes</strong> — in-home or on-location</li>
@@ -192,7 +192,7 @@
     <h2>Bloom <em>— bump to baby</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Bloom</span><span class="pkg-tag">Two 90-minute sessions</span></div>
-      <div class="pkg-price"><span class="from">From</span>$950</div>
+      <div class="pkg-price"><span class="from">From</span>{{price.bloom}}</div>
       <p>Two sittings that follow your family from bump to baby — a maternity or family session while you wait, and a newborn session once they arrive. Booked together at a better rate than two separate Gathered sessions, with the full gallery included both times.</p>
       <ul class="list">
         <li><strong>Two 90-minute sessions</strong> — maternity/family now, newborn later</li>
@@ -235,7 +235,7 @@
     </details>
     <details class="faq-item">
       <summary>How does the full-gallery upgrade work?</summary>
-      <p>After your session you'll receive your included images, and you can then unlock the rest of the edited gallery — $150 on Glimpse, $125 on Golden. Gathered and Bloom already include the full gallery, so there's nothing extra to decide.</p>
+      <p>After your session you'll receive your included images, and you can then unlock the rest of the edited gallery — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden. Gathered and Bloom already include the full gallery, so there's nothing extra to decide.</p>
     </details>
     <details class="faq-item">
       <summary>How long until we receive our photos?</summary>

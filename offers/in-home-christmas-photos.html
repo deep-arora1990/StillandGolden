@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>In-Home Christmas Photos Cranbourne & Frankston — $295 | Still &amp; Golden</title>
-  <meta name="description" content="In-home Christmas family photos across Cranbourne, Frankston &amp; South-East Melbourne: 45 minutes at your place, full gallery included, $295. Available until 6 December.">
+  <title>In-Home Christmas Photos Cranbourne & Frankston — {{price.in-home-christmas}} | Still &amp; Golden</title>
+  <meta name="description" content="In-home Christmas family photos across Cranbourne, Frankston &amp; South-East Melbourne: 45 minutes at your place, full gallery included, {{price.in-home-christmas}}. Available until 6 December.">
   <link rel="canonical" href="https://stillandgolden.com.au/offers/in-home-christmas-photos">
   <meta property="og:title" content="In-Home Christmas Sessions — Still &amp; Golden Photography">
-  <meta property="og:description" content="Christmas at home, in your own light. 45 minutes, the full gallery included, $295 — until 6 December.">
+  <meta property="og:description" content="Christmas at home, in your own light. 45 minutes, the full gallery included, {{price.in-home-christmas}} — until 6 December.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stillandgolden.com.au/offers/in-home-christmas-photos">
   <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
@@ -43,7 +43,7 @@
       { "@type": "City", "name": "Mount Eliza" },
       { "@type": "City", "name": "Melbourne" }
     ],
-    "offers": { "@type": "Offer", "price": "295", "priceCurrency": "AUD", "url": "https://stillandgolden.com.au/offers/in-home-christmas-photos" }
+    "offers": { "@type": "Offer", "price": "{{price.in-home-christmas.number}}", "priceCurrency": "AUD", "url": "https://stillandgolden.com.au/offers/in-home-christmas-photos" }
   }
   </script>
   <script type="application/ld+json">
@@ -122,7 +122,7 @@
   <main>
     <div class="label">Seasonal offer &middot; Cranbourne, Frankston &amp; South-East Melbourne</div>
     <h1>Christmas at home, <em>in your own light</em></h1>
-    <p class="lead">Forty-five minutes at your place, the full gallery included. $295.</p>
+    <p class="lead">Forty-five minutes at your place, the full gallery included. {{price.in-home-christmas}}.</p>
 
     <p>Christmas photos don't need a studio set or a hired backdrop. The best ones happen where Christmas actually happens &mdash; your tree with the ornaments the kids hung in a clump at the bottom, the couch everyone ends up on, the window the afternoon light comes through. This session is that: your family, at home, as you are this year.</p>
 
@@ -153,11 +153,11 @@
 
     <h2>Pricing</h2>
     <div class="price-box">
-      <span class="was"><span class="sr-only">Valued at </span><s>$400</s></span>
-      <span class="amount">$295</span>
+      <span class="was"><span class="sr-only">Valued at </span><s>{{price.in-home-christmas.valued}}</s></span>
+      <span class="amount">{{price.in-home-christmas}}</span>
       <span class="detail">In-home Christmas session &middot; 45 minutes &middot; full gallery included &middot; private online gallery within 2 weeks &middot; travel included</span>
     </div>
-    <p class="value-note">Valued at $400 &mdash; a <a href="/packages/glimpse-mini-sessions">Glimpse session</a> ($250) with its full gallery ($150).</p>
+    <p class="value-note">Valued at {{price.in-home-christmas.valued}} &mdash; a <a href="/packages/glimpse-mini-sessions">Glimpse session</a> ({{price.glimpse}}) with its full gallery ({{price.glimpse.gallery}}).</p>
 
     <a href="/book?service=in-home-christmas" class="btn">Book your date</a>
     <a href="/#contact" class="btn btn-ghost">Enquire now</a>

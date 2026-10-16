@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sunset Beach Mini Sessions Frankston — $295 | Still &amp; Golden</title>
-  <meta name="description" content="Sunset beach mini sessions at Frankston, Seaford or Carrum: 45 minutes at golden hour, full gallery included, $295. One family per evening, October–November.">
+  <title>Sunset Beach Mini Sessions Frankston — {{price.sunset-beach-minis}} | Still &amp; Golden</title>
+  <meta name="description" content="Sunset beach mini sessions at Frankston, Seaford or Carrum: 45 minutes at golden hour, full gallery included, {{price.sunset-beach-minis}}. One family per evening, October–November.">
   <link rel="canonical" href="https://stillandgolden.com.au/offers/sunset-beach-mini-sessions">
   <meta property="og:title" content="Sunset Beach Minis — Still &amp; Golden Photography">
-  <meta property="og:description" content="Golden hour on the bay at Frankston, Seaford or Carrum. 45 minutes, the full gallery included, $295 — one family per evening.">
+  <meta property="og:description" content="Golden hour on the bay at Frankston, Seaford or Carrum. 45 minutes, the full gallery included, {{price.sunset-beach-minis}} — one family per evening.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stillandgolden.com.au/offers/sunset-beach-mini-sessions">
   <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
@@ -30,7 +30,7 @@
       { "@type": "City", "name": "Carrum" },
       { "@type": "City", "name": "Melbourne" }
     ],
-    "offers": { "@type": "Offer", "price": "295", "priceCurrency": "AUD", "url": "https://stillandgolden.com.au/offers/sunset-beach-mini-sessions" }
+    "offers": { "@type": "Offer", "price": "{{price.sunset-beach-minis.number}}", "priceCurrency": "AUD", "url": "https://stillandgolden.com.au/offers/sunset-beach-mini-sessions" }
   }
   </script>
   <script type="application/ld+json">
@@ -109,7 +109,7 @@
   <main>
     <div class="label">Seasonal offer &middot; Frankston, Seaford &amp; Carrum</div>
     <h1>Sunset beach minis, <em>golden hour on the bay</em></h1>
-    <p class="lead">Forty-five minutes on the sand as the sun goes down, the full gallery included. $295.</p>
+    <p class="lead">Forty-five minutes on the sand as the sun goes down, the full gallery included. {{price.sunset-beach-minis}}.</p>
 
     <p>Low sun, cool sand, the water turning gold behind you. The kids chase the shoreline, you walk slow, and the wind does what it likes with everyone's hair &mdash; the loose, easy kind of photos that only happen at the end of the day.</p>
 
@@ -142,11 +142,11 @@
 
     <h2>Pricing</h2>
     <div class="price-box">
-      <span class="was"><span class="sr-only">Valued at </span><s>$400</s></span>
-      <span class="amount">$295</span>
+      <span class="was"><span class="sr-only">Valued at </span><s>{{price.sunset-beach-minis.valued}}</s></span>
+      <span class="amount">{{price.sunset-beach-minis}}</span>
       <span class="detail">Sunset beach mini &middot; 45 minutes &middot; Frankston, Seaford or Carrum &middot; full gallery included &middot; private online gallery within 2 weeks</span>
     </div>
-    <p class="value-note">Valued at $400 &mdash; a <a href="/packages/glimpse-mini-sessions">Glimpse session</a> ($250) with its full gallery ($150).</p>
+    <p class="value-note">Valued at {{price.sunset-beach-minis.valued}} &mdash; a <a href="/packages/glimpse-mini-sessions">Glimpse session</a> ({{price.glimpse}}) with its full gallery ({{price.glimpse.gallery}}).</p>
 
     <a href="/book?service=sunset-beach-minis" class="btn">Choose your evening</a>
     <a href="/#contact" class="btn btn-ghost">Enquire now</a>

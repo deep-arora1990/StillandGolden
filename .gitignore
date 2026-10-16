@@ -36,3 +36,4 @@ CLAUDE.md
 
 # Local Netlify folder
 .netlify
+dist/

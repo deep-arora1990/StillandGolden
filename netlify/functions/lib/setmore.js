@@ -45,14 +45,24 @@ function datesBetween(from, to, { weekdays = null, except = [] } = {}) {
   return out;
 }
 
+// Every price comes from data/prices.json (A+ build, 16 Oct 2026), the same
+// file the pages are built from, so a page can never show one price while
+// checkout charges another. Cents and the half deposit are derived here.
+const PRICES = require('../../../data/prices.json');
+const money = (key) => {
+  const p = PRICES[key];
+  if (!p) throw new Error(`data/prices.json has no entry for ${key}`);
+  return { priceFrom: p.price, priceCents: p.price * 100, depositCents: p.price * 50, valuedAt: p.valued };
+};
+
 const TIERS = {
   glimpse: {
     name: 'Glimpse',
     tagline: 'The quick refresh',
     serviceKey: 'd6e1959f-dde0-4785-a0b1-8249d1305c7d',
     durationMinutes: 45,
-    priceFrom: 250,
-    priceCents: 25000,
+    priceFrom: money('glimpse').priceFrom,
+    priceCents: money('glimpse').priceCents,
     includes: '10 edited images',
   },
   golden: {
@@ -60,9 +70,9 @@ const TIERS = {
     tagline: 'The signature sitting',
     serviceKey: 'cbad199e-41dd-4572-803b-7f27ae3e2bb3',
     durationMinutes: 90,
-    priceFrom: 475,
-    priceCents: 47500,
-    depositCents: 23750,
+    priceFrom: money('golden').priceFrom,
+    priceCents: money('golden').priceCents,
+    depositCents: money('golden').depositCents,
     includes: '20 edited images',
   },
   gathered: {
@@ -70,9 +80,9 @@ const TIERS = {
     tagline: 'Room to move',
     serviceKey: 'fe328a93-6db2-41d2-9a7d-4e7d4b4bf9e3',
     durationMinutes: 90,
-    priceFrom: 595,
-    priceCents: 59500,
-    depositCents: 29750,
+    priceFrom: money('gathered').priceFrom,
+    priceCents: money('gathered').priceCents,
+    depositCents: money('gathered').depositCents,
     includes: '30+ edited images',
   },
   bloom: {
@@ -80,9 +90,9 @@ const TIERS = {
     tagline: 'The bundle — bump to baby',
     serviceKey: 'd05d6d95-7e5c-4af6-8067-c25bcc55702b',
     durationMinutes: 90,
-    priceFrom: 950,
-    priceCents: 95000,
-    depositCents: 47500,
+    priceFrom: money('bloom').priceFrom,
+    priceCents: money('bloom').priceCents,
+    depositCents: money('bloom').depositCents,
     includes: 'Two 90-minute sessions',
   },
   'fathers-day': {
@@ -110,9 +120,9 @@ const TIERS = {
     durationMinutes: 25,
     // What the customer is actually buying, for anything customer-facing.
     sessionMinutes: 15,
-    priceFrom: 150,
-    priceCents: 15000,
-    depositCents: 7500,
+    priceFrom: money('christmas-minis').priceFrom,
+    priceCents: money('christmas-minis').priceCents,
+    depositCents: money('christmas-minis').depositCents,
     includes: '5 edited photos',
     hidden: true,
     allowedDates: ['2026-11-08'],
@@ -219,10 +229,10 @@ const TIERS = {
     tagline: 'Christmas at home, in your own light',
     serviceKey: '60614953-538c-4c46-86d2-a7dfcae8f3a7',
     durationMinutes: 45,
-    priceFrom: 295,
-    priceCents: 29500,
-    depositCents: 14750, // half, like every split tier (Deep, 30 Sep 2026)
-    valuedAt: 400,
+    priceFrom: money('in-home-christmas').priceFrom,
+    priceCents: money('in-home-christmas').priceCents,
+    depositCents: money('in-home-christmas').depositCents, // half, like every split tier (Deep, 30 Sep 2026)
+    valuedAt: money('in-home-christmas').valuedAt,
     includes: 'Full gallery included',
     unlisted: true,
     allowedDates: datesBetween('2026-10-01', '2026-12-06'),
@@ -246,10 +256,10 @@ const TIERS = {
     tagline: 'Golden hour at Frankston, Seaford or Carrum',
     serviceKey: '40b4d796-6949-4812-adfd-8ea896db36b2',
     durationMinutes: 45,
-    priceFrom: 295,
-    priceCents: 29500,
-    depositCents: 14750, // half, like every split tier (Deep, 30 Sep 2026)
-    valuedAt: 400,
+    priceFrom: money('sunset-beach-minis').priceFrom,
+    priceCents: money('sunset-beach-minis').priceCents,
+    depositCents: money('sunset-beach-minis').depositCents, // half, like every split tier (Deep, 30 Sep 2026)
+    valuedAt: money('sunset-beach-minis').valuedAt,
     includes: 'Full gallery included',
     unlisted: true,
     allowedDates: datesBetween('2026-10-01', '2026-11-30', { weekdays: [1, 3, 5, 6, 0], except: ['2026-11-08'] }),

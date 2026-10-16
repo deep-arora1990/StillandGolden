@@ -132,7 +132,9 @@ describe('signing the terms', () => {
     const { _test } = await fresh('../../submit-contract.js')
     expect(_test.TIERS.glimpse.upgrade).toBe(150)
     expect(_test.TIERS.golden.upgrade).toBe(125)
-    const page = fs.readFileSync(path.join(ROOT, 'contract.html'), 'utf8')
+    // The page as published: prices are filled in by build.js from data/prices.json.
+    const { renderPage } = (await import('module')).createRequire(import.meta.url)('../../../../build.js')
+    const page = renderPage('contract.html', fs.readFileSync(path.join(ROOT, 'contract.html'), 'utf8'))
     expect(page).toMatch(/Glimpse<\/strong> &mdash;[^<]*full gallery may be added for \$150/)
     expect(page).toMatch(/Golden<\/strong> &mdash;[^<]*full gallery may be added for \$125/)
   })

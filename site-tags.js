@@ -103,7 +103,7 @@ fbq('track', 'PageView');
 
    Scope follows this file — the 26 public marketing pages. The pages where
    clients type personal details (questionnaire, questionnaire-mini, contract,
-   contract-mini, book-mini) do not load site-tags.js and so are not recorded.
+   contract-mini) do not load site-tags.js and so are not recorded.
    book.html IS in scope by choice; Clarity masks input values by default, and
    card details are entered on Stripe's own domain, never on ours.
 

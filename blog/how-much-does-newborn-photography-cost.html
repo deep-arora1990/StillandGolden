@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>How Much Does Newborn Photography Cost? | Still &amp; Golden</title>
-  <meta name="description" content="What newborn photography costs in Melbourne, what sits behind the price, and what is included — sessions from $250, all galleries delivered in two weeks.">
+  <meta name="description" content="What newborn photography costs in Melbourne, what sits behind the price, and what is included — sessions from {{price.glimpse}}, all galleries delivered in two weeks.">
   <link rel="canonical" href="https://stillandgolden.com.au/blog/how-much-does-newborn-photography-cost">
   <meta property="og:title" content="How Much Does Newborn Photography Cost?">
   <meta property="og:description" content="Real numbers for newborn photography in south-east Melbourne, what drives the price, and what you actually get.">
@@ -93,16 +93,16 @@
     <h1>How much does newborn photography cost?</h1>
     <p class="byline">By Deep Arora &middot; Still &amp; Golden Photography &middot; Frankston &amp; South-East Melbourne</p>
 
-    <p>Most photographers won&rsquo;t put a number on their website, which is why you&rsquo;re reading this at 2am with a newborn on your chest and eleven tabs open. So: my sessions start at <strong>$250</strong>, and the most-booked newborn option is <strong>$595</strong>. Here is what sits behind those numbers, and what to check before you pay anyone.</p>
+    <p>Most photographers won&rsquo;t put a number on their website, which is why you&rsquo;re reading this at 2am with a newborn on your chest and eleven tabs open. So: my sessions start at <strong>{{price.glimpse}}</strong>, and the most-booked newborn option is <strong>{{price.gathered}}</strong>. Here is what sits behind those numbers, and what to check before you pay anyone.</p>
 
     <h2>The short <em>answer</em></h2>
     <p>Around Melbourne you&rsquo;ll generally see newborn photography somewhere between $150 for a very short mini and $1,200 or more for a full studio experience with prints included. Most in-home sessions land in the middle of that.</p>
     <p>Mine sit here:</p>
     <ul>
-      <li><strong>Glimpse &mdash; from $250.</strong> Up to forty-five minutes, ten edited images. A short, focused sitting.</li>
-      <li><strong>Golden &mdash; from $475.</strong> Up to ninety minutes, twenty edited images. Room for feeds and settling.</li>
-      <li><strong>Gathered &mdash; from $595.</strong> Ninety minutes, thirty or more images, full gallery included. The one most newborn families choose.</li>
-      <li><strong>Bloom &mdash; from $950.</strong> Two ninety-minute sessions: maternity or family while you wait, then newborn once they arrive.</li>
+      <li><strong>Glimpse &mdash; from {{price.glimpse}}.</strong> Up to forty-five minutes, ten edited images. A short, focused sitting.</li>
+      <li><strong>Golden &mdash; from {{price.golden}}.</strong> Up to ninety minutes, twenty edited images. Room for feeds and settling.</li>
+      <li><strong>Gathered &mdash; from {{price.gathered}}.</strong> Ninety minutes, thirty or more images, full gallery included. The one most newborn families choose.</li>
+      <li><strong>Bloom &mdash; from {{price.bloom}}.</strong> Two ninety-minute sessions: maternity or family while you wait, then newborn once they arrive.</li>
     </ul>
     <p>Every one of those includes travel across Frankston and south-east Melbourne, and a private online gallery within two weeks.</p>
 
@@ -130,7 +130,7 @@
     <p>What shouldn&rsquo;t cost extra: siblings, grandparents, or the fact your house is untidy. Every session I run includes the whole family with no per-person charge.</p>
 
     <h2>Is a mini session enough for a <em>newborn</em>?</h2>
-    <p>Sometimes. If your baby is settled, you want a handful of frames, and you are clear that forty-five minutes is forty-five minutes, a Glimpse &mdash; from $250 &mdash; does the job.</p>
+    <p>Sometimes. If your baby is settled, you want a handful of frames, and you are clear that forty-five minutes is forty-five minutes, a Glimpse &mdash; from {{price.glimpse}} &mdash; does the job.</p>
     <p>Be honest with yourself, though. Newborns feed, then need changing, then need settling, and none of that is negotiable. Forty-five minutes can vanish into one long feed. That is precisely why Gathered exists at ninety minutes &mdash; not to sell you more, but because a newborn session with a clock on it isn&rsquo;t much of a newborn session. More on the timing in <a href="/blog/when-to-book-newborn-photos">when to book newborn photos</a>.</p>
 
     <h2>When to <em>book</em></h2>
@@ -145,7 +145,7 @@
       <div class="pkg-grid">
         <div class="pkg featured">
           <div class="pkg-name">Gathered</div>
-          <div class="pkg-price"><span class="from">From</span>$595</div>
+          <div class="pkg-price"><span class="from">From</span>{{price.gathered}}</div>
           <ul class="pkg-specs">
             <li>90 minutes</li>
             <li>30+ edited images</li>
@@ -155,7 +155,7 @@
         </div>
         <div class="pkg">
           <div class="pkg-name">Glimpse</div>
-          <div class="pkg-price"><span class="from">From</span>$250</div>
+          <div class="pkg-price"><span class="from">From</span>{{price.glimpse}}</div>
           <ul class="pkg-specs">
             <li>Up to 45 minutes</li>
             <li>10 edited images</li>
@@ -165,7 +165,7 @@
         </div>
         <div class="pkg">
           <div class="pkg-name">Golden</div>
-          <div class="pkg-price"><span class="from">From</span>$475</div>
+          <div class="pkg-price"><span class="from">From</span>{{price.golden}}</div>
           <ul class="pkg-specs">
             <li>Up to 90 minutes</li>
             <li>20 edited images</li>
@@ -175,7 +175,7 @@
         </div>
         <div class="pkg">
           <div class="pkg-name">Bloom</div>
-          <div class="pkg-price"><span class="from">From</span>$950</div>
+          <div class="pkg-price"><span class="from">From</span>{{price.bloom}}</div>
           <ul class="pkg-specs">
             <li>Two 90-minute sessions</li>
             <li>Maternity / family + newborn</li>

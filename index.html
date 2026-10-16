@@ -30,7 +30,7 @@
     "image": "https://stillandgolden.com.au/og-image.jpg",
     "telephone": "+61426834359",
     "email": "hello@stillandgolden.com.au",
-    "priceRange": "$250-$950",
+    "priceRange": "{{price.glimpse}}-{{price.bloom}}",
     "identifier": {
       "@type": "PropertyValue",
       "name": "ABN",
@@ -75,7 +75,7 @@
         "@type": "Offer",
         "name": "Glimpse Session",
         "description": "Up to 45-minute in-home or on-location photography session with 10 edited images. Option to upgrade to the full gallery. Suits updated core family photos.",
-        "price": "250",
+        "price": "{{price.glimpse.number}}",
         "priceCurrency": "AUD",
         "priceSpecification": {
           "@type": "PriceSpecification",
@@ -87,7 +87,7 @@
         "@type": "Offer",
         "name": "Golden Session",
         "description": "Up to 90-minute in-home or on-location photography session with 20 edited images. Option to upgrade to the full gallery. Suits family, newborn, maternity and cake smash sessions.",
-        "price": "475",
+        "price": "{{price.golden.number}}",
         "priceCurrency": "AUD",
         "priceSpecification": {
           "@type": "PriceSpecification",
@@ -99,7 +99,7 @@
         "@type": "Offer",
         "name": "Gathered Session",
         "description": "90-minute in-home or on-location photography session with 30+ edited images and the full gallery included. Suits newborn, extended family and larger groups.",
-        "price": "595",
+        "price": "{{price.gathered.number}}",
         "priceCurrency": "AUD",
         "priceSpecification": {
           "@type": "PriceSpecification",
@@ -111,7 +111,7 @@
         "@type": "Offer",
         "name": "Bloom Bundle",
         "description": "Two 90-minute in-home sessions combining a maternity or family session with a newborn session, booked together at a better rate.",
-        "price": "950",
+        "price": "{{price.bloom.number}}",
         "priceCurrency": "AUD",
         "priceSpecification": {
           "@type": "PriceSpecification",
@@ -161,7 +161,7 @@
       {
         "@type": "Question",
         "name": "How much does a session cost?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from $250 (up to 45 minutes, 10 edited images), Golden from $475 (up to 90 minutes, 20 edited images) and Gathered from $595 (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from $950. Glimpse and Golden can both be upgraded to the full gallery afterwards — $150 on Glimpse, $125 on Golden — and Gathered and Bloom include it." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 45 minutes, 10 edited images), Golden from {{price.golden}} (up to 90 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it." }
       },
       {
         "@type": "Question",
@@ -1069,14 +1069,14 @@
     <div class="offer-cards">
       <a class="offer-card reveal d1" href="/offers/in-home-christmas-photos" data-until="2026-12-06">
         <span class="oc-name">In-home Christmas session</span>
-        <span class="oc-price"><s><span class="sr-only">Valued at </span>$400</s> $295</span>
+        <span class="oc-price"><s><span class="sr-only">Valued at </span>{{price.in-home-christmas.valued}}</s> {{price.in-home-christmas}}</span>
         <span class="oc-detail">45 minutes at your place, the full gallery included. Christmas-themed or not, your call.</span>
         <span class="oc-when">Until Sunday 6 December</span>
         <span class="oc-cta">See the session &rarr;</span>
       </a>
       <a class="offer-card reveal d1" href="/offers/sunset-beach-mini-sessions" data-until="2026-11-30">
         <span class="oc-name">Sunset beach mini</span>
-        <span class="oc-price"><s><span class="sr-only">Valued at </span>$400</s> $295</span>
+        <span class="oc-price"><s><span class="sr-only">Valued at </span>{{price.sunset-beach-minis.valued}}</s> {{price.sunset-beach-minis}}</span>
         <span class="oc-detail">45 minutes at Frankston, Seaford or Carrum beach around sunset, the full gallery included.</span>
         <span class="oc-when">October and November</span>
         <span class="oc-cta">Choose your evening &rarr;</span>
@@ -1210,7 +1210,7 @@
       </details>
       <details class="faq-item reveal d3">
         <summary>How much does a session cost?</summary>
-        <p>Sessions are grouped by how much time you want together. Glimpse is from $250 (up to 45 minutes, 10 edited images), Golden from $475 (up to 90 minutes, 20 edited images) and Gathered from $595 (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from $950. Glimpse and Golden can both be upgraded to the full gallery afterwards — $150 on Glimpse, $125 on Golden — and Gathered and Bloom include it. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
+        <p>Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 45 minutes, 10 edited images), Golden from {{price.golden}} (up to 90 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
       </details>
       <details class="faq-item reveal d3">
         <summary>Do you provide the cake for cake smash sessions?</summary>
