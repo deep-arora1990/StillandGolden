@@ -4,8 +4,8 @@ const { upsertResendContact } = require('./lib/resend-contacts');
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 const SESSION_LABELS = {
-  glimpse: 'Glimpse — up to 45 min, 10 images',
-  golden: 'Golden — up to 90 min, 20 images',
+  glimpse: 'Glimpse — up to 30 min, 10 images',
+  golden: 'Golden — up to 60 min, 20 images',
   gathered: 'Gathered — 90 min, 30+ images',
   bloom: 'Bloom — two sessions, maternity/family + newborn',
   unsure: 'Not sure yet — help me choose',

@@ -74,7 +74,7 @@
       {
         "@type": "Offer",
         "name": "Glimpse Session",
-        "description": "Up to 45-minute in-home or on-location photography session with 10 edited images. Option to upgrade to the full gallery. Suits updated core family photos.",
+        "description": "Up to 30-minute in-home or on-location photography session with 10 edited images. Option to upgrade to the full gallery. Suits updated core family photos.",
         "price": "{{price.glimpse.number}}",
         "priceCurrency": "AUD",
         "priceSpecification": {
@@ -86,7 +86,7 @@
       {
         "@type": "Offer",
         "name": "Golden Session",
-        "description": "Up to 90-minute in-home or on-location photography session with 20 edited images. Option to upgrade to the full gallery. Suits family, newborn, maternity and cake smash sessions.",
+        "description": "Up to 60-minute in-home or on-location photography session with 20 edited images. Option to upgrade to the full gallery. Suits family, newborn, maternity and cake smash sessions.",
         "price": "{{price.golden.number}}",
         "priceCurrency": "AUD",
         "priceSpecification": {
@@ -161,7 +161,7 @@
       {
         "@type": "Question",
         "name": "How much does a session cost?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 45 minutes, 10 edited images), Golden from {{price.golden}} (up to 90 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden from {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it." }
       },
       {
         "@type": "Question",
@@ -1210,7 +1210,7 @@
       </details>
       <details class="faq-item reveal d3">
         <summary>How much does a session cost?</summary>
-        <p>Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 45 minutes, 10 edited images), Golden from {{price.golden}} (up to 90 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
+        <p>Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden from {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
       </details>
       <details class="faq-item reveal d3">
         <summary>Do you provide the cake for cake smash sessions?</summary>
@@ -1269,8 +1269,8 @@
           <label for="st">Session type</label>
           <select id="st" name="session_type" required>
             <option value="" disabled selected>Select a session</option>
-            <option value="glimpse">Glimpse &mdash; up to 45 min, 10 images</option>
-            <option value="golden">Golden &mdash; up to 90 min, 20 images</option>
+            <option value="glimpse">Glimpse &mdash; up to 30 min, 10 images</option>
+            <option value="golden">Golden &mdash; up to 60 min, 20 images</option>
             <option value="gathered">Gathered &mdash; 90 min, 30+ images</option>
             <option value="bloom">Bloom &mdash; two sessions</option>
             <option value="unsure">Not sure yet &mdash; help me choose</option>

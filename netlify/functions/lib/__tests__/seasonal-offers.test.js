@@ -37,11 +37,11 @@ describe('offer dates', () => {
     expect(dates).toHaveLength(67)
   })
 
-  it('both are $295 against a genuine $400 comparison (Glimpse + its full gallery)', async () => {
+  it('both are $295 against a genuine $470 comparison (Glimpse + its full gallery)', async () => {
     const { TIERS } = await fresh('../setmore.js')
     for (const k of ['sunset-beach-minis', 'in-home-christmas']) {
       expect(TIERS[k].priceCents).toBe(29500)
-      expect(TIERS[k].valuedAt).toBe(400)
+      expect(TIERS[k].valuedAt).toBe(470)
     }
   })
 })
@@ -107,7 +107,7 @@ describe('booking-services exposes offers without listing them', () => {
     const { handler } = await fresh('../../booking-services.js')
     const { services } = JSON.parse((await handler({ httpMethod: 'GET' })).body)
     const beach = services.find((s) => s.tier === 'sunset-beach-minis')
-    expect(beach).toMatchObject({ unlisted: true, timeTbc: true, valuedAt: 400, locations: ['Frankston', 'Seaford', 'Carrum'] })
+    expect(beach).toMatchObject({ unlisted: true, timeTbc: true, valuedAt: 470, locations: ['Frankston', 'Seaford', 'Carrum'] })
     expect(services.find((s) => s.tier === 'in-home-christmas').unlisted).toBe(true)
     expect(services.find((s) => s.tier === 'christmas-minis')).toBeUndefined()
     expect(services.find((s) => s.tier === 'golden').unlisted).toBe(false)

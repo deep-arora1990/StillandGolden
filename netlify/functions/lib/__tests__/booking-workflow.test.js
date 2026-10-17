@@ -78,10 +78,10 @@ describe('booking confirmation carries the session terms', () => {
     const { TIERS } = await fresh('../setmore.js')
     const { render, valuesFromBooking } = await fresh('../booking-confirmation.js')
     const full = render(valuesFromBooking(meta, TIERS.golden, { termsUrl: 'x' }))
-    expect(full.text).toMatch(/Paid \$475/)
-    const split = render(valuesFromBooking({ ...meta, pay_mode: 'split', balance_cents: '23750', charge_on: '2026-10-15' }, TIERS.golden, { termsUrl: 'x' }))
-    expect(split.text).toMatch(/\$237\.50 paid today/)
-    expect(split.text).toMatch(/\$237\.50 on Thursday 15 October/)
+    expect(full.text).toMatch(/Paid \$395/)
+    const split = render(valuesFromBooking({ ...meta, pay_mode: 'split', balance_cents: '19750', charge_on: '2026-10-15' }, TIERS.golden, { termsUrl: 'x' }))
+    expect(split.text).toMatch(/\$197\.50 paid today/)
+    expect(split.text).toMatch(/\$197\.50 on Thursday 15 October/)
   })
 
   it('leaves the Christmas minis confirmation as it is (no terms block)', async () => {
@@ -130,13 +130,16 @@ describe('signing the terms', () => {
 
   it('the agreement PDF quotes the current full-gallery prices, matching the contract page', async () => {
     const { _test } = await fresh('../../submit-contract.js')
-    expect(_test.TIERS.glimpse.upgrade).toBe(150)
-    expect(_test.TIERS.golden.upgrade).toBe(125)
+    expect(_test.TIERS.glimpse.upgrade).toBe(175)
+    expect(_test.TIERS.golden.upgrade).toBe(175)
+    // Glimpse back to 30 minutes and Golden to an hour (Deep, 17 Oct 2026).
+    expect(_test.TIERS.glimpse.duration).toBe('up to 30 minutes')
+    expect(_test.TIERS.golden.duration).toBe('up to 60 minutes')
     // The page as published: prices are filled in by build.js from data/prices.json.
     const { renderPage } = (await import('module')).createRequire(import.meta.url)('../../../../build.js')
     const page = renderPage('contract.html', fs.readFileSync(path.join(ROOT, 'contract.html'), 'utf8'))
-    expect(page).toMatch(/Glimpse<\/strong> &mdash;[^<]*full gallery may be added for \$150/)
-    expect(page).toMatch(/Golden<\/strong> &mdash;[^<]*full gallery may be added for \$125/)
+    expect(page).toMatch(/Glimpse<\/strong> &mdash; up to 30 minutes[^<]*full gallery may be added for \$175/)
+    expect(page).toMatch(/Golden<\/strong> &mdash; up to 60 minutes[^<]*full gallery may be added for \$175/)
   })
 
   it('knows the two seasonal offers (full gallery included)', async () => {

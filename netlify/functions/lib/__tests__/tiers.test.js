@@ -74,3 +74,33 @@ describe('test-only tiers', () => {
     }
   })
 })
+
+// Glimpse is up to 30 minutes and Golden up to an hour (Deep, 17 Oct 2026,
+// reversing the 1 Oct lengthening). The booking code writes these lengths into
+// Setmore, and "up to N minutes" on a page only ever describes these two
+// tiers, so every such figure on the site must be one of them.
+describe('session lengths', () => {
+  it('books Glimpse for 30 minutes and Golden for 60', () => {
+    expect(TIERS.glimpse.durationMinutes).toBe(30)
+    expect(TIERS.golden.durationMinutes).toBe(60)
+  })
+
+  it('never quotes a Glimpse or Golden length on a page that the booking code does not book', () => {
+    const fs = require('fs')
+    const path = require('path')
+    const { execFileSync } = require('child_process')
+    const root = path.resolve(__dirname, '../../../..')
+    const pages = execFileSync('git', ['ls-files', '*.html'], { cwd: root, encoding: 'utf8' })
+      .split('\n').filter((f) => f && !/^(print|brand|reel)\//.test(f))
+    const allowed = [TIERS.glimpse.durationMinutes, TIERS.golden.durationMinutes]
+    const wrong = []
+    for (const f of pages) {
+      const html = fs.readFileSync(path.join(root, f), 'utf8')
+      for (const m of html.matchAll(/up to (\d+)[ -]min/gi)) {
+        if (!allowed.includes(Number(m[1]))) wrong.push(`${f}: "${m[0]}"`)
+      }
+      for (const m of html.matchAll(/up to (forty-five|ninety|an hour and a half)/gi)) wrong.push(`${f}: "${m[0]}"`)
+    }
+    expect(wrong).toEqual([])
+  })
+})

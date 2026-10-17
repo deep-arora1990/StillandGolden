@@ -13,14 +13,14 @@ const TIERS = {
   glimpse: {
     name: 'Glimpse',
     label: 'Glimpse Session Agreement',
-    duration: 'up to 45 minutes',
+    duration: 'up to 30 minutes',
     images: '10',
     upgrade: PRICES.glimpse.gallery,
   },
   golden: {
     name: 'Golden',
     label: 'Golden Session Agreement',
-    duration: 'up to 90 minutes',
+    duration: 'up to 60 minutes',
     images: '20',
     upgrade: PRICES.golden.gallery,
   },

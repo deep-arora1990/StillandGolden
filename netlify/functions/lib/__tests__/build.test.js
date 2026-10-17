@@ -8,12 +8,17 @@ const { priceToken, renderPage, pagePath } = require('../../../../build.js')
 
 describe('price tokens', () => {
   it('session price, gallery, valued-at and halves, as shown and as bare numbers', () => {
-    expect(priceToken('price.golden')).toBe('$475')
-    expect(priceToken('price.golden.number')).toBe('475')
-    expect(priceToken('price.golden.gallery')).toBe('$125')
-    expect(priceToken('price.golden.half')).toBe('$237.50')
+    expect(priceToken('price.golden')).toBe('$395')
+    expect(priceToken('price.golden.number')).toBe('395')
+    expect(priceToken('price.golden.gallery')).toBe('$175')
+    expect(priceToken('price.glimpse')).toBe('$295')
+    expect(priceToken('price.glimpse.gallery')).toBe('$175')
+    expect(priceToken('price.gathered')).toBe('$450')
+    expect(priceToken('price.bloom')).toBe('$795')
+    expect(priceToken('price.bloom.half')).toBe('$397.50')
+    expect(priceToken('price.golden.half')).toBe('$197.50')
     expect(priceToken('price.christmas-minis.half')).toBe('$75')
-    expect(priceToken('price.in-home-christmas.valued')).toBe('$400')
+    expect(priceToken('price.in-home-christmas.valued')).toBe('$470')
     expect(priceToken('price.sunset-beach-minis.number')).toBe('295')
   })
 
@@ -26,7 +31,7 @@ describe('price tokens', () => {
 
 describe('pages', () => {
   it('fills tokens, and stops the build on anything left unfilled', () => {
-    expect(renderPage('x.html', '<p>From {{price.golden}}</p>')).toBe('<p>From $475</p>')
+    expect(renderPage('x.html', '<p>From {{price.golden}}</p>')).toBe('<p>From $395</p>')
     expect(() => renderPage('x.html', '<p>{{price.nope}}</p>')).toThrow(/x\.html.*unknown tier/)
     expect(() => renderPage('x.html', '<p>{{ golden }}</p>')).toThrow(/unfilled/)
     expect(() => renderPage('x.html', '<!-- include:sidebar -->')).toThrow(/unfilled/)

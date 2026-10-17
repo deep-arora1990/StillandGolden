@@ -1,10 +1,10 @@
 {
   "_note": "Every Still & Golden price, in whole dollars. The website pages ({{price.*}} tokens, filled by build.js) and the booking code (netlify/functions/lib/setmore.js, submit-contract.js) both read this file. Change a price here and nowhere else. Stripe, Setmore and Pic-Time are separate and still need updating by hand.",
-  "glimpse": { "price": 250, "gallery": 150 },
-  "golden": { "price": 475, "gallery": 125 },
-  "gathered": { "price": 595 },
-  "bloom": { "price": 950 },
-  "in-home-christmas": { "price": 295, "valued": 400 },
-  "sunset-beach-minis": { "price": 295, "valued": 400 },
+  "glimpse": { "price": 295, "gallery": 175 },
+  "golden": { "price": 395, "gallery": 175 },
+  "gathered": { "price": 450 },
+  "bloom": { "price": 795 },
+  "in-home-christmas": { "price": 295, "valued": 470 },
+  "sunset-beach-minis": { "price": 295, "valued": 470 },
   "christmas-minis": { "price": 150, "gallery": 50 }
 }
