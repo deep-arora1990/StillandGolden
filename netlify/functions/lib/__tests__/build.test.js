@@ -13,7 +13,7 @@ describe('price tokens', () => {
     expect(priceToken('price.golden.gallery')).toBe('$175')
     expect(priceToken('price.glimpse')).toBe('$295')
     expect(priceToken('price.glimpse.gallery')).toBe('$175')
-    expect(priceToken('price.gathered')).toBe('$450')
+    expect(priceToken('price.gathered')).toBe('$475')
     expect(priceToken('price.bloom')).toBe('$795')
     expect(priceToken('price.bloom.half')).toBe('$397.50')
     expect(priceToken('price.golden.half')).toBe('$197.50')
