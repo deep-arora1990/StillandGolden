@@ -6,7 +6,7 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SESSION_LABELS = {
   glimpse: 'Glimpse — up to 30 min, 10 images',
   golden: 'Golden — up to 60 min, 20 images',
-  gathered: 'Gathered — 90 min, 30+ images',
+  gathered: 'Gathered — 90 min, full gallery (usually 60+ images)',
   bloom: 'Bloom — two sessions, maternity/family + newborn',
   unsure: 'Not sure yet — help me choose',
 
@@ -111,6 +111,11 @@ exports.handler = async (event) => {
   }
 
   const { first_name, last_name, email, phone, session_type, preferred_date, message } = data;
+  // Asked from 17 Oct 2026 (the coach's audit): where enquirers live and why
+  // they got in touch. Both optional; trimmed and capped so a pasted essay
+  // can't bloat the email.
+  const suburb = typeof data.suburb === 'string' ? data.suburb.trim().slice(0, 80) : '';
+  const reason = typeof data.reason === 'string' ? data.reason.trim().slice(0, 1000) : '';
   // Only a real tick is consent. A missing field (a page cached from before the
   // checkbox) or anything that isn't boolean true reads as "no".
   const marketingConsent = data.marketing_consent === true;
@@ -145,6 +150,8 @@ exports.handler = async (event) => {
           phone ? `Phone: ${phone}` : null,
           `Session: ${sessionLabel}`,
           preferred_date ? `${fromBookingPage ? 'Dates that would suit' : 'Preferred date'}: ${preferred_date}` : null,
+          suburb ? `Suburb: ${suburb}` : null,
+          reason ? `What made them get in touch: ${reason}` : null,
           `Marketing emails: ${marketingConsent ? 'yes' : 'no'}`,
           message ? `\nMessage:\n${message}` : null,
         ].filter(Boolean).join('\n'),

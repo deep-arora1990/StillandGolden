@@ -83,7 +83,7 @@ const TIERS = {
     priceFrom: money('gathered').priceFrom,
     priceCents: money('gathered').priceCents,
     depositCents: money('gathered').depositCents,
-    includes: '30+ edited images',
+    includes: 'Full gallery, usually 60+ edited images',
   },
   bloom: {
     name: 'Bloom',

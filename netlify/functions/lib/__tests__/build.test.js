@@ -22,6 +22,12 @@ describe('price tokens', () => {
     expect(priceToken('price.sunset-beach-minis.number')).toBe('295')
   })
 
+  it('a session with its full gallery added, to compare with Gathered', () => {
+    expect(priceToken('price.glimpse.withgallery')).toBe('$470')
+    expect(priceToken('price.golden.withgallery')).toBe('$570')
+    expect(() => priceToken('price.gathered.withgallery')).toThrow(/not set for gathered/)
+  })
+
   it('refuses a misspelt tier or a value the tier does not have', () => {
     expect(() => priceToken('price.goldn')).toThrow(/unknown tier/)
     expect(() => priceToken('price.bloom.gallery')).toThrow(/not set for bloom/)

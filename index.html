@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Still & Golden — Newborn & Family Photographer, Cranbourne & Frankston</title>
+  <title>Still & Golden — In-Home Newborn & Family Photographer, Cranbourne East & Casey</title>
   <meta name="description" content="In-home newborn &amp; family photographer based in Cranbourne East, serving Cranbourne, Clyde North, Berwick, Narre Warren, Frankston &amp; South-East Melbourne.">
   <meta name="keywords" content="newborn photographer Cranbourne, family photographer Cranbourne, family photographer Casey, newborn photographer Berwick, family photographer Clyde North, newborn photographer Frankston, family photographer Frankston, newborn photography Melbourne, Chelsea photographer, Seaford photographer, Langwarrin photographer, Mt Eliza photographer">
   <link rel="canonical" href="https://stillandgolden.com.au/">
-  <meta property="og:title" content="Still & Golden — Newborn & Family Photographer, Cranbourne & Frankston">
-  <meta property="og:description" content="In-home newborn & family photography serving Cranbourne, Clyde North, Berwick, Narre Warren, Frankston, Chelsea, Seaford, Langwarrin, Mt Eliza and South-East Melbourne.">
+  <meta property="og:title" content="Still & Golden — In-Home Newborn & Family Photographer, Cranbourne East & Casey">
+  <meta property="og:description" content="In-home newborn and family photography from Cranbourne East, across Casey and South-East Melbourne. The photos aren't perfect, but the feeling is.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stillandgolden.com.au/">
   <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
@@ -98,7 +98,7 @@
       {
         "@type": "Offer",
         "name": "Gathered Session",
-        "description": "90-minute in-home or on-location photography session with 30+ edited images and the full gallery included. Suits newborn, extended family and larger groups.",
+        "description": "90-minute in-home or on-location photography session with the full gallery included, usually 60+ edited images. Suits newborn, extended family and larger groups.",
         "price": "{{price.gathered.number}}",
         "priceCurrency": "AUD",
         "priceSpecification": {
@@ -141,7 +141,7 @@
       {
         "@type": "Question",
         "name": "What happens during an in-home newborn session?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Around 1.5 to 2 relaxed hours in your home. No elaborate props or forced poses — feeds, cuddles, naps and small details, working entirely at your baby's pace with pauses built in for feeding and settling." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Gathered gives us 90 minutes in your home, with feeds and settling built in. No elaborate props or forced poses — feeds, cuddles, naps and small details, working entirely at your baby's pace with pauses built in for feeding and settling." }
       },
       {
         "@type": "Question",
@@ -161,7 +161,7 @@
       {
         "@type": "Question",
         "name": "How much does a session cost?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden from {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden from {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, with the full gallery). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it." }
       },
       {
         "@type": "Question",
@@ -334,6 +334,13 @@
     }
     .intro-headline em {
       font-style: italic;
+      color: var(--gold);
+    }
+    .intro-where {
+      margin-top: 14px;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       color: var(--gold);
     }
     .intro-sub {
@@ -519,6 +526,7 @@
       font-weight: 400;
     }
     .sessions-header h2 em { font-style: italic; }
+    .sessions-header .sessions-prices { font-family: var(--serif); font-size: 1.05rem; color: var(--warm-black); margin-top: 14px; }
     .sessions-header a { font-size: 0.8rem; color: var(--mid); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 1px; }
     .sessions-header a:hover { color: var(--warm-black); border-color: var(--warm-black); }
 
@@ -1030,14 +1038,14 @@
 
   <!-- INTRO -->
   <div id="intro">
-    <p class="intro-location">Cranbourne · Berwick · Frankston · Melbourne</p>
+    <p class="intro-location">Cranbourne East · Casey · South-East Melbourne</p>
     <h1 class="intro-headline">
-      Creating <em>still,</em><br>golden moments<br>for families
+      In-home newborn<br><em>&amp; family photography</em>
     </h1>
-    <p class="intro-sub">Specialist newborn and family photography. Unhurried. Honest. Warm — the kind of images you'll want on your walls for the rest of your life.</p>
+    <p class="intro-sub">Think of the album in the cupboard at your parents' place: the photos aren't perfect, but the feeling is. Love and joy, smiles and frowns, everyday moments just as they happened.</p>
+    <p class="intro-where">Cranbourne East, Casey and the south-east, from a dad of two</p>
     <div class="intro-actions">
-      <a href="/packages" class="btn filled">View my packages</a>
-      <a href="/portfolio" class="btn">View work</a>
+      <a href="/packages" class="btn filled">See sessions and prices</a>
     </div>
   </div>
 
@@ -1056,6 +1064,82 @@
       <a href="/portfolio">View full portfolio →</a>
     </p>
   </div>
+
+  <hr class="rule">
+
+  <!-- ABOUT -->
+  <div id="about" class="about-teaser">
+    <a href="/about" class="about-ph reveal" aria-label="More about Deep, the photographer">
+      <picture>
+        <source srcset="Images/webp/DSC03278.webp" type="image/webp">
+        <img src="Images/DSC03278.jpg" alt="Deep Arora, Still & Golden Photography" loading="lazy" decoding="async">
+      </picture>
+    </a>
+    <div class="about-text">
+      <p class="label reveal">The photographer</p>
+      <h2 class="reveal">A fellow parent,<br>behind the <em>lens</em></h2>
+      <p class="reveal d1">Hi, I'm <strong>Deep</strong> — a dad of two based in Cranbourne East, and the person behind Still &amp; Golden. I come to your place, work with your light, and photograph your family as it actually is.</p>
+      <p class="reveal d1">I shoot this way because I'm living it. I know what 4pm with a toddler and a newborn looks like, and I know that one day your kids will go looking for a photo of <em>you</em> — the person who takes every photo and appears in none. My job is to make sure it exists.</p>
+      <a href="/about" class="btn reveal d2">More about me →</a>
+    </div>
+  </div>
+
+  <!-- SESSIONS -->
+  <section id="sessions">
+    <div class="sessions-inner">
+      <div class="sessions-header reveal">
+        <h2>My <em>services</em></h2>
+        <p>Newborn sessions in those first weeks and months. Family sessions for the season you're in right now. Maternity sittings while you wait, cake smashes for first birthdays, and every milestone in between &mdash; all at your place or somewhere you love, all delivered within two weeks.</p>
+        <p class="sessions-prices">Glimpse from {{price.glimpse}} &middot; Golden from {{price.golden}} &middot; Gathered from {{price.gathered}}, with the full gallery &middot; Bloom from {{price.bloom}}</p>
+        <p>Every session includes the whole family, with no per-person charge and nothing required of you.</p>
+        <a href="/packages" class="tbtn" style="display:inline-block;margin-top:22px;text-decoration:none;">See sessions and prices</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews">
+    <div class="reviews-inner">
+      <div class="reviews-header reveal">
+        <div class="eyebrow">Kind words</div>
+        <h2>What families <em>say</em></h2>
+      </div>
+      <div class="review-grid">
+        <div class="review reveal">
+          <div class="stars">★★★★★</div>
+          <q>His images of our newborn were beautiful!! He was so patient and no request was too much. We will 100% use Deep in the future.</q>
+          <div class="reviewer"><span class="avatar" style="background:#B0552E">A</span><div><div class="name">Alyce Patterson</div><div class="src">Newborn session</div></div></div>
+        </div>
+        <div class="review reveal d1">
+          <div class="stars">★★★★★</div>
+          <q>Absolutely loved my mini photoshoot — each photo was stunning. After 10 years I finally have photos of my son and I for the walls.</q>
+          <div class="reviewer"><span class="avatar" style="background:#D98A32">M</span><div><div class="name">Martine Stevens</div><div class="src">Mini session</div></div></div>
+        </div>
+        <div class="review reveal d2">
+          <div class="stars">★★★★★</div>
+          <q>My son was at ease with you instantly and it shows in the photos.</q>
+          <div class="reviewer"><span class="avatar" style="background:#B0552E">W</span><div><div class="name">Wadzi</div><div class="src">Family session</div></div></div>
+        </div>
+        <div class="review reveal">
+          <div class="stars">★★★★★</div>
+          <q>Welcoming and nice, no fuss — just some lovely relaxed family photos. We got what we wanted super quick.</q>
+          <div class="reviewer"><span class="avatar" style="background:#6E7B6A">J</span><div><div class="name">Jess Shields</div><div class="src">Local Guide · Family</div></div></div>
+        </div>
+        <div class="review reveal d1">
+          <div class="stars">★★★★★</div>
+          <q>Right away he set a relaxed atmosphere and made our kids laugh and allowed them to be themselves.</q>
+          <div class="reviewer"><span class="avatar" style="background:#8A7E78">A</span><div><div class="name">Adele</div><div class="src">Family session</div></div></div>
+        </div>
+        <div class="review reveal d2" style="background:var(--warm-black); color:var(--off-white); justify-content:center; align-items:flex-start;">
+          <div class="stars">★★★★★</div>
+          <div style="font-family:var(--serif); font-size:2.4rem; line-height:1; margin-bottom:8px;">5.0</div>
+          <div style="font-size:0.85rem; color:#cfc7bd;">Rated five stars across every Google review.</div>
+          <a class="tbtn" href="https://share.google/FwsgMQFb7JfN0tUkI" target="_blank" rel="noopener" style="background:var(--gold); color:var(--warm-black); margin-top:22px; align-self:stretch;">Read them on Google</a>
+        </div>
+      </div>
+      <p class="google-cue">Reviewed on <b>Google</b> · Still &amp; Golden Photography</p>
+    </div>
+  </section>
 
   <hr class="rule">
 
@@ -1104,81 +1188,6 @@
     })();
   </script>
 
-  <hr class="rule">
-
-  <!-- ABOUT -->
-  <div id="about" class="about-teaser">
-    <a href="/about" class="about-ph reveal" aria-label="More about Deep, the photographer">
-      <picture>
-        <source srcset="Images/webp/DSC03278.webp" type="image/webp">
-        <img src="Images/DSC03278.jpg" alt="Deep Arora, Still & Golden Photography" loading="lazy" decoding="async">
-      </picture>
-    </a>
-    <div class="about-text">
-      <p class="label reveal">The photographer</p>
-      <h2 class="reveal">A fellow parent,<br>behind the <em>lens</em></h2>
-      <p class="reveal d1">Hi, I'm <strong>Deep</strong> — a dad of two based in Cranbourne East, and the person behind Still &amp; Golden. There's no studio and no script: I come to your place, work with your light, and photograph your family as it actually is.</p>
-      <p class="reveal d1">I shoot this way because I'm living it. I know what 4pm with a toddler and a newborn looks like, and I know that one day your kids will go looking for a photo of <em>you</em> — the person who takes every photo and appears in none. My job is to make sure it exists.</p>
-      <a href="/about" class="btn reveal d2">More about me →</a>
-    </div>
-  </div>
-
-  <!-- SESSIONS -->
-  <section id="sessions">
-    <div class="sessions-inner">
-      <div class="sessions-header reveal">
-        <h2>My <em>services</em></h2>
-        <p>Newborn sessions in those first weeks and months. Family sessions for the season you're in right now. Maternity sittings while you wait, cake smashes for first birthdays, and every milestone in between &mdash; all unposed, all at your place or somewhere you love, all delivered within two weeks.</p>
-        <p>Every session includes the whole family, with no per-person charge and nothing required of you.</p>
-        <a href="/packages" class="tbtn" style="display:inline-block;margin-top:22px;text-decoration:none;">Explore my packages</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- REVIEWS -->
-  <section id="reviews">
-    <div class="reviews-inner">
-      <div class="reviews-header reveal">
-        <div class="eyebrow">Kind words</div>
-        <h2>What families <em>say</em></h2>
-      </div>
-      <div class="review-grid">
-        <div class="review reveal">
-          <div class="stars">★★★★★</div>
-          <q>His images of our newborn were beautiful!! He was so patient and no request was too much. We will 100% use Deep in the future.</q>
-          <div class="reviewer"><span class="avatar" style="background:#B0552E">A</span><div><div class="name">Alyce Patterson</div><div class="src">Newborn session</div></div></div>
-        </div>
-        <div class="review reveal d1">
-          <div class="stars">★★★★★</div>
-          <q>Absolutely loved my mini photoshoot — each photo was stunning. After 10 years I finally have photos of my son and I for the walls.</q>
-          <div class="reviewer"><span class="avatar" style="background:#D98A32">M</span><div><div class="name">Martine Stevens</div><div class="src">Mini session</div></div></div>
-        </div>
-        <div class="review reveal d2">
-          <div class="stars">★★★★★</div>
-          <q>Made the whole experience so enjoyable. The turnaround is super quick and the photos are very high quality and professional.</q>
-          <div class="reviewer"><span class="avatar" style="background:#B0552E">A</span><div><div class="name">Alvina Singh</div><div class="src">Google review</div></div></div>
-        </div>
-        <div class="review reveal">
-          <div class="stars">★★★★★</div>
-          <q>Welcoming and nice, no fuss — just some lovely relaxed family photos. We got what we wanted super quick.</q>
-          <div class="reviewer"><span class="avatar" style="background:#6E7B6A">J</span><div><div class="name">Jess Shields</div><div class="src">Local Guide · Family</div></div></div>
-        </div>
-        <div class="review reveal d1">
-          <div class="stars">★★★★★</div>
-          <q>Super friendly and made everything feel easy and relaxed. Photos came out really natural — exactly what we wanted. Highly recommend.</q>
-          <div class="reviewer"><span class="avatar" style="background:#8A7E78">S</span><div><div class="name">Stacey</div><div class="src">Google review</div></div></div>
-        </div>
-        <div class="review reveal d2" style="background:var(--warm-black); color:var(--off-white); justify-content:center; align-items:flex-start;">
-          <div class="stars">★★★★★</div>
-          <div style="font-family:var(--serif); font-size:2.4rem; line-height:1; margin-bottom:8px;">5.0</div>
-          <div style="font-size:0.85rem; color:#cfc7bd;">Rated five stars across every Google review.</div>
-          <a class="tbtn" href="https://share.google/FwsgMQFb7JfN0tUkI" target="_blank" rel="noopener" style="background:var(--gold); color:var(--warm-black); margin-top:22px; align-self:stretch;">Read them on Google</a>
-        </div>
-      </div>
-      <p class="google-cue">Reviewed on <b>Google</b> · Still &amp; Golden Photography</p>
-    </div>
-  </section>
-
   <!-- FAQ -->
   <section id="faq">
     <div class="faq-inner">
@@ -1194,7 +1203,7 @@
       </details>
       <details class="faq-item reveal d2">
         <summary>What happens during an in-home newborn session?</summary>
-        <p>We spend around 1.5 to 2 relaxed hours at your place. There are no elaborate props or forced poses &mdash; I photograph feeds, cuddles, naps and all the small details while working entirely at your baby's pace. Pauses for feeding and settling are always built in.</p>
+        <p>Gathered gives us 90 minutes at your place, with feeds and settling built in. There are no elaborate props or forced poses &mdash; I photograph feeds, cuddles, naps and all the small details while working entirely at your baby's pace. Pauses for feeding and settling are always built in.</p>
       </details>
       <details class="faq-item reveal d2">
         <summary>Does my house need to be tidy or "photo-ready"?</summary>
@@ -1210,7 +1219,7 @@
       </details>
       <details class="faq-item reveal d3">
         <summary>How much does a session cost?</summary>
-        <p>Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden from {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, 30+ edited images). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it. Full details are in the <a href="#sessions">sessions &amp; pricing</a> section above.</p>
+        <p>Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden from {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, with the full gallery). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it. Every session is laid out side by side on the <a href="/packages">packages and prices</a> page.</p>
       </details>
       <details class="faq-item reveal d3">
         <summary>Do you provide the cake for cake smash sessions?</summary>
@@ -1231,7 +1240,7 @@
   <section id="contact">
     <div class="contact-inner">
       <div class="contact-left">
-        <h2 class="reveal">Let's make<br>something <em>beautiful</em></h2>
+        <h2 class="reveal">Let's start your<br>family's <em>album</em></h2>
         <p class="reveal d1">I'd love to hear about your family. Fill in the form and I'll be in touch within 24 hours. Currently booking Glimpse, Golden, Gathered and Bloom sessions &mdash; and if you're not sure which fits, just say so and I'll help you choose.</p>
         <ul class="contact-meta reveal d2">
           <li><strong>Email</strong> <a href="mailto:hello@stillandgolden.com.au">hello@stillandgolden.com.au</a></li>
@@ -1271,19 +1280,27 @@
             <option value="" disabled selected>Select a session</option>
             <option value="glimpse">Glimpse &mdash; up to 30 min, 10 images</option>
             <option value="golden">Golden &mdash; up to 60 min, 20 images</option>
-            <option value="gathered">Gathered &mdash; 90 min, 30+ images</option>
+            <option value="gathered">Gathered &mdash; 90 min, full gallery (usually 60+ images)</option>
             <option value="bloom">Bloom &mdash; two sessions</option>
             <option value="unsure">Not sure yet &mdash; help me choose</option>
           </select>
-          <p class="fg-hint">Golden suits family, maternity, newborn and cake smash. Gathered suits newborn, extended family and bigger groups. Bloom pairs maternity or family with newborn.</p>
+          <p class="fg-hint">For a newborn, Gathered is the one I recommend: ninety minutes leaves room for feeds and settling, and every photo is yours. Golden suits families, maternity and cake smash. Bloom pairs maternity or family with newborn.</p>
         </div>
         <div class="fg">
           <label for="dt">Preferred date / due date</label>
           <input type="text" id="dt" name="preferred_date" placeholder="e.g. Due early May, or mid-June preferred">
         </div>
         <div class="fg">
+          <label for="sb">Your suburb</label>
+          <input type="text" id="sb" name="suburb" autocomplete="address-level2" placeholder="e.g. Clyde North">
+        </div>
+        <div class="fg">
           <label for="msg">Anything else</label>
           <textarea id="msg" name="message" placeholder="Tell me about your family, any questions, or special requests…"></textarea>
+        </div>
+        <div class="fg">
+          <label for="why">What made you decide to get in touch?</label>
+          <textarea id="why" name="reason" rows="2" placeholder="Optional, but I'd love to know"></textarea>
         </div>
         <label class="fg-consent" for="mk">
           <input type="checkbox" id="mk" name="marketing_consent">
@@ -1348,6 +1365,8 @@
         session_type: document.getElementById('st').value,
         preferred_date: document.getElementById('dt').value.trim(),
         message: document.getElementById('msg').value.trim(),
+        suburb: document.getElementById('sb').value.trim(),
+        reason: document.getElementById('why').value.trim(),
         marketing_consent: document.getElementById('mk').checked,
         'bot-field': document.getElementById('bot-field').value,
       };

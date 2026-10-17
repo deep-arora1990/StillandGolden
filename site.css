@@ -98,3 +98,8 @@ footer {
 }
 footer .footer-logo { font-family: var(--serif); font-size: 1rem; color: var(--warm-black); }
 footer a { color: var(--mid); text-decoration: none; border-bottom: 1px solid rgba(138,126,120,0.3); }
+
+/* A client's own words on a session page, next to the decision (17 Oct 2026). */
+.client-quote { margin: 40px 0; padding: 4px 0 4px 22px; border-left: 2px solid var(--gold); }
+.client-quote blockquote { margin: 0; font-family: var(--serif); font-size: 1.25rem; line-height: 1.5; font-style: italic; color: var(--warm-black); }
+.client-quote figcaption { margin-top: 10px; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mid); }

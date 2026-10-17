@@ -46,6 +46,7 @@ const { rootFiles: ROOT_FILES, dirs: DIRS } = CONFIG;
 // {{price.TIER.gallery}}       $125   its full-gallery add-on
 // {{price.TIER.valued}}        $400   an offer's "valued at"
 // {{price.TIER.half}}          $237.50  each half of a split payment
+// {{price.TIER.withgallery}}   $570   the session with its full gallery added
 // Add .number for a bare figure (475), as Google's structured data needs.
 const dollars = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 function priceToken(expr) {
@@ -54,8 +55,10 @@ function priceToken(expr) {
   const [, tier, field = 'price'] = parts;
   const p = PRICES[tier];
   if (!p || tier.startsWith('_')) throw new Error(`unknown tier "${tier}"`);
-  const value = field === 'half' ? p.price / 2 : p[field];
-  if (typeof value !== 'number' || !['price', 'gallery', 'valued', 'half'].includes(field)) {
+  const value = field === 'half' ? p.price / 2
+    : field === 'withgallery' ? (typeof p.gallery === 'number' ? p.price + p.gallery : undefined)
+    : p[field];
+  if (typeof value !== 'number' || !['price', 'gallery', 'valued', 'half', 'withgallery'].includes(field)) {
     throw new Error(`"${field}" is not set for ${tier}`);
   }
   return number ? String(value) : dollars(value);
