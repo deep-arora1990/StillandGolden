@@ -35,8 +35,8 @@ const { brandedEmail, esc } = require('./lib/email-layout');
 const { stripeClient } = require('./lib/stripe-client');
 // Gift vouchers (18 Oct 2026): issued here once bought, and taken off once a
 // booking that used one is made.
-const { issueVoucher, redeemVoucher } = require('./lib/vouchers');
-const { deliverVoucher, notifyOwnerOfVoucher } = require('./lib/voucher-delivery');
+const { issueVoucher, redeemVoucher, voucherCode } = require('./lib/vouchers');
+const { deliverVoucher, notifyOwnerOfVoucher, alertVoucherNotIssued } = require('./lib/voucher-delivery');
 const { todayInMelbourne } = require('./lib/deposits');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
@@ -583,13 +583,14 @@ async function findExistingBooking(meta) {
 // code comes from the session id, and the session is flagged once delivered.
 // If issuing fails, a 500 makes Stripe try again later; the money is in and
 // nothing has been booked, so a retry is always safe.
-async function handleVoucherPurchase(stripe, session, meta) {
+async function handleVoucherPurchase(stripe, session, meta, eventId) {
   if (!stripe) {
     console.error('stripe-webhook: voucher bought in mock mode; nothing issued');
     return json(200, { received: true, voucher: false });
   }
+  let fresh = null;
   try {
-    const fresh = await stripe.checkout.sessions.retrieve(session.id);
+    fresh = await stripe.checkout.sessions.retrieve(session.id);
     if (fresh && fresh.metadata && fresh.metadata.issued) {
       return json(200, { received: true, alreadyIssued: fresh.metadata.issued });
     }
@@ -597,15 +598,27 @@ async function handleVoucherPurchase(stripe, session, meta) {
     console.error('stripe-webhook: voucher session re-fetch failed (continuing):', err);
   }
 
+  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
   let voucher;
   try {
     voucher = await issueVoucher(stripe, session, todayInMelbourne());
   } catch (err) {
     console.error('stripe-webhook: could not issue voucher, Stripe will retry:', err);
+    // Deep hears at once, not after three days of Stripe retries, and only
+    // once: the session is flagged after the first alert.
+    const alerted = fresh && fresh.metadata && fresh.metadata.issue_alerted;
+    if (resend && !alerted) {
+      try {
+        await alertVoucherNotIssued(resend, meta, TIERS, { sessionId: session.id, eventId, code: voucherCode(session.id), error: err });
+        await stripe.checkout.sessions.update(session.id, { metadata: { ...meta, issue_alerted: '1' } });
+      } catch (alertErr) {
+        console.error('stripe-webhook: voucher not-issued alert failed:', alertErr);
+      }
+    }
     return json(500, { error: 'voucher not issued' });
   }
 
-  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
   let buyerEmailFailed = !resend;
   if (resend) {
     try {
@@ -713,7 +726,7 @@ exports.handler = async (event) => {
 
   // A gift voucher, not a booking: issue it and send it, then stop.
   if (meta.kind === 'voucher') {
-    return handleVoucherPurchase(stripe, session, meta);
+    return handleVoucherPurchase(stripe, session, meta, stripeEvent.id);
   }
 
   // Only sessions created by the booking widget carry our metadata. Any other

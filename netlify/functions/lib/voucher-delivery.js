@@ -176,4 +176,44 @@ async function notifyOwnerOfVoucher(resend, v, meta, TIERS, { sessionId, buyerEm
   if (error) throw new Error(`Resend rejected the voucher notice: ${error.message || JSON.stringify(error)}`);
 }
 
-module.exports = { voucherPdf, buyerEmail, deliverVoucher, notifyOwnerOfVoucher, pdfSafe };
+// "[S&G] Voucher NOT issued": paid for, but the voucher couldn't be created in
+// Stripe. Sent once (stripe-webhook flags the session), with the steps to put
+// it right by hand. Re-sending the Stripe event reruns the whole voucher step
+// safely: the code is derived from the payment, so it can't be issued twice.
+async function alertVoucherNotIssued(resend, meta, TIERS, { sessionId, eventId, code, error }) {
+  const what = meta.voucher_kind === 'package' ? `${TIERS[meta.tier] ? TIERS[meta.tier].name : meta.tier} session` : money(Number(meta.cents));
+  const paid = money(Number(meta.cents));
+  const buyer = meta.buyerName || 'The buyer';
+  const first = String(meta.buyerName || '').split(' ')[0] || 'there';
+  const { error: sendError } = await resend.emails.send({
+    from: FROM,
+    to: OWNER_EMAIL,
+    subject: `[S&G] Voucher NOT issued: ${what} for ${meta.recipientName} (${paid}), paid, needs you`,
+    text: [
+      `${buyer} paid ${paid} for a gift voucher (${what} for ${meta.recipientName}), but the site couldn't create the voucher in Stripe. They haven't been sent anything yet.`,
+      '',
+      `What went wrong: ${error && error.message ? error.message : String(error)}`,
+      '',
+      'Stripe tries again by itself over the next three days. If one of those tries works, you get the usual "Gift voucher sold" email and the buyer gets their voucher, so check for that first.',
+      '',
+      'To fix it now:',
+      '1. In Stripe, with Test mode OFF, go to Developers > Webhooks (newer dashboards: Workbench > Webhooks) and open the endpoint for stillandgolden.com.au.',
+      `2. Find event ${eventId || '(see the endpoint\'s failed events)'} and press Resend.`,
+      `3. Within a minute you should get "Gift voucher sold", and ${first} gets the email with the PDF. Resending can't make a second voucher: this payment's code is always ${code}.`,
+      '',
+      'If Resend fails again:',
+      `4. Let ${first} know, for example: "Hi ${first}, thanks for buying a voucher for ${meta.recipientName}. There was a hiccup sending it, so it's coming from me personally shortly."`,
+      `5. Forward this email to Claude to look at the error, or refund it: Stripe > Payments > the ${paid} payment from ${meta.buyerEmail} > Refund.`,
+      '',
+      `Buyer: ${meta.buyerName} <${meta.buyerEmail}>`,
+      `For: ${meta.recipientName}`,
+      `Voucher: ${what}, ${paid}`,
+      meta.message ? `Their message: ${meta.message}` : null,
+      `Stripe checkout: ${sessionId}`,
+      `Stripe event: ${eventId || '(unknown)'}`,
+    ].filter((l) => l !== null).join('\n'),
+  });
+  if (sendError) throw new Error(`Resend rejected the not-issued alert: ${sendError.message || JSON.stringify(sendError)}`);
+}
+
+module.exports = { voucherPdf, buyerEmail, deliverVoucher, notifyOwnerOfVoucher, alertVoucherNotIssued, pdfSafe };

@@ -30,9 +30,9 @@ async function fresh(mod) {
   delete process.env.SETMORE_MOCK
   return await import(mod)
 }
-const deliver = async (session) => {
+const deliver = async (session, id = 'evt_test_1') => {
   const { handler } = await fresh('../../stripe-webhook.js')
-  return handler({ httpMethod: 'POST', headers: { 'stripe-signature': 'x' }, body: JSON.stringify({ type: 'checkout.session.completed', data: { object: session } }) })
+  return handler({ httpMethod: 'POST', headers: { 'stripe-signature': 'x' }, body: JSON.stringify({ id, type: 'checkout.session.completed', data: { object: session } }) })
 }
 
 beforeEach(() => {
@@ -82,6 +82,35 @@ describe('a voucher is bought', () => {
     await deliver(session)
     expect(sent.length).toBe(count)
     expect(stripe._promos.size).toBe(1)
+  })
+})
+
+describe('a voucher that cannot be issued', () => {
+  it('asks Stripe to retry, and tells Deep at once how to fix it by hand', async () => {
+    const V = await fresh('../vouchers.js')
+    stripe.promotionCodes.create = async () => { throw new Error('Stripe is down') }
+    const session = bought(); stripe._sessions.push(session)
+    const res = await deliver(session, 'evt_live_abc123')
+    expect(res.statusCode).toBe(500)
+    expect(sent.find((m) => [].concat(m.to).includes('amanda@example.com'))).toBeUndefined()
+    const alert = sent.find((m) => m.subject && m.subject.startsWith('[S&G] Voucher NOT issued'))
+    expect(alert).toBeTruthy()
+    expect(alert.text).toContain('amanda@example.com')
+    expect(alert.text).toContain('Rand')
+    expect(alert.text).toContain(V.voucherCode('cs_test_voucher1'))
+    expect(alert.text).toContain('evt_live_abc123')
+    expect(alert.text).toMatch(/Developers.*Webhooks/)
+    expect(alert.text).toMatch(/Resend/)
+    expect(alert.text).toMatch(/Refund/)
+    expect(alert.text).toContain('Stripe is down')
+  })
+
+  it("Stripe's own retries don't send the alert again", async () => {
+    stripe.promotionCodes.create = async () => { throw new Error('Stripe is down') }
+    const session = bought(); stripe._sessions.push(session)
+    await deliver(session)
+    await deliver(session)
+    expect(sent.filter((m) => m.subject && m.subject.startsWith('[S&G] Voucher NOT issued'))).toHaveLength(1)
   })
 })
 
