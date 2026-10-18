@@ -461,8 +461,13 @@
       return { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() };
     }
 
+    // Bloom is two sittings: say so once, not "90 minutes · Two 90-minute sessions".
+    function lengthLabel(s) {
+      return s.sessions > 1 ? 'Two ' + s.durationMinutes + '-minute sessions' : s.durationMinutes + ' minutes';
+    }
+
     function describeService(s) {
-      return s.name + ' · ' + s.durationMinutes + ' min · ' + s.includes + ' · from $' + s.priceFrom;
+      return s.name + ' · ' + lengthLabel(s) + ' · ' + s.includes + ' · from $' + s.priceFrom;
     }
 
     // --- step 1: services ------------------------------------------------------
@@ -492,7 +497,7 @@
         btn.innerHTML =
           '<div class="svc-name"></div>' +
           '<div class="svc-tag"></div>' +
-          '<div class="svc-meta">' + s.durationMinutes + ' minutes · ' + s.includes + '</div>' +
+          '<div class="svc-meta">' + lengthLabel(s) + ' · ' + s.includes + '</div>' +
           '<div class="svc-price">from $' + s.priceFrom + '</div>';
         btn.querySelector('.svc-name').textContent = s.name;
         btn.querySelector('.svc-tag').textContent = s.tagline;
@@ -581,7 +586,7 @@
       name.textContent = state.service.name;
       var meta = document.createElement('span');
       meta.className = 'sum-meta';
-      meta.textContent = state.service.durationMinutes + ' min · ' + state.service.includes + ' · ' +
+      meta.textContent = lengthLabel(state.service) + ' · ' + state.service.includes + ' · ' +
         (state.service.valuedAt
           ? '$' + state.service.priceFrom + ' (valued at $' + state.service.valuedAt + ')'
           : 'from $' + state.service.priceFrom);

@@ -20,6 +20,7 @@ exports.handler = async (event) => {
       name: cfg.name,
       tagline: cfg.tagline,
       durationMinutes: cfg.durationMinutes,
+      sessions: cfg.sessions || 1,
       priceFrom: cfg.priceFrom,
       includes: cfg.includes,
       serviceKey: cfg.serviceKey,

@@ -93,7 +93,8 @@ const TIERS = {
     priceFrom: money('bloom').priceFrom,
     priceCents: money('bloom').priceCents,
     depositCents: money('bloom').depositCents,
-    includes: 'Two 90-minute sessions',
+    sessions: 2,
+    includes: 'Full gallery at both sessions',
   },
   'fathers-day': {
     name: "Father's Day Mini",

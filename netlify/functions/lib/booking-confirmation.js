@@ -280,7 +280,8 @@ function valuesFromBooking(meta, tier, opts = {}) {
       const loc = tier.locations && ((meta.notes || '').match(/^Location: (.+)$/m) || [])[1];
       return loc ? `${tier.name} — ${loc} beach` : tier.name;
     })(),
-    sessionLength: `${minutes}-minute session`,
+    // Bloom's online booking is its first sitting; the newborn date follows.
+    sessionLength: tier.sessions > 1 ? `First of two ${minutes}-minute sessions` : `${minutes}-minute session`,
     includes: tier.includes,
     dateLabel,
     timeLabel,

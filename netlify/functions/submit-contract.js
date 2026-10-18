@@ -37,7 +37,7 @@ const TIERS = {
     duration: '90 minutes per session',
     images: '30 or more per session',
     upgrade: null,
-    note: 'Bloom covers two separate 90-minute sessions — a maternity or family session, and a newborn session — each delivered as its own gallery. The newborn session takes place once the baby has arrived, usually within the first few weeks.',
+    note: 'Bloom covers two separate 90-minute sessions — a maternity or family session, and a newborn session — each delivered as its own gallery. The newborn session takes place once the baby has arrived, whenever the family is ready.',
   },
   // Seasonal offers (30 Sep 2026), booked on /book like the packages and so
   // signed against the same agreement. Keys match the booking tiers, so the

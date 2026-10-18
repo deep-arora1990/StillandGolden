@@ -43,6 +43,7 @@ function headline(v, meta, TIERS) {
 function subline(v, meta, TIERS) {
   if (meta.voucher_kind === 'package') {
     const t = TIERS[meta.tier];
+    if (t.sessions > 1) return `Two ${t.durationMinutes}-minute sessions, full gallery at both`;
     return t.includes || '';
   }
   return 'towards any photography session';
