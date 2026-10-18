@@ -23,6 +23,28 @@ const { connectStore } = require('./lib/shared-store');
 // Split payment (spec 2026-09-14). All of the rules and all of the Stripe
 // shaping live in the module; this file only decides whether to ask for them.
 const { balancePlan, splitCheckoutParams, todayInMelbourne } = require('./lib/deposits');
+const { stripeClient } = require('./lib/stripe-client');
+
+// Gift vouchers (18 Oct 2026): the code is checked and its credit worked out
+// here (lib/vouchers.js), then taken off as a one-off coupon for exactly that
+// amount. stripe-webhook takes it off the voucher once the booking is made.
+const { findVoucher, problemWith, plan: voucherPlan } = require('./lib/vouchers');
+
+async function voucherDiscount(stripe, tier, code, today) {
+  const v = await findVoucher(stripe, code);
+  const problem = problemWith(v, today);
+  if (problem) return { problem };
+  const { usedCents } = voucherPlan(v, tier.priceCents, TIERS);
+  const coupon = await stripe.coupons.create({
+    amount_off: usedCents,
+    currency: 'aud',
+    duration: 'once',
+    max_redemptions: 1,
+    name: `Gift voucher ${v.code}`,
+    metadata: { voucher_code: v.code },
+  });
+  return { voucher: v, usedCents, coupon };
+}
 
 const json = (statusCode, body) => ({
   statusCode,
@@ -161,6 +183,10 @@ exports.handler = async (event) => {
   // the page: the CTAs are HTML and a request can arrive asking for a split on
   // a session two days away. A tier without depositCents always refuses.
   const wantsSplit = data.payMode === 'split';
+  const voucherCode = typeof data.voucherCode === 'string' && data.voucherCode.trim() ? data.voucherCode.trim() : null;
+  if (voucherCode && wantsSplit) {
+    return error(400, 'INVALID_DETAILS', 'A gift voucher is used when you pay in full. Choose "Pay & book" instead.');
+  }
   const plan = wantsSplit ? balancePlan(tier, date, todayInMelbourne()) : null;
   if (wantsSplit && !plan.eligible) {
     return error(400, 'INVALID_DETAILS', 'Part payment is not available for this session');
@@ -175,6 +201,9 @@ exports.handler = async (event) => {
   const origin = requestOrigin(event);
 
   // --- mock mode: book straight through the lib, skip Stripe -------------
+  if (MOCK && voucherCode) {
+    return error(400, 'INVALID_DETAILS', 'Gift vouchers need the Stripe test key, not mock mode.');
+  }
   if (MOCK) {
     try {
       const staffKey = await getStaffKey();
@@ -201,14 +230,11 @@ exports.handler = async (event) => {
   }
 
   // Live key takes precedence; STRIPE_TEST_KEY is the fallback for test mode.
-  const stripeKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_TEST_KEY;
-  if (!stripeKey) {
+  const stripe = stripeClient();
+  if (!stripe) {
     console.error('STRIPE_SECRET_KEY / STRIPE_TEST_KEY is not set in the environment.');
     return error(500, 'PAYMENT_UNAVAILABLE', 'Online payment is not configured — please enquire instead');
   }
-
-  const Stripe = require('stripe');
-  const stripe = new Stripe(stripeKey);
 
   const cancelParams = new URLSearchParams({ service: tierName, date, time, cancelled: '1' });
 
@@ -219,6 +245,20 @@ exports.handler = async (event) => {
   const payment = wantsSplit
     ? splitCheckoutParams(tier, plan, { date, time, firstName, lastName, email })
     : fullPaymentParams(tier, { date, time, location });
+
+  // A voucher replaces the promo code box: Stripe takes one or the other.
+  let voucher = null;
+  if (voucherCode) {
+    try {
+      voucher = await voucherDiscount(stripe, tier, voucherCode, todayInMelbourne());
+    } catch (err) {
+      console.error('booking-checkout voucher lookup error:', err);
+      return error(502, 'PAYMENT_UNAVAILABLE', "The voucher couldn't be checked just now. Please try again shortly.");
+    }
+    if (voucher.problem) return error(400, 'INVALID_DETAILS', voucher.problem);
+    delete payment.allow_promotion_codes;
+    payment.discounts = [{ coupon: voucher.coupon.id }];
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -241,6 +281,7 @@ exports.handler = async (event) => {
         ...(wantsSplit
           ? { pay_mode: 'split', balance_cents: String(plan.balanceCents), charge_on: plan.chargeOn }
           : {}),
+        ...(voucher ? { voucher_code: voucher.voucher.code, voucher_used_cents: String(voucher.usedCents) } : {}),
       },
       success_url: `${origin}${returnTo}?booked=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}${returnTo}?${cancelParams.toString()}`,

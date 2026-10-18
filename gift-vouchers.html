@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gift Vouchers for Family &amp; Newborn Photos | Still &amp; Golden</title>
+  <meta name="description" content="Give a family or newborn photography session, or an amount from $100. A printable voucher by email straight away, valid for three years. Cranbourne East &amp; Casey.">
+  <link rel="canonical" href="https://stillandgolden.com.au/gift-vouchers">
+  <meta property="og:title" content="Gift Vouchers — Still &amp; Golden Photography">
+  <meta property="og:description" content="Give a session or an amount, with a printable voucher by email straight away.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://stillandgolden.com.au/gift-vouchers">
+  <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
+  <meta property="og:site_name" content="Still &amp; Golden Photography">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://stillandgolden.com.au/" },
+      { "@type": "ListItem", "position": 2, "name": "Gift vouchers", "item": "https://stillandgolden.com.au/gift-vouchers" }
+    ]
+  }
+  </script>
+  <!-- Google tag (gtag.js) — config lives in /site-tags.js (production-only) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18178273358"></script>
+  <script src="/site-tags.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site.css">
+  <script src="/site.js" defer></script>
+  <style>
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    main { max-width: 760px; margin: 0 auto; padding: 140px 48px 40px; }
+    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
+    h1 em, h2 em { font-style: italic; color: var(--gold); }
+    h2 { font-family: var(--serif); font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 400; margin: 48px 0 16px; }
+    p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
+    .lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
+    main a { color: var(--warm-black); }
+
+    .notice { border: 1px solid var(--gold); padding: 22px 26px; margin: 28px 0; background: rgba(184, 148, 94, 0.06); }
+    .notice p { margin: 0; }
+    .notice[hidden] { display: none; }
+
+    /* After paying: the same box a booking gets (book.html, christmas-minis). */
+    .confirm-box { border: 1px solid var(--border); padding: 40px 44px; background: #fff; margin: 32px 0 8px; }
+    .confirm-box[hidden] { display: none; }
+    .confirm-box .tick { font-family: var(--serif); font-size: 2rem; color: var(--gold); }
+    .confirm-box h2 { margin: 6px 0 14px; }
+    .confirm-box p { margin-bottom: 14px; }
+    .confirm-box p:last-child { margin-bottom: 0; }
+    @media (max-width: 640px) { .confirm-box { padding: 28px 24px; } }
+
+    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0 4px; }
+    .choice { position: relative; display: block; border: 1px solid var(--border); padding: 18px 20px; cursor: pointer; background: #fff; transition: border-color 0.2s; }
+    .choice:hover { border-color: var(--mid); }
+    .choice input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+    .choice:has(input[type="radio"]:checked) { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); background: rgba(184, 148, 94, 0.05); }
+    .choice:has(input[type="radio"]:focus-visible) { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .c-name { font-family: var(--serif); font-size: 1.35rem; display: block; }
+    .c-price { font-family: var(--serif); font-size: 1.1rem; color: var(--gold); display: block; margin: 2px 0 4px; }
+    .c-what { font-size: 0.82rem; color: var(--mid); display: block; }
+    .amount-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .amount-row span { font-family: var(--serif); font-size: 1.2rem; }
+
+    .field { margin: 0 0 16px; }
+    .field label { display: block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    .field input, .field textarea, .amount-row input {
+      width: 100%; font: inherit; font-size: 0.95rem; color: var(--warm-black); background: #fff;
+      border: 1px solid var(--border); border-radius: 0; padding: 12px 14px;
+    }
+    .amount-row input { width: 140px; }
+    .field input:focus, .field textarea:focus, .amount-row input:focus { outline: none; border-color: var(--gold); }
+    .hint { font-size: 0.8rem; color: var(--mid); margin-top: 4px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .btn {
+      display: inline-block; margin: 18px 0 8px; border: 0; cursor: pointer;
+      font: inherit; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--off-white); background: var(--warm-black);
+      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
+    }
+    .btn:hover { background: var(--gold); }
+    .btn:disabled { opacity: 0.6; cursor: wait; }
+    .err { color: #b04040; font-size: 0.9rem; margin: 10px 0 0; }
+    .err[hidden] { display: none; }
+    .secure { font-size: 0.8rem; color: var(--mid); }
+
+    .how { border: 1px solid var(--border); padding: 26px 30px; margin: 24px 0; }
+    .how ul { margin: 0 0 0 20px; color: #4d453f; }
+    .how li { margin-bottom: 8px; }
+
+    @media (max-width: 640px) {
+      main { padding: 120px 24px 32px; }
+      .choices, .row2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav id="nav" data-sg-nav></nav>
+
+  <main>
+    <div class="label">Gift vouchers &middot; Cranbourne East, Casey &amp; South-East Melbourne</div>
+    <h1>Gift <em>vouchers</em></h1>
+    <p class="lead">For new parents, grandparents, or the friend who&rsquo;s always behind the camera.</p>
+    <p>Choose a session or an amount. Your voucher comes by email straight away as a PDF, with your message on it, ready to print or forward.</p>
+
+    <div class="confirm-box" id="bought" role="status" hidden>
+      <div class="tick">Payment received.</div>
+      <h2>Your voucher is on its way</h2>
+      <p>It&rsquo;s in your inbox now as a PDF, with the code and your message on it, ready to print or forward. Thank you for giving one of my sessions as a present.</p>
+      <p>Nothing there in ten minutes? Check your spam folder, or email <a href="mailto:hello@stillandgolden.com.au">hello@stillandgolden.com.au</a> and I&rsquo;ll send it again.</p>
+      <p><a href="/gift-vouchers">Buy another voucher</a></p>
+    </div>
+    <div class="notice" id="cancelled" hidden>
+      <p>No payment was taken. Your choices are below if you&rsquo;d like to try again.</p>
+    </div>
+
+    <form id="voucher-form" novalidate>
+      <h2>What would you like to <em>give</em>?</h2>
+      <div class="choices" role="radiogroup" aria-label="Voucher">
+        <label class="choice">
+          <input type="radio" name="what" value="glimpse">
+          <span class="c-name">Glimpse</span>
+          <span class="c-price">{{price.glimpse}}</span>
+          <span class="c-what">Up to 30 minutes &middot; 10 edited images</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="what" value="golden">
+          <span class="c-name">Golden</span>
+          <span class="c-price">{{price.golden}}</span>
+          <span class="c-what">Up to 60 minutes &middot; 20 edited images</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="what" value="gathered">
+          <span class="c-name">Gathered</span>
+          <span class="c-price">{{price.gathered}}</span>
+          <span class="c-what">90 minutes &middot; every photo, usually 60+</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="what" value="bloom">
+          <span class="c-name">Bloom</span>
+          <span class="c-price">{{price.bloom}}</span>
+          <span class="c-what">Maternity or family now, newborn later</span>
+        </label>
+        <label class="choice" style="grid-column: 1 / -1;">
+          <input type="radio" name="what" value="amount">
+          <span class="c-name">An amount</span>
+          <span class="c-what">From $100, towards any session</span>
+          <span class="amount-row"><span>$</span><input id="v-amount" type="number" inputmode="numeric" min="100" max="2000" step="1" placeholder="200" aria-label="Amount in dollars"></span>
+        </label>
+      </div>
+
+      <h2>Who&rsquo;s it <em>for</em>?</h2>
+      <div class="field">
+        <label for="v-recipient">Their name</label>
+        <input id="v-recipient" type="text" maxlength="60" required>
+      </div>
+      <div class="field">
+        <label for="v-message">A message for the voucher (optional)</label>
+        <textarea id="v-message" rows="3" maxlength="240"></textarea>
+        <div class="hint">Up to 240 characters.</div>
+      </div>
+
+      <h2>Your <em>details</em></h2>
+      <div class="row2">
+        <div class="field">
+          <label for="v-buyer-name">Your name</label>
+          <input id="v-buyer-name" type="text" autocomplete="name" maxlength="80" required>
+        </div>
+        <div class="field">
+          <label for="v-buyer-email">Your email</label>
+          <input id="v-buyer-email" type="email" autocomplete="email" maxlength="120" required>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:-6px;">The voucher is sent to you, so the surprise stays yours.</p>
+
+      <button type="submit" class="btn" id="v-buy">Buy voucher</button>
+      <p class="err" id="v-err" role="alert" hidden></p>
+      <p class="secure">Secure payment through Stripe.</p>
+    </form>
+
+    <h2>How it <em>works</em></h2>
+    <div class="how">
+      <ul>
+        <li>They book online at <a href="/book">stillandgolden.com.au/book</a> and enter the code before paying.</li>
+        <li>A session voucher always covers that session, even if my prices go up.</li>
+        <li>Whatever a booking doesn&rsquo;t use stays on the code, for another session or their full gallery.</li>
+        <li>Vouchers last three years from the day you buy them.</li>
+        <li>Questions, or want to give more than $2,000? <a href="/#contact">Get in touch</a>.</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer data-sg-footer></footer>
+
+  <script>
+  (function () {
+    var q = new URLSearchParams(location.search);
+    var form = document.getElementById('voucher-form');
+
+    function track(name, params) {
+      try { if (window.sgTrack) window.sgTrack(name, params); } catch (e) {}
+    }
+
+    // Back from Stripe, paid: the form makes way for the confirmation, the
+    // same way a booking's does. The sale is reported once (the stash is
+    // cleared on first read, and GA4 de-duplicates on the session id).
+    if (q.get('bought')) {
+      form.hidden = true;
+      document.getElementById('bought').hidden = false;
+      try {
+        var pending = JSON.parse(sessionStorage.getItem('sg_pending_voucher') || 'null');
+        sessionStorage.removeItem('sg_pending_voucher');
+        if (pending) {
+          track('purchase', {
+            transaction_id: q.get('session_id') || undefined,
+            currency: 'AUD',
+            value: pending.value,
+            items: [{ item_id: 'gift-voucher-' + pending.id, item_name: 'Gift voucher: ' + pending.name, price: pending.value, currency: 'AUD' }],
+          });
+        }
+      } catch (e) {}
+    }
+    if (q.get('cancelled')) { document.getElementById('cancelled').hidden = false; }
+
+    var amount = document.getElementById('v-amount');
+    var err = document.getElementById('v-err');
+    var btn = document.getElementById('v-buy');
+
+    // Typing an amount picks "An amount".
+    amount.addEventListener('input', function () {
+      form.querySelector('input[value="amount"]').checked = true;
+    });
+
+    function fail(msg) { err.textContent = msg; err.hidden = false; }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      err.hidden = true;
+      var what = (form.querySelector('input[name="what"]:checked') || {}).value;
+      var body = {
+        recipientName: document.getElementById('v-recipient').value.trim(),
+        message: document.getElementById('v-message').value.trim(),
+        buyerName: document.getElementById('v-buyer-name').value.trim(),
+        buyerEmail: document.getElementById('v-buyer-email').value.trim(),
+      };
+      if (what === 'amount') {
+        var n = Number(amount.value);
+        if (!Number.isInteger(n) || n < 100) { amount.focus(); return fail('Vouchers start at $100, in whole dollars.'); }
+        body.kind = 'amount'; body.amount = n;
+      } else if (what) {
+        body.kind = 'package'; body.tier = what;
+      } else {
+        return fail('Choose a session or an amount.');
+      }
+      if (!body.recipientName) { document.getElementById('v-recipient').focus(); return fail('Who is the voucher for? Add their name.'); }
+      if (!body.buyerName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.buyerEmail)) {
+        return fail('Add your name and email so I can send you the voucher.');
+      }
+
+      var chosen = form.querySelector('input[name="what"]:checked').closest('.choice');
+      var name = chosen.querySelector('.c-name').textContent;
+      var value = body.kind === 'amount' ? body.amount : Number(chosen.querySelector('.c-price').textContent.replace(/[^0-9.]/g, ''));
+      try { sessionStorage.setItem('sg_pending_voucher', JSON.stringify({ id: body.tier || 'amount', name: name, value: value })); } catch (e3) {}
+      track('begin_checkout', { currency: 'AUD', value: value, items: [{ item_id: 'gift-voucher-' + (body.tier || 'amount'), item_name: 'Gift voucher: ' + name, price: value, currency: 'AUD' }] });
+
+      btn.disabled = true; btn.textContent = 'Going to payment…';
+      fetch('/.netlify/functions/voucher-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).then(function (r) {
+        return r.json().then(function (d) { if (!r.ok) throw d.error || {}; return d; });
+      }).then(function (d) {
+        window.location.href = d.url;
+      }).catch(function (e2) {
+        btn.disabled = false; btn.textContent = 'Buy voucher';
+        fail((e2 && e2.message) || 'Could not start the payment. Please try again shortly.');
+      });
+    });
+  })();
+  </script>
+</body>
+</html>

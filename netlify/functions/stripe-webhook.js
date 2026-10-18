@@ -32,6 +32,12 @@ const { tokenForBooking, linkFor, termsPathFor } = require('./lib/booking-links'
 const { postBookingEvent } = require('./lib/studio-sync');
 const { pricingFrom } = require('./lib/discounts');
 const { brandedEmail, esc } = require('./lib/email-layout');
+const { stripeClient } = require('./lib/stripe-client');
+// Gift vouchers (18 Oct 2026): issued here once bought, and taken off once a
+// booking that used one is made.
+const { issueVoucher, redeemVoucher } = require('./lib/vouchers');
+const { deliverVoucher, notifyOwnerOfVoucher } = require('./lib/voucher-delivery');
+const { todayInMelbourne } = require('./lib/deposits');
 
 const FROM = 'Still & Golden <notifications@stillandgolden.com.au>';
 const OWNER_EMAIL = 'hello@stillandgolden.com.au';
@@ -362,7 +368,10 @@ async function notifyOwnerOfBooking(resend, meta, appointment, pricing = null) {
   const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ');
   const when = tier.timeTbc ? shortDate(meta.date) : `${shortDate(meta.date)}, ${meta.time}`;
   const balance = Number(meta.balance_cents);
-  const promo = pricing ? `(${pricing.code ? `code ${pricing.code}, ` : 'promo code, '}${pricing.percentOff}% off ${dollars(pricing.listCents)})` : '';
+  const v = pricing && pricing.voucher;
+  const promo = v
+    ? `(gift voucher ${v.code} covered ${dollars(v.usedCents)}${v.failed ? '; COULD NOT update the voucher in Stripe, take it off by hand' : v.leftCents > 0 ? `; ${dollars(v.leftCents)} left on it` : '; voucher now used up'}${v.shortCents > 0 ? `; it was ${dollars(v.shortCents)} short, check it` : ''})`
+    : pricing ? `(${pricing.code ? `code ${pricing.code}, ` : 'promo code, '}${pricing.percentOff}% off ${dollars(pricing.listCents)})` : '';
   const paid = meta.pay_mode === 'split' && balance > 0 && tier.priceCents
     ? `Split: ${dollars(tier.priceCents - balance)} now, ${dollars(balance)} on ${meta.charge_on}`
     : pricing
@@ -569,6 +578,57 @@ async function findExistingBooking(meta) {
   }
 }
 
+// A voucher purchase (meta.kind 'voucher', from voucher-checkout). Issued in
+// Stripe, emailed to the buyer with its PDF, and Deep told. Idempotent: the
+// code comes from the session id, and the session is flagged once delivered.
+// If issuing fails, a 500 makes Stripe try again later; the money is in and
+// nothing has been booked, so a retry is always safe.
+async function handleVoucherPurchase(stripe, session, meta) {
+  if (!stripe) {
+    console.error('stripe-webhook: voucher bought in mock mode; nothing issued');
+    return json(200, { received: true, voucher: false });
+  }
+  try {
+    const fresh = await stripe.checkout.sessions.retrieve(session.id);
+    if (fresh && fresh.metadata && fresh.metadata.issued) {
+      return json(200, { received: true, alreadyIssued: fresh.metadata.issued });
+    }
+  } catch (err) {
+    console.error('stripe-webhook: voucher session re-fetch failed (continuing):', err);
+  }
+
+  let voucher;
+  try {
+    voucher = await issueVoucher(stripe, session, todayInMelbourne());
+  } catch (err) {
+    console.error('stripe-webhook: could not issue voucher, Stripe will retry:', err);
+    return json(500, { error: 'voucher not issued' });
+  }
+
+  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+  let buyerEmailFailed = !resend;
+  if (resend) {
+    try {
+      await deliverVoucher(resend, voucher, meta, TIERS);
+    } catch (err) {
+      buyerEmailFailed = true;
+      console.error('stripe-webhook: voucher email to buyer failed:', err);
+    }
+    try {
+      await notifyOwnerOfVoucher(resend, voucher, meta, TIERS, { sessionId: session.id, buyerEmailFailed });
+    } catch (err) {
+      console.error('stripe-webhook: voucher notice to Deep failed:', err);
+    }
+  }
+  try {
+    await stripe.checkout.sessions.update(session.id, { metadata: { ...meta, issued: voucher.code } });
+  } catch (err) {
+    console.error('stripe-webhook: could not flag voucher session as issued:', err);
+  }
+  console.log(`stripe-webhook: voucher ${voucher.code} issued for ${session.id}`);
+  return json(200, { received: true, voucher: voucher.code });
+}
+
 exports.handler = async (event) => {
   // Share one Setmore token with every other running copy (lib/shared-store.js).
   connectStore(event);
@@ -599,8 +659,7 @@ exports.handler = async (event) => {
       console.error('Stripe key / webhook secret not set for the active mode.');
       return json(500, { error: 'Webhook not configured' });
     }
-    const Stripe = require('stripe');
-    stripe = new Stripe(stripeKey);
+    stripe = stripeClient();
     const rawBody = event.isBase64Encoded
       ? Buffer.from(event.body, 'base64').toString('utf8')
       : event.body;
@@ -651,6 +710,11 @@ exports.handler = async (event) => {
 
   const session = stripeEvent.data.object;
   const meta = session.metadata || {};
+
+  // A gift voucher, not a booking: issue it and send it, then stop.
+  if (meta.kind === 'voucher') {
+    return handleVoucherPurchase(stripe, session, meta);
+  }
 
   // Only sessions created by the booking widget carry our metadata. Any other
   // Checkout payment (e.g. a manual Stripe Payment Link) fires this event too
@@ -712,6 +776,21 @@ exports.handler = async (event) => {
     // far worse outcome than a subscription that needs capping by hand.
     await capSplitSubscription(stripe, resend, session, meta);
 
+    // A gift voucher paid for some or all of it: take that off the voucher
+    // now the booking exists. A failure here leaves the booking alone and
+    // tells Deep, who can adjust the voucher in Stripe by hand.
+    if (meta.voucher_code && stripe) {
+      const usedCents = Number(meta.voucher_used_cents) || 0;
+      try {
+        const r = await redeemVoucher(stripe, meta.voucher_code, usedCents, TIERS,
+          `${todayInMelbourne()} ${meta.service_key ? (Object.values(TIERS).find((t) => t.serviceKey === meta.service_key) || {}).name : ''} ${meta.date} ${dollars(usedCents)} ${session.id}`);
+        if (pricing) pricing.voucher = { code: meta.voucher_code, usedCents, leftCents: r.leftCents, shortCents: r.shortCents };
+      } catch (vErr) {
+        console.error('stripe-webhook: voucher redemption failed (booking stands):', vErr);
+        if (pricing) pricing.voucher = { code: meta.voucher_code, usedCents, leftCents: null, failed: true };
+      }
+    }
+
     if (resend) {
       try {
         await sendBookingConfirmation(resend, meta, appointment.key, pricing);
@@ -754,4 +833,4 @@ exports.handler = async (event) => {
 
 // Exposed for tests only — the held-booking path handles real money and is
 // otherwise reachable only through a signed Stripe event.
-exports._test = { sendBookingConfirmation, holdFailedBooking, capSplitSubscription, balanceReminderText, balanceReminderEmail, balanceFailedEmail, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid, reportBookingToStudio };
+exports._test = { handleVoucherPurchase, sendBookingConfirmation, holdFailedBooking, capSplitSubscription, balanceReminderText, balanceReminderEmail, balanceFailedEmail, bookAppointment, notifyOwnerOfBooking, notifyBalancePaid, reportBookingToStudio };

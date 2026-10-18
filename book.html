@@ -58,6 +58,15 @@
     .consent-check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--warm-black); flex-shrink: 0; }
     .alt-done { font-family: var(--serif, Georgia, serif); font-style: italic; color: var(--gold); margin: 14px 0 0; }
     .alt-fail { font-size: 0.85rem; color: #b04040; margin: 14px 0 0; }
+    /* Gift vouchers (18 Oct 2026): a code instead of, or as well as, a card. */
+    .voucher { margin: 18px 0 16px; font-size: 0.88rem; }
+    .voucher summary { cursor: pointer; color: #4d453f; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(77, 69, 63, 0.35); }
+    .voucher-row { display: flex; gap: 10px; margin-top: 10px; }
+    .voucher-row input { flex: 1; min-width: 0; text-transform: uppercase; letter-spacing: 0.08em; }
+    .voucher-row .btn { margin: 0; white-space: nowrap; }
+    .voucher-msg { margin: 10px 0 0; font-size: 0.85rem; color: #4d453f; }
+    .voucher-msg.bad { color: #b04040; }
+    .voucher-msg[hidden] { display: none; }
     .pay-note { margin: 12px 0 0; font-size: 0.78rem; line-height: 1.6; color: #6b625c; max-width: 46ch; }
     @media (max-width: 560px) {
       .pay-choice { grid-template-columns: 1fr; }
@@ -333,6 +342,14 @@
           <span>Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</span>
         </label>
         <p class="sub" style="font-size:0.8rem;">By continuing to payment you agree to the <a href="/session-contract.html" target="_blank" rel="noopener">session terms and conditions</a>.</p>
+        <details class="voucher" id="voucher-box">
+          <summary>Have a gift voucher?</summary>
+          <div class="voucher-row">
+            <input id="f-voucher" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="SG-XXXX-XXXX" maxlength="16" aria-label="Gift voucher code">
+            <button type="button" class="btn btn-ghost" id="voucher-apply">Apply</button>
+          </div>
+          <p class="voucher-msg" id="voucher-msg" role="status" hidden></p>
+        </details>
         <div class="pay-choice" id="pay-choice">
           <button type="submit" class="btn" id="confirm-btn" data-pay-mode="full">Pay &amp; book</button>
           <button type="submit" class="btn" id="pay-split-btn" data-pay-mode="split" hidden></button>
@@ -383,6 +400,7 @@
       date: null,
       time: null,
       restoreTime: null, // time to re-highlight after a cancelled payment
+      voucher: null,     // a checked gift voucher: { code, usedCents, payCents, leftoverCents }
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -832,7 +850,8 @@
         });
       }
       $('details-context').appendChild(b);
-      $('confirm-btn').textContent = 'Pay & book — $' + state.service.priceFrom;
+      // A code already in the box is checked against this session's price.
+      if ($('f-voucher').value.trim()) checkVoucher(); else setConfirmLabel();
       showStep('details');
       $('f-first').focus();
     }
@@ -858,7 +877,8 @@
       var splitBtn = $('pay-split-btn');
       var note = $('pay-note');
 
-      if (!split.available) {
+      // A voucher is used when paying in full, so no part payment beside it.
+      if (!split.available || state.voucher) {
         // One full-width button, never a disabled second one — a greyed-out
         // button invites "why can't I?" and there is no good answer to give.
         splitBtn.hidden = true;
@@ -883,6 +903,59 @@
         ' today and the remaining ' + money(split.balanceCents) + ' to the same card on ' +
         when + '. That is the final payment — nothing is charged after it.';
     }
+
+    // --- gift vouchers ----------------------------------------------------------
+
+    function setConfirmLabel() {
+      var v = state.voucher;
+      $('confirm-btn').textContent = !v ? 'Pay & book — $' + state.service.priceFrom
+        : v.payCents === 0 ? 'Book with voucher'
+        : 'Pay ' + money(v.payCents) + ' & book';
+    }
+
+    function voucherMessage(text, bad) {
+      var m = $('voucher-msg');
+      m.textContent = text;
+      m.className = 'voucher-msg' + (bad ? ' bad' : '');
+      m.hidden = !text;
+    }
+
+    function checkVoucher() {
+      var code = $('f-voucher').value.trim();
+      if (!code || !state.service) return;
+      voucherMessage('Checking…');
+      api('voucher-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code, service_key: state.service.serviceKey }),
+      }).then(function (v) {
+        state.voucher = v;
+        $('f-voucher').value = v.code;
+        voucherMessage('Your voucher covers ' + money(v.usedCents) + '.' +
+          (v.payCents > 0 ? ' You\u2019ll pay the other ' + money(v.payCents) + '.' : ' Nothing left to pay.') +
+          (v.leftoverCents > 0 ? ' ' + money(v.leftoverCents) + ' stays on the voucher for next time.' : ''));
+        renderPayChoice();
+        setConfirmLabel();
+      }).catch(function (err) {
+        state.voucher = null;
+        voucherMessage(err.message || 'That voucher couldn\u2019t be checked. Please try again.', true);
+        renderPayChoice();
+        setConfirmLabel();
+      });
+    }
+
+    $('voucher-apply').addEventListener('click', checkVoucher);
+    $('f-voucher').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); checkVoucher(); }
+    });
+    // Editing the code un-applies it until it's checked again.
+    $('f-voucher').addEventListener('input', function () {
+      if (!state.voucher) return;
+      state.voucher = null;
+      voucherMessage('');
+      renderPayChoice();
+      setConfirmLabel();
+    });
 
     $('details-form').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -934,6 +1007,9 @@
           location: state.service.locations ? $('f-location').value : undefined,
           marketingConsent: $('f-marketing').checked,
           payMode: pressed,
+          // Checked or not, the server checks it again; an unchecked code that
+          // fails comes back as a message here.
+          voucherCode: state.voucher ? state.voucher.code : ($('f-voucher').value.trim() || undefined),
         }),
       }).then(function (data) {
         if (!data.url) throw new Error('No payment URL returned');
@@ -951,6 +1027,14 @@
     });
 
     // --- init ----------------------------------------------------------------------
+
+    // A gift voucher link (/book?voucher=SG-…) opens the voucher box with the
+    // code in it, before anything loads; it's checked once a session and date
+    // are chosen.
+    (function () {
+      var code = new URLSearchParams(window.location.search).get('voucher');
+      if (code) { $('f-voucher').value = code; $('voucher-box').open = true; }
+    })();
 
     loadServices();
   })();

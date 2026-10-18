@@ -34,6 +34,11 @@ const codeNote = (p) => (p.code ? ` (code ${p.code})` : '');
 // Client confirmation: "No charge · $295 less 100% off (code …)".
 function clientPaymentLine(p) {
   const lead = p.paidCents === 0 ? 'No charge' : `Paid ${money(p.paidCents)}`;
+  // A gift voucher (lib/vouchers.js), set on the pricing by stripe-webhook.
+  if (p.voucher) {
+    const left = p.voucher.leftCents > 0 ? ` · ${money(p.voucher.leftCents)} left on it for another session or your full gallery` : '';
+    return `${lead} · gift voucher ${p.voucher.code} covered ${money(p.voucher.usedCents)}${left}`;
+  }
   return `${lead} · ${money(p.listCents)} less ${p.percentOff}% off${codeNote(p)}`;
 }
 

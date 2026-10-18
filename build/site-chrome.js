@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: '/#faq', label: 'Common Questions' },
   { href: '/blog/', label: 'Blog' },
   { href: '/offers', label: 'Offers' },
+  { href: '/gift-vouchers', label: 'Gift vouchers' },
   { href: '/#contact', label: 'Enquire now', className: 'book' },
 ];
 
@@ -27,6 +28,7 @@ function isActive(href, path) {
   if (href === '/packages') return path === '/packages' || path.startsWith('/packages/') || path === '/book';
   if (href === '/offers') return path.startsWith('/offers/') || OFFER_PAGES.includes(path);
   if (href === '/blog/') return path.startsWith('/blog');
+  if (href === '/gift-vouchers') return path === '/gift-vouchers';
   return false;
 }
 
@@ -60,6 +62,7 @@ const FOOTER_HTML = '<footer data-sg-footer>' +
     footLink('/packages/gathered-newborn-photography', 'Gathered Newborn'),
     footLink('/packages/bloom-maternity-newborn-photography', 'Bloom Bundle'),
     footLink('/packages', 'Packages'),
+    footLink('/gift-vouchers', 'Gift vouchers'),
     footLink('/blog/', 'Blog'),
   ].join(' &middot; ') + '</span>' +
   `<a href="/privacy" class="footer-copy" style="${FOOTER_LINK_STYLE}">Privacy Policy</a>` +

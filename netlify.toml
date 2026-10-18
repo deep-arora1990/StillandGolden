@@ -211,6 +211,13 @@
   status = 301
   force = true
 
+# Gift vouchers page (18 Oct 2026).
+[[redirects]]
+  from = "/gift-vouchers.html"
+  to = "/gift-vouchers"
+  status = 301
+  force = true
+
 # Seasonal offers page (30 Sep 2026).
 [[redirects]]
   from = "/offers.html"

@@ -37,3 +37,6 @@ CLAUDE.md
 # Local Netlify folder
 .netlify
 dist/
+
+# Local secrets for netlify dev (never commit)
+.env
