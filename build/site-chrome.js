@@ -52,7 +52,7 @@ const footLink = (href, label) => `<a href="${href}" style="${FOOTER_LINK_STYLE}
 const FOOTER_HTML = '<footer data-sg-footer>' +
   '<span class="footer-logo">Still &amp; Golden</span>' +
   '<span class="footer-copy">&copy; 2026 Still &amp; Golden Photography &middot; ABN 37 280 912 036</span>' +
-  '<span class="footer-area">Cranbourne &middot; Clyde North &middot; Berwick &middot; Narre Warren &middot; Frankston &middot; Langwarrin &middot; Mt Eliza</span>' +
+  '<span class="footer-area">Cranbourne East &middot; Casey &middot; Officer &middot; Pakenham &middot; Frankston &middot; Mornington</span>' +
   '<span class="footer-copy">' + [
     footLink('/offers', 'Offers'),
     footLink('/packages/glimpse-mini-sessions', 'Glimpse Minis'),

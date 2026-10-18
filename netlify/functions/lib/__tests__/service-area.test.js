@@ -38,6 +38,14 @@ describe('service area matches the Google profile', () => {
     }
   })
 
+  it('the shared footer on every page starts from Cranbourne East, without Mt Eliza', () => {
+    const chrome = read('build/site-chrome.js')
+    const area = chrome.match(/footer-area">([^<]*)</)[1]
+    expect(area).toMatch(/^Cranbourne East/)
+    expect(area).toMatch(/Officer/)
+    expect(area).not.toMatch(/Mt Eliza/)
+  })
+
   it('no doubled-up place names', () => {
     for (const f of PAGES) expect(read(f), f).not.toMatch(/Cranbourne, Cranbourne East|Narre Warren, Cranbourne East/)
   })
