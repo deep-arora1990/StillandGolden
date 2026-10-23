@@ -237,6 +237,7 @@ async function holdFailedBooking(stripe, resend, session, meta, err, pricing = n
     await resend.emails.send({
       from: FROM,
       to: meta.email,
+      replyTo: OWNER_EMAIL,
       subject: 'About your Still & Golden booking',
       ...brandedEmail({
         eyebrow: 'Your booking',
@@ -380,6 +381,7 @@ async function notifyOwnerOfBooking(resend, meta, appointment, pricing = null) {
   const { error } = await resend.emails.send({
     from: FROM,
     to: OWNER_EMAIL,
+    ...(meta.email ? { replyTo: meta.email } : {}),
     subject: `[S&G] New booking — ${name} · ${tier.name} · ${when}`,
     text: [
       `New booking: ${tier.name}`,
@@ -443,6 +445,7 @@ async function notifyBalancePaid(stripe, resend, invoice) {
   const { error } = await resend.emails.send({
     from: FROM,
     to: OWNER_EMAIL,
+    ...(meta.email ? { replyTo: meta.email } : {}),
     subject: `[S&G] Balance paid — ${name} · ${amount}`,
     text: [
       `The balance for ${name}'s session has been paid: ${amount}.`,

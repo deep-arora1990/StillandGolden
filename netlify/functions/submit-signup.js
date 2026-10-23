@@ -124,6 +124,7 @@ exports.handler = async (event) => {
     resend.emails.send({
       from: FROM,
       to: email,
+      replyTo: OWNER,
       subject: 'You’re on the list — Still & Golden',
       html: welcomeHtml(firstName, email),
       headers: {
@@ -134,6 +135,7 @@ exports.handler = async (event) => {
     resend.emails.send({
       from: FROM,
       to: OWNER,
+      replyTo: email,
       subject: `[S&G] New email sign-up — ${firstName || email}`,
       text: [
         `New sign-up to the email list`,

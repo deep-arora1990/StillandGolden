@@ -85,6 +85,7 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: 'hello@stillandgolden.com.au',
+      replyTo: email,
       subject: `[S&G] Model call agreement signed — ${firstName} ${lastName}`,
       text: [
         'Model Call Session Agreement signed (free session).',

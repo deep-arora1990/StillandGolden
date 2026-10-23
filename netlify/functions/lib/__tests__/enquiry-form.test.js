@@ -53,6 +53,16 @@ describe('enquiry form: suburb and what made them get in touch', () => {
   }, 10000)
 })
 
+describe('replying to an enquiry', () => {
+  it('Reply on the email to Deep goes to the enquirer; a reply to the auto-reply reaches Deep', async () => {
+    stubResend()
+    await (await handler())(post(enquiry))
+    expect(toDeep().reply_to).toBe('mary@example.com')
+    const auto = calls.filter((c) => c.url.endsWith('/emails')).map((c) => c.body).find((m) => m.to === 'mary@example.com' || (Array.isArray(m.to) && m.to.includes('mary@example.com')))
+    expect(auto.reply_to).toBe('hello@stillandgolden.com.au')
+  }, 10000)
+})
+
 describe('Gathered is sold on the full gallery', () => {
   it('everywhere a session is chosen', () => {
     const { TIERS } = require('../setmore.js')

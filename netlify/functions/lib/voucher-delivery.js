@@ -160,6 +160,7 @@ async function notifyOwnerOfVoucher(resend, v, meta, TIERS, { sessionId, buyerEm
   const { error } = await resend.emails.send({
     from: FROM,
     to: OWNER_EMAIL,
+    ...(meta.buyerEmail ? { replyTo: meta.buyerEmail } : {}),
     subject: `[S&G] Gift voucher sold: ${what} for ${meta.recipientName} (${money(Number(meta.cents))})`,
     text: [
       `Gift voucher sold: ${what}`,

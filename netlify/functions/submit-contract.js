@@ -229,6 +229,7 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: 'hello@stillandgolden.com.au',
+      replyTo: email,
       subject: `[S&G] Terms signed — ${firstName} ${lastName} · ${tier.name}`,
       text: detailsText,
       attachments: [attachment],

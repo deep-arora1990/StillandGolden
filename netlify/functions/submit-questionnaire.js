@@ -466,6 +466,7 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: 'hello@stillandgolden.com.au',
+      ...(clientEmail ? { replyTo: clientEmail } : {}),
       subject: `[S&G] Questionnaire — ${displayName}`,
       text: pdfBase64
         ? detailsText
@@ -477,6 +478,7 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: 'Still & Golden <notifications@stillandgolden.com.au>',
       to: clientEmail,
+      replyTo: 'hello@stillandgolden.com.au',
       subject: 'Your session questionnaire — Still & Golden',
       ...brandedEmail({
         eyebrow: 'Questionnaire received',

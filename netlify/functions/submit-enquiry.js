@@ -142,6 +142,9 @@ exports.handler = async (event) => {
       resend.emails.send({
         from: 'Still & Golden <notifications@stillandgolden.com.au>',
         to: 'hello@stillandgolden.com.au',
+        // Reply in Mail goes straight to the enquirer, not back to the
+        // notifications address (24 Oct 2026).
+        replyTo: email,
         subject: fromBookingPage
           ? `[S&G] New enquiry from the booking page — ${fullName} (${sessionLabel})`
           : `[S&G] New enquiry — ${fullName} (${sessionLabel})`,
@@ -161,6 +164,7 @@ exports.handler = async (event) => {
       resend.emails.send({
         from: 'Still & Golden <notifications@stillandgolden.com.au>',
         to: email,
+        replyTo: 'hello@stillandgolden.com.au',
         subject: 'Thanks for reaching out — Still & Golden',
         html: autoResponseHtml(first_name),
       }),
