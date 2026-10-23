@@ -1374,6 +1374,7 @@
         suburb: document.getElementById('sb').value.trim(),
         reason: document.getElementById('why').value.trim(),
         marketing_consent: document.getElementById('mk').checked,
+        ad: window.sgAd ? window.sgAd() : null,
         'bot-field': document.getElementById('bot-field').value,
       };
       try {

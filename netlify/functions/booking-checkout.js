@@ -58,6 +58,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_RE = /^\d{2}:\d{2}$/;
 
+// The ad this visit began on (site-tags.js sgAd), for Studio's ad report via
+// stripe-webhook. Sent by the page, so only the known values get through
+// ('fb_link' is a bare fbclid, a hint rather than an ad); anything else
+// leaves the key out, as on a booking made before this existed.
+function adSourceMetadata(ad) {
+  return ad === 'meta' || ad === 'google' || ad === 'fb_link' ? { ad_source: ad } : {};
+}
+
 function requestOrigin(event) {
   const h = event.headers || {};
   if (h.origin) return h.origin;
@@ -282,6 +290,7 @@ exports.handler = async (event) => {
           ? { pay_mode: 'split', balance_cents: String(plan.balanceCents), charge_on: plan.chargeOn }
           : {}),
         ...(voucher ? { voucher_code: voucher.voucher.code, voucher_used_cents: String(voucher.usedCents) } : {}),
+        ...adSourceMetadata(data.ad),
       },
       success_url: `${origin}${returnTo}?booked=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}${returnTo}?${cancelParams.toString()}`,

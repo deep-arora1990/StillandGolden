@@ -13,6 +13,55 @@
 
 var SG_PROD_HOSTS = ['stillandgolden.com.au', 'www.stillandgolden.com.au'];
 
+/* ── Ad attribution ────────────────────────────────────────────────────────
+   Enquiries tracker (23 Oct 2026): remember, for the visit, whether it began
+   on a Meta or Google ad, so the enquiry and booking forms can tell Studio.
+   'google' is a gclid; 'meta' is our own paid utm tags (utm_source facebook,
+   instagram, fb or ig with utm_medium paid, cpc, paid_social or ads). A bare
+   fbclid is only 'fb_link': Meta adds it to ordinary Facebook and Instagram
+   link clicks too, so Studio shows it as a hint and Deep picks the source.
+   The first value in the visit wins (sessionStorage, so a new tab starts
+   again), except that a later 'meta' or 'google' replaces 'fb_link'.
+
+   Above the production guard on purpose: it sends nothing anywhere, and a
+   deploy preview must behave like the live site for testing. Storage can be
+   blocked (private mode, strict settings); that only loses the attribution. */
+function sgCaptureAd(search, storage) {
+  try {
+    var stored = storage.getItem('sg_ad');
+    if (stored === 'meta' || stored === 'google') return stored;
+    var params = new URLSearchParams(search || '');
+    var source = (params.get('utm_source') || '').toLowerCase();
+    var medium = (params.get('utm_medium') || '').toLowerCase();
+    var ad = null;
+    if (params.get('gclid')) {
+      ad = 'google';
+    } else if (['facebook', 'instagram', 'fb', 'ig'].indexOf(source) !== -1 &&
+        ['paid', 'cpc', 'paid_social', 'ads'].indexOf(medium) !== -1) {
+      ad = 'meta';
+    } else if (params.get('fbclid')) {
+      ad = 'fb_link';
+    }
+    if (stored === 'fb_link' && (!ad || ad === 'fb_link')) return stored;
+    if (ad) storage.setItem('sg_ad', ad);
+    return ad;
+  } catch (e) {
+    return null;
+  }
+}
+
+try { sgCaptureAd(location.search, window.sessionStorage); } catch (e) { /* storage blocked */ }
+
+/** 'meta' | 'google' | 'fb_link' | null: the ad this visit began on. Never throws. */
+window.sgAd = function () {
+  try {
+    var ad = window.sessionStorage.getItem('sg_ad');
+    return ad === 'meta' || ad === 'google' || ad === 'fb_link' ? ad : null;
+  } catch (e) {
+    return null;
+  }
+};
+
 if (SG_PROD_HOSTS.indexOf(location.hostname) === -1) {
   // Non-production: keep the helpers callable (the enquiry redirect must still
   // work) but send nothing anywhere.

@@ -844,6 +844,7 @@
           notes: $('f-notes').value.trim(),
           marketingConsent: $('f-marketing').checked,
           payMode: pressed,
+          ad: window.sgAd ? window.sgAd() : null,
           returnTo: '/christmas-minis.html',
         }),
       }).then(function (data) {

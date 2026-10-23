@@ -1,5 +1,6 @@
 const { Resend } = require('resend');
 const { upsertResendContact } = require('./lib/resend-contacts');
+const { postEnquiry } = require('./lib/enquiry-sync');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -86,6 +87,7 @@ function autoResponseHtml(firstName) {
 }
 
 exports.handler = async (event) => {
+  const startedAt = Date.now();
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }
@@ -178,6 +180,24 @@ exports.handler = async (event) => {
       await upsertResendContact({ email, firstName: first_name, lastName: last_name, phone, marketingConsent });
     } catch (contactErr) {
       console.error('submit-enquiry: contact not saved:', contactErr.message);
+    }
+
+    // 4. Studio's enquiry tracker (23 Oct 2026), last, once everything the
+    // enquirer and Deep need has happened. postEnquiry never throws and gives
+    // up once 8 s have passed since this handler started (never less than
+    // 1 s); the catch is belt and braces, so Studio being down or slow
+    // doesn't turn a delivered enquiry into an error.
+    try {
+      await postEnquiry({
+        first_name, last_name, email, phone, session_type, preferred_date, message, suburb, reason,
+        ...(fromBookingPage ? { source: 'book' } : {}),
+        // Set by the page from site-tags.js (sgAd): 'meta' or 'google' for an
+        // ad, 'fb_link' for a bare fbclid (maybe an ad). Anything else is not
+        // a value we know.
+        ad: ['meta', 'google', 'fb_link'].includes(data.ad) ? data.ad : null,
+      }, { startedAt });
+    } catch (studioErr) {
+      console.error('submit-enquiry: Studio not told:', studioErr.message);
     }
 
     return {

@@ -420,6 +420,9 @@ async function reportBookingToStudio(session, meta, appointment, pricing = null)
     balanceCents: split ? Number(meta.balance_cents) : null,
     balanceDue: split ? meta.charge_on || null : null,
     stripeSessionId: (session && session.id) || null,
+    // From booking-checkout's metadata when the visit began on an ad
+    // ('fb_link': a Facebook or Instagram link, maybe an ad).
+    adSource: ['meta', 'google', 'fb_link'].includes(meta.ad_source) ? meta.ad_source : null,
   });
 }
 

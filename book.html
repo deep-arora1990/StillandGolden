@@ -735,6 +735,7 @@
           message: $('alt-msg').value.trim(),
           marketing_consent: $('alt-marketing').checked,
           source: 'book',
+          ad: window.sgAd ? window.sgAd() : null,
           'bot-field': $('alt-bot').value,
         }),
       })
@@ -1015,6 +1016,7 @@
           // Checked or not, the server checks it again; an unchecked code that
           // fails comes back as a message here.
           voucherCode: state.voucher ? state.voucher.code : ($('f-voucher').value.trim() || undefined),
+          ad: window.sgAd ? window.sgAd() : null,
         }),
       }).then(function (data) {
         if (!data.url) throw new Error('No payment URL returned');
