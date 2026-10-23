@@ -11,7 +11,9 @@
   included_files = ["data/prices.json"]
 
 [build.environment]
-  NODE_VERSION = "18"
+  # Node 22 (23 Oct 2026). Netlify runs the functions on this version too, and
+  # Node 18 has had no security fixes since April 2025 (Stripe flagged it).
+  NODE_VERSION = "22"
 
 [[headers]]
   for = "/*"
