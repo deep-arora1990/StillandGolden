@@ -107,4 +107,12 @@ describe('published photos', () => {
       .toThrow("packages/x.html: points to New photos/Family/web/DSC05234_websize.jpg, which isn't published")
     expect(() => checkLinks(page('New photos/Family/web/DSC05234_websize.JPG'), published)).not.toThrow()
   })
+  it('resolves page-relative references against the page folder', () => {
+    expect([...referencedFiles('<img src="New%20photos/homepage-2_websize.JPG">')]).toEqual(['New photos/homepage-2_websize.JPG'])
+    expect([...referencedFiles('<img src="../Images/x.jpg"><img src="./y.png">', 'blog/x.html')].sort())
+      .toEqual(['Images/x.jpg', 'blog/y.png'])
+  })
+  it('ignores references inside HTML comments', () => {
+    expect([...referencedFiles('<!-- <img src="Images/your-photo.jpg"> --><style>/* <img src="Images/x.jpg"> */</style><img src="/Images/real.jpg">')]).toEqual(['Images/real.jpg'])
+  })
 })

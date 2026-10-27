@@ -106,21 +106,31 @@ function renderPage(rel, html) {
 // src, srcset (each candidate), content and href values, url(...), and quoted
 // site URLs (which catches the JSON-LD). Links to pages (no file extension) and
 // to other sites are ignored.
-function referencedFiles(html) {
+// Page-relative links ("New%20photos/a.jpg", "../Images/b.jpg") are resolved
+// against the folder of the page they appear in (pageRel, repo-relative).
+// Text inside <!-- comments --> and /* comments */ is ignored, since browsers
+// never fetch it.
+function referencedFiles(html, pageRel = 'index.html') {
   const found = new Set();
+  const dir = path.posix.dirname(pageRel.split(path.sep).join('/'));
+  html = html.replace(/<!--[\s\S]*?-->/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
   const add = (raw) => {
     let u = String(raw).trim();
     u = u.replace(/^https:\/\/(?:www\.)?stillandgolden\.com\.au(?=\/)/, '');
-    if (!u.startsWith('/') || u.startsWith('//')) return;
+    if (u.startsWith('//') || /^[a-z][a-z0-9+.-]*:/i.test(u) || u.startsWith('#')) return;
     u = u.split(/[?#]/)[0];
     try { u = decodeURIComponent(u); } catch { /* leave it as written */ }
-    u = u.replace(/^\/+/, '');
-    if (/\.[A-Za-z0-9]+$/.test(path.basename(u))) found.add(u);
+    u = u.startsWith('/') ? u.replace(/^\/+/, '') : path.posix.join(dir, u);
+    u = path.posix.normalize(u);
+    if (u.startsWith('../')) return;
+    if (/\.[A-Za-z0-9]+$/.test(path.posix.basename(u))) found.add(u);
   };
   for (const m of html.matchAll(/\b(src|srcset|content|href)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi)) {
     const value = m[2] !== undefined ? m[2] : m[3];
     if (m[1].toLowerCase() === 'srcset') {
       value.split(/,\s+|,(?=\/)/).forEach((c) => add(c.trim().split(/\s+/)[0]));
+    } else if (m[1].toLowerCase() === 'content' && !/^(\/|https:\/\/(?:www\.)?stillandgolden\.com\.au\/)/.test(value.trim())) {
+      continue; // content="width=device-width, initial-scale=1.0" is not a path
     } else add(value);
   }
   for (const m of html.matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi)) add(m[2]);
@@ -188,9 +198,9 @@ function build() {
   for (const f of candidates) {
     if (f.endsWith('.html')) {
       rendered.set(f, renderPage(f, fs.readFileSync(path.join(ROOT, f), 'utf8')));
-      refsBy.set(f, referencedFiles(rendered.get(f)));
-    } else if (f.endsWith('.css') && ROOT_FILES.includes(f)) {
-      refsBy.set(f, referencedFiles(fs.readFileSync(path.join(ROOT, f), 'utf8')));
+      refsBy.set(f, referencedFiles(rendered.get(f), f));
+    } else if (/\.(css|js)$/.test(f) && ROOT_FILES.includes(f)) {
+      refsBy.set(f, referencedFiles(fs.readFileSync(path.join(ROOT, f), 'utf8'), f));
     }
   }
   const refs = new Set([...refsBy.values()].flatMap((s) => [...s]));
