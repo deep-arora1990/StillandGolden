@@ -1,10 +1,7 @@
 // Block markers (Task 5): parsed and validated, then stripped by the build.
 import { describe, it, expect } from 'vitest'
 import { createRequire } from 'node:module'
-import fs from 'node:fs'
-import path from 'node:path'
 const require = createRequire(import.meta.url)
-const ROOT = path.resolve(__dirname, '../../../..')
 const { parseBlocks, stripBlockMarkers, LIBRARY } = require('../../../../build/blocks.js')
 const { renderPage } = require('../../../../build.js')
 
@@ -45,8 +42,9 @@ describe('block markers', () => {
     expect(Object.keys(LIBRARY.types).sort()).toEqual(['buttons', 'caption', 'gallery', 'heading', 'intro', 'list', 'note', 'price', 'quote', 'text'])
   })
   it('blocks/ and build/ are never published', () => {
-    expect(fs.existsSync(path.join(ROOT, 'dist'))).toBe(true)
-    expect(fs.existsSync(path.join(ROOT, 'dist/blocks'))).toBe(false)
-    expect(fs.existsSync(path.join(ROOT, 'dist/build'))).toBe(false)
+    const { CONFIG } = require('../../../../build.js')
+    expect(CONFIG.dirs).not.toContain('blocks')
+    expect(CONFIG.dirs).not.toContain('build')
+    expect(CONFIG.rootFiles.filter((f) => /^(blocks|build)\//.test(f))).toEqual([])
   })
 })
