@@ -28,5 +28,14 @@
       { "key": "secondary", "selector": "a.btn-ghost", "kind": "link", "repeat": false, "optional": true } ] },
     "note": { "label": "Small print", "families": ["site"], "addable": true, "snippet": "blocks/site/note.html", "fields": [
       { "key": "text", "selector": "p.note", "kind": "inline", "repeat": false, "optional": false } ] }
-  }
+  },
+  "pages": [
+    { "file": "packages/glimpse-mini-sessions.html", "label": "Glimpse" },
+    { "file": "packages/golden-family-photography.html", "label": "Golden (family)" },
+    { "file": "packages/golden-cake-smash-photography.html", "label": "Golden (cake smash)" },
+    { "file": "packages/gathered-newborn-photography.html", "label": "Gathered" },
+    { "file": "packages/bloom-maternity-newborn-photography.html", "label": "Bloom" },
+    { "file": "offers/sunset-beach-mini-sessions.html", "label": "Sunset beach minis" },
+    { "file": "offers/in-home-christmas-photos.html", "label": "In-home Christmas" }
+  ]
 }

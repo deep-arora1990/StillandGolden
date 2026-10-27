@@ -16,7 +16,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { parseBlocks, stripBlockMarkers, LIBRARY } = require('./build/blocks');
+const { LIBRARY } = require('./build/blocks');
+const { createRenderer } = require('./build/render');
 
 // ── Site settings ──────────────────────────────────────────────────────────
 // Everything specific to Still & Golden is here, so another site can reuse
@@ -45,70 +46,23 @@ const CONFIG = {
   unlinked: ['/packages/golden-cake-smash-photography'],
 };
 
-const { navHtml, FOOTER_HTML, barHtml, BAR_FOOTER } = CONFIG.chrome;
 const ROOT = __dirname;
 const OUT = path.join(ROOT, 'dist');
 const PRICES = JSON.parse(fs.readFileSync(path.join(ROOT, CONFIG.prices), 'utf8'));
 const NO_CHROME = process.argv.includes('--no-chrome');
 const { rootFiles: ROOT_FILES, dirs: DIRS, imageDirs: IMAGE_DIRS } = CONFIG;
 
-// ── Prices ─────────────────────────────────────────────────────────────────
-// {{price.TIER}}               $475   the session price
-// {{price.TIER.gallery}}       $125   its full-gallery add-on
-// {{price.TIER.valued}}        $400   an offer's "valued at"
-// {{price.TIER.half}}          $237.50  each half of a split payment
-// {{price.TIER.withgallery}}   $570   the session with its full gallery added
-// Add .number for a bare figure (475), as Google's structured data needs.
-const dollars = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
-function priceToken(expr) {
-  const parts = expr.split('.');
-  const number = parts[parts.length - 1] === 'number' ? parts.pop() && true : false;
-  const [, tier, field = 'price'] = parts;
-  const p = PRICES[tier];
-  if (!p || tier.startsWith('_')) throw new Error(`unknown tier "${tier}"`);
-  const value = field === 'half' ? p.price / 2
-    : field === 'withgallery' ? (typeof p.gallery === 'number' ? p.price + p.gallery : undefined)
-    : p[field];
-  if (typeof value !== 'number' || !['price', 'gallery', 'valued', 'half', 'withgallery'].includes(field)) {
-    throw new Error(`"${field}" is not set for ${tier}`);
-  }
-  return number ? String(value) : dollars(value);
-}
-
-// ── Pages ──────────────────────────────────────────────────────────────────
-const pagePath = (rel) => {
-  const p = '/' + rel.replace(/\\/g, '/').replace(/\.html$/, '');
-  return p === '/index' ? '/' : p.endsWith('/index') ? p.slice(0, -5) : p;
-};
-
-function renderPage(rel, html) {
-  // Block markers: validate, then strip, so they never reach the published page.
-  let blocks;
-  try { blocks = parseBlocks(html); } catch (e) { throw new Error(`${rel}: ${e.message}`); }
-  for (const b of blocks) {
-    if (!Object.hasOwn(LIBRARY.types, b.type)) throw new Error(`${rel}: unknown block type "${b.type}"`);
-  }
-  html = stripBlockMarkers(html);
-  html = html.replace(/\{\{\s*(price\.[\w.-]+)\s*\}\}/g, (_, expr) => {
-    try { return priceToken(expr); } catch (e) { throw new Error(`${rel}: {{${expr}}}: ${e.message}`); }
-  });
-  if (!NO_CHROME) {
-    html = html
-      .replace(CONFIG.mounts.nav, navHtml(pagePath(rel)))
-      .replace(CONFIG.mounts.footer, FOOTER_HTML)
-      .replace(/<!--\s*include:bar(?:\s+back="([^"]*)"\s+label="([^"]*)")?\s*-->/g,
-        (_, href, label) => barHtml(href ? { href, label } : undefined))
-      .replace(/<!--\s*include:bar-footer\s*-->/g, BAR_FOOTER);
-  }
-  const left = html.match(/\{\{[^}]*\}\}|<!--\s*include:[\w-]+/);
-  if (left) throw new Error(`${rel}: unfilled "${left[0]}"`);
-  for (const page of CONFIG.unlinked) {
-    if (pagePath(rel) !== page && html.includes(`href="${page}`)) {
-      throw new Error(`${rel}: links to ${page}, which must stay unlinked (SEO-only page)`);
-    }
-  }
-  return html;
-}
+// ── Prices and pages ───────────────────────────────────────────────────────
+// The renderer (price tokens, block markers, menu and footer) lives in
+// build/render.js so Studio's preview can run the very same code in the browser.
+const { priceToken, pagePath, renderPage } = createRenderer({
+  prices: PRICES,
+  chrome: CONFIG.chrome,
+  mounts: CONFIG.mounts,
+  unlinked: CONFIG.unlinked,
+  library: LIBRARY,
+  withChrome: !NO_CHROME,
+});
 
 // ── Photos ─────────────────────────────────────────────────────────────────
 // Every local file a page or stylesheet points to, as a repo-relative path with
@@ -169,6 +123,62 @@ function checkLinks(refsBy, published) {
   }
 }
 
+// ── Studio's preview bundle ────────────────────────────────────────────────
+// dist/_cms/render.js is a classic script (no imports, no Node APIs) that gives
+// Studio's sandboxed preview the same renderPage as this build. A tiny module
+// map stands in for a bundler: the source of the three build files plus the
+// JSON they read. dist/_cms/version.json says which commit it was built from.
+function commitSha() {
+  if (/^[0-9a-f]{40}$/.test(process.env.COMMIT_REF || '')) return process.env.COMMIT_REF;
+  return require('child_process').execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim();
+}
+function writeCmsBundle(dir) {
+  const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const modules = {
+    './render': read('build/render.js'),
+    './blocks': read('build/blocks.js'),
+    './site-chrome': read('build/site-chrome.js'),
+  };
+  const json = {
+    '../blocks/library.json': read('blocks/library.json'),
+    '../data/prices.json': read(CONFIG.prices),
+  };
+  const lit = (o) => '{' + Object.entries(o).map(([k, v]) => `${JSON.stringify(k)}: ${v}`).join(',\n') + '}';
+  const wrap = (src) => `function (module, exports, require) {\n${src}\n}`;
+  const bundle = `// Generated by build.js. Do not edit.
+(function () {
+  var defs = ${lit(Object.fromEntries(Object.entries(modules).map(([k, v]) => [k, wrap(v)])))};
+  var json = ${lit(json)};
+  var cache = {};
+  function req(name) {
+    if (Object.prototype.hasOwnProperty.call(json, name)) return json[name];
+    if (!Object.prototype.hasOwnProperty.call(defs, name)) throw new Error('cms bundle: cannot require ' + name);
+    if (!cache[name]) {
+      var module = { exports: {} };
+      cache[name] = module;
+      defs[name](module, module.exports, req);
+    }
+    return cache[name].exports;
+  }
+  var prices = req('../data/prices.json');
+  var library = req('../blocks/library.json');
+  var render = req('./render').createRenderer({
+    prices: prices,
+    chrome: req('./site-chrome'),
+    mounts: ${JSON.stringify(CONFIG.mounts)},
+    unlinked: ${JSON.stringify(CONFIG.unlinked)},
+    library: library,
+    withChrome: true
+  });
+  self.SGRender = { renderPage: render.renderPage, prices: prices, library: library, version: 1 };
+})();
+`;
+  fs.mkdirSync(path.join(dir, '_cms'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '_cms', 'render.js'), bundle);
+  fs.writeFileSync(path.join(dir, '_cms', 'version.json'),
+    JSON.stringify({ commit: commitSha(), builtAt: new Date().toISOString() }) + '\n');
+}
+
 // ── Copy ───────────────────────────────────────────────────────────────────
 function copy(rel, rendered) {
   const src = path.join(ROOT, rel);
@@ -221,10 +231,11 @@ function build() {
 
   for (const f of files) copy(f, rendered.get(f));
   const pages = files.filter((f) => f.endsWith('.html')).length;
+  writeCmsBundle(OUT);
   console.log(`build: ${pages} pages and ${files.length - pages} other files (${candidates.length - files.length} camera originals left out) written to dist/${NO_CHROME ? ' (prices only)' : ''}`);
 }
 
 if (require.main === module) {
   try { build(); } catch (err) { console.error(`build failed: ${err.message}`); process.exit(1); }
 }
-module.exports = { CONFIG, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks };
+module.exports = { CONFIG, writeCmsBundle, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks };

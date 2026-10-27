@@ -69,6 +69,16 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+# Studio's preview loads the renderer and version stamp from /_cms/. Public,
+# read-only data (the same prices and page code the site already shows), so any
+# origin may fetch it; noindex keeps it out of search.
+[[headers]]
+  for = "/_cms/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Access-Control-Allow-Origin = "*"
+    X-Robots-Tag = "noindex"
+
 [[redirects]]
   from = "/index"
   to = "/"
