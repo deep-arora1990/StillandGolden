@@ -36,9 +36,11 @@ const CONFIG = {
   // The camera originals stay in the repo but off the site.
   imageDirs: ['Images', 'New photos'],
   // Photos linked from outside the site (sent emails, templates in Studio) that
-  // no page points to. Empty for now: Studio's database could not be read on
-  // 27 Oct 2026 (access was denied), so emails have NOT been checked yet.
-  keepImages: [],
+  // no page points to. Studio's database could not be read on 27 Oct 2026
+  // (access was denied), so the check of sent emails was waived by Deep that day.
+  keepImages: [
+    'Images/christmas-minis-hero.jpg', // christmas-minis EOI email (brand/email-templates/christmas-minis-eoi.html) links it directly
+  ],
   // Pages that must stay unlinked (live and in the sitemap, linked from nowhere).
   unlinked: ['/packages/golden-cake-smash-photography'],
 };

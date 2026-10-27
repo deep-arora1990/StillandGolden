@@ -1,4 +1,5 @@
 {
+  "version": 1,
   "types": {
     "intro": { "label": "Page opening", "families": ["site"], "addable": false, "snippet": "blocks/site/intro.html", "fields": [
       { "key": "label", "selector": ".label", "kind": "text", "repeat": false, "optional": false },

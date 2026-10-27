@@ -131,5 +131,10 @@ describe('checks workflow', () => {
     expect(y).toMatch(/node-version: '22'/)
     expect(y).toMatch(/npx vitest run/)
     expect(y).toMatch(/node build\.js/)
+    expect(y).toMatch(/^permissions:\n  contents: read$/m)
+    expect(y).toMatch(/timeout-minutes: 10/)
+  })
+  it('keeps the photo the Christmas minis email links directly', () => {
+    expect(CONFIG.keepImages).toContain('Images/christmas-minis-hero.jpg')
   })
 })

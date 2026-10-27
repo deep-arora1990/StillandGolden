@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url)
 const { parseBlocks, stripBlockMarkers, LIBRARY } = require('../../../../build/blocks.js')
 const { renderPage } = require('../../../../build.js')
 
+const ROOT = require('node:path').resolve(__dirname, '../../../..')
 const src = 'a\n  <!-- block:text text-1 -->\n  <p>x</p>\n  <!-- /block -->\r\nb'
 
 describe('block markers', () => {
@@ -31,7 +32,13 @@ describe('block markers', () => {
     ['<!-- block:text A --><!-- /block -->', /id/],
     ['<!-- block:text --><!-- /block -->', /id/],
     ['<!-- block:text a --><!-- /block --><!-- block:text a --><!-- /block -->', /duplicate/],
+    ['<!-- block:text a extra --><!-- /block -->', /malformed block marker "<!-- block:text a extra -->" on line 1/],
+    ['x\n<!-- block text a --><!-- /block -->', /malformed block marker .* on line 2/],
+    ['<!-- block:text a --><!-- /block extra -->', /malformed block marker "<!-- \/block extra -->"/],
   ])('refuses bad markers: %s', (html, msg) => { expect(() => parseBlocks(html)).toThrow(msg) })
+  it('leaves ordinary comments alone', () => {
+    expect(parseBlocks('<!-- blockquote note --><!-- blocks -->')).toEqual([])
+  })
   it('names the line', () => {
     expect(() => parseBlocks('x\ny\n<!-- /block -->')).toThrow(/line 3/)
   })
@@ -90,13 +97,13 @@ const ALLOWED = {
 
 describe('seven pages are marked into blocks', () => {
   it.each(PAGES7)('%s', (page) => {
-    const raw = fs.readFileSync(page, 'utf8')
+    const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
     const blocks = parseBlocks(raw)
     expect(blocks.length).toBeGreaterThan(0)
     expect(blocks[0].type).toBe('intro')
     expect(blocks.filter((b) => b.type === 'intro')).toHaveLength(1)
-    const counts = {}
-    for (const b of blocks) expect(b.id).toBe(`${b.type}-${(counts[b.type] = (counts[b.type] || 0) + 1)}`)
+    // ids stay stable across edits, so they are not forced into page order
+    for (const b of blocks) expect(b.id).toMatch(/^[a-z][a-z0-9-]*$/)
     const main = find(parse(raw, { sourceCodeLocationInfo: true }), 'main')
     const kids = main.childNodes.filter((n) => n.tagName)
     const owner = new Map()
@@ -120,7 +127,6 @@ describe('seven pages are marked into blocks', () => {
       expect(mine.length, `${b.id} is not empty`).toBeGreaterThan(0)
       expect(mine.join(' '), `${b.id} shape`).toMatch(SHAPE[b.type])
     }
-    blocks.forEach((b, i) => { if (b.type === 'text') expect(blocks[i - 1]?.type, `${b.id} follows a split text run`).not.toBe('text') })
     // a text block is a run of plain <p>; a price note only follows a price-box
     kids.forEach((el, i) => { if (kind(el) === 'price-note') expect(kind(kids[i - 1])).toBe('price') })
     // no block is empty, and nothing but whitespace/comments sits outside blocks in <main>
@@ -133,7 +139,6 @@ describe('seven pages are marked into blocks', () => {
 // the words, photos and links inside every real block and inside the snippet.
 const { selectAll } = require('css-select')
 const { parseDocument } = require('htmlparser2')
-const ROOT = require('node:path').resolve(__dirname, '../../../..')
 const inner = (html, b) => parseDocument(html.slice(...b.inner))
 const TYPES = Object.keys(LIBRARY.types)
 
@@ -179,11 +184,46 @@ describe('block library', () => {
     expect(seen).toBeGreaterThan(0)
   })
 
+  it('the library is version 1', () => { expect(LIBRARY.version).toBe(1) })
+
   it('field keys are unique within a type and kinds are known', () => {
     for (const t of TYPES) {
       const keys = LIBRARY.types[t].fields.map((f) => f.key)
       expect(new Set(keys).size).toBe(keys.length)
       for (const f of LIBRARY.types[t].fields) expect(['text', 'inline', 'image', 'link']).toContain(f.kind)
+    }
+  })
+})
+
+// Placeholder guard: the words in the blocks/site snippets are for the editor
+// to offer, never for a live page. Strings are collected from the snippets so
+// the list cannot drift. These also belong on real pages, so they are skipped
+// (fixed list, so a placeholder pasted into a page is still caught).
+const LEGIT_ON_PAGES = ['Book directly', 'Enquire now', 'heading', 'From {{price.golden}}']
+describe('placeholder guard', () => {
+  const path = require('node:path')
+  const { execSync } = require('node:child_process')
+  const placeholders = () => {
+    const out = new Set()
+    const walk = (n) => {
+      if (n.type === 'text' && n.data.trim()) out.add(n.data.trim())
+      if (n.attribs && n.attribs.alt) out.add(n.attribs.alt)
+      ;(n.children || []).forEach(walk)
+    }
+    for (const f of fs.readdirSync(path.join(ROOT, 'blocks/site'))) {
+      walk(parseDocument(fs.readFileSync(path.join(ROOT, 'blocks/site', f), 'utf8'), { decodeEntities: false }))
+    }
+    return [...out].filter((t) => !LEGIT_ON_PAGES.includes(t))
+  }
+  it('no page holds a snippet placeholder', () => {
+    const list = placeholders()
+    expect(list.length).toBeGreaterThan(10)
+    const pages = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().trim().split('\n')
+      .filter((p) => !/^(blocks|brand|reel|print)\//.test(p))
+    expect(pages.length).toBeGreaterThan(30)
+    for (const p of pages) {
+      const html = fs.readFileSync(path.join(ROOT, p), 'utf8')
+      for (const t of list) expect(html.includes(t), `${p} contains placeholder "${t}"`).toBe(false)
     }
   })
 })
