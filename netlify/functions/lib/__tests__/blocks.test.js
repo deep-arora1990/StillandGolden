@@ -1,6 +1,8 @@
 // Block markers (Task 5): parsed and validated, then stripped by the build.
 import { describe, it, expect } from 'vitest'
 import { createRequire } from 'node:module'
+import fs from 'node:fs'
+import { parse } from 'parse5'
 const require = createRequire(import.meta.url)
 const { parseBlocks, stripBlockMarkers, LIBRARY } = require('../../../../build/blocks.js')
 const { renderPage } = require('../../../../build.js')
@@ -46,5 +48,71 @@ describe('block markers', () => {
     expect(CONFIG.dirs).not.toContain('blocks')
     expect(CONFIG.dirs).not.toContain('build')
     expect(CONFIG.rootFiles.filter((f) => /^(blocks|build)\//.test(f))).toEqual([])
+  })
+})
+
+const PAGES7 = [
+  'packages/glimpse-mini-sessions.html', 'packages/golden-family-photography.html',
+  'packages/golden-cake-smash-photography.html', 'packages/gathered-newborn-photography.html',
+  'packages/bloom-maternity-newborn-photography.html',
+  'offers/in-home-christmas-photos.html', 'offers/sunset-beach-mini-sessions.html',
+]
+
+const find = (n, tag) => {
+  if (n.tagName === tag) return n
+  for (const c of n.childNodes || []) { const r = find(c, tag); if (r) return r }
+  return null
+}
+const cls = (el) => (el.attrs.find((a) => a.name === 'class') || { value: '' }).value.split(/\s+/).filter(Boolean)
+// What each block type may hold, as [tag, required class or null] per element.
+const kind = (el) => {
+  const c = cls(el)
+  if (el.tagName === 'div' && c.includes('label')) return 'intro-label'
+  if (el.tagName === 'h1') return 'intro-h1'
+  if (el.tagName === 'p' && c.includes('lead')) return 'intro-lead'
+  if (el.tagName === 'p' && !c.length) return 'text'
+  if (el.tagName === 'h2') return 'heading'
+  if (el.tagName === 'ul' && c.includes('list')) return 'list'
+  if (el.tagName === 'div' && c.includes('gallery')) return 'gallery'
+  if (el.tagName === 'p' && c.includes('caption')) return 'caption'
+  if (el.tagName === 'figure' && c.includes('client-quote')) return 'quote'
+  if (el.tagName === 'div' && c.includes('price-box')) return 'price'
+  if (el.tagName === 'p' && c.includes('value-note')) return 'price-note'
+  if (el.tagName === 'a' && c.includes('btn')) return 'buttons'
+  if (el.tagName === 'p' && c.includes('note')) return 'note'
+  return null
+}
+const ALLOWED = {
+  intro: ['intro-label', 'intro-h1', 'intro-lead'], text: ['text'], heading: ['heading'], list: ['list'],
+  gallery: ['gallery'], caption: ['caption'], quote: ['quote'], price: ['price', 'price-note'],
+  buttons: ['buttons'], note: ['note'],
+}
+
+describe('seven pages are marked into blocks', () => {
+  it.each(PAGES7)('%s', (page) => {
+    const raw = fs.readFileSync(page, 'utf8')
+    const blocks = parseBlocks(raw)
+    expect(blocks.length).toBeGreaterThan(0)
+    expect(blocks[0].type).toBe('intro')
+    expect(blocks.filter((b) => b.type === 'intro')).toHaveLength(1)
+    const counts = {}
+    for (const b of blocks) expect(b.id).toBe(`${b.type}-${(counts[b.type] = (counts[b.type] || 0) + 1)}`)
+    const main = find(parse(raw, { sourceCodeLocationInfo: true }), 'main')
+    const kids = main.childNodes.filter((n) => n.tagName)
+    const owner = new Map()
+    for (const el of kids) {
+      const { startOffset: s, endOffset: e } = el.sourceCodeLocation
+      const inside = blocks.filter((b) => s >= b.inner[0] && e <= b.inner[1])
+      expect(inside, `<${el.tagName}> at ${s} in exactly one block`).toHaveLength(1)
+      const k = kind(el)
+      expect(k, `<${el.tagName}> at ${s} fits a type`).not.toBeNull()
+      expect(ALLOWED[inside[0].type], `${k} inside ${inside[0].id}`).toContain(k)
+      owner.set(el, inside[0])
+    }
+    // a text block is a run of plain <p>; a price note only follows a price-box
+    kids.forEach((el, i) => { if (kind(el) === 'price-note') expect(kind(kids[i - 1])).toBe('price') })
+    // no block is empty, and nothing but whitespace/comments sits outside blocks in <main>
+    for (const b of blocks) expect([...owner.values()].includes(b), `${b.id} holds an element`).toBe(true)
+    expect(stripBlockMarkers(raw)).not.toMatch(/<!--\s*\/?block/)
   })
 })

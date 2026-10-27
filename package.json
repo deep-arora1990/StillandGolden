@@ -13,6 +13,7 @@
     "stripe": "^22.4.0"
   },
   "devDependencies": {
+    "parse5": "^8.0.1",
     "vitest": "^4.1.11"
   }
 }
