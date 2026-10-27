@@ -14,6 +14,14 @@ export function setExceptionsForTest(list) {
   override = list
 }
 
+// Every distinct phrase `re` finds in `text`, as offenders for `page`, so one
+// run reports everything on a page (Studio records one exception per offender).
+export function pageOffenders(page, text, re) {
+  const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g')
+  const found = [...new Set([...text.matchAll(g)].map((m) => m[0]))]
+  return found.map((f) => ({ page, found: f }))
+}
+
 export function copyRule(id, offenders) {
   const rules = readJson('copy-rules.json').rules
   if (!Object.prototype.hasOwnProperty.call(rules, id)) {

@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
-import { copyRule } from './copy-rules.js'
+import { copyRule, pageOffenders } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
@@ -21,8 +21,7 @@ describe('newborn timing', () => {
   it('no page gives a usual window, a sleepy-baby reason or a cut-off', () => {
     const offenders = []
     for (const f of PAGES) {
-      const m = read(f).match(OLD_ANSWERS)
-      if (m) offenders.push({ page: f, found: m[0] })
+      offenders.push(...pageOffenders(f, read(f), OLD_ANSWERS))
     }
     copyRule('newborn-timing-window', offenders)
   })

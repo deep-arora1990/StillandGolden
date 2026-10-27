@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
-import { copyRule, setExceptionsForTest } from './copy-rules.js'
+import { copyRule, pageOffenders, setExceptionsForTest } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const RULES = JSON.parse(fs.readFileSync(path.join(ROOT, 'checks/copy-rules.json'), 'utf8')).rules
@@ -27,6 +27,16 @@ describe('copy rules', () => {
     expect(() => copyRule('newborn-timing-window', [{ page: GATHERED, found: 'first few weeks' }])).not.toThrow()
     expect(() => copyRule('newborn-timing-window', [{ page: BLOOM, found: 'first few weeks' }])).toThrow(/copy-rule newborn-timing-window/)
     expect(() => copyRule('newborn-timing-window', [{ page: GATHERED, found: 'sleepiest' }])).toThrow(/copy-rule newborn-timing-window/)
+  })
+
+  it('every distinct phrase on one page is reported, once each', () => {
+    const text = 'a first few weeks b sleepiest c first few weeks d'
+    const re = /first few weeks|sleepiest/i
+    expect(pageOffenders(GATHERED, text, re)).toEqual([
+      { page: GATHERED, found: 'first few weeks' },
+      { page: GATHERED, found: 'sleepiest' },
+    ])
+    expect(re.flags).toBe('i')
   })
 
   it('an unknown rule blocks', () => {

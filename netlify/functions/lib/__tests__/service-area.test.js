@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
-import { copyRule } from './copy-rules.js'
+import { copyRule, pageOffenders } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
@@ -29,8 +29,7 @@ describe('service area matches the Google profile', () => {
     const offenders = []
     for (const f of PAGES) {
       const text = read(f).replace(/alt="[^"]*"/g, '')
-      const m = text.match(/Mt Eliza|Mount Eliza/)
-      if (m) offenders.push({ page: f, found: m[0] })
+      offenders.push(...pageOffenders(f, text, /Mt Eliza|Mount Eliza/))
     }
     copyRule('no-mt-eliza', offenders)
   })
@@ -39,8 +38,7 @@ describe('service area matches the Google profile', () => {
     const offenders = []
     for (const f of PAGES) {
       const text = read(f)
-      const m = text.match(/(&middot;|across) Frankston &amp; South-East Melbourne|Cranbourne, Frankston &amp;|Cranbourne, Frankston and|Cranbourne &amp; Frankston|Cranbourne & Frankston|travel across Frankston|across Frankston, Chelsea/)
-      if (m) offenders.push({ page: f, found: m[0] })
+      offenders.push(...pageOffenders(f, text, /(&middot;|across) Frankston &amp; South-East Melbourne|Cranbourne, Frankston &amp;|Cranbourne, Frankston and|Cranbourne &amp; Frankston|Cranbourne & Frankston|travel across Frankston|across Frankston, Chelsea/))
     }
     copyRule('frankston-not-first', offenders)
   })
@@ -56,8 +54,7 @@ describe('service area matches the Google profile', () => {
   it('no doubled-up place names', () => {
     const offenders = []
     for (const f of PAGES) {
-      const m = read(f).match(/Cranbourne, Cranbourne East|Narre Warren, Cranbourne East/)
-      if (m) offenders.push({ page: f, found: m[0] })
+      offenders.push(...pageOffenders(f, read(f), /Cranbourne, Cranbourne East|Narre Warren, Cranbourne East/))
     }
     copyRule('doubled-place-names', offenders)
   })
