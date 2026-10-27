@@ -27,7 +27,7 @@ const CONFIG = {
   mounts: { nav: '<nav id="nav" data-sg-nav></nav>', footer: '<footer data-sg-footer></footer>' },
   // What gets published, besides the .html pages at the top level. Anything
   // not listed here is never served.
-  rootFiles: ['site.css', 'site.js', 'site-tags.js', 'favicon.ico', 'favicon-32.png', 'favicon-192.png',
+  rootFiles: ['site.css', 'blocks.css', 'site.js', 'site-tags.js', 'favicon.ico', 'favicon-32.png', 'favicon-192.png',
     'apple-touch-icon.png', 'og-image.jpg', 'sitemap.xml', 'robots.txt'],
   dirs: ['blog', 'packages', 'offers', 'Images', 'New photos'],
   // Folders that hold photos. In these only the web-ready copies (in a web/ or

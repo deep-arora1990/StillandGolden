@@ -72,50 +72,8 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="/blocks.css">
   <script src="/site.js" defer></script>
-  <style>
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--off-white);
-      color: var(--warm-black);
-      font-family: var(--sans);
-      font-weight: 300;
-      font-size: 15px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    main { max-width: 860px; margin: 0 auto; padding: 140px 48px 40px; }
-    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
-    h1 em, h2 em { font-style: italic; color: var(--gold); }
-    h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 400; margin: 56px 0 18px; }
-    p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
-    .lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
-    ul.list { margin: 0 0 18px 20px; color: #4d453f; }
-    ul.list li { margin-bottom: 8px; }
-    main a { color: var(--warm-black); }
-    .btn {
-      display: inline-block; margin: 12px 0 8px;
-      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--off-white); background: var(--warm-black);
-      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
-    }
-    .btn:hover { background: var(--gold); }
-    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
-    .btn-ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
-
-    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 40px 0 8px; }
-    .gallery img { width: 100%; height: 100%; object-fit: cover; display: block; aspect-ratio: 4/5; }
-    @media (max-width: 600px) { .gallery { grid-template-columns: 1fr 1fr; } .gallery picture:last-child { display: none; } }
-
-    .price-box {
-      border: 1px solid var(--border);
-      padding: 32px 36px; margin: 32px 0;
-      display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px 28px;
-    }
-    .price-box .amount { font-family: var(--serif); font-size: 2rem; }
-    .price-box .detail { font-size: 0.82rem; color: var(--mid); letter-spacing: 0.04em; }
-  </style>
 </head>
 <body>
   <nav id="nav" data-sg-nav></nav>
@@ -136,7 +94,7 @@
       <picture><source srcset="/New%20photos/Newborn/webp/DSC03050.webp" type="image/webp"><img src="/New%20photos/Newborn/web/DSC03050.jpg" alt="Newborn girl asleep on a pink knitted blanket with a teddy bear" loading="lazy" decoding="async"></picture>
       <picture><source srcset="/New%20photos/Newborn/webp/DSC03658.webp" type="image/webp"><img src="/New%20photos/Newborn/web/DSC03658.jpg" alt="Mum holding her newborn close, black and white in-home newborn photography" loading="lazy" decoding="async"></picture>
     </div>
-    <p style="font-size:0.75rem;color:var(--mid);letter-spacing:0.06em;">More real sessions in the <a href="/portfolio" style="color:var(--warm-black);">portfolio</a>.</p>
+    <p class="caption">More real sessions in the <a href="/portfolio">portfolio</a>.</p>
 
     <h2>Ninety minutes, <em>whoever's in the frame</em></h2>
     <p>Gathered isn't only a newborn session &mdash; it's the tier for anything that needs room to breathe:</p>
@@ -191,7 +149,7 @@
     <a href="/book?service=gathered" class="btn">Book directly</a>
     <a href="/#contact" class="btn btn-ghost">Enquire now</a>
 
-    <p style="margin-top:40px;font-size:0.8rem;color:var(--mid);">Have questions first? The <a href="/#faq" style="color:var(--warm-black);">FAQ</a> covers what to wear, timing and how sessions run &mdash; or read <a href="/blog/when-to-book-newborn-photos" style="color:var(--warm-black);">when to book newborn photos</a> and <a href="/blog/preparing-your-home-newborn-session" style="color:var(--warm-black);">how to prepare your home</a> on the blog.</p>
+    <p class="note">Have questions first? The <a href="/#faq">FAQ</a> covers what to wear, timing and how sessions run &mdash; or read <a href="/blog/when-to-book-newborn-photos">when to book newborn photos</a> and <a href="/blog/preparing-your-home-newborn-session">how to prepare your home</a> on the blog.</p>
   </main>
 
   <footer data-sg-footer></footer>

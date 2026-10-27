@@ -1,0 +1,53 @@
+/* Shared styles for the package and offer pages (loaded after site.css).
+   Later stages add About and the blog here. */
+html { scroll-behavior: smooth; }
+body {
+  background: var(--off-white);
+  color: var(--warm-black);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+main { max-width: 860px; margin: 0 auto; padding: 140px 48px 40px; }
+h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
+h1 em, h2 em { font-style: italic; color: var(--gold); }
+h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 400; margin: 56px 0 18px; }
+p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
+.lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
+ul.list { margin: 0 0 18px 20px; color: #4d453f; }
+ul.list li { margin-bottom: 8px; }
+main a { color: var(--warm-black); }
+.btn {
+  display: inline-block; margin: 12px 0 8px;
+  font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--off-white); background: var(--warm-black);
+  padding: 16px 34px; text-decoration: none; transition: background 0.25s;
+}
+.btn:hover { background: var(--gold); }
+.btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
+.btn-ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
+
+.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 40px 0 8px; }
+.gallery img { width: 100%; height: 100%; object-fit: cover; display: block; aspect-ratio: 4/5; }
+@media (max-width: 600px) { .gallery { grid-template-columns: 1fr 1fr; } .gallery picture:last-child { display: none; } }
+
+.price-box {
+  border: 1px solid var(--border);
+  padding: 32px 36px; margin: 32px 0;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px 28px;
+}
+.price-box .amount { font-family: var(--serif); font-size: 2rem; }
+.price-box .detail { font-size: 0.82rem; color: var(--mid); letter-spacing: 0.04em; }
+.price-box .was { font-family: var(--serif); font-size: 1.3rem; color: var(--mid); }
+.price-box .was s { text-decoration-thickness: 1.5px; }
+.value-note { font-size: 0.82rem; color: var(--mid); margin-top: -18px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* The small line under a gallery, and the closing small print. */
+.caption { font-size: 0.75rem; color: var(--mid); letter-spacing: 0.06em; }
+.note { margin-top: 40px; font-size: 0.8rem; color: var(--mid); }
+
+@media (max-width: 700px) { main { padding: 120px 24px 32px; } }

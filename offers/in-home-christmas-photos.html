@@ -72,54 +72,8 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="/blocks.css">
   <script src="/site.js" defer></script>
-  <style>
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--off-white);
-      color: var(--warm-black);
-      font-family: var(--sans);
-      font-weight: 300;
-      font-size: 15px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    main { max-width: 860px; margin: 0 auto; padding: 140px 48px 40px; }
-    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
-    h1 em, h2 em { font-style: italic; color: var(--gold); }
-    h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 400; margin: 56px 0 18px; }
-    p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
-    .lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
-    ul.list { margin: 0 0 18px 20px; color: #4d453f; }
-    ul.list li { margin-bottom: 8px; }
-    main a { color: var(--warm-black); }
-    .btn {
-      display: inline-block; margin: 12px 0 8px;
-      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--off-white); background: var(--warm-black);
-      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
-    }
-    .btn:hover { background: var(--gold); }
-    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
-    .btn-ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
-
-    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 40px 0 8px; }
-    .gallery img { width: 100%; height: 100%; object-fit: cover; display: block; aspect-ratio: 4/5; }
-    @media (max-width: 600px) { .gallery { grid-template-columns: 1fr 1fr; } .gallery picture:last-child { display: none; } }
-
-    .price-box {
-      border: 1px solid var(--border);
-      padding: 32px 36px; margin: 32px 0;
-      display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px 28px;
-    }
-    .price-box .amount { font-family: var(--serif); font-size: 2rem; }
-    .price-box .detail { font-size: 0.82rem; color: var(--mid); letter-spacing: 0.04em; }
-    .price-box .was { font-family: var(--serif); font-size: 1.3rem; color: var(--mid); }
-    .price-box .was s { text-decoration-thickness: 1.5px; }
-    .value-note { font-size: 0.82rem; color: var(--mid); margin-top: -18px; }
-    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  </style>
 </head>
 <body>
   <nav id="nav" data-sg-nav></nav>
@@ -167,7 +121,7 @@
     <a href="/book?service=in-home-christmas" class="btn">Book your date</a>
     <a href="/#contact" class="btn btn-ghost">Enquire now</a>
 
-    <p style="margin-top:40px;font-size:0.8rem;color:var(--mid);">Also this season: <a href="/offers/sunset-beach-mini-sessions" style="color:var(--warm-black);">sunset beach minis</a> at Frankston, Seaford and Carrum, and the <a href="/christmas-minis" style="color:var(--warm-black);">Christmas minis</a> on Sunday 8 November (sold out). See <a href="/offers" style="color:var(--warm-black);">all seasonal offers</a>.</p>
+    <p class="note">Also this season: <a href="/offers/sunset-beach-mini-sessions">sunset beach minis</a> at Frankston, Seaford and Carrum, and the <a href="/christmas-minis">Christmas minis</a> on Sunday 8 November (sold out). See <a href="/offers">all seasonal offers</a>.</p>
   </main>
 
   <footer data-sg-footer></footer>
