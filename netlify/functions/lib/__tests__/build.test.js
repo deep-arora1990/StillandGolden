@@ -3,7 +3,10 @@
 // that stop a broken page from ever being published.
 import { describe, it, expect } from 'vitest'
 import { createRequire } from 'node:module'
+import fs from 'node:fs'
+import path from 'node:path'
 const require = createRequire(import.meta.url)
+const ROOT = path.resolve(__dirname, '../../../..')
 const { CONFIG, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks } = require('../../../../build.js')
 
 describe('price tokens', () => {
@@ -114,5 +117,19 @@ describe('published photos', () => {
   })
   it('ignores references inside HTML comments', () => {
     expect([...referencedFiles('<!-- <img src="Images/your-photo.jpg"> --><style>/* <img src="Images/x.jpg"> */</style><img src="/Images/real.jpg">')]).toEqual(['Images/real.jpg'])
+  })
+})
+
+describe('checks workflow', () => {
+  it('never publishes the workflow folder', () => {
+    expect(CONFIG.rootFiles.some((f) => f.startsWith('.github'))).toBe(false)
+    expect(CONFIG.dirs).not.toContain('.github')
+  })
+  it('a checks workflow runs the tests and the build', () => {
+    const y = fs.readFileSync(path.join(ROOT, '.github/workflows/checks.yml'), 'utf8')
+    expect(y).toMatch(/^name: checks$/m)
+    expect(y).toMatch(/node-version: '22'/)
+    expect(y).toMatch(/npx vitest run/)
+    expect(y).toMatch(/node build\.js/)
   })
 })
