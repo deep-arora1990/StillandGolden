@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "rules": {
+    "newborn-timing-window": {
+      "headline": "Newborn timing gives a window",
+      "hint": "Take out the time window or sleepy-baby reason. Newborn sessions have no set time."
+    },
+    "newborn-timing-answer": {
+      "headline": "Newborn timing answer is missing",
+      "hint": "This page should say there's no set time: two weeks or twelve, they're still your little newborn."
+    },
+    "no-mt-eliza": {
+      "headline": "Mt Eliza is named",
+      "hint": "Mornington replaced Mt Eliza in the service area. A photo description can still say where it was taken."
+    },
+    "frankston-not-first": {
+      "headline": "Frankston leads the location",
+      "hint": "Lead with Cranbourne East. Frankston can stay further along the list."
+    },
+    "doubled-place-names": {
+      "headline": "A place is named twice",
+      "hint": "Cranbourne East already covers Cranbourne here. Take out the repeat."
+    },
+    "suburb-list": {
+      "headline": "Suburb list is missing Officer or Pakenham",
+      "hint": "Suburb lists start from Cranbourne East and include Officer and Pakenham."
+    },
+    "session-lengths": {
+      "headline": "Session length doesn't match the booking",
+      "hint": "Glimpse books 30 minutes and Golden 60. A different length here promises a session the booking can't give."
+    }
+  }
+}

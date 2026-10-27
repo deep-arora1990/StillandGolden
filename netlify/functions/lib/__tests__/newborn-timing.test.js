@@ -7,6 +7,7 @@ import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
+import { copyRule } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
@@ -18,10 +19,16 @@ const OLD_ANSWERS = /first few weeks|sleepiest|no cut-off|first-4-weeks|first 4 
 
 describe('newborn timing', () => {
   it('no page gives a usual window, a sleepy-baby reason or a cut-off', () => {
-    for (const f of PAGES) expect(read(f), f).not.toMatch(OLD_ANSWERS)
+    const offenders = []
+    for (const f of PAGES) {
+      const m = read(f).match(OLD_ANSWERS)
+      if (m) offenders.push({ page: f, found: m[0] })
+    }
+    copyRule('newborn-timing-window', offenders)
   })
 
   it('every page that answers the question says there is no set time, two weeks or twelve', () => {
+    const offenders = []
     for (const f of [
       'index.html',
       'packages.html',
@@ -31,10 +38,11 @@ describe('newborn timing', () => {
       'blog/how-much-does-newborn-photography-cost.html',
     ]) {
       const p = read(f)
-      expect(p, f).toMatch(/no set time/)
-      expect(p, f).toMatch(/two weeks or twelve/)
-      expect(p, f).toMatch(/still (your|a) little newborn/)
+      if (!/no set time/.test(p)) offenders.push({ page: f, found: 'missing: no set time' })
+      if (!/two weeks or twelve/.test(p)) offenders.push({ page: f, found: 'missing: two weeks or twelve' })
+      if (!/still (your|a) little newborn/.test(p)) offenders.push({ page: f, found: 'missing: still your little newborn' })
     }
+    copyRule('newborn-timing-answer', offenders)
   })
 
   it('the homepage FAQ and its search answer say the same thing', () => {

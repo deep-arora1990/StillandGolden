@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
+import { copyRule } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
@@ -25,17 +26,23 @@ const AREA = [
 
 describe('service area matches the Google profile', () => {
   it('no page offers Mt Eliza any more (Mornington replaced it), except where a photo was taken', () => {
+    const offenders = []
     for (const f of PAGES) {
       const text = read(f).replace(/alt="[^"]*"/g, '')
-      expect(text, f).not.toMatch(/Mt Eliza|Mount Eliza/)
+      const m = text.match(/Mt Eliza|Mount Eliza/)
+      if (m) offenders.push({ page: f, found: m[0] })
     }
+    copyRule('no-mt-eliza', offenders)
   })
 
   it('no page leads its location with Frankston', () => {
+    const offenders = []
     for (const f of PAGES) {
       const text = read(f)
-      expect(text, f).not.toMatch(/(&middot;|across) Frankston &amp; South-East Melbourne|Cranbourne, Frankston &amp;|Cranbourne, Frankston and|Cranbourne &amp; Frankston|Cranbourne & Frankston|travel across Frankston|across Frankston, Chelsea/)
+      const m = text.match(/(&middot;|across) Frankston &amp; South-East Melbourne|Cranbourne, Frankston &amp;|Cranbourne, Frankston and|Cranbourne &amp; Frankston|Cranbourne & Frankston|travel across Frankston|across Frankston, Chelsea/)
+      if (m) offenders.push({ page: f, found: m[0] })
     }
+    copyRule('frankston-not-first', offenders)
   })
 
   it('the shared footer on every page starts from Cranbourne East, without Mt Eliza', () => {
@@ -47,18 +54,24 @@ describe('service area matches the Google profile', () => {
   })
 
   it('no doubled-up place names', () => {
-    for (const f of PAGES) expect(read(f), f).not.toMatch(/Cranbourne, Cranbourne East|Narre Warren, Cranbourne East/)
+    const offenders = []
+    for (const f of PAGES) {
+      const m = read(f).match(/Cranbourne, Cranbourne East|Narre Warren, Cranbourne East/)
+      if (m) offenders.push({ page: f, found: m[0] })
+    }
+    copyRule('doubled-place-names', offenders)
   })
 
   it('every suburb list starts from Cranbourne East and names Officer and Pakenham', () => {
+    const offenders = []
     for (const f of PAGES) {
       for (const m of read(f).matchAll(/Clyde North(?:,| &middot;)[^<"]*/g)) {
         const list = m[0]
         if (!/Berwick/.test(list)) continue
-        expect(list, `${f}: ${list}`).toMatch(/Officer/)
-        expect(list, `${f}: ${list}`).toMatch(/Pakenham/)
+        if (!/Officer/.test(list) || !/Pakenham/.test(list)) offenders.push({ page: f, found: list })
       }
     }
+    copyRule('suburb-list', offenders)
   })
 
   it('structured data lists the same areas on every page that has them (the beach minis keep their beaches)', () => {

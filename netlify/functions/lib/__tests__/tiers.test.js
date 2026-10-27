@@ -12,6 +12,7 @@
 // did not work.
 
 // describe/it/expect come from vitest's globals — see vitest.config.js.
+import { copyRule } from './copy-rules.js'
 const { TIERS } = require('../setmore')
 
 describe('tier config', () => {
@@ -97,10 +98,10 @@ describe('session lengths', () => {
     for (const f of pages) {
       const html = fs.readFileSync(path.join(root, f), 'utf8')
       for (const m of html.matchAll(/up to (\d+)[ -]min/gi)) {
-        if (!allowed.includes(Number(m[1]))) wrong.push(`${f}: "${m[0]}"`)
+        if (!allowed.includes(Number(m[1]))) wrong.push({ page: f, found: m[0] })
       }
-      for (const m of html.matchAll(/up to (forty-five|ninety|an hour and a half)/gi)) wrong.push(`${f}: "${m[0]}"`)
+      for (const m of html.matchAll(/up to (forty-five|ninety|an hour and a half)/gi)) wrong.push({ page: f, found: m[0] })
     }
-    expect(wrong).toEqual([])
+    copyRule('session-lengths', wrong)
   })
 })
