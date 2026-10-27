@@ -28,8 +28,16 @@ const CONFIG = {
   // What gets published, besides the .html pages at the top level. Anything
   // not listed here is never served.
   rootFiles: ['site.css', 'site.js', 'site-tags.js', 'favicon.ico', 'favicon-32.png', 'favicon-192.png',
-    'og-image.jpg', 'sitemap.xml', 'robots.txt'],
+    'apple-touch-icon.png', 'og-image.jpg', 'sitemap.xml', 'robots.txt'],
   dirs: ['blog', 'packages', 'offers', 'Images', 'New photos'],
+  // Folders that hold photos. In these only the web-ready copies (in a web/ or
+  // webp/ folder) are published, plus any file a page or stylesheet points to.
+  // The camera originals stay in the repo but off the site.
+  imageDirs: ['Images', 'New photos'],
+  // Photos linked from outside the site (sent emails, templates in Studio) that
+  // no page points to. Empty for now: Studio's database could not be read on
+  // 27 Oct 2026 (access was denied), so emails have NOT been checked yet.
+  keepImages: [],
   // Pages that must stay unlinked (live and in the sitemap, linked from nowhere).
   unlinked: ['/packages/golden-cake-smash-photography'],
 };
@@ -39,7 +47,7 @@ const ROOT = __dirname;
 const OUT = path.join(ROOT, 'dist');
 const PRICES = JSON.parse(fs.readFileSync(path.join(ROOT, CONFIG.prices), 'utf8'));
 const NO_CHROME = process.argv.includes('--no-chrome');
-const { rootFiles: ROOT_FILES, dirs: DIRS } = CONFIG;
+const { rootFiles: ROOT_FILES, dirs: DIRS, imageDirs: IMAGE_DIRS } = CONFIG;
 
 // ── Prices ─────────────────────────────────────────────────────────────────
 // {{price.TIER}}               $475   the session price
@@ -92,12 +100,61 @@ function renderPage(rel, html) {
   return html;
 }
 
+// ── Photos ─────────────────────────────────────────────────────────────────
+// Every local file a page or stylesheet points to, as a repo-relative path with
+// %20 and friends decoded, e.g. "New photos/Family/web/DSC09027 1.jpg". Reads
+// src, srcset (each candidate), content and href values, url(...), and quoted
+// site URLs (which catches the JSON-LD). Links to pages (no file extension) and
+// to other sites are ignored.
+function referencedFiles(html) {
+  const found = new Set();
+  const add = (raw) => {
+    let u = String(raw).trim();
+    u = u.replace(/^https:\/\/(?:www\.)?stillandgolden\.com\.au(?=\/)/, '');
+    if (!u.startsWith('/') || u.startsWith('//')) return;
+    u = u.split(/[?#]/)[0];
+    try { u = decodeURIComponent(u); } catch { /* leave it as written */ }
+    u = u.replace(/^\/+/, '');
+    if (/\.[A-Za-z0-9]+$/.test(path.basename(u))) found.add(u);
+  };
+  for (const m of html.matchAll(/\b(src|srcset|content|href)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi)) {
+    const value = m[2] !== undefined ? m[2] : m[3];
+    if (m[1].toLowerCase() === 'srcset') {
+      value.split(/,\s+|,(?=\/)/).forEach((c) => add(c.trim().split(/\s+/)[0]));
+    } else add(value);
+  }
+  for (const m of html.matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi)) add(m[2]);
+  for (const m of html.matchAll(/["'](https:\/\/(?:www\.)?stillandgolden\.com\.au\/[^"'\s<>]*)["']/g)) add(m[1]);
+  return found;
+}
+
+// Should this file go on the site? Anything outside the photo folders, yes.
+// Inside them: web-ready copies (a web/ or webp/ folder), anything a page
+// points to, and anything on the keep list.
+function publishable(rel, refs) {
+  const p = rel.split(path.sep).join('/');
+  if (!IMAGE_DIRS.some((d) => p.startsWith(d + '/'))) return true;
+  return p.split('/').slice(0, -1).some((seg) => seg === 'web' || seg === 'webp')
+    || refs.has(p) || CONFIG.keepImages.includes(p);
+}
+
+// Link check: nothing may point to a file that isn't being published. Paths are
+// compared exactly, case included, because Netlify's servers are case-sensitive
+// (a .jpg link to a .JPG file works on a Mac and 404s on the live site).
+function checkLinks(refsBy, published) {
+  for (const [page, pointsTo] of refsBy) {
+    for (const p of pointsTo) {
+      if (!published.has(p)) throw new Error(`${page}: points to ${p}, which isn't published`);
+    }
+  }
+}
+
 // ── Copy ───────────────────────────────────────────────────────────────────
-function copy(rel) {
+function copy(rel, rendered) {
   const src = path.join(ROOT, rel);
   const dest = path.join(OUT, rel);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
-  if (rel.endsWith('.html')) fs.writeFileSync(dest, renderPage(rel, fs.readFileSync(src, 'utf8')));
+  if (rendered !== undefined) fs.writeFileSync(dest, rendered);
   else fs.copyFileSync(src, dest);
 }
 function walk(dir) {
@@ -122,14 +179,32 @@ function build() {
   fs.rmSync(OUT, { recursive: true, force: true });
   const tracked = committed();
   const rootPages = fs.readdirSync(ROOT).filter((f) => f.endsWith('.html'));
-  const files = [...rootPages, ...ROOT_FILES, ...DIRS.flatMap(walk)]
+  const candidates = [...rootPages, ...ROOT_FILES, ...DIRS.flatMap(walk)]
     .filter((f) => !tracked || tracked.has(f.split(path.sep).join('/')));
-  for (const f of files) copy(f);
+
+  // Render every page first, so we know which photos the site points to.
+  const rendered = new Map();
+  const refsBy = new Map();
+  for (const f of candidates) {
+    if (f.endsWith('.html')) {
+      rendered.set(f, renderPage(f, fs.readFileSync(path.join(ROOT, f), 'utf8')));
+      refsBy.set(f, referencedFiles(rendered.get(f)));
+    } else if (f.endsWith('.css') && ROOT_FILES.includes(f)) {
+      refsBy.set(f, referencedFiles(fs.readFileSync(path.join(ROOT, f), 'utf8')));
+    }
+  }
+  const refs = new Set([...refsBy.values()].flatMap((s) => [...s]));
+  const files = candidates.filter((f) => publishable(f, refs));
+  const published = new Set(files.map((f) => f.split(path.sep).join('/')));
+
+  checkLinks(refsBy, published);
+
+  for (const f of files) copy(f, rendered.get(f));
   const pages = files.filter((f) => f.endsWith('.html')).length;
-  console.log(`build: ${pages} pages and ${files.length - pages} other files written to dist/${NO_CHROME ? ' (prices only)' : ''}`);
+  console.log(`build: ${pages} pages and ${files.length - pages} other files (${candidates.length - files.length} camera originals left out) written to dist/${NO_CHROME ? ' (prices only)' : ''}`);
 }
 
 if (require.main === module) {
   try { build(); } catch (err) { console.error(`build failed: ${err.message}`); process.exit(1); }
 }
-module.exports = { CONFIG, priceToken, renderPage, pagePath };
+module.exports = { CONFIG, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks };

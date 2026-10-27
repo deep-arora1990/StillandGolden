@@ -4,7 +4,7 @@
 import { describe, it, expect } from 'vitest'
 import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
-const { priceToken, renderPage, pagePath } = require('../../../../build.js')
+const { CONFIG, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks } = require('../../../../build.js')
 
 describe('price tokens', () => {
   it('session price, gallery, valued-at and halves, as shown and as bare numbers', () => {
@@ -69,5 +69,42 @@ describe('pages', () => {
     expect(pagePath('index.html')).toBe('/')
     expect(pagePath('blog/index.html')).toBe('/blog/')
     expect(pagePath('offers/in-home-christmas-photos.html')).toBe('/offers/in-home-christmas-photos')
+  })
+})
+
+describe('published photos', () => {
+  it('finds every local file a page points to, decoded', () => {
+    const refs = referencedFiles(`
+      <source srcset="/New%20photos/Family/webp/DSC09027%201.webp" type="image/webp">
+      <img src="/New%20photos/Family/web/DSC09027%201.jpg">
+      <img srcset="/Images/a.jpg 1x, /Images/b.JPG 2x">
+      <div style="background:url('/Images/hero.jpg')"></div>
+      <meta property="og:image" content="https://stillandgolden.com.au/og-image.jpg">
+      <script type="application/ld+json">{"image": "https://stillandgolden.com.au/Images/christmas-minis-hero.jpg"}</script>
+      <img src="https://fonts.gstatic.com/x.png"><a href="/packages">x</a>`)
+    expect([...refs].sort()).toEqual([
+      'Images/a.jpg', 'Images/b.JPG', 'Images/christmas-minis-hero.jpg', 'Images/hero.jpg',
+      'New photos/Family/web/DSC09027 1.jpg', 'New photos/Family/webp/DSC09027 1.webp', 'og-image.jpg',
+    ])
+  })
+  it('publishes web/ and webp/ copies and anything referenced, never camera originals', () => {
+    const refs = new Set(['Images/christmas-minis-hero.jpg'])
+    expect(publishable('New photos/Family/web/DSC02307.jpg', refs)).toBe(true)
+    expect(publishable('New photos/Family/webp/DSC02307.webp', refs)).toBe(true)
+    expect(publishable('New photos/Family/DSC02307.jpg', refs)).toBe(false)
+    expect(publishable('Images/christmas-minis-hero.jpg', refs)).toBe(true)
+    expect(publishable('Images/DSC03550.jpg', refs)).toBe(false)
+    expect(publishable('blog/index.html', refs)).toBe(true)
+  })
+  // Every page links this icon; it was tracked but never published, so it 404ed.
+  it('publishes the apple touch icon', () => {
+    expect(CONFIG.rootFiles).toContain('apple-touch-icon.png')
+  })
+  it('stops on a link whose case differs from the published file', () => {
+    const published = new Set(['New photos/Family/web/DSC05234_websize.JPG'])
+    const page = (p) => new Map([['packages/x.html', new Set([p])]])
+    expect(() => checkLinks(page('New photos/Family/web/DSC05234_websize.jpg'), published))
+      .toThrow("packages/x.html: points to New photos/Family/web/DSC05234_websize.jpg, which isn't published")
+    expect(() => checkLinks(page('New photos/Family/web/DSC05234_websize.JPG'), published)).not.toThrow()
   })
 })
