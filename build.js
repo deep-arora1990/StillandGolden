@@ -16,6 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { parseBlocks, stripBlockMarkers, LIBRARY } = require('./build/blocks');
 
 // ── Site settings ──────────────────────────────────────────────────────────
 // Everything specific to Still & Golden is here, so another site can reuse
@@ -79,6 +80,13 @@ const pagePath = (rel) => {
 };
 
 function renderPage(rel, html) {
+  // Block markers: validate, then strip, so they never reach the published page.
+  let blocks;
+  try { blocks = parseBlocks(html); } catch (e) { throw new Error(`${rel}: ${e.message}`); }
+  for (const b of blocks) {
+    if (!Object.hasOwn(LIBRARY.types, b.type)) throw new Error(`${rel}: unknown block type "${b.type}"`);
+  }
+  html = stripBlockMarkers(html);
   html = html.replace(/\{\{\s*(price\.[\w.-]+)\s*\}\}/g, (_, expr) => {
     try { return priceToken(expr); } catch (e) { throw new Error(`${rel}: {{${expr}}}: ${e.message}`); }
   });
