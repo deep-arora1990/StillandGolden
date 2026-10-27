@@ -109,6 +109,18 @@ describe('seven pages are marked into blocks', () => {
       expect(ALLOWED[inside[0].type], `${k} inside ${inside[0].id}`).toContain(k)
       owner.set(el, inside[0])
     }
+    // cardinality and order, per block
+    const SHAPE = {
+      intro: /^intro-label intro-h1 intro-lead$/, heading: /^heading$/, list: /^list$/, gallery: /^gallery$/,
+      caption: /^caption$/, quote: /^quote$/, note: /^note$/, price: /^price( price-note)?$/,
+      text: /^text( text)*$/, buttons: /^buttons( buttons)*$/,
+    }
+    for (const b of blocks) {
+      const mine = kids.filter((el) => owner.get(el) === b).map(kind)
+      expect(mine.length, `${b.id} is not empty`).toBeGreaterThan(0)
+      expect(mine.join(' '), `${b.id} shape`).toMatch(SHAPE[b.type])
+    }
+    blocks.forEach((b, i) => { if (b.type === 'text') expect(blocks[i - 1]?.type, `${b.id} follows a split text run`).not.toBe('text') })
     // a text block is a run of plain <p>; a price note only follows a price-box
     kids.forEach((el, i) => { if (kind(el) === 'price-note') expect(kind(kids[i - 1])).toBe('price') })
     // no block is empty, and nothing but whitespace/comments sits outside blocks in <main>
