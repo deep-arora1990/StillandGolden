@@ -4,8 +4,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
+import { execSync } from 'node:child_process'
 
 const ROOT = path.resolve(__dirname, '../../../..')
+const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
 const P = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/prices.json'), 'utf8'))
 async function fresh(mod) { vi.resetModules(); process.env.SETMORE_API_KEY = 'test'; return await import(mod) }
 
@@ -33,6 +35,16 @@ describe('the booking code charges what prices.json says', () => {
     for (const k of ['in-home-christmas', 'sunset-beach-minis']) {
       expect(P[k].valued, k).toBe(P.glimpse.price + P.glimpse.gallery)
     }
+  })
+})
+
+describe('no page types a price into its structured data', () => {
+  it('no page types a price into its structured data', () => {
+    const pages = execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' })
+      .split('\n').filter((f) => f && !/^(brand|reel|print)\//.test(f))
+    const typed = pages.flatMap((f) => [...read(f).matchAll(/"(minPrice|maxPrice|lowPrice|highPrice|price)":\s*"?\d/g)]
+      .map(() => f))
+    expect(typed).toEqual([])
   })
 })
 
