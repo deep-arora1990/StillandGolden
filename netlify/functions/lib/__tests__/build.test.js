@@ -7,7 +7,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 const require = createRequire(import.meta.url)
 const ROOT = path.resolve(__dirname, '../../../..')
-const { CONFIG, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks } = require('../../../../build.js')
+const { CONFIG, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks, reportFailure } = require('../../../../build.js')
 
 describe('price tokens', () => {
   it('session price, gallery, valued-at and halves, as shown and as bare numbers', () => {
@@ -133,6 +133,19 @@ describe('checks workflow', () => {
     expect(y).toMatch(/node build\.js/)
     expect(y).toMatch(/^permissions:\n  contents: read$/m)
     expect(y).toMatch(/timeout-minutes: 10/)
+  })
+  it('reports failing tests as annotations', () => {
+    const y = fs.readFileSync(path.join(ROOT, '.github/workflows/checks.yml'), 'utf8')
+    expect(y).toMatch(/npx vitest run --reporter=default --reporter=github-actions/)
+  })
+  it('build failure is reported as a GitHub annotation', () => {
+    const out = []
+    const write = (s) => out.push(s)
+    reportFailure(new Error('bad 100% token\r\nline two'), { GITHUB_ACTIONS: 'true' }, write)
+    expect(out.join('')).toContain('::error title=Site build::bad 100%25 token%0D%0Aline two')
+    const quiet = []
+    reportFailure(new Error('x'), {}, (s) => quiet.push(s))
+    expect(quiet.join('')).not.toContain('::error')
   })
   it('keeps the photo the Christmas minis email links directly', () => {
     expect(CONFIG.keepImages).toContain('Images/christmas-minis-hero.jpg')

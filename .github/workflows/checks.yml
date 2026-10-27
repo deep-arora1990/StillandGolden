@@ -20,5 +20,5 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npx vitest run
+      - run: npx vitest run --reporter=default --reporter=github-actions
       - run: node build.js

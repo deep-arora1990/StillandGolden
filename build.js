@@ -235,7 +235,17 @@ function build() {
   console.log(`build: ${pages} pages and ${files.length - pages} other files (${candidates.length - files.length} camera originals left out) written to dist/${NO_CHROME ? ' (prices only)' : ''}`);
 }
 
-if (require.main === module) {
-  try { build(); } catch (err) { console.error(`build failed: ${err.message}`); process.exit(1); }
+// Prints the failure, and under GitHub Actions also as an annotation on the
+// check run (the Website tab reads it). %, CR and LF must be escaped.
+function reportFailure(err, env = process.env, write = (s) => process.stdout.write(s)) {
+  console.error(`build failed: ${err.message}`);
+  if (env.GITHUB_ACTIONS === 'true') {
+    const msg = String(err.message).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+    write(`::error title=Site build::${msg}\n`);
+  }
 }
-module.exports = { CONFIG, writeCmsBundle, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks };
+
+if (require.main === module) {
+  try { build(); } catch (err) { reportFailure(err); process.exit(1); }
+}
+module.exports = { CONFIG, writeCmsBundle, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks, reportFailure };
