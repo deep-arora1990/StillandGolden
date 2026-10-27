@@ -1,1 +1,31 @@
-{ "types": { "intro": {}, "text": {}, "heading": {}, "list": {}, "gallery": {}, "caption": {}, "quote": {}, "price": {}, "buttons": {}, "note": {} } }
+{
+  "types": {
+    "intro": { "label": "Page opening", "families": ["site"], "addable": false, "snippet": "blocks/site/intro.html", "fields": [
+      { "key": "label", "selector": ".label", "kind": "text", "repeat": false, "optional": false },
+      { "key": "title", "selector": "h1", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "lead", "selector": "p.lead", "kind": "inline", "repeat": false, "optional": false } ] },
+    "text": { "label": "Text", "families": ["site"], "addable": true, "snippet": "blocks/site/text.html", "fields": [
+      { "key": "paragraphs", "selector": "p", "kind": "inline", "repeat": true, "optional": false } ] },
+    "heading": { "label": "Heading", "families": ["site"], "addable": true, "snippet": "blocks/site/heading.html", "fields": [
+      { "key": "title", "selector": "h2", "kind": "inline", "repeat": false, "optional": false } ] },
+    "list": { "label": "List", "families": ["site"], "addable": true, "snippet": "blocks/site/list.html", "fields": [
+      { "key": "items", "selector": "ul.list > li", "kind": "inline", "repeat": true, "optional": false } ] },
+    "gallery": { "label": "Photo gallery", "families": ["site"], "addable": true, "snippet": "blocks/site/gallery.html", "fields": [
+      { "key": "photos", "selector": ".gallery > picture", "kind": "image", "repeat": true, "min": 3, "max": 3, "optional": false } ] },
+    "caption": { "label": "Gallery caption", "families": ["site"], "addable": true, "snippet": "blocks/site/caption.html", "fields": [
+      { "key": "text", "selector": "p.caption", "kind": "inline", "repeat": false, "optional": false } ] },
+    "quote": { "label": "Client quote", "families": ["site"], "addable": true, "snippet": "blocks/site/quote.html", "fields": [
+      { "key": "quote", "selector": "blockquote", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "credit", "selector": "figcaption", "kind": "text", "repeat": false, "optional": false } ] },
+    "price": { "label": "Price box", "families": ["site"], "addable": true, "snippet": "blocks/site/price.html", "fields": [
+      { "key": "was", "selector": ".price-box .was s", "kind": "inline", "repeat": false, "optional": true },
+      { "key": "amount", "selector": ".price-box .amount", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "detail", "selector": ".price-box .detail", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "valueNote", "selector": "p.value-note", "kind": "inline", "repeat": false, "optional": true } ] },
+    "buttons": { "label": "Buttons", "families": ["site"], "addable": true, "snippet": "blocks/site/buttons.html", "fields": [
+      { "key": "primary", "selector": "a.btn:not(.btn-ghost)", "kind": "link", "repeat": false, "optional": false },
+      { "key": "secondary", "selector": "a.btn-ghost", "kind": "link", "repeat": false, "optional": true } ] },
+    "note": { "label": "Small print", "families": ["site"], "addable": true, "snippet": "blocks/site/note.html", "fields": [
+      { "key": "text", "selector": "p.note", "kind": "inline", "repeat": false, "optional": false } ] }
+  }
+}

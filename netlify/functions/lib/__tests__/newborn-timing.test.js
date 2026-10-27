@@ -12,7 +12,7 @@ const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
 const PAGES = execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' })
   .split('\n')
-  .filter((f) => f && !/^(brand|reel|print)\//.test(f))
+  .filter((f) => f && !/^(brand|reel|print|blocks)\//.test(f))
 
 const OLD_ANSWERS = /first few weeks|sleepiest|no cut-off|first-4-weeks|first 4 weeks|first four weeks|weeks of birth|book (in|during) (their|the) second or third trimester|second or third trimester to secure|most families book Bloom in the second or third trimester|usually in the second or third trimester|Second trimester:|Third trimester:/i
 

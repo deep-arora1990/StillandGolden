@@ -128,3 +128,62 @@ describe('seven pages are marked into blocks', () => {
     expect(stripBlockMarkers(raw)).not.toMatch(/<!--\s*\/?block/)
   })
 })
+
+// Block library (Task 7): one snippet per type, and field selectors that find
+// the words, photos and links inside every real block and inside the snippet.
+const { selectAll } = require('css-select')
+const { parseDocument } = require('htmlparser2')
+const ROOT = require('node:path').resolve(__dirname, '../../../..')
+const inner = (html, b) => parseDocument(html.slice(...b.inner))
+const TYPES = Object.keys(LIBRARY.types)
+
+describe('block library', () => {
+  it.each(TYPES)('%s: snippet holds exactly one block of its type, id <type>-new', (type) => {
+    const entry = LIBRARY.types[type]
+    expect(entry.snippet).toBe(`blocks/site/${type}.html`)
+    expect(entry.label).toBeTruthy()
+    expect(entry.families).toEqual(['site'])
+    expect(entry.addable).toBe(type !== 'intro')
+    const html = fs.readFileSync(require('node:path').join(ROOT, entry.snippet), 'utf8')
+    const blocks = parseBlocks(html)
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0].type).toBe(type)
+    expect(blocks[0].id).toBe(`${type}-new`)
+    expect(html).not.toMatch(/\$\s*\d/)
+    expect(html).not.toMatch(/—/)
+    // the same shape the pages are held to
+    const el = find(parse(html.slice(...blocks[0].inner)), 'body').childNodes.filter((n) => n.tagName)
+    expect(el.length).toBeGreaterThan(0)
+    for (const e of el) expect(ALLOWED[type], `${type}: ${kind(e)}`).toContain(kind(e))
+  })
+
+  it.each(TYPES)('%s: every field selector matches inside the snippet and every real block', (type) => {
+    const entry = LIBRARY.types[type]
+    const check = (html, b, where) => {
+      const dom = inner(html, b)
+      for (const f of entry.fields) {
+        const n = selectAll(f.selector, dom).length
+        if (!f.optional) expect(n, `${where} ${b.id} field ${f.key}`).toBeGreaterThan(0)
+        if (!f.repeat) expect(n, `${where} ${b.id} field ${f.key} is single`).toBeLessThanOrEqual(1)
+        if (f.min !== undefined) expect(n, `${where} ${b.id} ${f.key} min`).toBeGreaterThanOrEqual(f.min)
+        if (f.max !== undefined) expect(n, `${where} ${b.id} ${f.key} max`).toBeLessThanOrEqual(f.max)
+      }
+    }
+    const snip = fs.readFileSync(require('node:path').join(ROOT, entry.snippet), 'utf8')
+    for (const b of parseBlocks(snip)) check(snip, b, 'snippet')
+    let seen = 0
+    for (const page of PAGES7) {
+      const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
+      for (const b of parseBlocks(raw).filter((x) => x.type === type)) { check(raw, b, page); seen++ }
+    }
+    expect(seen).toBeGreaterThan(0)
+  })
+
+  it('field keys are unique within a type and kinds are known', () => {
+    for (const t of TYPES) {
+      const keys = LIBRARY.types[t].fields.map((f) => f.key)
+      expect(new Set(keys).size).toBe(keys.length)
+      for (const f of LIBRARY.types[t].fields) expect(['text', 'inline', 'image', 'link']).toContain(f.kind)
+    }
+  })
+})

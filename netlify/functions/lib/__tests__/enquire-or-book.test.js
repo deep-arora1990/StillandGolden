@@ -11,7 +11,7 @@ const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
 const PAGES = execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' })
   .split('\n')
-  .filter((f) => f && !/^(brand|reel|print)\//.test(f))
+  .filter((f) => f && !/^(brand|reel|print|blocks)\//.test(f))
 
 describe('enquire or book', () => {
   it('the homepage contact section offers booking online as well as the form', () => {
