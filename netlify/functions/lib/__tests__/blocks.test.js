@@ -222,6 +222,32 @@ describe('block library', () => {
     if (!/^package-row-/.test(type)) expect(seen).toBeGreaterThan(0)
   })
 
+  // Studio's setRepeat trims and extends a repeat field by position, so its
+  // matches must be one unbroken run: same parent, no other element between.
+  it.each(TYPES)('%s: every repeat field is one unbroken run of siblings', (type) => {
+    const entry = LIBRARY.types[type]
+    const run = (html, b, where) => {
+      const dom = inner(html, b)
+      for (const f of entry.fields.filter((x) => x.repeat)) {
+        const hits = selectAll(f.selector, dom)
+        if (hits.length < 2) continue
+        const parent = hits[0].parent
+        for (const h of hits) expect(h.parent, `${where} ${b.id} ${f.key}: same parent`).toBe(parent)
+        const els = parent.children.filter((c) => c.type === 'tag' || c.type === 'script' || c.type === 'style')
+        const at = hits.map((h) => els.indexOf(h)).sort((x, y) => x - y)
+        expect(at[at.length - 1] - at[0], `${where} ${b.id} ${f.key}: no element between`).toBe(hits.length - 1)
+      }
+    }
+    if (entry.snippet) {
+      const snip = fs.readFileSync(require('node:path').join(ROOT, entry.snippet), 'utf8')
+      for (const b of parseBlocks(snip)) run(snip, b, 'snippet')
+    }
+    for (const page of PAGES) {
+      const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
+      for (const b of parseBlocks(raw).filter((x) => x.type === type)) run(raw, b, page)
+    }
+  })
+
   it('the pages list holds the eleven files in order, each in git', () => {
     const { execSync } = require('node:child_process')
     const tracked = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().split('\n')
@@ -250,23 +276,29 @@ describe('block library', () => {
 // to offer, never for a live page. Strings are collected from the snippets so
 // the list cannot drift. These also belong on real pages, so they are skipped
 // (fixed list, so a placeholder pasted into a page is still caught).
-const LEGIT_ON_PAGES = ['Book directly', 'Enquire now', 'heading', 'From {{price.golden}}',
+const LEGIT_ON_PAGES = ['heading', 'From {{price.golden}}',
   'Glimpse', 'Golden', 'Gathered', 'From {{price.glimpse}}', 'From {{price.gathered}}', 'From', '{{price.golden}}']
+const placeholders = () => {
+  const path = require('node:path')
+  const out = new Set()
+  const walk = (n, inLink) => {
+    // link labels are real defaults: mirrors Studio's placeholderWarnings (inline.js)
+    const link = inLink || n.name === 'a'
+    if (n.type === 'text' && !link && n.data.trim()) out.add(n.data.trim())
+    if (n.attribs && n.attribs.alt) out.add(n.attribs.alt)
+    ;(n.children || []).forEach((c) => walk(c, link))
+  }
+  for (const f of fs.readdirSync(path.join(ROOT, 'blocks/site'))) {
+    walk(parseDocument(fs.readFileSync(path.join(ROOT, 'blocks/site', f), 'utf8'), { decodeEntities: false }))
+  }
+  return [...out].filter((t) => !LEGIT_ON_PAGES.includes(t))
+}
+// The guard's check: every placeholder the page still holds.
+const placeholderHits = (html, list) => list.filter((t) => html.includes(t))
+
 describe('placeholder guard', () => {
   const path = require('node:path')
   const { execSync } = require('node:child_process')
-  const placeholders = () => {
-    const out = new Set()
-    const walk = (n) => {
-      if (n.type === 'text' && n.data.trim()) out.add(n.data.trim())
-      if (n.attribs && n.attribs.alt) out.add(n.attribs.alt)
-      ;(n.children || []).forEach(walk)
-    }
-    for (const f of fs.readdirSync(path.join(ROOT, 'blocks/site'))) {
-      walk(parseDocument(fs.readFileSync(path.join(ROOT, 'blocks/site', f), 'utf8'), { decodeEntities: false }))
-    }
-    return [...out].filter((t) => !LEGIT_ON_PAGES.includes(t))
-  }
   it('no page holds a snippet placeholder', () => {
     const list = placeholders()
     expect(list.length).toBeGreaterThan(10)
@@ -275,7 +307,38 @@ describe('placeholder guard', () => {
     expect(pages.length).toBeGreaterThan(30)
     for (const p of pages) {
       const html = fs.readFileSync(path.join(ROOT, p), 'utf8')
-      for (const t of list) expect(html.includes(t), `${p} contains placeholder "${t}"`).toBe(false)
+      expect(placeholderHits(html, list), `${p} contains a placeholder`).toEqual([])
     }
+  })
+  it('link labels are real defaults, not placeholders', () => {
+    const list = placeholders()
+    for (const t of ['See Glimpse &rarr;', 'See Golden &rarr;', 'See Gathered &rarr;', 'Book this', 'Find out more',
+      'Book directly', 'Enquire now']) expect(list).not.toContain(t)
+  })
+  // Pins the website guard to Studio's placeholderWarnings: a snippet whose
+  // sample words are all filled in publishes, links and one-word text untouched.
+  const ADDABLE = TYPES.filter((t) => LIBRARY.types[t].addable)
+  it.each(ADDABLE)('%s: a filled-in snippet added to a page passes the guard', (type) => {
+    const snip = fs.readFileSync(path.join(ROOT, LIBRARY.types[type].snippet), 'utf8')
+    const edits = []
+    const walk = (n, inLink) => {
+      const link = inLink || n.name === 'a'
+      if (n.type === 'text' && !link && n.data.trim().split(/\s+/).length >= 2) edits.push(n)
+      ;(n.children || []).forEach((c) => walk(c, link))
+    }
+    walk(parseDocument(snip, { decodeEntities: false, withStartIndices: true, withEndIndices: true }), false)
+    let filled = snip
+    let n = 0
+    for (const t of [...edits].sort((a, b) => b.startIndex - a.startIndex)) {
+      filled = filled.slice(0, t.startIndex) + `Real copy here ${++n}` + filled.slice(t.startIndex + t.data.length)
+    }
+    // Studio flags a sample alt too, so the editor fills those in as well
+    filled = filled.replace(/alt="[^"]*"/g, () => `alt="Real photo ${++n}"`)
+    const about = fs.readFileSync(path.join(ROOT, 'about.html'), 'utf8')
+    const at = about.indexOf('</main>')
+    expect(at).toBeGreaterThan(0)
+    const page = about.slice(0, at) + filled + about.slice(at)
+    expect(parseBlocks(page).map((b) => b.id)).toContain(`${type}-new`)
+    expect(placeholderHits(page, placeholders())).toEqual([])
   })
 })
