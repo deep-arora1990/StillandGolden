@@ -3,10 +3,12 @@
 // package row's second card does not stack below its first.
 // Run `node build.js` first, then:
 //   PUPPETEER_CORE=/path/to/node_modules/puppeteer-core node netlify/functions/lib/__tests__/snippet-sheet.mjs [outDir]
+// outDir defaults to snippet-sheets in the system temp folder, outside the repo.
 import { createRequire } from 'node:module'
 import fs from 'node:fs'
 import path from 'node:path'
 import http from 'node:http'
+import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 const require = createRequire(import.meta.url)
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..')
@@ -14,7 +16,7 @@ const puppeteer = require(process.env.PUPPETEER_CORE || 'puppeteer-core')
 const { renderPage } = require(path.join(ROOT, 'build.js'))
 const { LIBRARY } = require(path.join(ROOT, 'build/blocks.js'))
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-const out = process.argv[2] || path.join(ROOT, 'snippet-sheets')
+const out = process.argv[2] || path.join(os.tmpdir(), 'snippet-sheets')
 fs.mkdirSync(out, { recursive: true })
 
 const base = fs.readFileSync(path.join(ROOT, 'dist/packages/glimpse-mini-sessions.html'), 'utf8')
@@ -32,11 +34,12 @@ const server = http.createServer((req, res) => {
   res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' })
   fs.createReadStream(f).pipe(res)
 })
-await new Promise((r) => server.listen(0, '127.0.0.1', r))
-const origin = `http://127.0.0.1:${server.address().port}`
 let failed = false
-const browser = await puppeteer.launch({ executablePath: CHROME, headless: true })
+let browser
 try {
+  await new Promise((r) => server.listen(0, '127.0.0.1', r))
+  const origin = `http://127.0.0.1:${server.address().port}`
+  browser = await puppeteer.launch({ executablePath: CHROME, headless: true })
   for (const w of [1280, 390]) {
     const tab = await browser.newPage()
     await tab.setViewport({ width: w, height: 900 })
@@ -62,8 +65,9 @@ try {
     }
     await tab.close()
   }
+  console.log('sheets in', out)
 } finally {
-  await browser.close()
+  await browser?.close()
   server.close()
   fs.rmSync(file, { force: true })
 }
