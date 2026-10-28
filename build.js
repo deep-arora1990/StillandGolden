@@ -28,7 +28,7 @@ const { checkPortfolio } = require('./build/portfolio');
 // this script by changing only this block (Deep Arora Studios does).
 const CONFIG = {
   prices: 'data/prices.json',
-  portfolio: 'data/portfolio.json',               // the portfolio page's tabs and photos
+  portfolio: 'data/portfolio.json',               // the portfolio page's tabs and photos (null: no portfolio)
   chrome: require('./build/site-chrome'),          // menu, footer, slim bar
   // Placeholders in the pages that the menu and footer replace.
   mounts: { nav: '<nav id="nav" data-sg-nav></nav>', footer: '<footer data-sg-footer></footer>' },
@@ -54,7 +54,19 @@ const CONFIG = {
 const ROOT = __dirname;
 const OUT = path.join(ROOT, 'dist');
 const PRICES = JSON.parse(fs.readFileSync(path.join(ROOT, CONFIG.prices), 'utf8'));
-const PORTFOLIO = JSON.parse(fs.readFileSync(path.join(ROOT, CONFIG.portfolio), 'utf8'));
+
+// The portfolio data as { data, text }, or null when the site has none (the
+// setting is null, or the file isn't there). With none, nothing is checked
+// and the renderer gets no data, so a page with a portfolio mount still stops
+// the build ("no portfolio data").
+function readPortfolio(file) {
+  if (!file) return null;
+  const p = path.join(ROOT, file);
+  if (!fs.existsSync(p)) return null;
+  const text = fs.readFileSync(p, 'utf8');
+  return { data: JSON.parse(text), text };
+}
+const PORTFOLIO = readPortfolio(CONFIG.portfolio)?.data ?? null;
 const NO_CHROME = process.argv.includes('--no-chrome');
 const { rootFiles: ROOT_FILES, dirs: DIRS, imageDirs: IMAGE_DIRS } = CONFIG;
 
@@ -136,13 +148,13 @@ function checkLinks(refsBy, published) {
 // map stands in for a bundler: the source of the four build files plus the
 // JSON they read. dist/_cms/version.json says which commit it was built from.
 // SGRender version 2 (stage 3) added the portfolio: SGRender.portfolio is the
-// live data/portfolio.json, SGRender.checkPortfolio its rules, and
+// live data/portfolio.json (null on a site without one), SGRender.checkPortfolio its rules, and
 // renderPage(rel, html, { portfolio }) renders a page with other data.
 function commitSha() {
   if (/^[0-9a-f]{40}$/.test(process.env.COMMIT_REF || '')) return process.env.COMMIT_REF;
   return require('child_process').execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim();
 }
-function writeCmsBundle(dir) {
+function writeCmsBundle(dir, { portfolio = CONFIG.portfolio } = {}) {
   const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
   const modules = {
     './render': read('build/render.js'),
@@ -153,7 +165,7 @@ function writeCmsBundle(dir) {
   const json = {
     '../blocks/library.json': read('blocks/library.json'),
     '../data/prices.json': read(CONFIG.prices),
-    '../data/portfolio.json': read(CONFIG.portfolio),
+    '../data/portfolio.json': readPortfolio(portfolio)?.text ?? 'null',
   };
   const lit = (o) => '{' + Object.entries(o).map(([k, v]) => `${JSON.stringify(k)}: ${v}`).join(',\n') + '}';
   const wrap = (src) => `function (module, exports, require) {\n${src}\n}`;
@@ -223,7 +235,7 @@ function committed() {
 }
 
 function build() {
-  checkPortfolio(PORTFOLIO);
+  if (PORTFOLIO) checkPortfolio(PORTFOLIO);
   fs.rmSync(OUT, { recursive: true, force: true });
   const tracked = committed();
   const rootPages = fs.readdirSync(ROOT).filter((f) => f.endsWith('.html'));
@@ -266,4 +278,4 @@ function reportFailure(err, env = process.env, write = (s) => process.stdout.wri
 if (require.main === module) {
   try { build(); } catch (err) { reportFailure(err); process.exit(1); }
 }
-module.exports = { CONFIG, writeCmsBundle, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks, reportFailure };
+module.exports = { CONFIG, readPortfolio, writeCmsBundle, priceToken, renderPage, pagePath, referencedFiles, publishable, checkLinks, reportFailure };

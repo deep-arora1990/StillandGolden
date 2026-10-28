@@ -10,7 +10,7 @@ import { execFileSync } from 'child_process';
 
 const require_ = createRequire(import.meta.url);
 const ROOT = path.resolve(__dirname, '../../../..');
-const { CONFIG, renderPage, writeCmsBundle } = require_(path.join(ROOT, 'build.js'));
+const { CONFIG, renderPage, writeCmsBundle, readPortfolio } = require_(path.join(ROOT, 'build.js'));
 const { parseBlocks } = require_(path.join(ROOT, 'build/blocks.js'));
 const library = JSON.parse(fs.readFileSync(path.join(ROOT, 'blocks/library.json'), 'utf8'));
 const prices = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/prices.json'), 'utf8'));
@@ -85,6 +85,22 @@ describe('the /_cms/ bundle', () => {
     expect(block).toMatch(/Cache-Control = "public, max-age=0, must-revalidate"/);
     expect(block).toMatch(/Access-Control-Allow-Origin = "\*"/);
     expect(block).toMatch(/X-Robots-Tag = "noindex"/);
+  });
+  it('a site with no portfolio (CONFIG portfolio null, or no file) builds a bundle without one', () => {
+    expect(readPortfolio(null)).toBe(null);
+    expect(readPortfolio('data/no-such-portfolio.json')).toBe(null);
+    expect(readPortfolio(CONFIG.portfolio)).toEqual({ data: portfolio, text: fs.readFileSync(path.join(ROOT, 'data/portfolio.json'), 'utf8') });
+    for (const none of [null, 'data/no-such-portfolio.json']) {
+      const d = fs.mkdtempSync(path.join(os.tmpdir(), 'cms-'));
+      writeCmsBundle(d, { portfolio: none });
+      const ctx = { self: {} };
+      vm.runInNewContext(fs.readFileSync(path.join(d, '_cms/render.js'), 'utf8'), ctx);
+      const R = ctx.self.SGRender;
+      expect(R.portfolio, String(none)).toBe(null);
+      const about = fs.readFileSync(path.join(ROOT, 'about.html'), 'utf8');
+      expect(R.renderPage('about.html', about), String(none)).toBe(renderPage('about.html', about));
+      expect(() => R.renderPage('x.html', '<div><!-- include:portfolio-grid --></div>'), String(none)).toThrow('x.html: no portfolio data');
+    }
   });
   it('no page or the sitemap mentions /_cms/', () => {
     for (const rel of [...tracked.filter(isPage), 'sitemap.xml']) {
