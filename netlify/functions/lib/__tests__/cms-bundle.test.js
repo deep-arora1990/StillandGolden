@@ -14,6 +14,7 @@ const { CONFIG, renderPage, writeCmsBundle } = require_(path.join(ROOT, 'build.j
 const { parseBlocks } = require_(path.join(ROOT, 'build/blocks.js'));
 const library = JSON.parse(fs.readFileSync(path.join(ROOT, 'blocks/library.json'), 'utf8'));
 const prices = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/prices.json'), 'utf8'));
+const portfolio = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/portfolio.json'), 'utf8'));
 
 const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: ROOT, encoding: 'utf8' }).split('\0').filter(Boolean);
 const isPage = (f) => f.endsWith('.html')
@@ -38,10 +39,20 @@ describe('the /_cms/ bundle', () => {
       expect(SG.renderPage(rel, src), rel).toBe(renderPage(rel, src));
     }
   });
-  it('carries today\'s prices and library', () => {
+  it('carries today\'s prices, library and portfolio', () => {
     expect(SG.prices).toEqual(prices);
     expect(SG.library).toEqual(library);
-    expect(SG.version).toBe(1);
+    expect(SG.portfolio).toEqual(portfolio);
+    expect(SG.version).toBe(2);
+  });
+  it('renders the portfolio with the data it is given, and checks it like the build', () => {
+    const src = fs.readFileSync(path.join(ROOT, 'portfolio.html'), 'utf8');
+    const one = { version: 1, tabs: [{ ...portfolio.tabs[0], photos: portfolio.tabs[0].photos.slice(0, 1) }] };
+    const out = SG.renderPage('portfolio.html', src, { portfolio: one });
+    expect(out).toBe(renderPage('portfolio.html', src, { portfolio: one }));
+    expect(out.match(/class="masonry-item/g)).toHaveLength(1);
+    expect(() => SG.checkPortfolio(portfolio)).not.toThrow();
+    expect(() => SG.checkPortfolio({ version: 1, tabs: [{ ...one.tabs[0], photos: [] }] })).toThrow(/^data\/portfolio\.json: /);
   });
   it('fails like the build', () => {
     expect(() => SG.renderPage('x.html', '<p>{{price.nope}}</p>')).toThrow(/unknown tier "nope"/);

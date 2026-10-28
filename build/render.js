@@ -4,8 +4,9 @@
 // Node APIs here (no fs, path or process), only the modules the bundle carries.
 
 const { parseBlocks, stripBlockMarkers } = require('./blocks');
+const { renderTabs, renderGrid } = require('./portfolio');
 
-function createRenderer({ prices: PRICES, chrome, mounts, unlinked, library: LIBRARY, withChrome = true }) {
+function createRenderer({ prices: PRICES, chrome, mounts, unlinked, library: LIBRARY, portfolio: PORTFOLIO, withChrome = true }) {
   const { navHtml, FOOTER_HTML, barHtml, BAR_FOOTER } = chrome;
 
   // ── Prices ───────────────────────────────────────────────────────────────
@@ -37,7 +38,9 @@ function createRenderer({ prices: PRICES, chrome, mounts, unlinked, library: LIB
     return p === '/index' ? '/' : p.endsWith('/index') ? p.slice(0, -5) : p;
   };
 
-  function renderPage(rel, html) {
+  // opts.portfolio: the portfolio data to write into the page, instead of the
+  // live data/portfolio.json (Studio's preview passes the draft).
+  function renderPage(rel, html, opts = {}) {
     // Block markers: validate, then strip, so they never reach the published page.
     let blocks;
     try { blocks = parseBlocks(html); } catch (e) { throw new Error(`${rel}: ${e.message}`); }
@@ -55,6 +58,14 @@ function createRenderer({ prices: PRICES, chrome, mounts, unlinked, library: LIB
         .replace(/<!--\s*include:bar(?:\s+back="([^"]*)"\s+label="([^"]*)")?\s*-->/g,
           (_, href, label) => barHtml(href ? { href, label } : undefined))
         .replace(/<!--\s*include:bar-footer\s*-->/g, BAR_FOOTER);
+    }
+    // The portfolio's tab buttons and grid (build/portfolio.js).
+    if (/<!--\s*include:portfolio-(?:tabs|grid)\s*-->/.test(html)) {
+      const portfolio = opts.portfolio ?? PORTFOLIO;
+      if (!portfolio) throw new Error(`${rel}: no portfolio data`);
+      html = html
+        .replace(/<!--\s*include:portfolio-tabs\s*-->/g, () => renderTabs(portfolio))
+        .replace(/<!--\s*include:portfolio-grid\s*-->/g, () => renderGrid(portfolio));
     }
     const left = html.match(/\{\{[^}]*\}\}|<!--\s*include:[\w-]+/);
     if (left) throw new Error(`${rel}: unfilled "${left[0]}"`);

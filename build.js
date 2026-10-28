@@ -2,7 +2,9 @@
 // Still & Golden site build (A+ build, 16 Oct 2026). Netlify runs this on every
 // deploy and serves dist/. The pages stay hand-written HTML; this only:
 //
-//   1. fills price tokens from data/prices.json, e.g. {{price.golden}} -> $475
+//   1. fills price tokens from data/prices.json, e.g. {{price.golden}} -> $475,
+//      and the portfolio's tabs and photos from data/portfolio.json
+//      (build/portfolio.js)
 //   2. writes the shared menu and footer into each page (build/site-chrome.js),
 //      and the slim bar on form and legal pages
 //   3. copies ONLY the files that belong on the site into dist/ (an allowlist,
@@ -10,20 +12,23 @@
 //      served again)
 //
 // It stops with an error, and nothing is published, if a page has an unknown
-// token, a token is left unfilled, or any page links to the SEO-only cake smash
-// page. Run locally with `node build.js`; `--no-chrome` skips step 2 (used to
-// prove the price tokens alone change nothing).
+// token, a token is left unfilled, any page links to the SEO-only cake smash
+// page, or a photo in data/portfolio.json breaks checkPortfolio's rules. Run
+// locally with `node build.js`; `--no-chrome` skips step 2 (used to prove the
+// price tokens alone change nothing).
 
 const fs = require('fs');
 const path = require('path');
 const { LIBRARY } = require('./build/blocks');
 const { createRenderer } = require('./build/render');
+const { checkPortfolio } = require('./build/portfolio');
 
 // ── Site settings ──────────────────────────────────────────────────────────
 // Everything specific to Still & Golden is here, so another site can reuse
 // this script by changing only this block (Deep Arora Studios does).
 const CONFIG = {
   prices: 'data/prices.json',
+  portfolio: 'data/portfolio.json',               // the portfolio page's tabs and photos
   chrome: require('./build/site-chrome'),          // menu, footer, slim bar
   // Placeholders in the pages that the menu and footer replace.
   mounts: { nav: '<nav id="nav" data-sg-nav></nav>', footer: '<footer data-sg-footer></footer>' },
@@ -49,6 +54,7 @@ const CONFIG = {
 const ROOT = __dirname;
 const OUT = path.join(ROOT, 'dist');
 const PRICES = JSON.parse(fs.readFileSync(path.join(ROOT, CONFIG.prices), 'utf8'));
+const PORTFOLIO = JSON.parse(fs.readFileSync(path.join(ROOT, CONFIG.portfolio), 'utf8'));
 const NO_CHROME = process.argv.includes('--no-chrome');
 const { rootFiles: ROOT_FILES, dirs: DIRS, imageDirs: IMAGE_DIRS } = CONFIG;
 
@@ -61,6 +67,7 @@ const { priceToken, pagePath, renderPage } = createRenderer({
   mounts: CONFIG.mounts,
   unlinked: CONFIG.unlinked,
   library: LIBRARY,
+  portfolio: PORTFOLIO,
   withChrome: !NO_CHROME,
 });
 
@@ -126,8 +133,11 @@ function checkLinks(refsBy, published) {
 // ── Studio's preview bundle ────────────────────────────────────────────────
 // dist/_cms/render.js is a classic script (no imports, no Node APIs) that gives
 // Studio's sandboxed preview the same renderPage as this build. A tiny module
-// map stands in for a bundler: the source of the three build files plus the
+// map stands in for a bundler: the source of the four build files plus the
 // JSON they read. dist/_cms/version.json says which commit it was built from.
+// SGRender version 2 (stage 3) added the portfolio: SGRender.portfolio is the
+// live data/portfolio.json, SGRender.checkPortfolio its rules, and
+// renderPage(rel, html, { portfolio }) renders a page with other data.
 function commitSha() {
   if (/^[0-9a-f]{40}$/.test(process.env.COMMIT_REF || '')) return process.env.COMMIT_REF;
   return require('child_process').execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim();
@@ -138,10 +148,12 @@ function writeCmsBundle(dir) {
     './render': read('build/render.js'),
     './blocks': read('build/blocks.js'),
     './site-chrome': read('build/site-chrome.js'),
+    './portfolio': read('build/portfolio.js'),
   };
   const json = {
     '../blocks/library.json': read('blocks/library.json'),
     '../data/prices.json': read(CONFIG.prices),
+    '../data/portfolio.json': read(CONFIG.portfolio),
   };
   const lit = (o) => '{' + Object.entries(o).map(([k, v]) => `${JSON.stringify(k)}: ${v}`).join(',\n') + '}';
   const wrap = (src) => `function (module, exports, require) {\n${src}\n}`;
@@ -162,15 +174,20 @@ function writeCmsBundle(dir) {
   }
   var prices = req('../data/prices.json');
   var library = req('../blocks/library.json');
+  var portfolio = req('../data/portfolio.json');
   var render = req('./render').createRenderer({
     prices: prices,
     chrome: req('./site-chrome'),
     mounts: ${JSON.stringify(CONFIG.mounts)},
     unlinked: ${JSON.stringify(CONFIG.unlinked)},
     library: library,
+    portfolio: portfolio,
     withChrome: true
   });
-  self.SGRender = { renderPage: render.renderPage, prices: prices, library: library, version: 1 };
+  self.SGRender = {
+    renderPage: render.renderPage, prices: prices, library: library, portfolio: portfolio,
+    checkPortfolio: req('./portfolio').checkPortfolio, version: 2
+  };
 })();
 `;
   fs.mkdirSync(path.join(dir, '_cms'), { recursive: true });
@@ -206,6 +223,7 @@ function committed() {
 }
 
 function build() {
+  checkPortfolio(PORTFOLIO);
   fs.rmSync(OUT, { recursive: true, force: true });
   const tracked = committed();
   const rootPages = fs.readdirSync(ROOT).filter((f) => f.endsWith('.html'));

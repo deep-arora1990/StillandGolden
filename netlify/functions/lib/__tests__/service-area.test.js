@@ -12,9 +12,11 @@ import { copyRule, pageOffenders } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
+// The pages, and the portfolio's photo descriptions (data/portfolio.json).
 const PAGES = execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' })
   .split('\n')
   .filter((f) => f && !/^(brand|reel|print|blocks)\//.test(f))
+  .concat('data/portfolio.json')
 
 // The Google profile's service areas, plus the council and the city.
 const AREA = [
@@ -28,7 +30,7 @@ describe('service area matches the Google profile', () => {
   it('no page offers Mt Eliza any more (Mornington replaced it), except where a photo was taken', () => {
     const offenders = []
     for (const f of PAGES) {
-      const text = read(f).replace(/alt="[^"]*"/g, '')
+      const text = read(f).replace(/alt="[^"]*"/g, '').replace(/"alt": "(?:[^"\\]|\\.)*"/g, '')
       offenders.push(...pageOffenders(f, text, /Mt Eliza|Mount Eliza/))
     }
     copyRule('no-mt-eliza', offenders)
