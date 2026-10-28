@@ -119,7 +119,7 @@ const ALLOWED = {
   'package-row-two': ['package-row'], 'package-row-three': ['package-row'],
 }
 
-describe('eleven pages are marked into blocks', () => {
+describe('every page but the portfolio is marked into blocks', () => {
   it.each(PAGES)('%s', (page) => {
     const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
     const blocks = parseBlocks(raw)
@@ -256,7 +256,7 @@ describe('block library', () => {
     }
   })
 
-  it('the pages list holds the eleven files in order, each in git', () => {
+  it('the pages list holds the twelve files in order, each in git', () => {
     const { execSync } = require('node:child_process')
     const tracked = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().split('\n')
     expect(LIBRARY.pages.map((p) => p.file)).toEqual([
