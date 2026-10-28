@@ -56,6 +56,10 @@
     "question": { "label": "Question", "families": ["site"], "addable": true, "snippet": "blocks/site/question.html", "fields": [
       { "key": "question", "selector": "summary", "kind": "inline", "repeat": false, "optional": false },
       { "key": "answer", "selector": "details > p", "kind": "inline", "repeat": false, "optional": false } ] },
+    "portfolio-intro": { "label": "Page opening", "families": ["portfolio"], "addable": false, "fields": [
+      { "key": "title", "selector": "h1", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "subtitle", "selector": "p:not(.port-intro)", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "intro", "selector": "p.port-intro", "kind": "inline", "repeat": false, "optional": false } ] },
     "xmas-card": { "label": "Christmas minis card", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
     "signup": { "label": "Email sign-up form", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
     "voucher-form": { "label": "Voucher form", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
@@ -84,6 +88,7 @@
   },
   "pages": [
     { "file": "about.html", "label": "About" },
+    { "file": "portfolio.html", "label": "Portfolio", "kind": "portfolio" },
     { "file": "packages.html", "label": "Packages (overview)" },
     { "file": "packages/glimpse-mini-sessions.html", "label": "Glimpse" },
     { "file": "packages/golden-family-photography.html", "label": "Golden (family)" },

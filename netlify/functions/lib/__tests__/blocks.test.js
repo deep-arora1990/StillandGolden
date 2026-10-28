@@ -47,10 +47,10 @@ describe('block markers', () => {
     expect(() => renderPage('x.html', '<!-- block:carousel c --><!-- /block -->')).toThrow(/x\.html: unknown block type "carousel"/)
     expect(() => renderPage('x.html', '<!-- block:text t -->')).toThrow(/x\.html: .*unclosed/)
   })
-  it('the library names all twenty-two types', () => {
+  it('the library names all twenty-three types', () => {
     expect(Object.keys(LIBRARY.types).sort()).toEqual([
       'areas', 'box-list', 'buttons', 'caption', 'gallery', 'heading', 'intro', 'list', 'note', 'notice',
-      'package', 'package-row-three', 'package-row-two', 'portrait', 'price', 'question', 'quote', 'signature',
+      'package', 'package-row-three', 'package-row-two', 'portfolio-intro', 'portrait', 'price', 'question', 'quote', 'signature',
       'signup', 'text', 'voucher-form', 'xmas-card'])
   })
   it('blocks/ and build/ are never published', () => {
@@ -175,6 +175,12 @@ describe('block library', () => {
   it.each(TYPES)('%s: snippet holds exactly one block of its type, id <type>-new', (type) => {
     const entry = LIBRARY.types[type]
     expect(entry.label).toBeTruthy()
+    if (entry.families.join() === 'portfolio') {
+      expect(entry.addable).toBe(false)
+      expect(entry.snippet).toBeUndefined()
+      expect(entry.locked).toBeUndefined()
+      return
+    }
     expect(entry.families).toEqual(['site'])
     expect(entry.addable).toBe(type !== 'intro' && !entry.locked)
     if (entry.locked) {
@@ -211,10 +217,12 @@ describe('block library', () => {
         if (f.max !== undefined) expect(n, `${where} ${b.id} ${f.key} max`).toBeLessThanOrEqual(f.max)
       }
     }
-    const snip = fs.readFileSync(require('node:path').join(ROOT, entry.snippet), 'utf8')
-    for (const b of parseBlocks(snip)) check(snip, b, 'snippet')
+    if (entry.snippet) {
+      const snip = fs.readFileSync(require('node:path').join(ROOT, entry.snippet), 'utf8')
+      for (const b of parseBlocks(snip)) check(snip, b, 'snippet')
+    }
     let seen = 0
-    for (const page of PAGES) {
+    for (const page of entry.families.join() === 'portfolio' ? ['portfolio.html'] : PAGES) {
       const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
       for (const b of parseBlocks(raw).filter((x) => x.type === type)) { check(raw, b, page); seen++ }
     }
@@ -242,7 +250,7 @@ describe('block library', () => {
       const snip = fs.readFileSync(require('node:path').join(ROOT, entry.snippet), 'utf8')
       for (const b of parseBlocks(snip)) run(snip, b, 'snippet')
     }
-    for (const page of PAGES) {
+    for (const page of [...PAGES, 'portfolio.html']) {
       const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
       for (const b of parseBlocks(raw).filter((x) => x.type === type)) run(raw, b, page)
     }
@@ -252,13 +260,32 @@ describe('block library', () => {
     const { execSync } = require('node:child_process')
     const tracked = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().split('\n')
     expect(LIBRARY.pages.map((p) => p.file)).toEqual([
-      'about.html', 'packages.html',
+      'about.html', 'portfolio.html', 'packages.html',
       'packages/glimpse-mini-sessions.html', 'packages/golden-family-photography.html',
       'packages/golden-cake-smash-photography.html', 'packages/gathered-newborn-photography.html',
       'packages/bloom-maternity-newborn-photography.html',
       'offers.html', 'offers/sunset-beach-mini-sessions.html', 'offers/in-home-christmas-photos.html',
       'gift-vouchers.html'])
     for (const p of LIBRARY.pages) { expect(tracked).toContain(p.file); expect(p.label).toBeTruthy() }
+    expect(LIBRARY.pages.filter((p) => p.kind).map((p) => [p.file, p.kind])).toEqual([['portfolio.html', 'portfolio']])
+    expect(LIBRARY.pages.find((p) => p.file === 'portfolio.html').label).toBe('Portfolio')
+  })
+
+  it('portfolio.html: one portfolio-intro block around .port-header, mounts outside it', () => {
+    const raw = fs.readFileSync(require('node:path').join(ROOT, 'portfolio.html'), 'utf8')
+    const blocks = parseBlocks(raw)
+    expect(blocks.map((b) => `${b.type} ${b.id}`)).toEqual(['portfolio-intro portfolio-intro-1'])
+    const [b] = blocks
+    const dom = inner(raw, b)
+    expect(selectAll('div.port-header', dom)).toHaveLength(1)
+    expect(raw.slice(...b.inner).trim().startsWith('<div class="port-header">')).toBe(true)
+    for (const f of LIBRARY.types['portfolio-intro'].fields) expect(selectAll(f.selector, dom), f.key).toHaveLength(1)
+    for (const m of ['<!-- include:portfolio-tabs -->', '<!-- include:portfolio-grid -->']) {
+      const at = raw.indexOf(m)
+      expect(at).toBeGreaterThan(-1)
+      expect(at < b.open[0] || at >= b.close[1]).toBe(true)
+    }
+    expect(raw.match(/<!--\s*\/?block/g) || []).toHaveLength(2)
   })
 
   it('the library is version 1', () => { expect(LIBRARY.version).toBe(1) })

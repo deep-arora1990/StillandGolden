@@ -62,16 +62,16 @@ describe('the /_cms/ bundle', () => {
   });
   it('lists pages that exist and have blocks', () => {
     expect(library.pages.map((p) => p.file)).toEqual([
-      'about.html', 'packages.html',
+      'about.html', 'portfolio.html', 'packages.html',
       'packages/glimpse-mini-sessions.html', 'packages/golden-family-photography.html',
       'packages/golden-cake-smash-photography.html', 'packages/gathered-newborn-photography.html',
       'packages/bloom-maternity-newborn-photography.html', 'offers.html',
       'offers/sunset-beach-mini-sessions.html', 'offers/in-home-christmas-photos.html',
       'gift-vouchers.html']);
-    for (const { file, label } of library.pages) {
+    for (const { file, label, kind } of library.pages) {
       expect(label).toBeTruthy();
       expect(tracked, file).toContain(file);
-      expect(parseBlocks(fs.readFileSync(path.join(ROOT, file), 'utf8')).length, file).toBeGreaterThanOrEqual(5);
+      expect(parseBlocks(fs.readFileSync(path.join(ROOT, file), 'utf8')).length, file).toBeGreaterThanOrEqual(kind === 'portfolio' ? 1 : 5);
     }
   });
   it('version.json names a commit', () => {
