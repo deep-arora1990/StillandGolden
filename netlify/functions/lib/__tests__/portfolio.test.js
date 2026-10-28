@@ -3,6 +3,11 @@
 // back into portfolio.html at build time, and Studio's preview runs the same
 // code from /_cms/render.js, so the page must come out exactly as it was
 // written by hand.
+//
+// Studio publishes change data/portfolio.json, so nothing here pins the live
+// file's photos or counts: the byte-for-byte proof runs on a frozen copy of
+// the data (fixtures/portfolio-29-oct-2026.json) against the markup the page
+// had by hand that day, and the live data is only checked against itself.
 import { describe, it, expect } from 'vitest'
 import { createRequire } from 'node:module'
 import fs from 'node:fs'
@@ -15,6 +20,9 @@ const { LIBRARY } = require('../../../../build/blocks.js')
 const { CONFIG, renderPage } = require('../../../../build.js')
 
 const LIVE = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/portfolio.json'), 'utf8'))
+const fixture = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', f), 'utf8'))
+const FROZEN = fixture('portfolio-29-oct-2026.json')
+const HAND_WRITTEN = fixture('portfolio-29-oct-2026.markup.json')
 
 const photo = (dir, name, ext, width, height, alt) => ({
   jpg: `New photos/${dir}/web/${name}.${ext}`,
@@ -82,13 +90,27 @@ describe('renderGrid', () => {
     expect(renderGrid(d)).toContain('alt="Mum &amp; &quot;Bub&quot; &lt;3"')
   })
 
-  it('writes today\'s data back as the page had it', () => {
-    const page = fs.readFileSync(path.join(ROOT, 'portfolio.html'), 'utf8')
-    expect(page).toContain('    <!-- include:portfolio-grid -->')
-    const items = renderGrid(LIVE).split('\n').filter((l) => l.includes('masonry-item'))
-    expect(items).toHaveLength(198)
-    expect(LIVE.tabs.map((t) => [t.id, t.photos.length])).toEqual([
+  it('writes the 29 Oct 2026 data back byte for byte as the page had it by hand (frozen copy)', () => {
+    expect(renderGrid(FROZEN)).toBe(HAND_WRITTEN.grid)
+    expect(renderTabs(FROZEN)).toBe(HAND_WRITTEN.tabs)
+    expect(FROZEN.tabs.map((t) => [t.id, t.photos.length])).toEqual([
       ['family', 56], ['motherhood', 36], ['fatherhood', 29], ['newborn', 77]])
+  })
+
+  it('writes every photo of the live data into the page, each tab with its button and section', () => {
+    const page = fs.readFileSync(path.join(ROOT, 'portfolio.html'), 'utf8')
+    expect(page).toContain('      <!-- include:portfolio-tabs -->')
+    expect(page).toContain('    <!-- include:portfolio-grid -->')
+    const out = renderPage('portfolio.html', page)
+    const total = LIVE.tabs.reduce((n, t) => n + t.photos.length, 0)
+    expect(out.match(/class="masonry-item/g)).toHaveLength(total)
+    expect(out.match(/class="port-tab[ "]/g)).toHaveLength(LIVE.tabs.length)
+    for (const t of LIVE.tabs) {
+      expect(out, t.id).toContain(`data-tab="${t.id}"`)
+      expect(out, t.id).toContain(`<div id="tab-${t.id}" class="port-section`)
+      const section = out.slice(out.indexOf(`<div id="tab-${t.id}"`)).split('<p class="grid-caption">')[0]
+      expect(section.match(/class="masonry-item/g), t.id).toHaveLength(t.photos.length)
+    }
   })
 })
 
