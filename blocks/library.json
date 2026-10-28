@@ -27,7 +27,59 @@
       { "key": "primary", "selector": "a.btn:not(.btn-ghost)", "kind": "link", "repeat": false, "optional": false },
       { "key": "secondary", "selector": "a.btn-ghost", "kind": "link", "repeat": false, "optional": true } ] },
     "note": { "label": "Small print", "families": ["site"], "addable": true, "snippet": "blocks/site/note.html", "fields": [
-      { "key": "text", "selector": "p.note", "kind": "inline", "repeat": false, "optional": false } ] }
+      { "key": "text", "selector": "p.note", "kind": "inline", "repeat": false, "optional": false } ] },
+    "portrait": { "label": "Portrait photo", "families": ["site"], "addable": true, "snippet": "blocks/site/portrait.html", "fields": [
+      { "key": "photo", "selector": ".portrait > picture", "kind": "image", "repeat": false, "optional": false } ] },
+    "signature": { "label": "Signature", "families": ["site"], "addable": true, "snippet": "blocks/site/signature.html", "fields": [
+      { "key": "text", "selector": ".sig", "kind": "text", "repeat": false, "optional": false } ] },
+    "areas": { "label": "Service areas", "families": ["site"], "addable": true, "snippet": "blocks/site/areas.html", "fields": [
+      { "key": "suburbs", "selector": "p.suburbs", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "more", "selector": "p.areas-more", "kind": "inline", "repeat": false, "optional": true } ] },
+    "package": { "label": "Package card", "families": ["site"], "addable": true, "snippet": "blocks/site/package.html", "fields": [
+      { "key": "name", "selector": ".pkg-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "tag", "selector": ".pkg-tag", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "was", "selector": ".pkg-price .was s", "kind": "inline", "repeat": false, "optional": true },
+      { "key": "price", "selector": ".pkg-price .now", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "valueNote", "selector": ".pkg > p.value-note", "kind": "inline", "repeat": false, "optional": true },
+      { "key": "paragraphs", "selector": ".pkg > p:not(.value-note)", "kind": "inline", "repeat": true, "optional": false },
+      { "key": "callout", "selector": ".pkg-callout", "kind": "inline", "repeat": false, "optional": true },
+      { "key": "items", "selector": ".pkg > ul.list > li", "kind": "inline", "repeat": true, "optional": false },
+      { "key": "best", "selector": ".best", "kind": "inline", "repeat": false, "optional": true },
+      { "key": "primary", "selector": "a.btn:not(.btn-ghost)", "kind": "link", "repeat": false, "optional": false },
+      { "key": "secondary", "selector": "a.btn-ghost", "kind": "link", "repeat": false, "optional": true } ] },
+    "notice": { "label": "Highlight box", "families": ["site"], "addable": true, "snippet": "blocks/site/notice.html", "fields": [
+      { "key": "label", "selector": ".notice > .label", "kind": "text", "repeat": false, "optional": false },
+      { "key": "text", "selector": ".notice > p", "kind": "inline", "repeat": false, "optional": false } ] },
+    "box-list": { "label": "Boxed list", "families": ["site"], "addable": true, "snippet": "blocks/site/box-list.html", "fields": [
+      { "key": "items", "selector": ".box li", "kind": "inline", "repeat": true, "optional": false } ] },
+    "question": { "label": "Question", "families": ["site"], "addable": true, "snippet": "blocks/site/question.html", "fields": [
+      { "key": "question", "selector": "summary", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "answer", "selector": "details > p", "kind": "inline", "repeat": false, "optional": false } ] },
+    "xmas-card": { "label": "Christmas minis card", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
+    "signup": { "label": "Email sign-up form", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
+    "voucher-form": { "label": "Voucher form", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
+    "package-row-2": { "label": "Package row (2 cards)", "families": ["site"], "addable": true, "snippet": "blocks/site/package-row-2.html", "fields": [
+      { "key": "name1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-price", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "detail1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-detail", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "link1", "selector": ".pkg-row > .pkg-mini:nth-child(1) a.pm-link", "kind": "link", "repeat": false, "optional": false },
+      { "key": "name2", "selector": ".pkg-row > .pkg-mini:nth-child(2) .pm-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price2", "selector": ".pkg-row > .pkg-mini:nth-child(2) .pm-price", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "detail2", "selector": ".pkg-row > .pkg-mini:nth-child(2) .pm-detail", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "link2", "selector": ".pkg-row > .pkg-mini:nth-child(2) a.pm-link", "kind": "link", "repeat": false, "optional": false } ] },
+    "package-row-3": { "label": "Package row (3 cards)", "families": ["site"], "addable": true, "snippet": "blocks/site/package-row-3.html", "fields": [
+      { "key": "name1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-price", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "detail1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-detail", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "link1", "selector": ".pkg-row > .pkg-mini:nth-child(1) a.pm-link", "kind": "link", "repeat": false, "optional": false },
+      { "key": "name2", "selector": ".pkg-row > .pkg-mini:nth-child(2) .pm-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price2", "selector": ".pkg-row > .pkg-mini:nth-child(2) .pm-price", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "detail2", "selector": ".pkg-row > .pkg-mini:nth-child(2) .pm-detail", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "link2", "selector": ".pkg-row > .pkg-mini:nth-child(2) a.pm-link", "kind": "link", "repeat": false, "optional": false },
+      { "key": "name3", "selector": ".pkg-row > .pkg-mini:nth-child(3) .pm-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price3", "selector": ".pkg-row > .pkg-mini:nth-child(3) .pm-price", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "detail3", "selector": ".pkg-row > .pkg-mini:nth-child(3) .pm-detail", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "link3", "selector": ".pkg-row > .pkg-mini:nth-child(3) a.pm-link", "kind": "link", "repeat": false, "optional": false } ] }
   },
   "pages": [
     { "file": "packages/glimpse-mini-sessions.html", "label": "Glimpse" },

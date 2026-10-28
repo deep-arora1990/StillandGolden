@@ -4,14 +4,14 @@
 //
 //   <!-- block:<type> <id> -->  ...  <!-- /block -->
 //
-// type: /^[a-z][a-z-]*$/   id: /^[a-z][a-z0-9-]*$/, unique per page. Flat only.
+// type: /^[a-z][a-z0-9-]*$/   id: /^[a-z][a-z0-9-]*$/, unique per page. Flat only.
 //
 // Offsets are JS string indices (UTF-16), not bytes: decode a file to a string
 // before slicing or patching with them.
 
 const LIBRARY = require('../blocks/library.json');
 
-const TYPE_RE = /^[a-z][a-z-]*$/;
+const TYPE_RE = /^[a-z][a-z0-9-]*$/;
 const ID_RE = /^[a-z][a-z0-9-]*$/;
 // Anything shaped like a block marker. Loose on purpose, so a malformed one is
 // reported rather than ignored; the exact syntax is checked below.
@@ -41,7 +41,7 @@ function parseBlocks(html) {
     }
     const [, type, id] = om;
     if (open) throw new Error(`line ${line}: nested block "${id}" inside "${open.id}" (blocks are flat)`);
-    if (!TYPE_RE.test(type)) throw new Error(`line ${line}: bad block type "${type}" (lowercase letters and hyphens)`);
+    if (!TYPE_RE.test(type)) throw new Error(`line ${line}: bad block type "${type}" (lowercase letters, digits and hyphens)`);
     if (id === undefined || !ID_RE.test(id)) throw new Error(`line ${line}: bad block id "${id === undefined ? '' : id}" (lowercase letters, digits and hyphens, starting with a letter)`);
     if (seen.has(id)) throw new Error(`line ${line}: duplicate block id "${id}"`);
     seen.add(id);
