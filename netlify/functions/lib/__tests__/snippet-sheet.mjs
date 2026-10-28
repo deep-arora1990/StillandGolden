@@ -41,7 +41,12 @@ try {
     const tab = await browser.newPage()
     await tab.setViewport({ width: w, height: 900 })
     await tab.goto(`${origin}/packages/_snippet-sheet.html`, { waitUntil: 'networkidle0' })
-    await tab.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)))
+    await tab.evaluate(async () => {
+      document.querySelectorAll('details').forEach((d) => (d.open = true))
+      const imgs = [...document.querySelectorAll('img')]
+      imgs.forEach((i) => { i.loading = 'eager' })
+      await Promise.all(imgs.map((i) => i.decode().catch(() => {})))
+    })
     await tab.screenshot({ path: path.join(out, `snippets-${w}.png`), fullPage: true })
     if (w === 390) {
       const r = await tab.evaluate(() => ({

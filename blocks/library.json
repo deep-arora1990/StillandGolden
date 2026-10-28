@@ -58,7 +58,7 @@
     "xmas-card": { "label": "Christmas minis card", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
     "signup": { "label": "Email sign-up form", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
     "voucher-form": { "label": "Voucher form", "families": ["site"], "addable": false, "locked": true, "hint": "This part has a form or live switching in it, so a developer edits it. You can move it.", "fields": [] },
-    "package-row-2": { "label": "Package row (2 cards)", "families": ["site"], "addable": true, "snippet": "blocks/site/package-row-2.html", "fields": [
+    "package-row-two": { "label": "Package row (2 cards)", "families": ["site"], "addable": true, "snippet": "blocks/site/package-row-two.html", "fields": [
       { "key": "name1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-name", "kind": "text", "repeat": false, "optional": false },
       { "key": "price1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-price", "kind": "inline", "repeat": false, "optional": false },
       { "key": "detail1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-detail", "kind": "inline", "repeat": false, "optional": false },
@@ -67,7 +67,7 @@
       { "key": "price2", "selector": ".pkg-row > .pkg-mini:nth-child(2) .pm-price", "kind": "inline", "repeat": false, "optional": false },
       { "key": "detail2", "selector": ".pkg-row > .pkg-mini:nth-child(2) .pm-detail", "kind": "inline", "repeat": false, "optional": false },
       { "key": "link2", "selector": ".pkg-row > .pkg-mini:nth-child(2) a.pm-link", "kind": "link", "repeat": false, "optional": false } ] },
-    "package-row-3": { "label": "Package row (3 cards)", "families": ["site"], "addable": true, "snippet": "blocks/site/package-row-3.html", "fields": [
+    "package-row-three": { "label": "Package row (3 cards)", "families": ["site"], "addable": true, "snippet": "blocks/site/package-row-three.html", "fields": [
       { "key": "name1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-name", "kind": "text", "repeat": false, "optional": false },
       { "key": "price1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-price", "kind": "inline", "repeat": false, "optional": false },
       { "key": "detail1", "selector": ".pkg-row > .pkg-mini:nth-child(1) .pm-detail", "kind": "inline", "repeat": false, "optional": false },

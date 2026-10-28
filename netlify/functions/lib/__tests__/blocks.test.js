@@ -50,7 +50,7 @@ describe('block markers', () => {
   it('the library names all twenty-two types', () => {
     expect(Object.keys(LIBRARY.types).sort()).toEqual([
       'areas', 'box-list', 'buttons', 'caption', 'gallery', 'heading', 'intro', 'list', 'note', 'notice',
-      'package', 'package-row-2', 'package-row-3', 'portrait', 'price', 'question', 'quote', 'signature',
+      'package', 'package-row-three', 'package-row-two', 'portrait', 'price', 'question', 'quote', 'signature',
       'signup', 'text', 'voucher-form', 'xmas-card'])
   })
   it('blocks/ and build/ are never published', () => {
@@ -116,7 +116,7 @@ const ALLOWED = {
   notice: ['notice'], 'box-list': ['box-list'], question: ['question'],
   'xmas-card': ['xmas-heading', 'xmas-card'], signup: ['signup'],
   'voucher-form': ['voucher-bought', 'voucher-cancelled', 'voucher-form-el'],
-  'package-row-2': ['package-row'], 'package-row-3': ['package-row'],
+  'package-row-two': ['package-row'], 'package-row-three': ['package-row'],
 }
 
 describe('eleven pages are marked into blocks', () => {
@@ -148,7 +148,7 @@ describe('eleven pages are marked into blocks', () => {
       portrait: /^portrait$/, signature: /^signature$/, areas: /^areas$/, package: /^package$/,
       notice: /^notice$/, 'box-list': /^box-list$/, question: /^question$/, signup: /^signup$/,
       'xmas-card': /^xmas-heading xmas-card$/,
-      'package-row-2': /^package-row$/, 'package-row-3': /^package-row$/,
+      'package-row-two': /^package-row$/, 'package-row-three': /^package-row$/,
       'voucher-form': /^voucher-bought voucher-cancelled voucher-form-el$/,
     }
     for (const b of blocks) {
