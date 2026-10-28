@@ -119,8 +119,8 @@ const ALLOWED = {
   'package-row-2': ['package-row'], 'package-row-3': ['package-row'],
 }
 
-describe('seven pages are marked into blocks', () => {
-  it.each(PAGES7)('%s', (page) => {
+describe('eleven pages are marked into blocks', () => {
+  it.each(PAGES)('%s', (page) => {
     const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
     const blocks = parseBlocks(raw)
     expect(blocks.length).toBeGreaterThan(0)
@@ -170,7 +170,6 @@ const { selectAll } = require('css-select')
 const { parseDocument } = require('htmlparser2')
 const inner = (html, b) => parseDocument(html.slice(...b.inner))
 const TYPES = Object.keys(LIBRARY.types)
-const OLD = ['intro', 'text', 'heading', 'list', 'gallery', 'caption', 'quote', 'price', 'buttons', 'note']
 
 describe('block library', () => {
   it.each(TYPES)('%s: snippet holds exactly one block of its type, id <type>-new', (type) => {
@@ -215,12 +214,25 @@ describe('block library', () => {
     const snip = fs.readFileSync(require('node:path').join(ROOT, entry.snippet), 'utf8')
     for (const b of parseBlocks(snip)) check(snip, b, 'snippet')
     let seen = 0
-    for (const page of PAGES7) {
+    for (const page of PAGES) {
       const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
       for (const b of parseBlocks(raw).filter((x) => x.type === type)) { check(raw, b, page); seen++ }
     }
-    // the new types appear on real pages once those are marked (next commit)
-    if (OLD.includes(type)) expect(seen).toBeGreaterThan(0)
+    // the two package rows are new: no page holds one yet
+    if (!/^package-row-/.test(type)) expect(seen).toBeGreaterThan(0)
+  })
+
+  it('the pages list holds the eleven files in order, each in git', () => {
+    const { execSync } = require('node:child_process')
+    const tracked = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().split('\n')
+    expect(LIBRARY.pages.map((p) => p.file)).toEqual([
+      'about.html', 'packages.html',
+      'packages/glimpse-mini-sessions.html', 'packages/golden-family-photography.html',
+      'packages/golden-cake-smash-photography.html', 'packages/gathered-newborn-photography.html',
+      'packages/bloom-maternity-newborn-photography.html',
+      'offers.html', 'offers/sunset-beach-mini-sessions.html', 'offers/in-home-christmas-photos.html',
+      'gift-vouchers.html'])
+    for (const p of LIBRARY.pages) { expect(tracked).toContain(p.file); expect(p.label).toBeTruthy() }
   })
 
   it('the library is version 1', () => { expect(LIBRARY.version).toBe(1) })
