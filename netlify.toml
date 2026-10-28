@@ -5,6 +5,10 @@
   command = "node build.js"
   publish = "dist"
   functions = "netlify/functions"
+  # Studio's Website tab publishes through a short-lived website-tab/<page>-<time>
+  # branch that GitHub's checks test before it joins main (28 Oct 2026). Netlify
+  # skips building those branches: main builds once the publish merges.
+  ignore = 'case "$BRANCH" in website-tab/*) exit 0 ;; *) exit 1 ;; esac'
 
 # The booking functions read every price from data/prices.json.
 [functions]
