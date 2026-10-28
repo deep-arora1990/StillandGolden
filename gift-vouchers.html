@@ -32,82 +32,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="/blocks.css">
   <script src="/site.js" defer></script>
-  <style>
-    body {
-      background: var(--off-white);
-      color: var(--warm-black);
-      font-family: var(--sans);
-      font-weight: 300;
-      font-size: 15px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-    main { max-width: 760px; margin: 0 auto; padding: 140px 48px 40px; }
-    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
-    h1 em, h2 em { font-style: italic; color: var(--gold); }
-    h2 { font-family: var(--serif); font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 400; margin: 48px 0 16px; }
-    p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
-    .lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
-    main a { color: var(--warm-black); }
-
-    .notice { border: 1px solid var(--gold); padding: 22px 26px; margin: 28px 0; background: rgba(184, 148, 94, 0.06); }
-    .notice p { margin: 0; }
-    .notice[hidden] { display: none; }
-
-    /* After paying: the same box a booking gets (book.html, christmas-minis). */
-    .confirm-box { border: 1px solid var(--border); padding: 40px 44px; background: #fff; margin: 32px 0 8px; }
-    .confirm-box[hidden] { display: none; }
-    .confirm-box .tick { font-family: var(--serif); font-size: 2rem; color: var(--gold); }
-    .confirm-box h2 { margin: 6px 0 14px; }
-    .confirm-box p { margin-bottom: 14px; }
-    .confirm-box p:last-child { margin-bottom: 0; }
-    @media (max-width: 640px) { .confirm-box { padding: 28px 24px; } }
-
-    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0 4px; }
-    .choice { position: relative; display: block; border: 1px solid var(--border); padding: 18px 20px; cursor: pointer; background: #fff; transition: border-color 0.2s; }
-    .choice:hover { border-color: var(--mid); }
-    .choice input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
-    .choice:has(input[type="radio"]:checked) { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); background: rgba(184, 148, 94, 0.05); }
-    .choice:has(input[type="radio"]:focus-visible) { outline: 2px solid var(--gold); outline-offset: 2px; }
-    .c-name { font-family: var(--serif); font-size: 1.35rem; display: block; }
-    .c-price { font-family: var(--serif); font-size: 1.1rem; color: var(--gold); display: block; margin: 2px 0 4px; }
-    .c-what { font-size: 0.82rem; color: var(--mid); display: block; }
-    .amount-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-    .amount-row span { font-family: var(--serif); font-size: 1.2rem; }
-
-    .field { margin: 0 0 16px; }
-    .field label { display: block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
-    .field input, .field textarea, .amount-row input {
-      width: 100%; font: inherit; font-size: 0.95rem; color: var(--warm-black); background: #fff;
-      border: 1px solid var(--border); border-radius: 0; padding: 12px 14px;
-    }
-    .amount-row input { width: 140px; }
-    .field input:focus, .field textarea:focus, .amount-row input:focus { outline: none; border-color: var(--gold); }
-    .hint { font-size: 0.8rem; color: var(--mid); margin-top: 4px; }
-    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .btn {
-      display: inline-block; margin: 18px 0 8px; border: 0; cursor: pointer;
-      font: inherit; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--off-white); background: var(--warm-black);
-      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
-    }
-    .btn:hover { background: var(--gold); }
-    .btn:disabled { opacity: 0.6; cursor: wait; }
-    .err { color: #b04040; font-size: 0.9rem; margin: 10px 0 0; }
-    .err[hidden] { display: none; }
-    .secure { font-size: 0.8rem; color: var(--mid); }
-
-    .how { border: 1px solid var(--border); padding: 26px 30px; margin: 24px 0; }
-    .how ul { margin: 0 0 0 20px; color: #4d453f; }
-    .how li { margin-bottom: 8px; }
-
-    @media (max-width: 640px) {
-      main { padding: 120px 24px 32px; }
-      .choices, .row2 { grid-template-columns: 1fr; }
-    }
-  </style>
 </head>
 <body>
   <nav id="nav" data-sg-nav></nav>
@@ -156,7 +82,7 @@
           <span class="c-price">{{price.bloom}}</span>
           <span class="c-what">Maternity or family now, newborn later</span>
         </label>
-        <label class="choice" style="grid-column: 1 / -1;">
+        <label class="choice choice-wide">
           <input type="radio" name="what" value="amount">
           <span class="c-name">An amount</span>
           <span class="c-what">From $100, towards any session</span>
@@ -186,7 +112,7 @@
           <input id="v-buyer-email" type="email" autocomplete="email" maxlength="120" required>
         </div>
       </div>
-      <p class="hint" style="margin-top:-6px;">The voucher is sent to you, so the surprise stays yours.</p>
+      <p class="hint hint-under">The voucher is sent to you, so the surprise stays yours.</p>
 
       <button type="submit" class="btn" id="v-buy">Buy voucher</button>
       <p class="err" id="v-err" role="alert" hidden></p>
@@ -194,7 +120,7 @@
     </form>
 
     <h2>How it <em>works</em></h2>
-    <div class="how">
+    <div class="box">
       <ul>
         <li>They book online at <a href="/book">stillandgolden.com.au/book</a> and enter the code before paying.</li>
         <li>A session voucher always covers that session, even if my prices go up.</li>

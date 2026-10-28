@@ -40,48 +40,8 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="/blocks.css">
   <script src="/site.js" defer></script>
-  <style>
-    body {
-      background: var(--off-white);
-      color: var(--warm-black);
-      font-family: var(--sans);
-      font-weight: 300;
-      font-size: 15px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    main { max-width: 860px; margin: 0 auto; padding: 140px 48px 40px; }
-    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
-    h1 em, h2 em { font-style: italic; color: var(--gold); }
-    h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 400; margin: 56px 0 18px; }
-    p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
-    .lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
-    main a { color: var(--warm-black); }
-
-    .portrait { max-width: 340px; margin: 36px 0; }
-    .portrait img { width: 100%; height: auto; display: block; aspect-ratio: 3/4; object-fit: cover; }
-
-    .sig { font-family: var(--serif); font-style: italic; font-size: 1.5rem; color: var(--gold); margin: 28px 0 4px; }
-
-    .areas { border: 1px solid var(--border); padding: 30px 34px; margin: 32px 0; }
-    .areas .suburbs { font-family: var(--serif); font-size: 1.3rem; line-height: 1.6; }
-    ul.list { margin: 0 0 18px 20px; color: #4d453f; }
-    ul.list li { margin-bottom: 8px; }
-
-    .btn {
-      display: inline-block; margin: 12px 0 8px;
-      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--off-white); background: var(--warm-black);
-      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
-    }
-    .btn:hover { background: var(--gold); }
-    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
-    .btn-ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
-
-    @media (max-width: 700px) { main { padding: 120px 24px 32px; } }
-  </style>
 </head>
 <body>
   <nav id="nav" data-sg-nav></nav>
@@ -126,7 +86,7 @@
     <p>Sessions happen at your place or a spot you love. I'm based in Cranbourne East and travel is included across the south-east.</p>
     <div class="areas">
       <p class="suburbs">Cranbourne East &middot; Cranbourne &middot; Clyde North &middot; Berwick &middot; Narre Warren &middot; Officer &middot; Pakenham &middot; Frankston &middot; Seaford &middot; Chelsea &middot; Langwarrin &middot; Mornington</p>
-      <p style="margin:10px 0 0;">— and across Melbourne's south-east. Nearby but not listed? Just ask; if I can get there, I'll come to you.</p>
+      <p class="areas-more">— and across Melbourne's south-east. Nearby but not listed? Just ask; if I can get there, I'll come to you.</p>
     </div>
 
     <h2>Say hello</h2>

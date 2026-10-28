@@ -1,5 +1,5 @@
-/* Shared styles for the package and offer pages (loaded after site.css).
-   Later stages add About and the blog here. */
+/* Shared styles for the package and offer pages, About, Packages, Offers and
+   Gift vouchers (loaded after site.css). A later stage adds the blog here. */
 html { scroll-behavior: smooth; }
 body {
   background: var(--off-white);
@@ -21,12 +21,13 @@ ul.list { margin: 0 0 18px 20px; color: #4d453f; }
 ul.list li { margin-bottom: 8px; }
 main a { color: var(--warm-black); }
 .btn {
-  display: inline-block; margin: 12px 0 8px;
-  font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+  display: inline-block; margin: 12px 0 8px; border: 0; cursor: pointer;
+  font: inherit; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--off-white); background: var(--warm-black);
   padding: 16px 34px; text-decoration: none; transition: background 0.25s;
 }
 .btn:hover { background: var(--gold); }
+.btn:disabled { opacity: 0.6; cursor: wait; }
 .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
 .btn-ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
 
@@ -50,4 +51,147 @@ main a { color: var(--warm-black); }
 .caption { font-size: 0.75rem; color: var(--mid); letter-spacing: 0.06em; }
 .note { margin-top: 40px; font-size: 0.8rem; color: var(--mid); }
 
-@media (max-width: 700px) { main { padding: 120px 24px 32px; } }
+/* The highlighted box (a seasonal pointer, the voucher page's "no payment
+   taken"). */
+.notice {
+  border: 1px solid var(--gold);
+  padding: 26px 30px; margin: 32px 0;
+  background: rgba(184, 148, 94, 0.06);
+}
+.notice .label { color: var(--gold); margin-bottom: 8px; }
+.notice p { margin-bottom: 0; }
+.notice[hidden] { display: none; }
+
+/* The bordered list box ("Always included", "How it works"). */
+.box { border: 1px solid var(--border); padding: 30px 34px; margin: 32px 0; }
+.box ul { margin: 0 0 0 20px; color: #4d453f; }
+.box li { margin-bottom: 8px; }
+
+/* Package cards (packages, offers). */
+.pkg { border: 1px solid var(--border); padding: 36px 40px; margin: 28px 0; }
+.pkg-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 22px; margin-bottom: 6px; }
+.pkg-name { font-family: var(--serif); font-size: 1.9rem; }
+.pkg-tag { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); }
+.pkg-price { font-family: var(--serif); font-size: 2rem; margin: 10px 0 16px; }
+.pkg-price .from { font-size: 0.85rem; font-family: var(--sans); color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; margin-right: 8px; }
+.pkg .btn, .pkg .btn-ghost {
+  display: block; width: 100%; max-width: 340px;
+  margin: 12px auto 0; text-align: center;
+}
+.best { font-size: 0.9rem; color: var(--mid); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 20px; }
+.pkg .tlearn { font-size: 0.82rem; letter-spacing: 0.06em; }
+
+/* Valued-at pricing: the comparison is struck through, the offer price is
+   the one that reads first. The $400 basis is spelled out underneath —
+   a "valued at" figure needs a real price behind it. */
+.pkg-price .was { font-size: 1.15rem; color: var(--mid); margin-right: 12px; }
+.pkg-price .was s { text-decoration-thickness: 1.5px; }
+.pkg .value-note { margin: -8px 0 18px; }
+/* Christmas minis: two versions, picked by site.js from the live calendar
+   (<html data-xmas>). Until it answers, the sold-out version shows. */
+html[data-xmas="open"] .xmas-sold { display: none !important; }
+html:not([data-xmas="open"]) .xmas-open { display: none !important; }
+/* Sold out (12 Oct 2026): the card stays, so people see it went, but it
+   recedes and points them at what's still open. */
+html:not([data-xmas="open"]) .pkg.xmas-card { background: rgba(26, 23, 20, 0.025); }
+html:not([data-xmas="open"]) .pkg.xmas-card .pkg-name,
+html:not([data-xmas="open"]) .pkg.xmas-card .pkg-price,
+html:not([data-xmas="open"]) .pkg.xmas-card ul.list { color: var(--mid); }
+.sold-badge { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 5px 10px; }
+.sold-note, .pkg-callout { border-left: 2px solid var(--gold); padding: 4px 0 4px 16px; margin: 18px 0 8px; }
+.pkg-callout { margin: 4px 0 22px; }
+.sold-note strong, .pkg-callout strong { color: var(--warm-black); font-weight: 400; font-family: var(--serif); font-size: 1.15rem; display: block; margin-bottom: 4px; }
+
+/* A row of small package cards, each one a link (the homepage offer cards'
+   look). Two or three share the width; they stack on a phone. */
+.pkg-row { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 22px; margin: 32px 0; }
+.pkg-mini {
+  position: relative; display: flex; flex-direction: column; background: #fff;
+  border: 1px solid var(--border); padding: 30px 30px 26px; transition: border-color 0.25s;
+}
+.pkg-mini:hover, .pkg-mini:focus-within { border-color: var(--gold); }
+.pm-name { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; line-height: 1.2; margin: 0 0 8px; }
+.pm-price { font-family: var(--serif); font-size: 1.25rem; margin-bottom: 14px; }
+.pm-detail { color: #4d453f; font-size: 0.92rem; line-height: 1.65; flex: 1; margin-bottom: 0; }
+.pm-link { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-top: 16px; text-decoration: none; }
+.pm-link::after { content: ""; position: absolute; inset: 0; }
+
+/* Questions. */
+details.faq-item { border-top: 1px solid var(--border); padding: 18px 0; }
+details.faq-item:last-of-type { border-bottom: 1px solid var(--border); }
+details.faq-item summary { font-family: var(--serif); font-size: 1.15rem; cursor: pointer; }
+details.faq-item p { margin: 12px 0 0; }
+
+/* About: the portrait, the sign-off and the suburbs box. */
+.portrait { max-width: 340px; margin: 36px 0; }
+.portrait img { width: 100%; height: auto; display: block; aspect-ratio: 3/4; object-fit: cover; }
+.sig { font-family: var(--serif); font-style: italic; font-size: 1.5rem; color: var(--gold); margin: 28px 0 4px; }
+.areas { border: 1px solid var(--border); padding: 30px 34px; margin: 32px 0; }
+.areas .suburbs { font-family: var(--serif); font-size: 1.3rem; line-height: 1.6; }
+.areas .areas-more { margin: 10px 0 0; }
+
+@media (max-width: 700px) {
+  main { padding: 120px 24px 32px; }
+  .pkg { padding: 28px 24px; }
+  .pkg-row { grid-auto-flow: row; grid-auto-columns: auto; }
+}
+
+/* Locked blocks: forms. Their scripts find them by id, so they can move but
+   not be edited from the Website tab. */
+.hp { display: none; }
+
+/* The offers sign-up. */
+.signup { margin-top: 64px; padding: 36px 32px; border: 1px solid var(--border); background: rgba(26,23,20,0.03); }
+.signup h2 { margin-top: 0; }
+.signup p { max-width: 560px; }
+.su-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 10px; margin-top: 18px; }
+.su-row input {
+  font: inherit; font-size: 0.95rem; color: var(--warm-black); background: #fff;
+  border: 1px solid var(--border); border-radius: 0; padding: 13px 14px; min-width: 0;
+}
+.su-row input:focus { outline: none; border-color: var(--gold); }
+.su-row .btn { margin: 0; white-space: nowrap; }
+.su-msg { margin: 14px 0 0; font-size: 0.9rem; color: var(--gold); }
+.su-msg[hidden] { display: none; }
+.su-err { color: #b04040; }
+@media (max-width: 640px) { .signup { padding: 28px 20px; } .su-row { grid-template-columns: 1fr; } }
+
+/* The gift voucher form. */
+#voucher-form .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0 4px; }
+#voucher-form .choice { position: relative; display: block; border: 1px solid var(--border); padding: 18px 20px; cursor: pointer; background: #fff; transition: border-color 0.2s; }
+#voucher-form .choice:hover { border-color: var(--mid); }
+#voucher-form .choice input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+#voucher-form .choice:has(input[type="radio"]:checked) { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); background: rgba(184, 148, 94, 0.05); }
+#voucher-form .choice:has(input[type="radio"]:focus-visible) { outline: 2px solid var(--gold); outline-offset: 2px; }
+#voucher-form .choice-wide { grid-column: 1 / -1; }
+#voucher-form .c-name { font-family: var(--serif); font-size: 1.35rem; display: block; }
+#voucher-form .c-price { font-family: var(--serif); font-size: 1.1rem; color: var(--gold); display: block; margin: 2px 0 4px; }
+#voucher-form .c-what { font-size: 0.82rem; color: var(--mid); display: block; }
+#voucher-form .amount-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+#voucher-form .amount-row span { font-family: var(--serif); font-size: 1.2rem; }
+
+#voucher-form .field { margin: 0 0 16px; }
+#voucher-form .field label { display: block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+#voucher-form .field input, #voucher-form .field textarea, #voucher-form .amount-row input {
+  width: 100%; font: inherit; font-size: 0.95rem; color: var(--warm-black); background: #fff;
+  border: 1px solid var(--border); border-radius: 0; padding: 12px 14px;
+}
+#voucher-form .amount-row input { width: 140px; }
+#voucher-form .field input:focus, #voucher-form .field textarea:focus, #voucher-form .amount-row input:focus { outline: none; border-color: var(--gold); }
+#voucher-form .hint { font-size: 0.8rem; color: var(--mid); margin-top: 4px; }
+#voucher-form .hint-under { margin-top: -6px; }
+#voucher-form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+#voucher-form .btn { margin-top: 18px; }
+#voucher-form .err { color: #b04040; font-size: 0.9rem; margin: 10px 0 0; }
+#voucher-form .err[hidden] { display: none; }
+#voucher-form .secure { font-size: 0.8rem; color: var(--mid); }
+@media (max-width: 640px) { #voucher-form .choices, #voucher-form .row2 { grid-template-columns: 1fr; } }
+
+/* After paying: the same box a booking gets (book.html, christmas-minis). */
+.confirm-box { border: 1px solid var(--border); padding: 40px 44px; background: #fff; margin: 32px 0 8px; }
+.confirm-box[hidden] { display: none; }
+.confirm-box .tick { font-family: var(--serif); font-size: 2rem; color: var(--gold); }
+.confirm-box h2 { margin: 6px 0 14px; }
+.confirm-box p { margin-bottom: 14px; }
+.confirm-box p:last-child { margin-bottom: 0; }
+@media (max-width: 640px) { .confirm-box { padding: 28px 24px; } }

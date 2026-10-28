@@ -20,6 +20,9 @@ describe('/gift-vouchers', () => {
     expect(p).not.toMatch(/\$(295|395|450|795)\b/)
     // Only the radio buttons are hidden; the amount box must stay visible.
     expect(p).not.toMatch(/\.choice input \{[^}]*opacity: 0/)
+    const css = read('blocks.css')
+    expect(css).toMatch(/#voucher-form \.choice input\[type="radio"\] \{[^}]*opacity: 0/)
+    expect(css).not.toMatch(/\.amount-row input \{[^}]*opacity: 0/)
   })
 
   it('asks who it is for and where to send it, and posts to voucher-checkout', () => {

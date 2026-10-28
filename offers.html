@@ -32,110 +32,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="/blocks.css">
   <script src="/site.js" defer></script>
-  <style>
-    body {
-      background: var(--off-white);
-      color: var(--warm-black);
-      font-family: var(--sans);
-      font-weight: 300;
-      font-size: 15px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    main { max-width: 860px; margin: 0 auto; padding: 140px 48px 40px; }
-    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
-    h1 em, h2 em { font-style: italic; color: var(--gold); }
-    h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 400; margin: 56px 0 18px; }
-    p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
-    .lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
-    main a { color: var(--warm-black); }
-    .btn {
-      display: inline-block; margin: 12px 0 8px;
-      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--off-white); background: var(--warm-black);
-      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
-    }
-    .btn:hover { background: var(--gold); }
-    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
-    .btn-ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
-
-    .notice {
-      border: 1px solid var(--gold);
-      padding: 26px 30px; margin: 32px 0;
-      background: rgba(184, 148, 94, 0.06);
-    }
-    .notice .label { color: var(--gold); margin-bottom: 8px; }
-    .notice p { margin-bottom: 0; }
-
-    .pkg { border: 1px solid var(--border); padding: 36px 40px; margin: 28px 0; }
-    .pkg-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 22px; margin-bottom: 6px; }
-    .pkg-name { font-family: var(--serif); font-size: 1.9rem; }
-    .pkg-tag { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); }
-    .pkg-price { font-family: var(--serif); font-size: 2rem; margin: 10px 0 16px; }
-    .pkg-price .from { font-size: 0.85rem; font-family: var(--sans); color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; margin-right: 8px; }
-    ul.list { margin: 0 0 18px 20px; color: #4d453f; }
-    ul.list li { margin-bottom: 8px; }
-    .pkg .btn, .pkg .btn-ghost {
-      display: block; width: 100%; max-width: 340px;
-      margin: 12px auto 0; text-align: center;
-    }
-
-    .best { font-size: 0.9rem; color: var(--mid); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 20px; }
-    .pkg .tlearn { font-size: 0.82rem; letter-spacing: 0.06em; }
-
-    .always { border: 1px solid var(--border); padding: 30px 34px; margin: 32px 0; }
-    .always ul { margin: 0 0 0 20px; color: #4d453f; }
-    .always li { margin-bottom: 8px; }
-
-    details.faq-item { border-top: 1px solid var(--border); padding: 18px 0; }
-    details.faq-item:last-of-type { border-bottom: 1px solid var(--border); }
-    details.faq-item summary { font-family: var(--serif); font-size: 1.15rem; cursor: pointer; }
-    details.faq-item p { margin: 12px 0 0; }
-
-    .quote { border-left: 2px solid var(--gold); padding: 6px 0 6px 22px; margin: 26px 0; }
-    .quote q { font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--warm-black); quotes: "\201C" "\201D"; }
-    .quote .who { font-size: 0.8rem; color: var(--mid); margin-top: 8px; letter-spacing: 0.06em; }
-
-    @media (max-width: 700px) { main { padding: 120px 24px 32px; } .pkg { padding: 28px 24px; } }
-  
-    /* Valued-at pricing: the comparison is struck through, the offer price is
-       the one that reads first. The $400 basis is spelled out underneath —
-       a "valued at" figure needs a real price behind it. */
-    .pkg-price .was { font-size: 1.15rem; color: var(--mid); margin-right: 12px; }
-    .pkg-price .was s { text-decoration-thickness: 1.5px; }
-    /* Christmas minis: two versions, picked by site.js from the live calendar
-       (<html data-xmas>). Until it answers, the sold-out version shows. */
-    html[data-xmas="open"] .xmas-sold { display: none !important; }
-    html:not([data-xmas="open"]) .xmas-open { display: none !important; }
-    /* Sold out (12 Oct 2026): the card stays, so people see it went, but it
-       recedes and points them at what's still open. */
-    html:not([data-xmas="open"]) .pkg.xmas-card { background: rgba(26, 23, 20, 0.025); }
-    html:not([data-xmas="open"]) .pkg.xmas-card .pkg-name,
-    html:not([data-xmas="open"]) .pkg.xmas-card .pkg-price,
-    html:not([data-xmas="open"]) .pkg.xmas-card ul.list { color: var(--mid); }
-    .sold-badge { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 5px 10px; }
-    .sold-note, .pkg-callout { border-left: 2px solid var(--gold); padding: 4px 0 4px 16px; margin: 18px 0 8px; }
-    .pkg-callout { margin: 4px 0 22px; }
-    .sold-note strong, .pkg-callout strong { color: var(--warm-black); font-weight: 400; font-family: var(--serif); font-size: 1.15rem; display: block; margin-bottom: 4px; }
-    .value-note { font-size: 0.82rem; color: var(--mid); margin: -8px 0 18px; }
-    .signup { margin-top: 64px; padding: 36px 32px; border: 1px solid var(--border); background: rgba(26,23,20,0.03); }
-    .signup h2 { margin-top: 0; }
-    .signup p { max-width: 560px; }
-    .su-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 10px; margin-top: 18px; }
-    .su-row input {
-      font: inherit; font-size: 0.95rem; color: var(--warm-black); background: #fff;
-      border: 1px solid var(--border); border-radius: 0; padding: 13px 14px; min-width: 0;
-    }
-    .su-row input:focus { outline: none; border-color: var(--gold); }
-    .su-row .btn { margin: 0; white-space: nowrap; }
-    .su-msg { margin: 14px 0 0; font-size: 0.9rem; color: var(--gold); }
-    .su-msg[hidden] { display: none; }
-    .su-err { color: #b04040; }
-    @media (max-width: 640px) { .signup { padding: 28px 20px; } .su-row { grid-template-columns: 1fr; } }
-    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  </style>
 </head>
 <body>
   <nav id="nav" data-sg-nav></nav>
@@ -148,7 +46,7 @@
     <h2>Christmas minis <em class="xmas-open">— one day only</em><em class="xmas-sold">— sold out</em></h2>
     <div class="pkg xmas-card">
       <div class="pkg-head"><span class="pkg-name">Christmas minis</span><span class="sold-badge xmas-sold">Sold out</span><span class="pkg-tag">15 minutes &middot; 5 images</span></div>
-      <div class="pkg-price">{{price.christmas-minis}}</div>
+      <div class="pkg-price"><span class="now">{{price.christmas-minis}}</span></div>
       <p>Fifteen minutes in a festive set at Baxter Community Hall, with everything back in time for Christmas cards.</p>
       <ul class="list">
         <li><strong>Sunday 8 November</strong> &mdash; Baxter Community Hall</li>
@@ -167,7 +65,7 @@
     <h2 id="in-home-christmas">In-home Christmas session <em>— in your own light</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">In-home Christmas session</span><span class="pkg-tag">45 minutes &middot; full gallery</span></div>
-      <div class="pkg-price"><span class="was"><span class="sr-only">Valued at </span><s>{{price.in-home-christmas.valued}}</s></span>{{price.in-home-christmas}}</div>
+      <div class="pkg-price"><span class="was"><span class="sr-only">Valued at </span><s>{{price.in-home-christmas.valued}}</s></span><span class="now">{{price.in-home-christmas}}</span></div>
       <p class="value-note">Valued at {{price.in-home-christmas.valued}} &mdash; a Glimpse session ({{price.glimpse}}) with its full gallery ({{price.glimpse.gallery}}).</p>
       <p>Christmas as it actually looks at your place. Your tree, your couch, the window the afternoon light comes through &mdash; photographed where the season really happens, in your own home and your own light. Nothing staged, nothing borrowed; just your family, as you are this year.</p>
       <div class="pkg-callout">
@@ -188,7 +86,7 @@
     <h2>Sunset beach minis <em>— golden hour on the bay</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Sunset beach mini</span><span class="pkg-tag">45 minutes &middot; full gallery</span></div>
-      <div class="pkg-price"><span class="was"><span class="sr-only">Valued at </span><s>{{price.sunset-beach-minis.valued}}</s></span>{{price.sunset-beach-minis}}</div>
+      <div class="pkg-price"><span class="was"><span class="sr-only">Valued at </span><s>{{price.sunset-beach-minis.valued}}</s></span><span class="now">{{price.sunset-beach-minis}}</span></div>
       <p class="value-note">Valued at {{price.sunset-beach-minis.valued}} &mdash; a Glimpse session ({{price.glimpse}}) with its full gallery ({{price.glimpse.gallery}}).</p>
       <p>Low sun, cool sand, the water turning gold behind you. The kids chase the shoreline, you walk slow, and the wind does what it likes with everyone&rsquo;s hair &mdash; the loose, easy kind of photos that only happen at the end of the day.</p>
       <ul class="list">
@@ -207,7 +105,7 @@
       <h2 id="signup-title">Hear about the next one <em>first</em></h2>
       <p>Offers like these don't run for long. Leave your email and I'll let you know when the next one opens. Occasional emails only, and you can unsubscribe any time.</p>
       <form id="signup-form" novalidate>
-        <p style="display:none"><label>Don't fill: <input name="bot-field" id="su-bot" tabindex="-1" autocomplete="off"></label></p>
+        <p class="hp"><label>Don't fill: <input name="bot-field" id="su-bot" tabindex="-1" autocomplete="off"></label></p>
         <div class="su-row">
           <label class="sr-only" for="su-name">First name</label>
           <input id="su-name" type="text" autocomplete="given-name" placeholder="First name">

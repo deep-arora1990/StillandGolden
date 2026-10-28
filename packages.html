@@ -54,74 +54,8 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="/blocks.css">
   <script src="/site.js" defer></script>
-  <style>
-    body {
-      background: var(--off-white);
-      color: var(--warm-black);
-      font-family: var(--sans);
-      font-weight: 300;
-      font-size: 15px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    main { max-width: 860px; margin: 0 auto; padding: 140px 48px 40px; }
-    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 24px; }
-    h1 em, h2 em { font-style: italic; color: var(--gold); }
-    h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 400; margin: 56px 0 18px; }
-    p { color: #4d453f; margin-bottom: 18px; max-width: 68ch; }
-    .lead { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--mid); margin-bottom: 8px; }
-    main a { color: var(--warm-black); }
-    .btn {
-      display: inline-block; margin: 12px 0 8px;
-      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--off-white); background: var(--warm-black);
-      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
-    }
-    .btn:hover { background: var(--gold); }
-    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
-    .btn-ghost:hover { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
-
-    .notice {
-      border: 1px solid var(--gold);
-      padding: 26px 30px; margin: 32px 0;
-      background: rgba(184, 148, 94, 0.06);
-    }
-    .notice .label { color: var(--gold); margin-bottom: 8px; }
-    .notice p { margin-bottom: 0; }
-
-    .pkg { border: 1px solid var(--border); padding: 36px 40px; margin: 28px 0; }
-    .pkg-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 22px; margin-bottom: 6px; }
-    .pkg-name { font-family: var(--serif); font-size: 1.9rem; }
-    .pkg-tag { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); }
-    .pkg-price { font-family: var(--serif); font-size: 2rem; margin: 10px 0 16px; }
-    .pkg-price .from { font-size: 0.85rem; font-family: var(--sans); color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; margin-right: 8px; }
-    ul.list { margin: 0 0 18px 20px; color: #4d453f; }
-    ul.list li { margin-bottom: 8px; }
-    .pkg .btn, .pkg .btn-ghost {
-      display: block; width: 100%; max-width: 340px;
-      margin: 12px auto 0; text-align: center;
-    }
-
-    .best { font-size: 0.9rem; color: var(--mid); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 20px; }
-    .pkg .tlearn { font-size: 0.82rem; letter-spacing: 0.06em; }
-
-    .always { border: 1px solid var(--border); padding: 30px 34px; margin: 32px 0; }
-    .always ul { margin: 0 0 0 20px; color: #4d453f; }
-    .always li { margin-bottom: 8px; }
-
-    details.faq-item { border-top: 1px solid var(--border); padding: 18px 0; }
-    details.faq-item:last-of-type { border-bottom: 1px solid var(--border); }
-    details.faq-item summary { font-family: var(--serif); font-size: 1.15rem; cursor: pointer; }
-    details.faq-item p { margin: 12px 0 0; }
-
-    .quote { border-left: 2px solid var(--gold); padding: 6px 0 6px 22px; margin: 26px 0; }
-    .quote q { font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--warm-black); quotes: "\201C" "\201D"; }
-    .quote .who { font-size: 0.8rem; color: var(--mid); margin-top: 8px; letter-spacing: 0.06em; }
-
-    @media (max-width: 700px) { main { padding: 120px 24px 32px; } .pkg { padding: 28px 24px; } }
-  </style>
 </head>
 <body>
   <nav id="nav" data-sg-nav></nav>
@@ -136,7 +70,7 @@
     <h2>Glimpse <em>— the quick refresh</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Glimpse</span><span class="pkg-tag">Up to 30 minutes &middot; 10 images</span></div>
-      <div class="pkg-price"><span class="from">From</span>{{price.glimpse}}</div>
+      <div class="pkg-price"><span class="from">From</span><span class="now">{{price.glimpse}}</span></div>
       <p>A short, focused sitting for when you don't need the whole production — updated family photos, a milestone worth marking, or simply proof that you were all in the same place at the same time. Up to thirty minutes, in your home or at a spot you love, and ten edited images that actually look like your family.</p>
       <ul class="list">
         <li><strong>Up to 30 minutes</strong> — in-home or on-location</li>
@@ -153,7 +87,7 @@
     <h2>Golden <em>— the signature sitting</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Golden</span><span class="pkg-tag">Up to 60 minutes &middot; 20 images</span></div>
-      <div class="pkg-price"><span class="from">From</span>{{price.golden}}</div>
+      <div class="pkg-price"><span class="from">From</span><span class="now">{{price.golden}}</span></div>
       <p>Up to an hour together, and the session most families choose. Long enough that everyone stops performing — usually around minute twenty — with room for a break before anyone melts down. Maternity, cake smash and splash, or the family as it is right now.</p>
       <ul class="list">
         <li><strong>Up to 60 minutes</strong> — in-home or on-location</li>
@@ -170,7 +104,7 @@
     <h2>Gathered <em>— room to move</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Gathered</span><span class="pkg-tag">90 minutes &middot; full gallery</span></div>
-      <div class="pkg-price"><span class="from">From</span>{{price.gathered}}</div>
+      <div class="pkg-price"><span class="from">From</span><span class="now">{{price.gathered}}</span></div>
       <p>The longest session, and every photo is yours. Golden with its full gallery comes to {{price.golden.withgallery}}, and Glimpse to {{price.glimpse.withgallery}}. Gathered starts at {{price.gathered}} with every photo included. It's the one I recommend for newborns — a days-old baby keeps their own schedule, and ninety minutes means nobody hurries a feed or a settle — and equally the session for extended family, milestones and multiple set-ups.</p>
       <ul class="list">
         <li><strong>90 minutes</strong> — in-home or on-location</li>
@@ -187,7 +121,7 @@
     <h2>Bloom <em>— bump to baby</em></h2>
     <div class="pkg">
       <div class="pkg-head"><span class="pkg-name">Bloom</span><span class="pkg-tag">Two 90-minute sessions</span></div>
-      <div class="pkg-price"><span class="from">From</span>{{price.bloom}}</div>
+      <div class="pkg-price"><span class="from">From</span><span class="now">{{price.bloom}}</span></div>
       <p>Two sittings that follow your family from bump to baby — a maternity or family session while you wait, and a newborn session once they arrive. Booked together at a better rate than two separate Gathered sessions, with the full gallery included both times.</p>
       <ul class="list">
         <li><strong>Two 90-minute sessions</strong> — maternity/family now, newborn later</li>
@@ -207,7 +141,7 @@
     </div>
 
     <h2>Always <em>included</em></h2>
-    <div class="always">
+    <div class="box">
       <ul>
         <li><strong>In-home or on-location.</strong> Your home, or a place that means something to you, is the set, and the photos are yours in a way a backdrop never is.</li>
         <li><strong>Everyone in the frame.</strong> No per-person charges. Whoever turns up is in it.</li>
@@ -245,18 +179,18 @@
     </details>
 
     <h2>What families <em>say</em></h2>
-    <div class="quote">
-      <q>His images of our newborn were beautiful!! He was so patient and no request was too much. We will 100% use Deep in the future.</q>
-      <div class="who">Alyce Patterson &middot; Newborn session</div>
-    </div>
-    <div class="quote">
-      <q>Absolutely loved my mini photoshoot — each photo was stunning. After 10 years I finally have photos of my son and I for the walls.</q>
-      <div class="who">Martine Stevens &middot; Mini session</div>
-    </div>
-    <div class="quote">
-      <q>Welcoming and nice, no fuss — just some lovely relaxed family photos. We got what we wanted super quick.</q>
-      <div class="who">Jess Shields &middot; Local Guide &middot; Family</div>
-    </div>
+    <figure class="client-quote">
+      <blockquote>&ldquo;His images of our newborn were beautiful!! He was so patient and no request was too much. We will 100% use Deep in the future.&rdquo;</blockquote>
+      <figcaption>Alyce Patterson &middot; Newborn session</figcaption>
+    </figure>
+    <figure class="client-quote">
+      <blockquote>&ldquo;Absolutely loved my mini photoshoot — each photo was stunning. After 10 years I finally have photos of my son and I for the walls.&rdquo;</blockquote>
+      <figcaption>Martine Stevens &middot; Mini session</figcaption>
+    </figure>
+    <figure class="client-quote">
+      <blockquote>&ldquo;Welcoming and nice, no fuss — just some lovely relaxed family photos. We got what we wanted super quick.&rdquo;</blockquote>
+      <figcaption>Jess Shields &middot; Local Guide &middot; Family</figcaption>
+    </figure>
 
     <h2>Ready when you are</h2>
     <p>Book your date directly, or get in touch and I'll come back to you within 24 hours.</p>
