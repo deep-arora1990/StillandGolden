@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
-import { copyRule, pageOffenders, setExceptionsForTest } from './copy-rules.js'
+import { copyRule, pageOffenders, setExceptionsForTest, exceptionProblem, SCANNED_DATA } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const RULES = JSON.parse(fs.readFileSync(path.join(ROOT, 'checks/copy-rules.json'), 'utf8')).rules
@@ -58,12 +58,18 @@ describe('copy rules', () => {
 
   it('every exception is well formed', () => {
     const list = JSON.parse(fs.readFileSync(path.join(ROOT, 'checks/copy-exceptions.json'), 'utf8')).exceptions
-    const tracked = execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' }).split('\n')
-    for (const e of list) {
-      expect(Object.keys(RULES), JSON.stringify(e)).toContain(e.rule)
-      expect(tracked, JSON.stringify(e)).toContain(e.page)
-      expect(typeof e.found === 'string' && e.found.length > 0, JSON.stringify(e)).toBe(true)
-      expect(e.date, JSON.stringify(e)).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-    }
+    for (const e of list) expect(exceptionProblem(e), JSON.stringify(e)).toBe(null)
+  })
+
+  it('an exception may name a page, or a data file the rules scan (a photo description), as Studio records it', () => {
+    expect(SCANNED_DATA).toEqual(['data/portfolio.json'])
+    const ok = { rule: 'newborn-timing-window', found: 'first few weeks', date: '2026-10-29', note: 'Quoting a client' }
+    expect(exceptionProblem({ ...ok, page: GATHERED })).toBe(null)
+    expect(exceptionProblem({ ...ok, page: 'data/portfolio.json' })).toBe(null)
+    expect(exceptionProblem({ ...ok, page: 'data/prices.json' })).toMatch(/page/)
+    expect(exceptionProblem({ ...ok, page: 'nope.html' })).toMatch(/page/)
+    expect(exceptionProblem({ ...ok, rule: 'nope', page: GATHERED })).toMatch(/rule/)
+    expect(exceptionProblem({ ...ok, found: '', page: GATHERED })).toMatch(/found/)
+    expect(exceptionProblem({ ...ok, date: '29 Oct', page: GATHERED })).toMatch(/date/)
   })
 })
