@@ -123,9 +123,12 @@ describe('published photos', () => {
 describe('the post template', () => {
   it('never publishes the post template', () => {
     const { execFileSync } = require('node:child_process')
-    execFileSync('node', ['build.js'], { cwd: ROOT, stdio: 'ignore' })
-    expect(fs.existsSync(path.join(ROOT, 'dist/blog/_template.html'))).toBe(false)
-    expect(fs.existsSync(path.join(ROOT, 'dist/blog/index.html'))).toBe(true)
+    const out = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'sg-build-'))
+    try {
+      execFileSync('node', ['build.js'], { cwd: ROOT, stdio: 'ignore', env: { ...process.env, SG_BUILD_OUT: out } })
+      expect(fs.existsSync(path.join(out, 'blog/_template.html'))).toBe(false)
+      expect(fs.existsSync(path.join(out, 'blog/index.html'))).toBe(true)
+    } finally { fs.rmSync(out, { recursive: true, force: true }) }
     expect(publishable('blog/_template.html', new Set())).toBe(false)
   })
 })

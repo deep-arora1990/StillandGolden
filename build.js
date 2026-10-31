@@ -55,7 +55,9 @@ const CONFIG = {
 };
 
 const ROOT = __dirname;
-const OUT = path.join(ROOT, 'dist');
+// SG_BUILD_OUT redirects the output (tests build into their own temp folder so
+// parallel runs never clear each other's dist/). Unset, it is dist/ as always.
+const OUT = process.env.SG_BUILD_OUT ? path.resolve(process.env.SG_BUILD_OUT) : path.join(ROOT, 'dist');
 const PRICES = JSON.parse(fs.readFileSync(path.join(ROOT, CONFIG.prices), 'utf8'));
 
 // The portfolio data as { data, text }, or null when the site has none (the

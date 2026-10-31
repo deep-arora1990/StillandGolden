@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
+import os from 'node:os'
 import { execSync } from 'node:child_process'
 import { copyRule, pageOffenders, setExceptionsForTest, exceptionProblem, SCANNED_DATA } from './copy-rules.js'
 
@@ -52,8 +53,11 @@ describe('copy rules', () => {
   })
 
   it('the lists are never published', () => {
-    execSync('node build.js', { cwd: ROOT, stdio: 'ignore' })
-    expect(fs.existsSync(path.join(ROOT, 'dist/checks'))).toBe(false)
+    const out = fs.mkdtempSync(path.join(os.tmpdir(), 'sg-build-'))
+    try {
+      execSync('node build.js', { cwd: ROOT, stdio: 'ignore', env: { ...process.env, SG_BUILD_OUT: out } })
+      expect(fs.existsSync(path.join(out, 'checks'))).toBe(false)
+    } finally { fs.rmSync(out, { recursive: true, force: true }) }
   })
 
   it('every exception is well formed', () => {
