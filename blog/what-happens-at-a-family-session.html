@@ -40,50 +40,13 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="/blocks.css">
   <script src="/site.js" defer></script>
-  <style>
-    body { background: var(--off-white); color: var(--warm-black); font-family: var(--sans); font-weight: 300; font-size: 15px; line-height: 1.7; }
-
-    main { max-width: 720px; margin: 0 auto; padding: 140px 48px 40px; }
-    h1 { font-family: var(--serif); font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 400; line-height: 1.15; margin-bottom: 14px; }
-    .byline { font-size: 0.78rem; color: var(--mid); letter-spacing: 0.06em; margin-bottom: 44px; }
-    h2 { font-family: var(--serif); font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 400; margin: 48px 0 16px; }
-    h2 em { font-style: italic; color: var(--gold); }
-    p { color: #4d453f; margin-bottom: 18px; }
-    a { color: var(--warm-black); }
-    ul { margin: 0 0 18px 20px; color: #4d453f; }
-    li { margin-bottom: 8px; }
-    .callout { border-left: 2px solid var(--gold); padding: 6px 0 6px 24px; margin: 28px 0; font-family: var(--serif); font-size: 1.15rem; font-style: italic; color: var(--mid); }
-    .cta-box { border: 1px solid var(--border); padding: 32px 36px; margin: 48px 0 0; }
-    .cta-box h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; margin-bottom: 10px; }
-    .btn {
-      display: inline-block; margin-top: 14px;
-      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--off-white); background: var(--warm-black);
-      padding: 14px 30px; text-decoration: none; transition: background 0.25s;
-    }
-    .btn:hover { background: var(--gold); }
-
-    .pkgs { margin: 48px 0 0; }
-    .pkgs-sub { color: var(--mid); font-size: 0.9rem; margin-bottom: 24px; }
-    .pkg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
-    .pkg { background: #fff; border: 1px solid var(--border); padding: 26px 24px 24px; display: flex; flex-direction: column; }
-    .pkg.featured { border-color: var(--gold); }
-    .pkg-name { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; }
-    .pkg-price { font-family: var(--serif); font-size: 1.05rem; margin: 4px 0 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
-    .pkg-price .from { font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); margin-right: 6px; }
-    .pkg-specs { list-style: none; margin: 0 0 20px; padding: 0; flex: 1; }
-    .pkg-specs li { position: relative; padding-left: 18px; margin-bottom: 8px; font-size: 0.84rem; }
-    .pkg-specs li::before { content: ""; position: absolute; left: 0; top: 7px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
-    .pkg-btn { display: block; text-align: center; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 13px 16px; text-decoration: none; transition: background 0.25s; }
-    .pkg-btn:hover { background: var(--gold); }
-    @media (max-width: 560px) { .pkg-grid { grid-template-columns: 1fr; } }
-  </style>
 </head>
 <body>
   <nav id="nav" data-sg-nav></nav>
 
-  <main>
+  <main class="article">
     <div class="label">Family Photography</div>
     <h1>What actually happens at a family session</h1>
     <p class="byline">By Deep Arora &middot; Still &amp; Golden Photography &middot; Cranbourne East &amp; South-East Melbourne</p>
@@ -126,45 +89,45 @@
       <h2>Session <em>packages</em></h2>
       <p class="pkgs-sub">This post's session is Golden — but here's the full lineup, all in-home or on-location across Cranbourne East &amp; South-East Melbourne, all delivered within 2 weeks.</p>
       <div class="pkg-grid">
-        <div class="pkg featured">
-          <div class="pkg-name">Golden</div>
-          <div class="pkg-price"><span class="from">From</span>{{price.golden}}</div>
-          <ul class="pkg-specs">
+        <div class="pg-card featured">
+          <div class="pg-name">Golden</div>
+          <div class="pg-price"><span class="from">From</span><span class="now">{{price.golden}}</span></div>
+          <ul class="pg-specs">
             <li>Up to 60 minutes</li>
             <li>20 edited images</li>
             <li>In-home or on-location</li>
           </ul>
-          <a class="pkg-btn" href="/book?service=golden">Book Golden</a>
+          <a class="pg-btn" href="/book?service=golden">Book Golden</a>
         </div>
-        <div class="pkg">
-          <div class="pkg-name">Glimpse</div>
-          <div class="pkg-price"><span class="from">From</span>{{price.glimpse}}</div>
-          <ul class="pkg-specs">
+        <div class="pg-card">
+          <div class="pg-name">Glimpse</div>
+          <div class="pg-price"><span class="from">From</span><span class="now">{{price.glimpse}}</span></div>
+          <ul class="pg-specs">
             <li>Up to 30 minutes</li>
             <li>10 edited images</li>
             <li>In-home or on-location</li>
           </ul>
-          <a class="pkg-btn" href="/book?service=glimpse">Book Glimpse</a>
+          <a class="pg-btn" href="/book?service=glimpse">Book Glimpse</a>
         </div>
-        <div class="pkg">
-          <div class="pkg-name">Gathered</div>
-          <div class="pkg-price"><span class="from">From</span>{{price.gathered}}</div>
-          <ul class="pkg-specs">
+        <div class="pg-card">
+          <div class="pg-name">Gathered</div>
+          <div class="pg-price"><span class="from">From</span><span class="now">{{price.gathered}}</span></div>
+          <ul class="pg-specs">
             <li>90 minutes</li>
             <li>Full gallery included</li>
             <li>Usually 60+ edited images</li>
           </ul>
-          <a class="pkg-btn" href="/book?service=gathered">Book Gathered</a>
+          <a class="pg-btn" href="/book?service=gathered">Book Gathered</a>
         </div>
-        <div class="pkg">
-          <div class="pkg-name">Bloom</div>
-          <div class="pkg-price"><span class="from">From</span>{{price.bloom}}</div>
-          <ul class="pkg-specs">
+        <div class="pg-card">
+          <div class="pg-name">Bloom</div>
+          <div class="pg-price"><span class="from">From</span><span class="now">{{price.bloom}}</span></div>
+          <ul class="pg-specs">
             <li>Two 90-minute sessions</li>
             <li>Maternity / family + newborn</li>
             <li>In-home, both sittings</li>
           </ul>
-          <a class="pkg-btn" href="/book?service=bloom">Book Bloom</a>
+          <a class="pg-btn" href="/book?service=bloom">Book Bloom</a>
         </div>
       </div>
     </section>

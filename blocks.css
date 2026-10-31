@@ -1,5 +1,5 @@
 /* Shared styles for the package and offer pages, About, Packages, Offers and
-   Gift vouchers (loaded after site.css). A later stage adds the blog here. */
+   Gift vouchers (loaded after site.css). The blog posts share it too. */
 html { scroll-behavior: smooth; }
 body {
   background: var(--off-white);
@@ -195,3 +195,39 @@ details.faq-item p { margin: 12px 0 0; }
 .confirm-box p { margin-bottom: 14px; }
 .confirm-box p:last-child { margin-bottom: 0; }
 @media (max-width: 640px) { .confirm-box { padding: 28px 24px; } }
+
+/* Blog posts. They share everything above; what follows is only what a post
+   has and the pages don't. Scoped (main.article, main > h3, main > ul,
+   figure.photo, .pair, .byline, .callout, .cta-box, .pg-*) so no other page can
+   match it. The reading width is a page choice, not a block style. */
+main.article { max-width: 720px; }
+.byline { font-size: 0.78rem; color: var(--mid); letter-spacing: 0.06em; margin-bottom: 44px; }
+main > h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; margin: 28px 0 8px; }
+main > ul { margin: 0 0 18px 20px; color: #4d453f; }
+main > ul > li { margin-bottom: 8px; }
+.callout { border-left: 2px solid var(--gold); padding: 6px 0 6px 24px; margin: 28px 0; font-family: var(--serif); font-size: 1.15rem; font-style: italic; color: var(--mid); }
+figure.photo { margin: 32px 0; }
+figure.photo img { width: 100%; height: auto; display: block; }
+figure.photo figcaption { font-size: 0.74rem; color: var(--mid); letter-spacing: 0.04em; margin-top: 10px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pair img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/5; display: block; }
+@media (max-width: 600px) { .pair { grid-template-columns: 1fr; } .pair img { aspect-ratio: auto; } }
+.cta-box { border: 1px solid var(--border); padding: 32px 36px; margin: 48px 0 0; }
+.cta-box h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; margin: 0 0 10px; }
+
+/* The post package grid (a post's closing lineup). */
+.pkgs { margin: 48px 0 0; }
+.pkgs-sub { color: var(--mid); font-size: 0.9rem; margin-bottom: 24px; }
+.pkgs-sub.pkgs-more { margin: 22px 0 0; }
+.pkg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.pg-card { background: #fff; border: 1px solid var(--border); padding: 26px 24px 24px; display: flex; flex-direction: column; }
+.pg-card.featured { border-color: var(--gold); }
+.pg-name { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; }
+.pg-price { font-family: var(--serif); font-size: 1.05rem; margin: 4px 0 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.pg-price .from { font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); margin-right: 6px; }
+.pg-specs { list-style: none; margin: 0 0 20px; padding: 0; flex: 1; }
+.pg-specs li { position: relative; padding-left: 18px; margin-bottom: 8px; font-size: 0.84rem; }
+.pg-specs li::before { content: ""; position: absolute; left: 0; top: 7px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.pg-btn { display: block; text-align: center; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--off-white); background: var(--warm-black); padding: 13px 16px; text-decoration: none; transition: background 0.25s; }
+.pg-btn:hover { background: var(--gold); }
+@media (max-width: 560px) { .pkg-grid { grid-template-columns: 1fr; } }
