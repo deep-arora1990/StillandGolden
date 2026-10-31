@@ -22,19 +22,8 @@ const PAGES = [
   'offers/in-home-christmas-photos.html',
   'offers/sunset-beach-mini-sessions.html',
 ]
-const POSTS = [
-  'blog/how-i-bring-the-studio-to-your-house.html',
-  'blog/how-much-does-newborn-photography-cost.html',
-  'blog/how-to-choose-a-smash-cake.html',
-  'blog/preparing-your-home-newborn-session.html',
-  'blog/what-happens-at-a-cake-smash-session.html',
-  'blog/what-happens-at-a-family-session.html',
-  'blog/what-happens-at-a-maternity-session.html',
-  'blog/what-happens-at-a-newborn-session.html',
-  'blog/what-happens-at-an-outdoor-mini-session.html',
-  'blog/what-to-wear-family-photo-session.html',
-  'blog/when-to-book-newborn-photos.html',
-]
+const POSTS = JSON.parse(fs.readFileSync(path.join(ROOT, 'blocks/library.json'), 'utf8')).pages
+  .filter((p) => p.kind === 'post').map((p) => p.file)
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
 
 describe('blocks.css', () => {

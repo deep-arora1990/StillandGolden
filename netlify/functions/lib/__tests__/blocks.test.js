@@ -47,10 +47,11 @@ describe('block markers', () => {
     expect(() => renderPage('x.html', '<!-- block:carousel c --><!-- /block -->')).toThrow(/x\.html: unknown block type "carousel"/)
     expect(() => renderPage('x.html', '<!-- block:text t -->')).toThrow(/x\.html: .*unclosed/)
   })
-  it('the library names all twenty-three types', () => {
+  it('the library names all thirty types', () => {
     expect(Object.keys(LIBRARY.types).sort()).toEqual([
-      'areas', 'box-list', 'buttons', 'caption', 'gallery', 'heading', 'intro', 'list', 'note', 'notice',
-      'package', 'package-row-three', 'package-row-two', 'portfolio-intro', 'portrait', 'price', 'question', 'quote', 'signature',
+      'areas', 'box-list', 'buttons', 'callout', 'caption', 'cta-box', 'gallery', 'heading', 'intro', 'list', 'note', 'notice',
+      'package', 'package-grid', 'package-row-three', 'package-row-two', 'photo', 'photo-pair', 'portfolio-intro', 'portrait',
+      'post-intro', 'price', 'prose', 'question', 'quote', 'signature',
       'signup', 'text', 'voucher-form', 'xmas-card'])
   })
   it('blocks/ and build/ are never published', () => {
@@ -67,7 +68,8 @@ const PAGES7 = [
   'packages/bloom-maternity-newborn-photography.html',
   'offers/in-home-christmas-photos.html', 'offers/sunset-beach-mini-sessions.html',
 ]
-const PAGES = ['about.html', 'packages.html', 'offers.html', 'gift-vouchers.html', ...PAGES7]
+const POSTS = LIBRARY.pages.filter((p) => p.kind === 'post').map((p) => p.file)
+const PAGES = ['about.html', 'packages.html', 'offers.html', 'gift-vouchers.html', ...PAGES7, ...POSTS]
 
 const find = (n, tag) => {
   if (n.tagName === tag) return n
@@ -93,11 +95,19 @@ const kind = (el) => {
   if (el.tagName === 'section' && c.includes('signup')) return 'signup'
   if (el.tagName === 'div' && c.includes('confirm-box')) return 'voucher-bought'
   if (el.tagName === 'form' && id === 'voucher-form') return 'voucher-form-el'
+  if (el.tagName === 'p' && c.includes('byline')) return 'byline'
+  if (el.tagName === 'div' && c.includes('callout')) return 'callout'
+  if (el.tagName === 'figure' && c.includes('photo')) return 'photo'
+  if (el.tagName === 'div' && c.includes('pair')) return 'photo-pair'
+  if (el.tagName === 'div' && c.includes('cta-box')) return 'cta-box'
+  if (el.tagName === 'section' && c.includes('pkgs')) return 'package-grid'
   if (el.tagName === 'div' && c.includes('label')) return 'intro-label'
   if (el.tagName === 'h1') return 'intro-h1'
   if (el.tagName === 'p' && c.includes('lead')) return 'intro-lead'
   if (el.tagName === 'p' && !c.length) return 'text'
   if (el.tagName === 'h2') return 'heading'
+  if (el.tagName === 'h3') return 'h3'
+  if (el.tagName === 'ul' && !c.length) return 'plain-list'
   if (el.tagName === 'ul' && c.includes('list')) return 'list'
   if (el.tagName === 'div' && c.includes('gallery')) return 'gallery'
   if (el.tagName === 'p' && c.includes('caption')) return 'caption'
@@ -117,6 +127,8 @@ const ALLOWED = {
   'xmas-card': ['xmas-heading', 'xmas-card'], signup: ['signup'],
   'voucher-form': ['voucher-bought', 'voucher-cancelled', 'voucher-form-el'],
   'package-row-two': ['package-row'], 'package-row-three': ['package-row'],
+  'post-intro': ['intro-label', 'intro-h1', 'byline'], prose: ['text', 'heading', 'h3', 'plain-list'],
+  callout: ['callout'], photo: ['photo'], 'photo-pair': ['photo-pair'], 'cta-box': ['cta-box'], 'package-grid': ['package-grid'],
 }
 
 describe('every page but the portfolio is marked into blocks', () => {
@@ -124,8 +136,9 @@ describe('every page but the portfolio is marked into blocks', () => {
     const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
     const blocks = parseBlocks(raw)
     expect(blocks.length).toBeGreaterThan(0)
-    expect(blocks[0].type).toBe('intro')
-    expect(blocks.filter((b) => b.type === 'intro')).toHaveLength(1)
+    const first = POSTS.includes(page) ? 'post-intro' : 'intro'
+    expect(blocks[0].type).toBe(first)
+    expect(blocks.filter((b) => b.type === first)).toHaveLength(1)
     // ids stay stable across edits, so they are not forced into page order
     for (const b of blocks) expect(b.id).toMatch(/^[a-z][a-z0-9-]*$/)
     const main = find(parse(raw, { sourceCodeLocationInfo: true }), 'main')
@@ -149,6 +162,8 @@ describe('every page but the portfolio is marked into blocks', () => {
       notice: /^notice$/, 'box-list': /^box-list$/, question: /^question$/, signup: /^signup$/,
       'xmas-card': /^xmas-heading xmas-card$/,
       'package-row-two': /^package-row$/, 'package-row-three': /^package-row$/,
+      'post-intro': /^intro-label intro-h1 byline$/, prose: /^(text|heading|h3|plain-list)( (text|heading|h3|plain-list))*$/,
+      callout: /^callout$/, photo: /^photo$/, 'photo-pair': /^photo-pair$/, 'cta-box': /^cta-box$/, 'package-grid': /^package-grid$/,
       'voucher-form': /^voucher-bought voucher-cancelled voucher-form-el$/,
     }
     for (const b of blocks) {
@@ -182,7 +197,7 @@ describe('block library', () => {
       return
     }
     expect(entry.families).toEqual(['site'])
-    expect(entry.addable).toBe(type !== 'intro' && !entry.locked)
+    expect(entry.addable).toBe(!['intro', 'post-intro'].includes(type) && !entry.locked)
     if (entry.locked) {
       expect(entry.fields).toEqual([])
       expect(entry.hint).toBe('This part has a form or live switching in it, so a developer edits it. You can move it.')
@@ -190,6 +205,7 @@ describe('block library', () => {
       expect(entry.snippet).toBeUndefined()
       return
     }
+    if (type === 'post-intro') { expect(entry.snippet).toBeUndefined(); return }
     expect(entry.snippet).toBe(`blocks/site/${type}.html`)
     const html = fs.readFileSync(require('node:path').join(ROOT, entry.snippet), 'utf8')
     const blocks = parseBlocks(html)
@@ -207,9 +223,10 @@ describe('block library', () => {
   it.each(TYPES)('%s: every field selector matches inside the snippet and every real block', (type) => {
     const entry = LIBRARY.types[type]
     if (entry.locked) return
+    for (const f of entry.fields) if (!f.selector) expect(f).toEqual({ key: f.key, kind: 'rich', repeat: false, optional: false })
     const check = (html, b, where) => {
       const dom = inner(html, b)
-      for (const f of entry.fields) {
+      for (const f of entry.fields.filter((x) => x.selector)) {
         const n = selectAll(f.selector, dom).length
         if (!f.optional) expect(n, `${where} ${b.id} field ${f.key}`).toBeGreaterThan(0)
         if (!f.repeat) expect(n, `${where} ${b.id} field ${f.key} is single`).toBeLessThanOrEqual(1)
@@ -236,7 +253,7 @@ describe('block library', () => {
     const entry = LIBRARY.types[type]
     const run = (html, b, where) => {
       const dom = inner(html, b)
-      for (const f of entry.fields.filter((x) => x.repeat)) {
+      for (const f of entry.fields.filter((x) => x.repeat && x.selector)) {
         const hits = selectAll(f.selector, dom)
         if (hits.length < 2) continue
         const parent = hits[0].parent
@@ -256,10 +273,15 @@ describe('block library', () => {
     }
   })
 
-  it('the pages list holds the twelve files in order, each in git', () => {
+  it('the pages list holds the twelve files in order, then the posts, each in git', () => {
     const { execSync } = require('node:child_process')
     const tracked = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().split('\n')
-    expect(LIBRARY.pages.map((p) => p.file)).toEqual([
+    const nonPosts = LIBRARY.pages.filter((p) => p.kind !== 'post')
+    expect(LIBRARY.pages.slice(0, 12)).toEqual(nonPosts)
+    expect(POSTS).toHaveLength(11)
+    expect(new Set(POSTS).size).toBe(POSTS.length)
+    for (const f of POSTS) expect(f.startsWith('blog/')).toBe(true)
+    expect(nonPosts.map((p) => p.file)).toEqual([
       'about.html', 'portfolio.html', 'packages.html',
       'packages/glimpse-mini-sessions.html', 'packages/golden-family-photography.html',
       'packages/golden-cake-smash-photography.html', 'packages/gathered-newborn-photography.html',
@@ -267,7 +289,7 @@ describe('block library', () => {
       'offers.html', 'offers/sunset-beach-mini-sessions.html', 'offers/in-home-christmas-photos.html',
       'gift-vouchers.html'])
     for (const p of LIBRARY.pages) { expect(tracked).toContain(p.file); expect(p.label).toBeTruthy() }
-    expect(LIBRARY.pages.filter((p) => p.kind).map((p) => [p.file, p.kind])).toEqual([['portfolio.html', 'portfolio']])
+    expect(nonPosts.filter((p) => p.kind).map((p) => [p.file, p.kind])).toEqual([['portfolio.html', 'portfolio']])
     expect(LIBRARY.pages.find((p) => p.file === 'portfolio.html').label).toBe('Portfolio')
   })
 
@@ -294,7 +316,8 @@ describe('block library', () => {
     for (const t of TYPES) {
       const keys = LIBRARY.types[t].fields.map((f) => f.key)
       expect(new Set(keys).size).toBe(keys.length)
-      for (const f of LIBRARY.types[t].fields) expect(['text', 'inline', 'image', 'link']).toContain(f.kind)
+      for (const f of LIBRARY.types[t].fields) expect(['text', 'inline', 'image', 'link', 'rich']).toContain(f.kind)
+      for (const t of TYPES) for (const f of LIBRARY.types[t].fields) if (!f.selector) expect(f.kind).toBe('rich')
     }
   })
 })
@@ -311,7 +334,8 @@ const placeholders = () => {
   const walk = (n, inLink) => {
     // link labels are real defaults: mirrors Studio's placeholderWarnings (inline.js)
     const link = inLink || n.name === 'a'
-    if (n.type === 'text' && !link && n.data.trim()) out.add(n.data.trim())
+    // one-word runs are not flagged by Studio either (two or more words only)
+    if (n.type === 'text' && !link && n.data.trim().split(/\s+/).length >= 2) out.add(n.data.trim())
     if (n.attribs && n.attribs.alt) out.add(n.attribs.alt)
     ;(n.children || []).forEach((c) => walk(c, link))
   }

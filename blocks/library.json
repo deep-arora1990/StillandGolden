@@ -84,7 +84,44 @@
       { "key": "name3", "selector": ".pkg-row > .pkg-mini:nth-child(3) .pm-name", "kind": "text", "repeat": false, "optional": false },
       { "key": "price3", "selector": ".pkg-row > .pkg-mini:nth-child(3) .pm-price", "kind": "inline", "repeat": false, "optional": false },
       { "key": "detail3", "selector": ".pkg-row > .pkg-mini:nth-child(3) .pm-detail", "kind": "inline", "repeat": false, "optional": false },
-      { "key": "link3", "selector": ".pkg-row > .pkg-mini:nth-child(3) a.pm-link", "kind": "link", "repeat": false, "optional": false } ] }
+      { "key": "link3", "selector": ".pkg-row > .pkg-mini:nth-child(3) a.pm-link", "kind": "link", "repeat": false, "optional": false } ] },
+    "post-intro": { "label": "Post opening", "families": ["site"], "addable": false, "fields": [
+      { "key": "label", "selector": ".label", "kind": "text", "repeat": false, "optional": false },
+      { "key": "title", "selector": "h1", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "byline", "selector": "p.byline", "kind": "inline", "repeat": false, "optional": false } ] },
+    "prose": { "label": "Text and headings", "families": ["site"], "addable": true, "snippet": "blocks/site/prose.html", "fields": [
+      { "key": "body", "kind": "rich", "repeat": false, "optional": false } ] },
+    "callout": { "label": "Callout", "families": ["site"], "addable": true, "snippet": "blocks/site/callout.html", "fields": [
+      { "key": "text", "selector": ".callout", "kind": "inline", "repeat": false, "optional": false } ] },
+    "photo": { "label": "Photo", "families": ["site"], "addable": true, "snippet": "blocks/site/photo.html", "fields": [
+      { "key": "photo", "selector": "figure.photo > picture", "kind": "image", "repeat": false, "optional": false },
+      { "key": "caption", "selector": "figcaption", "kind": "inline", "repeat": false, "optional": true } ] },
+    "photo-pair": { "label": "Two photos", "families": ["site"], "addable": true, "snippet": "blocks/site/photo-pair.html", "fields": [
+      { "key": "photos", "selector": ".pair > picture", "kind": "image", "repeat": true, "optional": false, "min": 2, "max": 2 } ] },
+    "cta-box": { "label": "Booking box", "families": ["site"], "addable": true, "snippet": "blocks/site/cta-box.html", "fields": [
+      { "key": "title", "selector": ".cta-box > h3", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "text", "selector": ".cta-box > p", "kind": "inline", "repeat": true, "optional": false },
+      { "key": "button", "selector": ".cta-box > a.btn", "kind": "link", "repeat": false, "optional": false } ] },
+    "package-grid": { "label": "Package grid", "families": ["site"], "addable": true, "snippet": "blocks/site/package-grid.html", "fields": [
+      { "key": "title", "selector": "h2", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "sub", "selector": "p.pkgs-sub:not(.pkgs-more)", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "more", "selector": "p.pkgs-more", "kind": "inline", "repeat": false, "optional": true },
+      { "key": "name1", "selector": ".pkg-grid > .pg-card:nth-child(1) .pg-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price1", "selector": ".pkg-grid > .pg-card:nth-child(1) .pg-price .now", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "specs1", "selector": ".pkg-grid > .pg-card:nth-child(1) ul.pg-specs > li", "kind": "inline", "repeat": true, "optional": false },
+      { "key": "button1", "selector": ".pkg-grid > .pg-card:nth-child(1) a.pg-btn", "kind": "link", "repeat": false, "optional": false },
+      { "key": "name2", "selector": ".pkg-grid > .pg-card:nth-child(2) .pg-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price2", "selector": ".pkg-grid > .pg-card:nth-child(2) .pg-price .now", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "specs2", "selector": ".pkg-grid > .pg-card:nth-child(2) ul.pg-specs > li", "kind": "inline", "repeat": true, "optional": false },
+      { "key": "button2", "selector": ".pkg-grid > .pg-card:nth-child(2) a.pg-btn", "kind": "link", "repeat": false, "optional": false },
+      { "key": "name3", "selector": ".pkg-grid > .pg-card:nth-child(3) .pg-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price3", "selector": ".pkg-grid > .pg-card:nth-child(3) .pg-price .now", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "specs3", "selector": ".pkg-grid > .pg-card:nth-child(3) ul.pg-specs > li", "kind": "inline", "repeat": true, "optional": false },
+      { "key": "button3", "selector": ".pkg-grid > .pg-card:nth-child(3) a.pg-btn", "kind": "link", "repeat": false, "optional": false },
+      { "key": "name4", "selector": ".pkg-grid > .pg-card:nth-child(4) .pg-name", "kind": "text", "repeat": false, "optional": false },
+      { "key": "price4", "selector": ".pkg-grid > .pg-card:nth-child(4) .pg-price .now", "kind": "inline", "repeat": false, "optional": false },
+      { "key": "specs4", "selector": ".pkg-grid > .pg-card:nth-child(4) ul.pg-specs > li", "kind": "inline", "repeat": true, "optional": false },
+      { "key": "button4", "selector": ".pkg-grid > .pg-card:nth-child(4) a.pg-btn", "kind": "link", "repeat": false, "optional": false } ] }
   },
   "pages": [
     { "file": "about.html", "label": "About" },
@@ -98,6 +135,17 @@
     { "file": "offers.html", "label": "Offers (overview)" },
     { "file": "offers/sunset-beach-mini-sessions.html", "label": "Sunset beach minis" },
     { "file": "offers/in-home-christmas-photos.html", "label": "In-home Christmas" },
-    { "file": "gift-vouchers.html", "label": "Gift vouchers" }
+    { "file": "gift-vouchers.html", "label": "Gift vouchers" },
+    { "file": "blog/what-happens-at-an-outdoor-mini-session.html", "label": "What actually happens at an outdoor mini session", "kind": "post" },
+    { "file": "blog/how-much-does-newborn-photography-cost.html", "label": "How much does newborn photography cost?", "kind": "post" },
+    { "file": "blog/how-i-bring-the-studio-to-your-house.html", "label": "How I bring the studio to your house", "kind": "post" },
+    { "file": "blog/what-happens-at-a-maternity-session.html", "label": "What actually happens at a maternity session", "kind": "post" },
+    { "file": "blog/what-happens-at-a-family-session.html", "label": "What actually happens at a family session", "kind": "post" },
+    { "file": "blog/what-happens-at-a-newborn-session.html", "label": "What actually happens at a newborn session", "kind": "post" },
+    { "file": "blog/how-to-choose-a-smash-cake.html", "label": "How to choose a smash cake", "kind": "post" },
+    { "file": "blog/what-happens-at-a-cake-smash-session.html", "label": "What actually happens at a cake smash session", "kind": "post" },
+    { "file": "blog/when-to-book-newborn-photos.html", "label": "When is the best time to book newborn photos?", "kind": "post" },
+    { "file": "blog/preparing-your-home-newborn-session.html", "label": "Preparing your home for a newborn session (it doesn't need to be tidy)", "kind": "post" },
+    { "file": "blog/what-to-wear-family-photo-session.html", "label": "What to wear for your family photo session", "kind": "post" }
   ]
 }

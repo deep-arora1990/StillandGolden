@@ -67,7 +67,8 @@ describe('the /_cms/ bundle', () => {
       'packages/golden-cake-smash-photography.html', 'packages/gathered-newborn-photography.html',
       'packages/bloom-maternity-newborn-photography.html', 'offers.html',
       'offers/sunset-beach-mini-sessions.html', 'offers/in-home-christmas-photos.html',
-      'gift-vouchers.html']);
+      'gift-vouchers.html', ...library.pages.filter((p) => p.kind === 'post').map((p) => p.file)]);
+    expect(library.pages.filter((p) => p.kind === 'post')).toHaveLength(11);
     for (const { file, label, kind } of library.pages) {
       expect(label).toBeTruthy();
       expect(tracked, file).toContain(file);
