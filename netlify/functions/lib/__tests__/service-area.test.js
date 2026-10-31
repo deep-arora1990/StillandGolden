@@ -8,14 +8,12 @@ import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
-import { copyRule, pageOffenders, SCANNED_DATA } from './copy-rules.js'
+import { copyRule, pageOffenders, SCANNED_DATA, scannedPages } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
 // The pages, and the portfolio's photo descriptions (data/portfolio.json).
-const PAGES = execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' })
-  .split('\n')
-  .filter((f) => f && !/^(brand|reel|print|blocks)\//.test(f))
+const PAGES = scannedPages()
   .concat(SCANNED_DATA)
 
 // The Google profile's service areas, plus the council and the city.

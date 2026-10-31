@@ -20,6 +20,15 @@ export function setExceptionsForTest(list) {
 // "Publish anyway" records the exception against it.
 export const SCANNED_DATA = ['data/portfolio.json']
 
+// The pages every scan reads: tracked .html files outside brand/, reel/,
+// print/ and blocks/ (snippets), and without the post template (placeholder
+// text that is never published).
+export function scannedPages() {
+  return execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' })
+    .split('\n')
+    .filter((f) => f && !/^(brand|reel|print|blocks)\//.test(f) && f !== 'blog/_template.html')
+}
+
 const RULE_IDS = () => Object.keys(readJson('copy-rules.json').rules)
 let trackedPages = null
 

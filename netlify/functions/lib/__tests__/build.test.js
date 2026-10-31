@@ -120,6 +120,16 @@ describe('published photos', () => {
   })
 })
 
+describe('the post template', () => {
+  it('never publishes the post template', () => {
+    const { execFileSync } = require('node:child_process')
+    execFileSync('node', ['build.js'], { cwd: ROOT, stdio: 'ignore' })
+    expect(fs.existsSync(path.join(ROOT, 'dist/blog/_template.html'))).toBe(false)
+    expect(fs.existsSync(path.join(ROOT, 'dist/blog/index.html'))).toBe(true)
+    expect(publishable('blog/_template.html', new Set())).toBe(false)
+  })
+})
+
 describe('checks workflow', () => {
   it('never publishes the workflow folder', () => {
     expect(CONFIG.rootFiles.some((f) => f.startsWith('.github'))).toBe(false)

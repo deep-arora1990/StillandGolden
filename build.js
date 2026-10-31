@@ -49,6 +49,9 @@ const CONFIG = {
   ],
   // Pages that must stay unlinked (live and in the sitemap, linked from nowhere).
   unlinked: ['/packages/golden-cake-smash-photography'],
+  // Files that stay in the repo but are never published: Studio copies the
+  // post template to make each new post.
+  skip: ['blog/_template.html'],
 };
 
 const ROOT = __dirname;
@@ -126,6 +129,7 @@ function referencedFiles(html, pageRel = 'index.html') {
 // points to, and anything on the keep list.
 function publishable(rel, refs) {
   const p = rel.split(path.sep).join('/');
+  if (CONFIG.skip.includes(p)) return false;
   if (!IMAGE_DIRS.some((d) => p.startsWith(d + '/'))) return true;
   return p.split('/').slice(0, -1).some((seg) => seg === 'web' || seg === 'webp')
     || refs.has(p) || CONFIG.keepImages.includes(p);
@@ -219,7 +223,7 @@ function copy(rel, rendered) {
 function walk(dir) {
   return fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap((e) => {
     const rel = path.join(dir, e.name);
-    if (e.name.startsWith('.')) return [];
+    if (e.name.startsWith('.') || CONFIG.skip.includes(rel.split(path.sep).join('/'))) return [];
     return e.isDirectory() ? walk(rel) : [rel];
   });
 }

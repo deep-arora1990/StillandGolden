@@ -5,6 +5,7 @@ import { describe, it, expect, vi } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
+import { scannedPages } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
@@ -40,8 +41,7 @@ describe('the booking code charges what prices.json says', () => {
 
 describe('no page types a price into its structured data', () => {
   it('no page types a price into its structured data', () => {
-    const pages = execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' })
-      .split('\n').filter((f) => f && !/^(brand|reel|print)\//.test(f))
+    const pages = scannedPages()
     const typed = pages.flatMap((f) => [...read(f).matchAll(/"(minPrice|maxPrice|lowPrice|highPrice|price)":\s*"?\d/g)]
       .map(() => f))
     expect(typed).toEqual([])

@@ -6,12 +6,11 @@ import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
+import { scannedPages } from './copy-rules.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
-const PAGES = execSync('git ls-files "*.html"', { cwd: ROOT, encoding: 'utf8' })
-  .split('\n')
-  .filter((f) => f && !/^(brand|reel|print|blocks)\//.test(f))
+const PAGES = scannedPages()
 
 describe('enquire or book', () => {
   it('the homepage contact section offers booking online as well as the form', () => {

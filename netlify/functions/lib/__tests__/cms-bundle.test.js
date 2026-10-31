@@ -17,7 +17,7 @@ const prices = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/prices.json'), '
 const portfolio = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/portfolio.json'), 'utf8'));
 
 const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: ROOT, encoding: 'utf8' }).split('\0').filter(Boolean);
-const isPage = (f) => f.endsWith('.html')
+const isPage = (f) => f.endsWith('.html') && f !== 'blog/_template.html'
   && (!f.includes('/') || CONFIG.dirs.some((d) => f.startsWith(d + '/')));
 
 let dir, bundleText, SG;

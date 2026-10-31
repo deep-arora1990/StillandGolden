@@ -12,7 +12,7 @@
 // did not work.
 
 // describe/it/expect come from vitest's globals — see vitest.config.js.
-import { copyRule } from './copy-rules.js'
+import { copyRule, scannedPages } from './copy-rules.js'
 const { TIERS } = require('../setmore')
 
 describe('tier config', () => {
@@ -91,8 +91,7 @@ describe('session lengths', () => {
     const path = require('path')
     const { execFileSync } = require('child_process')
     const root = path.resolve(__dirname, '../../../..')
-    const pages = execFileSync('git', ['ls-files', '*.html'], { cwd: root, encoding: 'utf8' })
-      .split('\n').filter((f) => f && !/^(print|brand|reel)\//.test(f))
+    const pages = scannedPages()
     const allowed = [TIERS.glimpse.durationMinutes, TIERS.golden.durationMinutes]
     const wrong = []
     for (const f of pages) {

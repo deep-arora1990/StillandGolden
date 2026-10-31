@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest'
 import { createRequire } from 'node:module'
 import fs from 'node:fs'
 import { parse } from 'parse5'
+import { scannedPages } from './copy-rules.js'
 const require = createRequire(import.meta.url)
 const { parseBlocks, stripBlockMarkers, LIBRARY } = require('../../../../build/blocks.js')
 const { renderPage } = require('../../../../build.js')
@@ -69,7 +70,7 @@ const PAGES7 = [
   'offers/in-home-christmas-photos.html', 'offers/sunset-beach-mini-sessions.html',
 ]
 const POSTS = LIBRARY.pages.filter((p) => p.kind === 'post').map((p) => p.file)
-const PAGES = ['about.html', 'packages.html', 'offers.html', 'gift-vouchers.html', ...PAGES7, ...POSTS]
+const PAGES = ['about.html', 'packages.html', 'offers.html', 'gift-vouchers.html', ...PAGES7, ...POSTS, 'blog/_template.html']
 
 const find = (n, tag) => {
   if (n.tagName === tag) return n
@@ -136,7 +137,7 @@ describe('every page but the portfolio is marked into blocks', () => {
     const raw = fs.readFileSync(require('node:path').join(ROOT, page), 'utf8')
     const blocks = parseBlocks(raw)
     expect(blocks.length).toBeGreaterThan(0)
-    const first = POSTS.includes(page) ? 'post-intro' : 'intro'
+    const first = [...POSTS, 'blog/_template.html'].includes(page) ? 'post-intro' : 'intro'
     expect(blocks[0].type).toBe(first)
     expect(blocks.filter((b) => b.type === first)).toHaveLength(1)
     // ids stay stable across edits, so they are not forced into page order
@@ -353,8 +354,7 @@ describe('placeholder guard', () => {
   it('no page holds a snippet placeholder', () => {
     const list = placeholders()
     expect(list.length).toBeGreaterThan(10)
-    const pages = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().trim().split('\n')
-      .filter((p) => !/^(blocks|brand|reel|print)\//.test(p))
+    const pages = scannedPages()
     expect(pages.length).toBeGreaterThan(30)
     for (const p of pages) {
       const html = fs.readFileSync(path.join(ROOT, p), 'utf8')
