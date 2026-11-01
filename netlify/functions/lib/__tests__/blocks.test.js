@@ -279,7 +279,9 @@ describe('block library', () => {
     const tracked = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().split('\n')
     const nonPosts = LIBRARY.pages.filter((p) => p.kind !== 'post')
     expect(LIBRARY.pages.slice(0, 12)).toEqual(nonPosts)
-    expect(POSTS).toHaveLength(11)
+    const onDisk = tracked.filter((f) => /^blog\/[^/]+\.html$/.test(f) && f !== 'blog/index.html' && f !== 'blog/_template.html')
+    expect(POSTS.length).toBeGreaterThanOrEqual(11)
+    expect([...POSTS].sort()).toEqual(onDisk.sort())
     expect(new Set(POSTS).size).toBe(POSTS.length)
     for (const f of POSTS) expect(f.startsWith('blog/')).toBe(true)
     expect(nonPosts.map((p) => p.file)).toEqual([

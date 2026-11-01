@@ -68,7 +68,10 @@ describe('the /_cms/ bundle', () => {
       'packages/bloom-maternity-newborn-photography.html', 'offers.html',
       'offers/sunset-beach-mini-sessions.html', 'offers/in-home-christmas-photos.html',
       'gift-vouchers.html', ...library.pages.filter((p) => p.kind === 'post').map((p) => p.file)]);
-    expect(library.pages.filter((p) => p.kind === 'post')).toHaveLength(11);
+    const posts = library.pages.filter((p) => p.kind === 'post').map((p) => p.file);
+    const onDisk = tracked.filter((f) => /^blog\/[^/]+\.html$/.test(f) && f !== 'blog/index.html' && f !== 'blog/_template.html');
+    expect(posts.length).toBeGreaterThanOrEqual(11);
+    expect([...posts].sort()).toEqual(onDisk.sort());
     for (const { file, label, kind } of library.pages) {
       expect(label).toBeTruthy();
       expect(tracked, file).toContain(file);
