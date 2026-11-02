@@ -240,7 +240,8 @@ const TIERS = {
   },
 
   // Mon / Wed / Fri / Sat / Sun through October and November, never 8 Nov
-  // (Christmas minis day), one session a day, time confirmed by Deep directly.
+  // (Christmas minis day), then again 18 Jan – 31 Mar 2027 (Deep, 2 Nov 2026).
+  // One session a day, time confirmed by Deep directly.
   //
   // The booking still needs A time for the Setmore appointment, so it is
   // written at slotTimes[0] as a placeholder Deep moves once he has agreed the
@@ -263,7 +264,10 @@ const TIERS = {
     valuedAt: money('sunset-beach-minis').valuedAt,
     includes: 'Full gallery included',
     unlisted: true,
-    allowedDates: datesBetween('2026-10-01', '2026-11-30', { weekdays: [1, 3, 5, 6, 0], except: ['2026-11-08'] }),
+    allowedDates: [
+      ...datesBetween('2026-10-01', '2026-11-30', { weekdays: [1, 3, 5, 6, 0], except: ['2026-11-08'] }),
+      ...datesBetween('2027-01-18', '2027-03-31', { weekdays: [1, 3, 5, 6, 0] }),
+    ],
     fixedSchedule: true,
     slotTimes: ['18:30'],
     onePerDay: true,

@@ -16,12 +16,18 @@ async function fresh(mod) {
 const wd = (d) => new Date(`${d}T00:00:00Z`).getUTCDay()
 
 describe('offer dates', () => {
-  it('beach minis: Mon/Wed/Fri/Sat/Sun only, Oct–Nov, never 8 November', async () => {
+  it('beach minis: Mon/Wed/Fri/Sat/Sun only, Oct–Nov then 18 Jan–31 Mar, never 8 November', async () => {
     const { TIERS } = await fresh('../setmore.js')
     const dates = TIERS['sunset-beach-minis'].allowedDates
     expect(dates[0]).toBe('2026-10-02')                       // 1 Oct is a Thursday
-    expect(dates.at(-1)).toBe('2026-11-30')
+    expect(dates).toContain('2026-11-30')
     expect(dates).not.toContain('2026-11-08')
+    // Nothing from December to 17 January, then the summer run (Deep, 2 Nov 2026).
+    expect(dates.some((d) => d > '2026-11-30' && d < '2027-01-18')).toBe(false)
+    expect(dates.filter((d) => d >= '2027-01-18' && d <= '2027-01-24'))
+      .toEqual(['2027-01-18', '2027-01-20', '2027-01-22', '2027-01-23', '2027-01-24'])
+    expect(dates.at(-1)).toBe('2027-03-31')                   // a Wednesday
+    expect([...dates].sort()).toEqual(dates)
     expect(dates.some((d) => [2, 4].includes(wd(d)))).toBe(false)
     // Daylight saving starts 4 Oct: no day skipped or repeated across it.
     expect(dates.filter((d) => d >= '2026-10-02' && d <= '2026-10-07'))
