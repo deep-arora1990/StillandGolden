@@ -81,48 +81,28 @@
         "name": "Glimpse Session",
         "description": "Up to 30-minute in-home or on-location photography session with 10 edited images. Option to upgrade to the full gallery. Suits updated core family photos.",
         "price": "{{price.glimpse.number}}",
-        "priceCurrency": "AUD",
-        "priceSpecification": {
-          "@type": "PriceSpecification",
-          "minPrice": "{{price.glimpse.number}}",
-          "priceCurrency": "AUD"
-        }
+        "priceCurrency": "AUD"
       },
       {
         "@type": "Offer",
         "name": "Golden Session",
         "description": "Up to 60-minute in-home or on-location photography session with 20 edited images. Option to upgrade to the full gallery. Suits family, newborn, maternity and cake smash sessions.",
         "price": "{{price.golden.number}}",
-        "priceCurrency": "AUD",
-        "priceSpecification": {
-          "@type": "PriceSpecification",
-          "minPrice": "{{price.golden.number}}",
-          "priceCurrency": "AUD"
-        }
+        "priceCurrency": "AUD"
       },
       {
         "@type": "Offer",
         "name": "Gathered Session",
         "description": "90-minute in-home or on-location photography session with the full gallery included, usually 60+ edited images. Suits newborn, extended family and larger groups.",
         "price": "{{price.gathered.number}}",
-        "priceCurrency": "AUD",
-        "priceSpecification": {
-          "@type": "PriceSpecification",
-          "minPrice": "{{price.gathered.number}}",
-          "priceCurrency": "AUD"
-        }
+        "priceCurrency": "AUD"
       },
       {
         "@type": "Offer",
         "name": "Bloom Bundle",
         "description": "Two 90-minute in-home sessions combining a maternity or family session with a newborn session, booked together at a better rate.",
         "price": "{{price.bloom.number}}",
-        "priceCurrency": "AUD",
-        "priceSpecification": {
-          "@type": "PriceSpecification",
-          "minPrice": "{{price.bloom.number}}",
-          "priceCurrency": "AUD"
-        }
+        "priceCurrency": "AUD"
       }
     ]
   }
@@ -166,7 +146,7 @@
       {
         "@type": "Question",
         "name": "How much does a session cost?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden from {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, with the full gallery). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Sessions are grouped by how much time you want together. Glimpse is {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered {{price.gathered}} (90 minutes, with the full gallery). Bloom, the bump-to-baby bundle of two 90-minute sessions, is {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it." }
       },
       {
         "@type": "Question",
@@ -1096,7 +1076,7 @@
       <div class="sessions-header reveal">
         <h2>My <em>services</em></h2>
         <p>Newborn sessions in those first weeks and months. Family sessions for the season you're in right now. Maternity sittings while you wait, cake smashes for first birthdays, and every milestone in between &mdash; all at your place or somewhere you love, all delivered within two weeks.</p>
-        <p class="sessions-prices">Glimpse from {{price.glimpse}} &middot; Golden from {{price.golden}} &middot; Gathered from {{price.gathered}}, with the full gallery &middot; Bloom from {{price.bloom}}</p>
+        <p class="sessions-prices">Glimpse {{price.glimpse}} &middot; Golden {{price.golden}} &middot; Gathered {{price.gathered}}, with the full gallery &middot; Bloom {{price.bloom}}</p>
         <p>Every session includes the whole family, with no per-person charge and nothing required of you.</p>
         <a href="/packages" class="tbtn" style="display:inline-block;margin-top:22px;text-decoration:none;">See sessions and prices</a>
       </div>
@@ -1225,7 +1205,7 @@
       </details>
       <details class="faq-item reveal d3">
         <summary>How much does a session cost?</summary>
-        <p>Sessions are grouped by how much time you want together. Glimpse is from {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden from {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered from {{price.gathered}} (90 minutes, with the full gallery). Bloom, the bump-to-baby bundle of two 90-minute sessions, is from {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it. Every session is laid out side by side on the <a href="/packages">packages and prices</a> page.</p>
+        <p>Sessions are grouped by how much time you want together. Glimpse is {{price.glimpse}} (up to 30 minutes, 10 edited images), Golden {{price.golden}} (up to 60 minutes, 20 edited images) and Gathered {{price.gathered}} (90 minutes, with the full gallery). Bloom, the bump-to-baby bundle of two 90-minute sessions, is {{price.bloom}}. Glimpse and Golden can both be upgraded to the full gallery afterwards — {{price.glimpse.gallery}} on Glimpse, {{price.golden.gallery}} on Golden — and Gathered and Bloom include it. Every session is laid out side by side on the <a href="/packages">packages and prices</a> page.</p>
       </details>
       <details class="faq-item reveal d3">
         <summary>Do you provide the cake for cake smash sessions?</summary>

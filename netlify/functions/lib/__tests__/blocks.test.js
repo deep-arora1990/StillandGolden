@@ -329,8 +329,8 @@ describe('block library', () => {
 // to offer, never for a live page. Strings are collected from the snippets so
 // the list cannot drift. These also belong on real pages, so they are skipped
 // (fixed list, so a placeholder pasted into a page is still caught).
-const LEGIT_ON_PAGES = ['heading', 'From {{price.golden}}',
-  'Glimpse', 'Golden', 'Gathered', 'From {{price.glimpse}}', 'From {{price.gathered}}', 'From', '{{price.golden}}']
+const LEGIT_ON_PAGES = ['heading', 'Glimpse', 'Golden', 'Gathered',
+  '{{price.glimpse}}', '{{price.golden}}', '{{price.gathered}}']
 const placeholders = () => {
   const path = require('node:path')
   const out = new Set()

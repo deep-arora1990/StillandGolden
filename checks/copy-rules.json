@@ -25,6 +25,10 @@
       "headline": "Suburb list is missing Officer or Pakenham",
       "hint": "Suburb lists start from Cranbourne East and include Officer and Pakenham."
     },
+    "single-price-from": {
+      "headline": "A session price says \"from\"",
+      "hint": "Prices are straight now: write \"$395\", not \"from $395\". Keep \"from\" only on a line that sums up several sessions."
+    },
     "session-lengths": {
       "headline": "Session length doesn't match the booking",
       "hint": "Glimpse books 30 minutes and Golden 60. A different length here promises a session the booking can't give."
