@@ -24,5 +24,7 @@ Disallow: /book-wedding
 Disallow: /book-wedding.html
 Disallow: /wedding-agreement
 Disallow: /wedding-agreement.html
+Disallow: /wedding-questionnaire
+Disallow: /wedding-questionnaire.html
 
 Sitemap: https://stillandgolden.com.au/sitemap.xml
