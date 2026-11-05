@@ -832,11 +832,14 @@ const toSetmoreRangeDate = (iso) => {
 // records and cursor pagination. Used by the scheduled Setmore→Resend sync, and
 // (without customer records) by availability through appointmentsByDay.
 //
-// Reaching the page cap with a cursor still pending throws rather than
-// returning what it has: a day missing from a truncated read would look free,
-// and a wedding day's exclusivity has to fail closed.
+// By default a read that can't finish (the page cap reached with a cursor
+// still pending, or Setmore handing back the cursor it was sent) returns what
+// it has, which suits the contact sync. `failOnTruncation` makes either case
+// throw instead: a read deciding whether a day is free must fail closed, since
+// a day missing from a partial read would look free and a wedding day's
+// exclusivity rests on it.
 const RANGE_PAGE_CAP = 25;
-async function getAppointmentsInRange(startDate, endDate, { customerDetails = true } = {}) {
+async function getAppointmentsInRange(startDate, endDate, { customerDetails = true, failOnTruncation = false } = {}) {
   if (MOCK) {
     return [{
       key: 'mock-appt-range',
@@ -856,10 +859,19 @@ async function getAppointmentsInRange(startDate, endDate, { customerDetails = tr
     const data = await setmoreFetch('/bookingapi/appointments', { query });
     appointments.push(...((data && data.appointments) || []));
     const next = data && data.pagination && data.pagination.cursor;
-    if (!next || next === cursor) return appointments;
+    if (!next) return appointments;
+    if (next === cursor) {
+      if (failOnTruncation) {
+        throw new SetmoreError(`Appointments ${startDate} to ${endDate}: Setmore repeated its page cursor; refusing a partial read`, { code: 'STUCK_CURSOR' });
+      }
+      return appointments;
+    }
     cursor = next;
   }
-  throw new SetmoreError(`Appointments ${startDate} to ${endDate} ran past ${RANGE_PAGE_CAP} pages; refusing a partial read`, { code: 'TOO_MANY_PAGES' });
+  if (failOnTruncation) {
+    throw new SetmoreError(`Appointments ${startDate} to ${endDate} ran past ${RANGE_PAGE_CAP} pages; refusing a partial read`, { code: 'TOO_MANY_PAGES' });
+  }
+  return appointments;
 }
 
 // One calendar read for a run of days (both 'YYYY-MM-DD'), as a Map from each
@@ -876,8 +888,9 @@ async function appointmentsByDay(startIso, endIso) {
     for (const date of byDay.keys()) byDay.set(date, await getAppointmentsOnDate(date));
     return byDay;
   }
-  // Only service keys and start times are needed here, so no customer records.
-  const appointments = await getAppointmentsInRange(startIso, endIso, { customerDetails: false });
+  // Only service keys and start times are needed here, so no customer records;
+  // and this read decides which days are free, so it fails closed.
+  const appointments = await getAppointmentsInRange(startIso, endIso, { customerDetails: false, failOnTruncation: true });
   for (const appt of appointments) {
     const day = String(appt.start_time || '').slice(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {

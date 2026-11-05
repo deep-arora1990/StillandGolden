@@ -252,21 +252,41 @@ describe('wedding webhook', () => {
 describe('the calendar reads behind exclusivity', () => {
   const reply = (body, status = 200) => ({ ok: status >= 200 && status < 300, status, json: async () => body, clone() { return this } })
 
-  it('a range read that hits its page cap with more to come fails rather than truncating', async () => {
+  // Setmore that never stops paging (a fresh cursor every page), or that hands
+  // back the very cursor it was sent.
+  const endless = ({ stuck = false } = {}) => {
     let page = 0
     vi.stubGlobal('fetch', vi.fn(async (url) => {
       url = String(url)
       if (url.includes('/o/oauth2/token')) return reply({ response: true, data: { token: { access_token: 'tok', expires_in: 3600 } } })
       if (url.includes('/bookingapi/appointments?')) {
         page++
-        return reply({ response: true, data: { appointments: [{ service_key: 'x', start_time: '2027-03-06T10:00' }], pagination: { cursor: `c${page}` } } })
+        return reply({ response: true, data: { appointments: [{ service_key: 'x', start_time: '2027-03-06T10:00' }], pagination: { cursor: stuck ? 'same' : `c${page}` } } })
       }
       return reply({ ok: true })
     }))
+  }
+
+  it('an exclusivity read that hits its page cap with more to come fails rather than truncating', async () => {
+    endless()
     const S = await fresh('../setmore.js')
-    await expect(S.getAppointmentsInRange('2027-03-01', '2027-03-31')).rejects.toMatchObject({ name: 'SetmoreError', code: 'TOO_MANY_PAGES' })
-    page = 0
-    await expect(S.appointmentsByDay('2027-03-01', '2027-03-31')).rejects.toMatchObject({ code: 'TOO_MANY_PAGES' })
+    await expect(S.appointmentsByDay('2027-03-01', '2027-03-31')).rejects.toMatchObject({ name: 'SetmoreError', code: 'TOO_MANY_PAGES' })
+    endless()
+    await expect(S.getAppointmentsInRange('2027-03-01', '2027-03-31', { failOnTruncation: true })).rejects.toMatchObject({ code: 'TOO_MANY_PAGES' })
+  })
+
+  it('an exclusivity read fails when Setmore repeats the cursor it was sent', async () => {
+    endless({ stuck: true })
+    const S = await fresh('../setmore.js')
+    await expect(S.appointmentsByDay('2027-03-01', '2027-03-31')).rejects.toMatchObject({ name: 'SetmoreError', code: 'STUCK_CURSOR' })
+  })
+
+  it('any other range read keeps its old behaviour: a partial list at the cap or on a stuck cursor, no throw', async () => {
+    endless()
+    const S = await fresh('../setmore.js')
+    expect(await S.getAppointmentsInRange('2027-03-01', '2027-03-31')).toHaveLength(25)
+    endless({ stuck: true })
+    expect(await S.getAppointmentsInRange('2027-03-01', '2027-03-31')).toHaveLength(2)
   })
 
   it('a range read that runs out of pages returns everything', async () => {
