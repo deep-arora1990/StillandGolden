@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/portfolio', label: 'Portfolio' },
   { href: '/about', label: 'About' },
   { href: '/packages', label: 'Packages' },
+  { href: '/weddings', label: 'Weddings' },
   { href: '/#faq', label: 'Common Questions' },
   { href: '/blog/', label: 'Blog' },
   { href: '/offers', label: 'Offers' },
@@ -29,6 +30,7 @@ function isActive(href, path) {
   if (href === '/offers') return path.startsWith('/offers/') || OFFER_PAGES.includes(path);
   if (href === '/blog/') return path.startsWith('/blog');
   if (href === '/gift-vouchers') return path === '/gift-vouchers';
+  if (href === '/weddings') return path === '/weddings';
   return false;
 }
 
@@ -61,6 +63,7 @@ const FOOTER_HTML = '<footer data-sg-footer>' +
     footLink('/packages/golden-family-photography', 'Golden Family'),
     footLink('/packages/gathered-newborn-photography', 'Gathered Newborn'),
     footLink('/packages/bloom-maternity-newborn-photography', 'Bloom Bundle'),
+    footLink('/weddings', 'Weddings'),
     footLink('/packages', 'Packages'),
     footLink('/gift-vouchers', 'Gift vouchers'),
     footLink('/blog/', 'Blog'),

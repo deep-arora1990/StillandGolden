@@ -171,3 +171,15 @@ describe('checks workflow', () => {
     expect(CONFIG.keepImages).toContain('Images/christmas-minis-hero.jpg')
   })
 })
+
+describe('Weddings in the site chrome', () => {
+  const { navHtml, FOOTER_HTML } = require('../../../../build/site-chrome.js')
+  it('the menu lists Weddings after Packages, active only on /weddings', () => {
+    const nav = navHtml('/weddings')
+    expect(nav).toContain('<a href="/packages">Packages</a><a href="/weddings" class="active" aria-current="page">Weddings</a>')
+    expect(navHtml('/packages')).toContain('<a href="/weddings">Weddings</a>')
+  })
+  it('the footer links to Weddings after Bloom Bundle', () => {
+    expect(FOOTER_HTML).toMatch(/Bloom Bundle<\/a> &middot; <a href="\/weddings"[^>]*>Weddings<\/a>/)
+  })
+})
