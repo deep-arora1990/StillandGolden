@@ -214,3 +214,12 @@ describe('renderPage and the portfolio mounts', () => {
     expect(noData('x.html', '<p>no mounts</p>')).toBe('<p>no mounts</p>')
   })
 })
+
+describe('live data: weddings', () => {
+  it('has a Weddings tab, last, with all 16 wedding photos', () => {
+    const t = LIVE.tabs.at(-1)
+    expect([t.id, t.label, t.folder]).toEqual(['weddings', 'Weddings', 'New photos/Weddings'])
+    expect(t.photos).toHaveLength(16)
+    for (const p of t.photos) expect(p.alt.trim().length, p.jpg).toBeGreaterThan(10)
+  })
+})
