@@ -1,6 +1,6 @@
 // The signed-agreement PDF (A4, brand header, client box, sections, signature,
-// footer on every page). Shared by the session agreements (submit-contract.js)
-// and the model call agreement, so both look and break across pages the same.
+// footer on every page). Shared by the session, model call and wedding
+// agreements, so all look and break across pages the same.
 // Moved out of submit-contract.js on 15 Oct 2026 without changing its output.
 
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
@@ -12,6 +12,24 @@ const BRAND = {
   cream: [0.973, 0.961, 0.945],  // #F8F5F1
 };
 
+// What CP1252 (WinAnsi) can draw, copied from submit-questionnaire.js: pdf-lib
+// throws on the first character the standard fonts cannot encode, and a
+// signer's name is typed by a person, so an emoji must not lose the agreement.
+const WINANSI_SAFE = /[\n\t\x20-\x7E\xA0-\xFF\u20AC\u201A\u0192\u201E\u2026\u2020\u2021\u02C6\u2030\u0160\u2039\u0152\u017D\u2018\u2019\u201C\u201D\u2022\u2013\u2014\u02DC\u2122\u0161\u203A\u0153\u017E\u0178]/;
+
+function pdfSafe(value) {
+  if (typeof value !== 'string') return value;
+  const cleaned = [...value].filter((ch) => WINANSI_SAFE.test(ch)).join('');
+  return cleaned.replace(/[^\S\n]{2,}/g, ' ').trim();
+}
+
+// The largest size, up to `size`, at which `text` fits in `maxW`.
+function fitSize(font, text, size, maxW) {
+  let s = size;
+  while (s > 4 && font.widthOfTextAtSize(text, s) > maxW) s -= 0.25;
+  return s;
+}
+
 async function renderAgreementPDF(data, { title, sections }) {
   const doc = await PDFDocument.create();
   const helvetica = await doc.embedFont(StandardFonts.Helvetica);
@@ -22,6 +40,11 @@ async function renderAgreementPDF(data, { title, sections }) {
   const W = 595.28; // A4 width in points
   const H = 841.89; // A4 height in points
   const margin = 56;
+
+  // Weddings pass two signers; without them everything below is the family layout.
+  const signers = Array.isArray(data.signers) && data.signers.length
+    ? data.signers.map((x) => ({ name: pdfSafe(x.name || ''), email: pdfSafe(x.email || '') }))
+    : null;
 
   // ── Page 1 ──
   const page1 = doc.addPage([W, H]);
@@ -80,21 +103,36 @@ async function renderAgreementPDF(data, { title, sections }) {
     color: rgb(1, 1, 1),
   });
 
-  page1.drawText('CLIENT', {
-    x: margin + 14, y: y - 16, size: 6.5, font: helveticaBold,
-    color: rgb(...BRAND.gold),
-  });
-  page1.drawText(data.firstName + ' ' + data.lastName, {
-    x: margin + 14, y: y - 32, size: 12, font: timesRoman,
-    color: rgb(...BRAND.black),
-  });
-  page1.drawText(data.email, {
-    x: margin + 14, y: y - 48, size: 8, font: helvetica,
-    color: rgb(...BRAND.mid),
-  });
+  if (signers) {
+    const nameMaxW = W / 2 - margin - 14;
+    page1.drawText('COUPLE', {
+      x: margin + 14, y: y - 16, size: 6.5, font: helveticaBold,
+      color: rgb(...BRAND.gold),
+    });
+    [[signers[0], 32], [signers[1], 50]].forEach(([sg, dy]) => {
+      if (!sg) return;
+      page1.drawText(sg.name, {
+        x: margin + 14, y: y - dy, size: fitSize(timesRoman, sg.name, 12, nameMaxW),
+        font: timesRoman, color: rgb(...BRAND.black),
+      });
+    });
+  } else {
+    page1.drawText('CLIENT', {
+      x: margin + 14, y: y - 16, size: 6.5, font: helveticaBold,
+      color: rgb(...BRAND.gold),
+    });
+    page1.drawText(data.firstName + ' ' + data.lastName, {
+      x: margin + 14, y: y - 32, size: 12, font: timesRoman,
+      color: rgb(...BRAND.black),
+    });
+    page1.drawText(data.email, {
+      x: margin + 14, y: y - 48, size: 8, font: helvetica,
+      color: rgb(...BRAND.mid),
+    });
+  }
 
   if (data.sessionDate) {
-    page1.drawText('SESSION DATE', {
+    page1.drawText(data.dateLabel || 'SESSION DATE', {
       x: W / 2 + 20, y: y - 16, size: 6.5, font: helveticaBold,
       color: rgb(...BRAND.gold),
     });
@@ -178,13 +216,33 @@ async function renderAgreementPDF(data, { title, sections }) {
     color: rgb(...BRAND.gold),
   });
   y -= 18;
-  cur.drawText(data.firstName + ' ' + data.lastName, {
-    x: margin, y, size: 11, font: timesRoman, color: rgb(...BRAND.black),
-  });
-  y -= 14;
-  cur.drawText('Date: ' + data.agreementDate, {
-    x: margin, y, size: 9, font: helvetica, color: rgb(...BRAND.mid),
-  });
+  if (signers) {
+    const colX = [margin, W / 2 + 20];
+    const colW = [W / 2 + 20 - margin - 14, W - margin - (W / 2 + 20)];
+    signers.slice(0, 2).forEach((sg, i) => {
+      const agreed = 'Agreed: ' + data.agreementDate;
+      cur.drawText(sg.name, {
+        x: colX[i], y, size: fitSize(timesRoman, sg.name, 11, colW[i]),
+        font: timesRoman, color: rgb(...BRAND.black),
+      });
+      cur.drawText(sg.email, {
+        x: colX[i], y: y - 14, size: fitSize(helvetica, sg.email, 8, colW[i]),
+        font: helvetica, color: rgb(...BRAND.mid),
+      });
+      cur.drawText(agreed, {
+        x: colX[i], y: y - 28, size: fitSize(helvetica, agreed, 9, colW[i]),
+        font: helvetica, color: rgb(...BRAND.mid),
+      });
+    });
+  } else {
+    cur.drawText(data.firstName + ' ' + data.lastName, {
+      x: margin, y, size: 11, font: timesRoman, color: rgb(...BRAND.black),
+    });
+    y -= 14;
+    cur.drawText('Date: ' + data.agreementDate, {
+      x: margin, y, size: 9, font: helvetica, color: rgb(...BRAND.mid),
+    });
+  }
 
   // Footer on every page
   for (const pg of doc.getPages()) {
