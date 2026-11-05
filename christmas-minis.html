@@ -856,6 +856,9 @@
         $('pay-split-btn').disabled = !(state.split && state.split.available);
         if (err.code === 'INVALID_DETAILS') {
           showNotice(err.message, true);
+        } else if (err.code === 'DAY_TAKEN') {
+          showNotice(err.message, true);
+          loadSlots();
         } else {
           showNotice('Could not start the payment — please try again shortly, or get in touch.', true);
         }

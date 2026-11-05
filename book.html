@@ -1027,6 +1027,15 @@
         btn.innerHTML = label;
         if (err.code === 'INVALID_DETAILS') {
           showNotice(err.message, true);
+        } else if (err.code === 'DAY_TAKEN') {
+          // The day went while they were paying: show why, drop the stale
+          // choice, and reload this month so the calendar is right.
+          showNotice(err.message, true);
+          state.date = null;
+          state.time = null;
+          $('slot-area').hidden = true;
+          delete state.availableDates[monthKey(state.cursor.year, state.cursor.month)];
+          fetchAvailability(state.cursor.year, state.cursor.month);
         } else {
           showNotice('Could not start the payment — please try again shortly, or use the enquiry form.', true);
         }
