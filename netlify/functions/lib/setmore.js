@@ -804,7 +804,13 @@ async function getFixedScheduleSlots(tier, date) {
   });
 }
 
-async function getAppointmentsOnDate(date) {
+// One day's appointments. By default one page, with customer records, as it
+// has always been read. A read that decides whether the day is free passes
+// `failOnTruncation`: it then follows Setmore's cursor and throws if it can't
+// finish (see getAppointmentsInRange), since a wedding hiding on a page it
+// never read would make the day look free. `customerDetails: false` leaves
+// the customer records out when nobody needs them.
+async function getAppointmentsOnDate(date, { customerDetails = true, failOnTruncation = false } = {}) {
   if (MOCK) {
     // SETMORE_MOCK_FULL=2026-11-08[,…] books the whole day out, so a local
     // preview can show the sold-out versions of fixed-schedule pages.
@@ -816,9 +822,10 @@ async function getAppointmentsOnDate(date) {
     if (weddings.includes(date)) return [{ start_time: `${date}T10:00Z`, end_time: `${date}T16:00Z`, service_key: TIERS['wedding-full'].serviceKey }];
     return [];
   }
+  if (failOnTruncation) return getAppointmentsInRange(date, date, { customerDetails, failOnTruncation });
   const [y, m, d] = date.split('-');
   const data = await setmoreFetch('/bookingapi/appointments', {
-    query: { startDate: `${d}-${m}-${y}`, endDate: `${d}-${m}-${y}`, customerDetails: 'true' },
+    query: { startDate: `${d}-${m}-${y}`, endDate: `${d}-${m}-${y}`, ...(customerDetails ? { customerDetails: 'true' } : {}) },
   });
   return (data && data.appointments) || [];
 }
@@ -903,9 +910,11 @@ async function appointmentsByDay(startIso, endIso) {
 }
 
 // Whether `tier` can be booked on `date` at all, by the wedding rule above.
-// Throws when Setmore can't be read: an unknown day is never an open one.
+// Throws when Setmore can't be read, or can't be read to the end: an unknown
+// day is never an open one. Service keys are all it needs, so no customer
+// records.
 async function isDayOpen(tier, date) {
-  return dayOpenFor(tier, await getAppointmentsOnDate(date));
+  return dayOpenFor(tier, await getAppointmentsOnDate(date, { customerDetails: false, failOnTruncation: true }));
 }
 
 module.exports = {

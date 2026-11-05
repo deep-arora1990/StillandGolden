@@ -50,7 +50,7 @@ const json = (statusCode, body) => ({
   body: JSON.stringify(body),
 });
 
-async function bookAppointment(meta) {
+async function bookAppointment(meta, sessionId) {
   const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key);
   if (!tier) throw new Error(`Unknown service_key in session metadata: ${meta.service_key}`);
 
@@ -68,7 +68,7 @@ async function bookAppointment(meta) {
   // day); any other booking carries on as it did before weddings existed.
   let dayAppointments = null;
   try {
-    dayAppointments = await getAppointmentsOnDate(meta.date);
+    dayAppointments = await getAppointmentsOnDate(meta.date, { failOnTruncation: true });
   } catch (err) {
     if (tier.wedding) throw err;
     console.error(`stripe-webhook: could not read ${meta.date} for the wedding check (booking anyway):`, err);
@@ -94,7 +94,10 @@ async function bookAppointment(meta) {
     customerKey: customer.key,
     startTime: `${meta.date}T${meta.time}`,
     endTime: `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(end.getDate())}T${pad(end.getHours())}:${pad(end.getMinutes())}`,
-    comment: meta.notes || '',
+    // The Stripe session rides along on its own line under the customer's
+    // notes, so a redelivery of this payment can prove the appointment is its
+    // own (findExistingBooking) rather than another payment's.
+    comment: [meta.notes, sessionId && stripeTag(sessionId)].filter(Boolean).join('\n\n'),
   });
 
   // That day is now taken, for every package — they share one calendar — so
@@ -589,16 +592,30 @@ async function alertBalanceFailed(stripe, invoice) {
   }
 }
 
-// Idempotency guard 2: Stripe redelivers events (at-least-once). If the slot
-// is already held by this same customer, the original delivery succeeded and
-// this one is a duplicate — never refund in that case.
-async function findExistingBooking(meta) {
+// Idempotency guard 2: Stripe redelivers events (at-least-once). If the
+// appointment on the day is this very payment's, the original delivery
+// succeeded and this one is a duplicate — never refund in that case.
+//
+// It has to be this payment's, not just this customer's: a couple who pays a
+// second checkout for a day they already hold (wedding tiers always book
+// 10:00) would otherwise be told "already booked" and the second payment kept
+// with nobody told. So an appointment tagged with a Stripe session (see
+// bookAppointment) matches only on this session's id and the same package.
+// Appointments written before the tag existed keep the old rule (same email,
+// date and time) and must also be the same package.
+const stripeTag = (sessionId) => `[stripe ${sessionId}]`;
+const STRIPE_TAG = /\[stripe (\S+)\]/g;
+
+async function findExistingBooking(meta, sessionId) {
   try {
-    const appts = await getAppointmentsOnDate(meta.date);
-    return appts.find((a) =>
-      (a.start_time || '').startsWith(`${meta.date}T${meta.time}`) &&
-      ((a.customer && a.customer.email_id) || '').toLowerCase() === (meta.email || '').toLowerCase()
-    ) || null;
+    const appts = await getAppointmentsOnDate(meta.date, { failOnTruncation: true });
+    return appts.find((a) => {
+      if (a.service_key !== meta.service_key) return false;
+      const tags = [...String(a.comment || '').matchAll(STRIPE_TAG)].map((m) => m[1]);
+      if (tags.length) return Boolean(sessionId) && tags.includes(sessionId);
+      return (a.start_time || '').startsWith(`${meta.date}T${meta.time}`) &&
+        ((a.customer && a.customer.email_id) || '').toLowerCase() === (meta.email || '').toLowerCase();
+    }) || null;
   } catch (err) {
     console.error('stripe-webhook: duplicate-booking check failed (continuing):', err);
     return null;
@@ -790,7 +807,7 @@ exports.handler = async (event) => {
   if (!resend) console.error('RESEND_API_KEY is not set; audience add and failure emails will be skipped.');
 
   try {
-    const appointment = await bookAppointment(meta);
+    const appointment = await bookAppointment(meta, session.id);
     console.log(`stripe-webhook: booked ${session.id} → appointment ${appointment.key || '(no key)'}`);
     if (stripe) {
       try {
@@ -858,10 +875,10 @@ exports.handler = async (event) => {
       return json(200, { received: true, booked: false, error: err.message });
     }
     // Guard 2: the "failure" may be a redelivery where the original delivery
-    // already booked this slot for this customer — never refund that.
-    const existing = await findExistingBooking(meta);
+    // already booked this slot for this payment — never refund that.
+    const existing = await findExistingBooking(meta, session.id);
     if (existing) {
-      console.log(`stripe-webhook: slot already held by this customer (${existing.key}); treating as duplicate delivery, no refund`);
+      console.log(`stripe-webhook: slot already held by this payment (${existing.key}); treating as duplicate delivery, no refund`);
       return json(200, { received: true, alreadyBooked: true });
     }
     await holdFailedBooking(stripe, resend, session, meta, err, pricing);

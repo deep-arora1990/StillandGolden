@@ -60,9 +60,9 @@ function catchResend() {
   }))
 }
 let sessionN = 0
-async function webhook({ metadata }) {
+async function webhook({ metadata, id }) {
   catchResend()
-  const session = { id: `cs_test_wh${++sessionN}`, amount_total: 1, payment_status: 'paid', metadata }
+  const session = { id: id || `cs_test_wh${++sessionN}`, amount_total: 1, payment_status: 'paid', metadata }
   const { handler } = await fresh('../../stripe-webhook.js')
   const res = await handler({ httpMethod: 'POST', headers: { 'stripe-signature': 'x' }, body: JSON.stringify({ id: `evt_${sessionN}`, type: 'checkout.session.completed', data: { object: session } }) })
   return res
@@ -191,6 +191,45 @@ describe('wedding checkout', () => {
     expect(w.body.error.code).toBe('SETMORE_BUSY')
     expect(stripe._sessions).toHaveLength(1)
   })
+
+  it("checkout's day read follows Setmore's cursor, and one that can't finish never opens the day to a wedding", async () => {
+    const reply = (body, status = 200) => ({ ok: status >= 200 && status < 300, status, json: async () => body, clone() { return this } })
+    const pagedWith = (second) => {
+      stubSetmore()
+      const inner = globalThis.fetch
+      vi.stubGlobal('fetch', vi.fn(async (url, init = {}) => {
+        if (String(url).includes('/bookingapi/appointments?')) {
+          const cursor = new URL(String(url)).searchParams.get('cursor')
+          if (!cursor) return reply({ response: true, data: { appointments: [], pagination: { cursor: 'p2' } } })
+          return reply(second)
+        }
+        return inner(url, init)
+      }))
+    }
+    // A wedding on page two closes the day for a family booking.
+    pagedWith({ response: true, data: { appointments: [{ service_key: TIERS['wedding-full'].serviceKey, start_time: '2027-03-06T10:00' }] } })
+    expect((await checkout(golden({ date: '2027-03-06', time: '17:00' }))).status).toBe(409)
+    // A stuck cursor: a wedding waits rather than trusting a partial read.
+    pagedWith({ response: true, data: { appointments: [], pagination: { cursor: 'p2' } } })
+    const w = await checkout(wedding())
+    expect(w.status).toBe(503)
+    expect(w.body.error.code).toBe('SETMORE_BUSY')
+    expect(stripe._sessions).toHaveLength(0)
+  })
+
+  it("checkout's day read asks Setmore for no customer details", async () => {
+    let s = stubSetmore()
+    expect((await checkout(golden())).status).toBe(200)
+    let reads = s.calls.filter((c) => c.url.includes('/bookingapi/appointments?'))
+    expect(reads).toHaveLength(1)
+    expect(new URL(reads[0].url).searchParams.has('customerDetails')).toBe(false)
+
+    s = stubSetmore()
+    expect((await checkout(wedding())).status).toBe(200)
+    reads = s.calls.filter((c) => c.url.includes('/bookingapi/appointments?'))
+    expect(reads).toHaveLength(1)
+    expect(new URL(reads[0].url).searchParams.has('customerDetails')).toBe(false)
+  })
 })
 
 describe('wedding webhook', () => {
@@ -211,19 +250,103 @@ describe('wedding webhook', () => {
     expect(toDeep[0].text).toContain('2027-03-06 already has a booking')
   })
 
-  it('a second wedding on the same day is held too; a redelivered wedding finds itself', async () => {
-    let s = stubSetmore({ appointments: [{ service_key: TIERS['wedding-short'].serviceKey, start_time: '2027-03-06T10:00', customer: { email_id: 'other@example.com' } }] })
-    let res = await webhook({ metadata: { service_key: TIERS['wedding-full'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' } })
+  it('a second wedding on the same day is held too', async () => {
+    const s = stubSetmore({ appointments: [{ service_key: TIERS['wedding-short'].serviceKey, start_time: '2027-03-06T10:00', customer: { email_id: 'other@example.com' } }] })
+    const res = await webhook({ metadata: { service_key: TIERS['wedding-full'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' } })
     expect(JSON.parse(res.body)).toMatchObject({ booked: false, held: true })
     expect(s.created).toHaveLength(0)
     expect(alerts()).toHaveLength(1)
     expect(alerts()[0].text).toContain('wedding days are exclusive')
+  })
 
-    s = stubSetmore({ appointments: [{ service_key: TIERS['wedding-short'].serviceKey, start_time: '2027-03-06T10:00', customer: { email_id: 'sam@example.com' } }] })
-    res = await webhook({ metadata: { service_key: TIERS['wedding-short'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' } })
+  it('the same couple paying a second checkout for a day they already hold is held, not swallowed', async () => {
+    const s = stubSetmore({ appointments: [{
+      service_key: TIERS['wedding-short'].serviceKey, start_time: '2027-03-06T10:00',
+      customer: { email_id: 'sam@example.com' }, comment: '[stripe cs_test_first]',
+    }] })
+    const res = await webhook({ id: 'cs_test_second', metadata: { service_key: TIERS['wedding-short'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'SAM@example.com' } })
+    expect(JSON.parse(res.body)).toMatchObject({ booked: false, held: true })
+    expect(s.created).toHaveLength(0)
+    expect(alerts()).toHaveLength(1)
+    expect(alerts()[0].text).toContain('wedding days are exclusive')
+  })
+
+  it('a true redelivery (this very session, its booked flag never set) finds its own appointment', async () => {
+    const s = stubSetmore({ appointments: [{
+      service_key: TIERS['wedding-short'].serviceKey, start_time: '2027-03-06T10:00',
+      customer: { email_id: 'sam@example.com' }, comment: 'Ceremony at the botanic gardens\n\n[stripe cs_test_redeliver]',
+    }] })
+    const res = await webhook({ id: 'cs_test_redeliver', metadata: { service_key: TIERS['wedding-short'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' } })
     expect(JSON.parse(res.body)).toMatchObject({ alreadyBooked: true })
     expect(s.created).toHaveLength(0)
     expect(alerts()).toHaveLength(0)
+  })
+
+  it("a tagged appointment of another package is never this session's, even with its id", async () => {
+    const s = stubSetmore({ appointments: [{
+      service_key: TIERS['wedding-full'].serviceKey, start_time: '2027-03-06T10:00',
+      customer: { email_id: 'sam@example.com' }, comment: '[stripe cs_test_pkg]',
+    }] })
+    const res = await webhook({ id: 'cs_test_pkg', metadata: { service_key: TIERS['wedding-short'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' } })
+    expect(JSON.parse(res.body)).toMatchObject({ booked: false, held: true })
+    expect(s.created).toHaveLength(0)
+    expect(alerts()).toHaveLength(1)
+  })
+
+  it('an appointment written before the stripe tag still counts as a redelivery: same email, date, time and package', async () => {
+    let s = stubSetmore({ appointments: [{ service_key: TIERS['wedding-short'].serviceKey, start_time: '2027-03-06T10:00', customer: { email_id: 'sam@example.com' } }] })
+    let res = await webhook({ metadata: { service_key: TIERS['wedding-short'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' } })
+    expect(JSON.parse(res.body)).toMatchObject({ alreadyBooked: true })
+    expect(s.created).toHaveLength(0)
+    expect(alerts()).toHaveLength(0)
+
+    // Same couple, same day and time, another package: not the same booking.
+    s = stubSetmore({ appointments: [{ service_key: TIERS['wedding-short'].serviceKey, start_time: '2027-03-06T10:00', customer: { email_id: 'sam@example.com' } }] })
+    res = await webhook({ metadata: { service_key: TIERS['wedding-full'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' } })
+    expect(JSON.parse(res.body)).toMatchObject({ booked: false, held: true })
+    expect(s.created).toHaveLength(0)
+    expect(alerts()).toHaveLength(1)
+  })
+
+  it("the Setmore appointment carries the Stripe session id under the couple's notes", async () => {
+    let s = stubSetmore()
+    await webhook({ id: 'cs_test_tag1', metadata: { service_key: TIERS['wedding-short'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com', notes: 'Ceremony at 11' } })
+    expect(s.created).toHaveLength(1)
+    expect(s.created[0].comment).toBe('Ceremony at 11\n\n[stripe cs_test_tag1]')
+
+    s = stubSetmore()
+    await webhook({ id: 'cs_test_tag2', metadata: { service_key: TIERS.golden.serviceKey, date: '2027-03-13', time: '10:00', firstName: 'Mia', lastName: 'Example', email: 'mia@example.com' } })
+    expect(s.created[0].comment).toBe('[stripe cs_test_tag2]')
+  })
+
+  it("the webhook's day reads follow Setmore's cursor, and a read that can't finish holds the payment", async () => {
+    const reply = (body, status = 200) => ({ ok: status >= 200 && status < 300, status, json: async () => body, clone() { return this } })
+    // Page one is empty; page two has a wedding. A first-page-only read would call the day free.
+    const pagedWith = (second) => {
+      const s = stubSetmore()
+      const inner = globalThis.fetch
+      vi.stubGlobal('fetch', vi.fn(async (url, init = {}) => {
+        if (String(url).includes('/bookingapi/appointments?')) {
+          s.calls.push({ url: String(url), method: 'GET' })
+          const cursor = new URL(String(url)).searchParams.get('cursor')
+          if (!cursor) return reply({ response: true, data: { appointments: [], pagination: { cursor: 'p2' } } })
+          return reply(second)
+        }
+        return inner(url, init)
+      }))
+      return s
+    }
+    let s = pagedWith({ response: true, data: { appointments: [{ service_key: TIERS['wedding-short'].serviceKey, start_time: '2027-03-06T10:00' }] } })
+    let res = await webhook({ metadata: { service_key: TIERS.golden.serviceKey, date: '2027-03-06', time: '17:00', firstName: 'Mary', lastName: 'Jane', email: 'mary@example.com' } })
+    expect(JSON.parse(res.body)).toMatchObject({ booked: false, held: true })
+    expect(s.created).toHaveLength(0)
+    expect(alerts()).toHaveLength(1)
+
+    // Setmore hands back the cursor it was sent: a wedding can't trust the day.
+    s = pagedWith({ response: true, data: { appointments: [], pagination: { cursor: 'p2' } } })
+    res = await webhook({ metadata: { service_key: TIERS['wedding-short'].serviceKey, date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' } })
+    expect(JSON.parse(res.body)).toMatchObject({ booked: false, held: true })
+    expect(s.created).toHaveLength(0)
   })
 
   it('a wedding on a free day is written to Setmore', async () => {
