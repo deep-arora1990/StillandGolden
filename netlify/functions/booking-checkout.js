@@ -209,10 +209,10 @@ exports.handler = async (event) => {
   // a paid booking inside a break can't be taken back quietly.
   const closed = await loadClosedDates();
   if (!closed.known) {
-    return error(503, 'CLOSED_DATES_UNKNOWN', 'Bookings are paused for a moment — please try again shortly.');
+    return error(503, 'CLOSED_DATES_UNKNOWN', 'Bookings are paused for a moment. Please try again shortly.');
   }
   if (isClosedIn(closed.ranges, date)) {
-    return error(400, 'INVALID_DETAILS', "I'm not taking bookings on that date — please pick another.");
+    return error(400, 'INVALID_DETAILS', "I'm not taking bookings on that date. Please pick another.");
   }
 
   // Fixed-date offers (allowedDates in the tier config) only take their
@@ -259,7 +259,7 @@ exports.handler = async (event) => {
   if (!dayOpen) {
     return error(409, 'DAY_TAKEN', tier.wedding
       ? 'Sorry, that day has just been taken. Pick another?'
-      : "That day isn't available any more, please pick another.");
+      : "That day isn't available any more. Please pick another.");
   }
 
   // Campaign pages get their own success/cancel URLs; anything not on the
@@ -295,7 +295,7 @@ exports.handler = async (event) => {
       return json(200, { url: `${origin}${returnTo}?booked=1&mock=1` });
     } catch (err) {
       console.error('booking-checkout mock booking error:', err);
-      return error(502, 'SETMORE_DOWN', 'Booking is unavailable right now — please try again shortly');
+      return error(502, 'SETMORE_DOWN', 'Booking is unavailable right now. Please try again shortly.');
     }
   }
 
@@ -303,7 +303,7 @@ exports.handler = async (event) => {
   const stripe = stripeClient();
   if (!stripe) {
     console.error('STRIPE_SECRET_KEY / STRIPE_TEST_KEY is not set in the environment.');
-    return error(500, 'PAYMENT_UNAVAILABLE', 'Online payment is not configured — please enquire instead');
+    return error(500, 'PAYMENT_UNAVAILABLE', 'Online payment is not configured. Please enquire instead.');
   }
 
   const cancelParams = new URLSearchParams({ service: tierName, date, time, cancelled: '1' });
@@ -364,7 +364,7 @@ exports.handler = async (event) => {
     return json(200, { url: session.url });
   } catch (err) {
     console.error('booking-checkout Stripe error:', err);
-    return error(502, 'PAYMENT_UNAVAILABLE', 'Could not start the payment — please try again shortly');
+    return error(502, 'PAYMENT_UNAVAILABLE', 'Could not start the payment. Please try again shortly.');
   }
 };
 

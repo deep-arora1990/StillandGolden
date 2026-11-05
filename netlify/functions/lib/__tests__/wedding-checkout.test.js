@@ -187,7 +187,7 @@ describe('wedding checkout', () => {
                                  { service_key: TIERS.golden.serviceKey, start_time: '2027-03-13T09:00' }] })
     const family = await checkout(golden({ date: '2027-03-06', time: '17:00' }))
     expect(family.status).toBe(409)
-    expect(family.body.error).toEqual({ code: 'DAY_TAKEN', message: "That day isn't available any more, please pick another." })
+    expect(family.body.error).toEqual({ code: 'DAY_TAKEN', message: "That day isn't available any more. Please pick another." })
     const onWedding = await checkout(wedding({ date: '2027-03-06' }))
     expect(onWedding.status).toBe(409)
     expect(onWedding.body.error).toEqual({ code: 'DAY_TAKEN', message: 'Sorry, that day has just been taken. Pick another?' })
