@@ -4,6 +4,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { installFreshBlobs, removeBlobs } from './helpers/blobs.js'
 import { fakeStripe } from './helpers/fake-stripe.js'
+import { stubSetmore } from './helpers/setmore-stub.js'
 
 let stripe
 async function fresh(mod) {
@@ -21,8 +22,10 @@ async function issued(meta, id = 'cs_test_buy') {
   return V.issueVoucher(stripe, { id, amount_total: amount, metadata: { kind: 'voucher', buyerName: 'A', buyerEmail: 'a@example.com', recipientName: 'R', ...meta } }, '2026-10-18')
 }
 
-beforeEach(() => { installFreshBlobs(); stripe = fakeStripe(); globalThis.__sgStripe = stripe; process.env.STRIPE_TEST_KEY = 'sk_test_x' })
-afterEach(() => { removeBlobs(); delete globalThis.__sgStripe; delete process.env.STRIPE_TEST_KEY })
+// booking-checkout reads the day from Setmore (the wedding-day check), so
+// Setmore is stubbed by default: nothing here may reach the network.
+beforeEach(() => { installFreshBlobs(); stubSetmore(); stripe = fakeStripe(); globalThis.__sgStripe = stripe; process.env.STRIPE_TEST_KEY = 'sk_test_x' })
+afterEach(() => { removeBlobs(); vi.unstubAllGlobals(); delete globalThis.__sgStripe; delete process.env.STRIPE_TEST_KEY })
 
 describe('voucher-checkout: buying a voucher', () => {
   it('a Golden voucher goes to Stripe at the Golden price', async () => {

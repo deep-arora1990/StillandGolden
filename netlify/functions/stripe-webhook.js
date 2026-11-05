@@ -20,6 +20,8 @@ const {
   createCustomer,
   createAppointment,
   getAppointmentsOnDate,
+  dayOpenFor,
+  SetmoreError,
 } = require('./lib/setmore');
 const { connectStore } = require('./lib/shared-store');
 const { clearMonth } = require('./lib/availability-cache');
@@ -55,6 +57,25 @@ async function bookAppointment(meta) {
   const pad = (n) => String(n).padStart(2, '0');
   const start = new Date(`${meta.date}T${meta.time}:00`);
   const end = new Date(start.getTime() + tier.durationMinutes * 60 * 1000);
+
+  // A wedding day is exclusive (lib/setmore.js dayOpenFor), and checkout's
+  // check was made before the customer went to Stripe: a wedding may have been
+  // booked in the meantime, or the day filled before a wedding was paid for.
+  // Read the day again before writing anything. A clash throws, and the
+  // handler's catch either finds this very booking (a redelivery) or holds the
+  // payment for Deep. If the day can't be read, a wedding is held too (it
+  // needs the whole day, and a double-booked wedding can't be fixed on the
+  // day); any other booking carries on as it did before weddings existed.
+  let dayAppointments = null;
+  try {
+    dayAppointments = await getAppointmentsOnDate(meta.date);
+  } catch (err) {
+    if (tier.wedding) throw err;
+    console.error(`stripe-webhook: could not read ${meta.date} for the wedding check (booking anyway):`, err);
+  }
+  if (dayAppointments && !dayOpenFor(tier, dayAppointments)) {
+    throw new SetmoreError(`${meta.date} already has a booking (wedding days are exclusive)`, { code: 'DAY_TAKEN' });
+  }
 
   const staffKey = await getStaffKey();
   let customer = await findCustomer(meta.firstName, meta.email);

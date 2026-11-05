@@ -1,6 +1,6 @@
 // POST /.netlify/functions/booking-checkout
 // Body: { service_key, date: 'YYYY-MM-DD', time: 'HH:MM', firstName, lastName,
-//         email, phone?, notes? }
+//         email, phone?, notes?, weddingLink? (required for a wedding tier) }
 // → { url } — a Stripe Checkout URL the browser redirects to. Payment first;
 // the Setmore appointment is only created by stripe-webhook.js after
 // checkout.session.completed.
@@ -16,6 +16,7 @@ const {
   findCustomer,
   createCustomer,
   createAppointment,
+  isDayOpen,
 } = require('./lib/setmore');
 const { loadClosedDates, isClosedIn } = require('./lib/closed-dates');
 const { connectStore } = require('./lib/shared-store');
@@ -29,6 +30,10 @@ const { stripeClient } = require('./lib/stripe-client');
 // here (lib/vouchers.js), then taken off as a one-off coupon for exactly that
 // amount. stripe-webhook takes it off the voucher once the booking is made.
 const { findVoucher, problemWith, plan: voucherPlan } = require('./lib/vouchers');
+
+// Weddings (stage 2, Nov 2026): reached only through Deep's private signed
+// link, inside the wedding date window, on a day with nothing else booked.
+const { verifyWeddingLink, weddingDateProblem, WEDDING_LINK_INVALID_MESSAGE } = require('./lib/weddings');
 
 async function voucherDiscount(stripe, tier, code, today) {
   const v = await findVoucher(stripe, code);
@@ -79,6 +84,27 @@ function requestOrigin(event) {
 // and still take the whole second half. Any code works on any package — Deep's
 // codes are single-use and handed out one per person.
 function fullPaymentParams(tier, { date, time, location }) {
+  // A wedding carries a placeholder time Deep moves later, and is sold by its
+  // length ("3 hours"), so it has its own wording.
+  if (tier.wedding) {
+    return {
+      mode: 'payment',
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'aud',
+            unit_amount: tier.priceCents,
+            product_data: {
+              name: `${tier.name}: wedding photography`,
+              description: `${date} · your wedding day · ${tier.lengthLabel}`,
+            },
+          },
+        },
+      ],
+      allow_promotion_codes: true,
+    };
+  }
   return {
     mode: 'payment',
     line_items: [
@@ -134,6 +160,18 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Please check the booking details and try again');
   }
   const [tierName, tier] = tierEntry;
+
+  // A wedding is booked only through a valid private link (lib/weddings.js):
+  // a missing, expired, edited or family terms link is refused here as well as
+  // on the page, and before anything else is looked at.
+  const weddingLink = tier.wedding && typeof data.weddingLink === 'string' ? data.weddingLink : '';
+  if (tier.wedding) {
+    if (!verifyWeddingLink(weddingLink)) {
+      return error(403, 'LINK_INVALID', WEDDING_LINK_INVALID_MESSAGE);
+    }
+    const problem = weddingDateProblem(date, todayInMelbourne());
+    if (problem) return error(400, 'INVALID_DETAILS', problem);
+  }
 
   // Offers with a choice of location (the beach minis) need one of theirs.
   // Validated against the tier rather than trusted from the page, and folded
@@ -200,9 +238,32 @@ exports.handler = async (event) => {
     return error(400, 'INVALID_DETAILS', 'Part payment is not available for this session');
   }
 
+  // A wedding day is exclusive (lib/setmore.js dayOpenFor): a wedding needs
+  // the day empty, and a booked wedding closes it for every package. Checked
+  // for every tier, right before payment, since the page's view of the day can
+  // be minutes old. If Setmore can't be read, a wedding waits (the whole day
+  // is at stake and the couple can retry), while any other booking goes ahead
+  // as it always has: stripe-webhook re-reads the day before writing it, and
+  // holds the payment if a wedding got there first.
+  let dayOpen = true;
+  try {
+    dayOpen = await isDayOpen(tier, date);
+  } catch (err) {
+    if (tier.wedding) {
+      console.error('booking-checkout: could not read the day for a wedding:', err);
+      return error(503, 'SETMORE_BUSY', "I couldn't check that day just now. Please try again in a moment.");
+    }
+    console.error(`booking-checkout: could not read ${date} for the wedding check (continuing, the webhook re-checks):`, err);
+  }
+  if (!dayOpen) {
+    return error(409, 'DAY_TAKEN', tier.wedding
+      ? 'Sorry, that day has just been taken. Pick another?'
+      : "That day isn't available any more, please pick another.");
+  }
+
   // Campaign pages get their own success/cancel URLs; anything not on the
   // allowlist falls back to the main booking page.
-  const returnTo = ['/book.html', '/christmas-minis.html', '/test-booking.html'].includes(data.returnTo)
+  const returnTo = ['/book.html', '/christmas-minis.html', '/test-booking.html', '/book-wedding.html'].includes(data.returnTo)
     ? data.returnTo
     : '/book.html';
 
@@ -245,6 +306,9 @@ exports.handler = async (event) => {
   }
 
   const cancelParams = new URLSearchParams({ service: tierName, date, time, cancelled: '1' });
+  // The wedding page opens only with its link, so a couple who backs out of
+  // Stripe needs it on the way back.
+  if (tier.wedding) cancelParams.set('t', weddingLink);
 
   // Pay in full: one charge, exactly as before. Split: a two-payment
   // subscription, shaped entirely by the deposits module. `service_key` stays

@@ -6,6 +6,12 @@
 // discounts.promotion_code is expanded.
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { installFreshBlobs, removeBlobs } from './helpers/blobs.js'
+import { stubSetmore } from './helpers/setmore-stub.js'
+
+// booking-checkout reads the day from Setmore (the wedding-day check), so
+// Setmore is stubbed by default: nothing here may reach the network.
+beforeEach(() => stubSetmore())
+afterEach(() => vi.unstubAllGlobals())
 
 async function fresh(mod) {
   vi.resetModules()

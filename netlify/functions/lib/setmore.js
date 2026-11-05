@@ -829,8 +829,14 @@ const toSetmoreRangeDate = (iso) => {
 };
 
 // Appointments across a date range (both 'YYYY-MM-DD'), with embedded customer
-// records and cursor pagination. Used by the scheduled Setmore→Resend sync.
-async function getAppointmentsInRange(startDate, endDate) {
+// records and cursor pagination. Used by the scheduled Setmore→Resend sync, and
+// (without customer records) by availability through appointmentsByDay.
+//
+// Reaching the page cap with a cursor still pending throws rather than
+// returning what it has: a day missing from a truncated read would look free,
+// and a wedding day's exclusivity has to fail closed.
+const RANGE_PAGE_CAP = 25;
+async function getAppointmentsInRange(startDate, endDate, { customerDetails = true } = {}) {
   if (MOCK) {
     return [{
       key: 'mock-appt-range',
@@ -840,20 +846,20 @@ async function getAppointmentsInRange(startDate, endDate) {
   }
   const appointments = [];
   let cursor;
-  for (let page = 0; page < 25; page++) { // hard cap — never loop forever on a stuck cursor
+  for (let page = 0; page < RANGE_PAGE_CAP; page++) { // hard cap: never loop forever on a stuck cursor
     const query = {
       startDate: toSetmoreRangeDate(startDate),
       endDate: toSetmoreRangeDate(endDate),
-      customerDetails: 'true',
+      ...(customerDetails ? { customerDetails: 'true' } : {}),
     };
     if (cursor) query.cursor = cursor;
     const data = await setmoreFetch('/bookingapi/appointments', { query });
     appointments.push(...((data && data.appointments) || []));
     const next = data && data.pagination && data.pagination.cursor;
-    if (!next || next === cursor) break;
+    if (!next || next === cursor) return appointments;
     cursor = next;
   }
-  return appointments;
+  throw new SetmoreError(`Appointments ${startDate} to ${endDate} ran past ${RANGE_PAGE_CAP} pages; refusing a partial read`, { code: 'TOO_MANY_PAGES' });
 }
 
 // One calendar read for a run of days (both 'YYYY-MM-DD'), as a Map from each
@@ -870,7 +876,8 @@ async function appointmentsByDay(startIso, endIso) {
     for (const date of byDay.keys()) byDay.set(date, await getAppointmentsOnDate(date));
     return byDay;
   }
-  const appointments = await getAppointmentsInRange(startIso, endIso);
+  // Only service keys and start times are needed here, so no customer records.
+  const appointments = await getAppointmentsInRange(startIso, endIso, { customerDetails: false });
   for (const appt of appointments) {
     const day = String(appt.start_time || '').slice(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {

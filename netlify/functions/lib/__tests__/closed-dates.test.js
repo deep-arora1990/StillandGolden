@@ -4,6 +4,7 @@
 // written in code still holds.
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { installFreshBlobs, removeBlobs } from './helpers/blobs.js'
+import { stubSetmore } from './helpers/setmore-stub.js'
 
 const SECRET = 'ingest-secret-test'
 const reply = (body, status = 200) =>
@@ -49,8 +50,11 @@ async function checkout(date) {
 }
 
 let blobs
+// booking-checkout reads the day from Setmore (the wedding-day check), so
+// Setmore is stubbed by default: nothing here may reach the network.
 beforeEach(() => {
   vi.resetModules()
+  stubSetmore()
   blobs = installFreshBlobs()
   delete globalThis.__sgClosedDatesMemo
   process.env.BOOKING_INGEST_SECRET = SECRET

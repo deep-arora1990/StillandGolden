@@ -9,6 +9,7 @@ import path from 'node:path'
 import vm from 'node:vm'
 import { installFreshBlobs, removeBlobs } from './helpers/blobs.js'
 import { fakeStripe } from './helpers/fake-stripe.js'
+import { stubSetmore } from './helpers/setmore-stub.js'
 
 const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
@@ -165,8 +166,9 @@ describe('booking-checkout: ad_source in the Stripe metadata', () => {
     return stripe._sessions[stripe._sessions.length - 1].metadata
   }
 
-  beforeEach(() => { installFreshBlobs(); stripe = fakeStripe(); globalThis.__sgStripe = stripe; process.env.STRIPE_TEST_KEY = 'sk_test_x' })
-  afterEach(() => { removeBlobs(); delete globalThis.__sgStripe; delete process.env.STRIPE_TEST_KEY })
+  // booking-checkout reads the day from Setmore (the wedding-day check).
+  beforeEach(() => { installFreshBlobs(); stubSetmore(); stripe = fakeStripe(); globalThis.__sgStripe = stripe; process.env.STRIPE_TEST_KEY = 'sk_test_x' })
+  afterEach(() => { removeBlobs(); vi.unstubAllGlobals(); delete globalThis.__sgStripe; delete process.env.STRIPE_TEST_KEY })
 
   it('stores meta, google or fb_link', async () => {
     expect((await checkout({ ad: 'meta' })).ad_source).toBe('meta')

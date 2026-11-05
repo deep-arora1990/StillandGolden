@@ -3,6 +3,12 @@
 // one a day, time agreed directly with Deep, with a choice of beach.
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { installFreshBlobs, removeBlobs } from './helpers/blobs.js'
+import { stubSetmore } from './helpers/setmore-stub.js'
+
+// booking-checkout reads the day from Setmore (the wedding-day check), so
+// Setmore is stubbed by default: nothing here may reach the network.
+beforeEach(() => stubSetmore())
+afterEach(() => vi.unstubAllGlobals())
 
 const reply = (body, status = 200) =>
   ({ ok: status >= 200 && status < 300, status, json: async () => body, clone() { return this } })
