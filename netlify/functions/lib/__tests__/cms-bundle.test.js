@@ -65,7 +65,7 @@ describe('the /_cms/ bundle', () => {
       'about.html', 'portfolio.html', 'packages.html',
       'packages/glimpse-mini-sessions.html', 'packages/golden-family-photography.html',
       'packages/golden-cake-smash-photography.html', 'packages/gathered-newborn-photography.html',
-      'packages/bloom-maternity-newborn-photography.html', 'offers.html',
+      'packages/bloom-maternity-newborn-photography.html', 'weddings.html', 'offers.html',
       'offers/sunset-beach-mini-sessions.html', 'offers/in-home-christmas-photos.html',
       'gift-vouchers.html', ...library.pages.filter((p) => p.kind === 'post').map((p) => p.file)]);
     const posts = library.pages.filter((p) => p.kind === 'post').map((p) => p.file);

@@ -274,11 +274,11 @@ describe('block library', () => {
     }
   })
 
-  it('the pages list holds the twelve files in order, then the posts, each in git', () => {
+  it('the pages list holds the thirteen files in order, then the posts, each in git', () => {
     const { execSync } = require('node:child_process')
     const tracked = execSync("git ls-files '*.html'", { cwd: ROOT }).toString().split('\n')
     const nonPosts = LIBRARY.pages.filter((p) => p.kind !== 'post')
-    expect(LIBRARY.pages.slice(0, 12)).toEqual(nonPosts)
+    expect(LIBRARY.pages.slice(0, 13)).toEqual(nonPosts)
     const onDisk = tracked.filter((f) => /^blog\/[^/]+\.html$/.test(f) && f !== 'blog/index.html' && f !== 'blog/_template.html')
     expect(POSTS.length).toBeGreaterThanOrEqual(11)
     expect([...POSTS].sort()).toEqual(onDisk.sort())
@@ -288,7 +288,7 @@ describe('block library', () => {
       'about.html', 'portfolio.html', 'packages.html',
       'packages/glimpse-mini-sessions.html', 'packages/golden-family-photography.html',
       'packages/golden-cake-smash-photography.html', 'packages/gathered-newborn-photography.html',
-      'packages/bloom-maternity-newborn-photography.html',
+      'packages/bloom-maternity-newborn-photography.html', 'weddings.html',
       'offers.html', 'offers/sunset-beach-mini-sessions.html', 'offers/in-home-christmas-photos.html',
       'gift-vouchers.html'])
     for (const p of LIBRARY.pages) { expect(tracked).toContain(p.file); expect(p.label).toBeTruthy() }

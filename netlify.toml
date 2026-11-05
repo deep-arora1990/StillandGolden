@@ -239,6 +239,13 @@
   status = 301
   force = true
 
+# Weddings page (5 Nov 2026).
+[[redirects]]
+  from = "/weddings.html"
+  to = "/weddings"
+  status = 301
+  force = true
+
 # Seasonal offers page (30 Sep 2026).
 [[redirects]]
   from = "/offers.html"

@@ -132,6 +132,7 @@
     { "file": "packages/golden-cake-smash-photography.html", "label": "Golden (cake smash)" },
     { "file": "packages/gathered-newborn-photography.html", "label": "Gathered" },
     { "file": "packages/bloom-maternity-newborn-photography.html", "label": "Bloom" },
+    { "file": "weddings.html", "label": "Weddings" },
     { "file": "offers.html", "label": "Offers (overview)" },
     { "file": "offers/sunset-beach-mini-sessions.html", "label": "Sunset beach minis" },
     { "file": "offers/in-home-christmas-photos.html", "label": "In-home Christmas" },
