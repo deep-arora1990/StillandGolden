@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Photography Agreement · Still & Golden Photography</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white: #F8F5F1;
+      --warm-black: #1A1714;
+      --gold: #A8845A;
+      --mid: #8A7E78;
+      --border: rgba(26,23,20,0.1);
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px;
+      background: rgba(248,245,241,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--warm-black);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-right a {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-right a:hover { color: var(--gold); }
+
+    /* ─── PAGE ─── */
+    .page {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 140px 48px 100px;
+    }
+
+    .page-label {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--mid);
+      margin-bottom: 56px;
+    }
+
+    .rule {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+      margin-bottom: 56px;
+    }
+
+    /* ─── CONTENT ─── */
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 14px;
+      color: var(--warm-black);
+    }
+
+    .section p {
+      color: var(--warm-black);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .section p:last-child { margin-bottom: 0; }
+
+    /* ─── FORM ─── */
+    .acceptance-form {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 40px;
+      margin-top: 56px;
+    }
+
+    .acceptance-form h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      color: var(--warm-black);
+    }
+
+    form { display: flex; flex-direction: column; gap: 2px; }
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .fg { display: flex; flex-direction: column; margin-bottom: 2px; }
+    .fg label {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      padding: 10px 14px 0;
+      background: rgba(26,23,20,0.04);
+    }
+    .fg input, .fg select, .fg textarea {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--warm-black);
+      background: rgba(26,23,20,0.04);
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 8px 14px 12px;
+      outline: none;
+      appearance: none;
+      border-radius: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      background: rgba(168,132,90,0.08);
+      border-bottom-color: var(--gold);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+      flex-shrink: 0;
+      appearance: auto;
+    }
+    .checkbox-row label {
+      font-size: 0.88rem;
+      color: var(--warm-black);
+      line-height: 1.6;
+      cursor: pointer;
+    }
+
+    .form-submit {
+      margin-top: 16px;
+      align-self: flex-start;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      background: var(--warm-black);
+      border: none;
+      padding: 16px 36px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .form-submit:hover { background: var(--gold); }
+    .form-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .form-success {
+      text-align: center;
+      padding: 48px 24px;
+    }
+    .form-success h2 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: var(--warm-black);
+    }
+    .form-success p {
+      font-size: 0.95rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    .form-error {
+      color: #b54a4a;
+      font-size: 0.82rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--mid);
+    }
+
+    .footer-brand {
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 20px 24px; }
+      .page { padding: 120px 24px 80px; }
+      .frow { grid-template-columns: 1fr; }
+      .acceptance-form { padding: 28px 20px; }
+      footer { padding: 28px 24px; }
+    }
+      .booking-ref { font-size: 0.9rem; line-height: 1.6; color: #4d453f; border-left: 3px solid #A8845A; padding: 10px 14px; background: #fff; margin: 0 0 22px; }
+    .booking-ref[hidden] { display: none; }
+      fieldset { border: 1px solid var(--border); padding: 18px 18px 8px; margin-bottom: 18px; }
+    legend { font-family: var(--serif); font-size: 1.1rem; padding: 0 8px; }
+    .section ul { margin: 0 0 14px 20px; line-height: 1.8; }
+    .section li { margin-bottom: 8px; }
+    #link-problem { margin-top: 56px; padding: 20px; background: #fff; border-left: 3px solid var(--gold); }
+  </style>
+</head>
+<body>
+
+  <!-- include:bar -->
+
+  <div class="page">
+
+    <div class="page-label">Weddings · Agreement</div>
+    <h1 class="page-title">Wedding Photography Agreement</h1>
+    <p class="page-subtitle">Here's everything we're agreeing to, in plain words. Have a read together, then you both sign at the bottom.</p>
+    <div class="rule"></div>
+
+    <div class="section">
+      <h2>What's Included</h2>
+      <p>Here's what you're getting, whichever package you picked.</p>
+      <ul>
+        <li><strong>Short &amp; sweet</strong>: 3 hours, {{price.wedding-short}}. The ceremony, your people, the two of you, and whatever comes after (gelato, pizza in the city, you name it).</li>
+        <li><strong>The whole shebang</strong>: 6 hours, {{price.wedding-full}}. The ceremony, your people, the two of you and whatever comes after, plus getting ready, and the long lunch or dinner with speeches and dancing.</li>
+      </ul>
+      <p>Both packages include a planning call 4 to 6 weeks before the wedding, a short questionnaire so I know who's who, and every edited photo in a private online gallery within 4 weeks of the wedding, as high-resolution JPEG files for personal use. Your gallery stays online for 3 months from delivery, so download your favourites early.</p>
+      <p>Coverage is for the hours of the package booked, on the wedding date. We'll work out the timing together on the planning call.</p>
+      <p>Travel is included anywhere in South-east Melbourne, the Mornington Peninsula, Inner Melbourne and the City registry office.</p>
+    </div>
+
+    <div class="section">
+      <h2>Payment Terms</h2>
+      <p>Paying secures your wedding date. You can pay the full fee when you book, or pay half when you book and the other half 4 weeks later, charged automatically to the same card. You'll get a reminder three days before the second payment, and nothing is charged after it.</p>
+      <p>Paying in two halves is only offered when the wedding is at least 5 weeks away, so the full fee is always paid before the wedding.</p>
+      <p>If the second payment doesn't go through, your date is still booked. You'll be emailed a link to pay with another card, and the full fee must be paid before the wedding day.</p>
+      <p>The fee is the price of the package you booked, less any promo code used at booking. A gift voucher used at booking counts as payment towards the fee.</p>
+    </div>
+
+    <div class="section">
+      <h2>Cancellation &amp; Rescheduling</h2>
+      <p><strong>If you cancel</strong> at least 14 days (2 weeks) before the wedding date, everything you've paid is refunded in full, and any payment still to come is cancelled.</p>
+      <p><strong>If you cancel</strong> fewer than 14 days before the wedding date, half the fee is refunded. If only the first half has been paid by then, it isn't refunded and the second payment is cancelled, so cancelling never costs more than half the fee.</p>
+      <p>Any part of the fee paid with a gift voucher is put back on the voucher rather than refunded as money.</p>
+      <p><strong>If I can't be there.</strong> I'll do everything I can to be at your wedding. If illness or an emergency means the photographer can't attend, everything you've paid is refunded in full, and any payment still to come is cancelled. The photographer doesn't send a replacement.</p>
+      <p><strong>If you postpone.</strong> Before you lock in a new date, talk to all your suppliers, the photographer included, and get their availability for a handful of dates. If the photographer is free on your new date, your booking and everything you've paid move to it, and a second payment is still taken on its original date. If the photographer isn't free on any of your dates, it's treated as a cancellation by you, and the refund rules above apply, measured from the original wedding date.</p>
+    </div>
+
+    <div class="section">
+      <h2>Image Usage &amp; Rights</h2>
+      <p><strong>Your use:</strong> Images are licensed for personal, non-commercial use only. You may print, share, and display images for personal purposes. Commercial use of any image is strictly prohibited without prior written consent from Still &amp; Golden Photography.</p>
+      <p><strong>Photographer use:</strong> Still &amp; Golden Photography retains full copyright of all images. The photographer reserves the right to use images for portfolio, website, social media, and other promotional purposes. If you would prefer your images not be used publicly, please notify the photographer in writing before the wedding.</p>
+      <p><strong>Sharing on socials:</strong> If you'd rather your photos weren't shared on my socials, just let me know before the wedding. A reply to any of my emails is fine, and it won't change a thing about your day or your gallery.</p>
+    </div>
+
+    <div class="section">
+      <h2>General</h2>
+      <p>This agreement is the entire agreement between the two of you and Still &amp; Golden Photography for your wedding photography, and is governed by the laws of Victoria, Australia. You each confirm you have read, understood and agree to it by ticking your own box below.</p>
+    </div>
+
+    <p id="link-problem" hidden>This link has expired or isn't quite right. Reply to your booking email and I'll send you a fresh one.</p>
+
+    <div class="acceptance-form" id="acceptance-form">
+      <h2>Sign the Agreement</h2>
+      <p class="booking-ref" id="booking-ref" hidden></p>
+      <form id="wedding-form">
+        <fieldset>
+          <legend>Partner 1</legend>
+          <div class="fg"><label for="p1name">Full name</label><input type="text" id="p1name" required></div>
+          <div class="fg"><label for="p1email">Email</label><input type="email" id="p1email" required></div>
+          <div class="checkbox-row"><input type="checkbox" id="p1agree" required><label for="p1agree">I've read this Wedding Photography Agreement and I agree to it.</label></div>
+        </fieldset>
+        <fieldset>
+          <legend>Partner 2</legend>
+          <div class="fg"><label for="p2name">Full name</label><input type="text" id="p2name" required></div>
+          <div class="fg"><label for="p2email">Email</label><input type="email" id="p2email" required></div>
+          <div class="checkbox-row"><input type="checkbox" id="p2agree" required><label for="p2agree">I've read this Wedding Photography Agreement and I agree to it.</label></div>
+        </fieldset>
+        <div class="fg">
+          <label for="agreement_date">Today's date</label>
+          <input type="date" id="agreement_date" name="agreement_date" required>
+        </div>
+        <button type="submit" class="form-submit">Sign the agreement</button>
+        <p class="form-error" id="form-error"></p>
+      </form>
+    </div>
+
+    <div class="acceptance-form form-success" id="form-success" style="display:none;">
+      <h2>Thank you both</h2>
+      <p>Your signed copy is on its way to your inboxes. Next up is our planning call, 4 to 6 weeks before the wedding.</p>
+    </div>
+
+  </div>
+
+  <!-- include:bar-footer -->
+
+  <script>
+    // Today's date in the visitor's own time zone (valueAsDate would be UTC).
+    (function () { var d = new Date(); document.getElementById('agreement_date').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
+
+    // Signed link from the booking email (?t=...). The page only READS the
+    // payload to prefill; submit-wedding-agreement verifies the signature.
+    function readBookingLink() {
+      try {
+        var t = new URLSearchParams(location.search).get('t');
+        if (!t) return null;
+        var data = t.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+        while (data.length % 4) data += '=';
+        var json = decodeURIComponent(Array.prototype.map.call(atob(data), function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        var p = JSON.parse(json);
+        p.token = t;
+        return p;
+      } catch (e) { return null; }
+    }
+
+    var NAMES = { 'wedding-short': 'Short & sweet', 'wedding-full': 'The whole shebang' };
+    var booking = readBookingLink();
+    var form = document.getElementById('wedding-form');
+    if (!booking || !/^wedding-/.test(String(booking.s || ''))) {
+      document.getElementById('acceptance-form').style.display = 'none';
+      document.getElementById('link-problem').hidden = false;
+    } else {
+      document.getElementById('p1name').value = [booking.f, booking.l].filter(Boolean).join(' ');
+      document.getElementById('p1email').value = booking.e || '';
+      var when = booking.d ? new Date(booking.d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '';
+      var ref = document.getElementById('booking-ref');
+      ref.textContent = 'Your booking: ' + [NAMES[booking.s] || '', when].filter(Boolean).join(' · ') +
+        '. Check your details, then you each tick your box. If anything\'s wrong, reply to your booking email.';
+      ref.hidden = false;
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var btn = this.querySelector('.form-submit');
+      var errorEl = document.getElementById('form-error');
+      errorEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Signing…';
+      var payload = {
+        token: booking ? booking.token : undefined,
+        agreementDate: document.getElementById('agreement_date').value,
+        partners: [1, 2].map(function (n) {
+          return {
+            name: document.getElementById('p' + n + 'name').value,
+            email: document.getElementById('p' + n + 'email').value,
+            agreed: document.getElementById('p' + n + 'agree').checked
+          };
+        })
+      };
+      try {
+        var res = await fetch('/.netlify/functions/submit-wedding-agreement', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          document.getElementById('acceptance-form').style.display = 'none';
+          document.getElementById('form-success').style.display = 'block';
+          document.getElementById('form-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          var body = await res.json().catch(function () { return {}; });
+          throw new Error(res.status === 400 && body.error ? body.error : 'Submission failed');
+        }
+      } catch (err) {
+        errorEl.textContent = err.message && err.message !== 'Submission failed' && err.message !== 'Failed to fetch'
+          ? err.message
+          : 'Something went wrong. Please try again or email hello@stillandgolden.com.au';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Sign the agreement';
+      }
+    });
+  </script>
+
+</body>
+</html>

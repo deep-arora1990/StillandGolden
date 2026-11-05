@@ -22,5 +22,7 @@ Disallow: /unsubscribe
 Disallow: /unsubscribe.html
 Disallow: /book-wedding
 Disallow: /book-wedding.html
+Disallow: /wedding-agreement
+Disallow: /wedding-agreement.html
 
 Sitemap: https://stillandgolden.com.au/sitemap.xml
