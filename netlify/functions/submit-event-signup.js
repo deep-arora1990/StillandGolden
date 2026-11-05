@@ -133,7 +133,7 @@ exports.handler = async (event) => {
     console.error('Event sign-up storage failed:', err.message);
     return {
       statusCode: 502,
-      body: JSON.stringify({ error: "Sorry — that didn't save. Please try again, or grab Deep." }),
+      body: JSON.stringify({ error: "Sorry, that didn't save. Please try again, or grab Deep." }),
     };
   }
 

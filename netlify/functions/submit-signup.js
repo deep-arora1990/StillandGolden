@@ -113,7 +113,7 @@ exports.handler = async (event) => {
     await upsertResendContact({ email, firstName, marketingConsent: true });
   } catch (err) {
     console.error('submit-signup: contact not saved:', err.message);
-    return json(500, { error: 'Something went wrong — please try again.' });
+    return json(500, { error: 'Something went wrong. Please try again.' });
   }
 
   // Resend allows 2 requests a second; the upsert may have used both.

@@ -213,7 +213,7 @@ exports.handler = async (event) => {
       statusCode: 503,
       headers: { 'Content-Type': 'application/json', 'Retry-After': '20' },
       body: JSON.stringify({
-        error: { code: 'SETMORE_BUSY', message: 'Availability is busy right now — please try again in a moment.' },
+        error: { code: 'SETMORE_BUSY', message: 'Availability is busy right now. Please try again in a moment.' },
       }),
     };
   }

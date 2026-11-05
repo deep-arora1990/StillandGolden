@@ -87,7 +87,7 @@ const TIERS = {
   },
   bloom: {
     name: 'Bloom',
-    tagline: 'The bundle — bump to baby',
+    tagline: 'The bundle: bump to baby',
     serviceKey: 'd05d6d95-7e5c-4af6-8067-c25bcc55702b',
     durationMinutes: 90,
     priceFrom: money('bloom').priceFrom,
@@ -98,7 +98,7 @@ const TIERS = {
   },
   'fathers-day': {
     name: "Father's Day Mini",
-    tagline: 'One day only — George Pentland Botanic Gardens',
+    tagline: 'One day only, George Pentland Botanic Gardens',
     serviceKey: 'c3709660-7aa6-4a07-8ec2-d98548526a3e',
     durationMinutes: 30, // Setmore block is 30 min (20-min session + 10-min changeover buffer)
     priceFrom: 150,
@@ -111,7 +111,7 @@ const TIERS = {
   },
   'christmas-minis': {
     name: 'Christmas Mini',
-    tagline: 'One day only — Baxter Community Hall',
+    tagline: 'One day only, Baxter Community Hall',
     serviceKey: 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82',
     // What gets written into the calendar: the 15-minute session plus its
     // 10-minute changeover. The service's own after-buffer is set to 0 in
@@ -162,7 +162,7 @@ const TIERS = {
   // failure path and auto-refunds. That already happened once with the $1 tier.
   'xmas-test': {
     name: 'Christmas Mini (test)',
-    tagline: 'Test tier — 25 December',
+    tagline: 'Test tier, 25 December',
     // Refused outright on the production deploy. The page that drives this tier
     // ships with the site (publish = "."), and in production the Stripe key is
     // LIVE — so without this, anyone who found /xmas-test could be charged real
