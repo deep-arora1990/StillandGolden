@@ -16,7 +16,9 @@ function createRenderer({ prices: PRICES, chrome, mounts, unlinked, library: LIB
   // {{price.TIER.half}}          $237.50  each half of a split payment
   // {{price.TIER.withgallery}}   $570   the session with its full gallery added
   // Add .number for a bare figure (475), as Google's structured data needs.
-  const dollars = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
+  // Thousands get a comma ($1,000), added by hand so it never depends on the locale.
+  const withCommas = (digits) => digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const dollars = (n) => `$${withCommas(Number.isInteger(n) ? String(n) : n.toFixed(2))}`;
   function priceToken(expr) {
     const parts = expr.split('.');
     const number = parts[parts.length - 1] === 'number' ? parts.pop() && true : false;

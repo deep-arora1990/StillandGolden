@@ -31,6 +31,13 @@ describe('price tokens', () => {
     expect(() => priceToken('price.gathered.withgallery')).toThrow(/not set for gathered/)
   })
 
+  it('whole dollars from a thousand get a separator; .number stays plain digits', () => {
+    expect(priceToken('price.wedding-full')).toBe('$1,000')
+    expect(priceToken('price.wedding-full.number')).toBe('1000')
+    expect(priceToken('price.wedding-short')).toBe('$700')
+    expect(priceToken('price.wedding-full.half')).toBe('$500')
+  })
+
   it('refuses a misspelt tier or a value the tier does not have', () => {
     expect(() => priceToken('price.goldn')).toThrow(/unknown tier/)
     expect(() => priceToken('price.bloom.gallery')).toThrow(/not set for bloom/)
