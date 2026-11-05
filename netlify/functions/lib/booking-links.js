@@ -90,8 +90,13 @@ function tokenForBooking(meta, tierKey, tier, appointmentKey) {
 // the Seasonal Mini Session Agreement (contract-mini.html); every package signs
 // the main one. Christmas minis keep their own terms page and never get here.
 const SEASONAL_AGREEMENT_TIERS = ['in-home-christmas', 'sunset-beach-minis'];
+// Weddings sign neither: their own agreement arrives in stage 3, which replaces
+// NO_AGREEMENT_YET with the wedding agreement's path. Until then termsPathFor
+// returns null and callers send no link.
+const NO_AGREEMENT_YET = ['wedding-short', 'wedding-full'];
 function termsPathFor(tierKey) {
+  if (NO_AGREEMENT_YET.includes(tierKey)) return null;
   return SEASONAL_AGREEMENT_TIERS.includes(tierKey) ? '/contract-mini' : '/contract';
 }
 
-module.exports = { sign, verify, linkFor, tokenForBooking, termsPathFor, MAX_AGE_DAYS };
+module.exports = { sign, verify, linkFor, tokenForBooking, termsPathFor, NO_AGREEMENT_YET, MAX_AGE_DAYS };

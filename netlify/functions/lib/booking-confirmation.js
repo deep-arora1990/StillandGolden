@@ -38,7 +38,7 @@ function formatShortDate(iso) {
 }
 
 const { clientPaymentLine } = require('./discounts');
-const { C, SERIF, SANS, LOGO_SVG, FOOTER_ROW, esc } = require('./email-layout');
+const { C, SERIF, SANS, LOGO_SVG, FOOTER_ROW, esc, brandedEmail } = require('./email-layout');
 const money = (cents) => `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
 
 // '13:25' -> '1:25pm'
@@ -294,17 +294,41 @@ function valuesFromBooking(meta, tier, opts = {}) {
     // What was paid: in full, or the split and the day the balance comes off
     // (the same card, automatically — the split terms say so), or the amount
     // after a promo code.
-    paymentLine: (() => {
-      // Christmas minis keep their confirmation exactly as it was (Deep, 8 Oct).
-      if (!tier.priceCents || tier.serviceKey === CHRISTMAS_TIER_KEY_SERVICE) return '';
-      if (opts.pricing) return clientPaymentLine(opts.pricing);
-      const balance = Number(meta.balance_cents);
-      if (meta.pay_mode === 'split' && balance > 0) {
-        return `${money(tier.priceCents - balance)} paid today · ${money(balance)} on ${formatShortDate(meta.charge_on)}`;
-      }
-      return `Paid ${money(tier.priceCents)}`;
-    })(),
+    paymentLine: paymentLineFor(meta, tier, opts.pricing),
   };
+}
+
+// What was paid, for the confirmation: nothing for Christmas minis, the
+// post-promo amount when a code applied, the split and the balance day, or the
+// full price.
+function paymentLineFor(meta, tier, pricing) {
+  // Christmas minis keep their confirmation exactly as it was (Deep, 8 Oct).
+  if (!tier.priceCents || tier.serviceKey === CHRISTMAS_TIER_KEY_SERVICE) return '';
+  if (pricing) return clientPaymentLine(pricing);
+  const balance = Number(meta.balance_cents);
+  if (meta.pay_mode === 'split' && balance > 0) {
+    return `${money(tier.priceCents - balance)} paid today · ${money(balance)} on ${formatShortDate(meta.charge_on)}`;
+  }
+  return `Paid ${money(tier.priceCents)}`;
+}
+
+// The wedding confirmation (Nov 2026): no agreement link (stage 3 adds the
+// wedding agreement), no time (Deep settles it with the couple), 4-week gallery.
+function renderWeddingConfirmation(meta, tier, { pricing } = {}) {
+  const date = formatDate(meta.date);
+  const { html, text } = brandedEmail({
+    eyebrow: "You're booked in",
+    heading: `That's your date locked in, ${meta.firstName}.`,
+    details: [
+      ['Package', `${tier.name}, ${tier.lengthLabel} of wedding photography`],
+      ['Date', date],
+      ['Paid', paymentLineFor(meta, tier, pricing)],
+      ['Your gallery', 'Every edited photo, within 4 weeks of the wedding'],
+    ],
+    paragraphs: ["Next up, I'll send through your wedding agreement for you both to sign. Then 4 to 6 weeks before the day we'll jump on a planning call, and I'll send a short questionnaire so I know who's who."],
+    after: ['Got a question, or something\'s changed? Just reply to this email, it comes straight to me.'],
+  });
+  return { subject: `You're booked in: ${tier.name}, ${date}`, html, text };
 }
 
 // Resolved from the tier map at require time so the key lives in one place.
@@ -320,6 +344,8 @@ const CHRISTMAS_TIER_KEY_SERVICE = (() => {
 module.exports = {
   render,
   valuesFromBooking,
+  paymentLineFor,
+  renderWeddingConfirmation,
   formatDate,
   formatTime,
   MINI_FORM_URL,

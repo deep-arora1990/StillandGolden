@@ -27,9 +27,9 @@ const { connectStore } = require('./lib/shared-store');
 const { clearMonth } = require('./lib/availability-cache');
 
 // Split payment (spec 2026-09-14): when the subscription must stop.
-const { subscriptionCancelAt } = require('./lib/deposits');
+const { subscriptionCancelAt, splitRule } = require('./lib/deposits');
 const { upsertResendContact } = require('./lib/resend-contacts');
-const { render: renderConfirmation, valuesFromBooking } = require('./lib/booking-confirmation');
+const { render: renderConfirmation, valuesFromBooking, renderWeddingConfirmation } = require('./lib/booking-confirmation');
 const { tokenForBooking, linkFor, termsPathFor } = require('./lib/booking-links');
 const { postBookingEvent } = require('./lib/studio-sync');
 const { pricingFrom } = require('./lib/discounts');
@@ -146,8 +146,13 @@ async function sendBookingConfirmation(resend, meta, appointmentKey, pricing = n
   const tierKey = Object.keys(TIERS).find((k) => TIERS[k].serviceKey === meta.service_key);
   const tier = tierKey && TIERS[tierKey];
   if (!tier) throw new Error(`Unknown service_key for confirmation: ${meta.service_key}`);
-  const termsUrl = linkFor(termsPathFor(tierKey), tokenForBooking(meta, tierKey, tier, appointmentKey));
-  const { subject, html, text } = renderConfirmation(valuesFromBooking(meta, tier, { termsUrl, pricing }));
+  // Weddings get no family agreement link (stage 3 adds their own).
+  const { subject, html, text } = tier.wedding
+    ? renderWeddingConfirmation(meta, tier, { pricing })
+    : renderConfirmation(valuesFromBooking(meta, tier, {
+      termsUrl: linkFor(termsPathFor(tierKey), tokenForBooking(meta, tierKey, tier, appointmentKey)),
+      pricing,
+    }));
   const { error } = await resend.emails.send({
     from: `Still & Golden <${OWNER_EMAIL}>`,
     to: meta.email,
@@ -172,6 +177,7 @@ async function capSplitSubscription(stripe, resend, session, meta) {
   const subId = typeof session.subscription === 'string'
     ? session.subscription
     : session.subscription.id;
+  const wedding = Boolean((Object.values(TIERS).find((x) => x.serviceKey === meta.service_key) || {}).wedding);
   try {
     // Retrieved rather than assumed: the cancellation has to sit exactly on a
     // billing-period boundary, and only Stripe knows where that falls.
@@ -193,7 +199,7 @@ async function capSplitSubscription(stripe, resend, session, meta) {
         text: [
           `The split-payment subscription for ${meta.firstName} ${meta.lastName} could not be capped.`,
           '',
-          `It will keep billing weekly until someone stops it.`,
+          `It will keep billing ${wedding ? 'every 4 weeks' : 'weekly'} until someone stops it.`,
           '',
           `Fix: Stripe dashboard → Subscriptions → ${subId}. AFTER the second payment has gone through, choose Cancel subscription → "End of current period".`,
           `Don't cancel before the second payment (the balance would never be taken), and don't pick a custom date (it prorates).`,
@@ -231,7 +237,7 @@ async function holdFailedBooking(stripe, resend, session, meta, err, pricing = n
     `Customer: ${meta.firstName} ${meta.lastName} <${meta.email}>`,
     meta.phone ? `Phone: ${meta.phone}` : null,
     `Session: service_key ${meta.service_key} on ${meta.date} at ${meta.time}`,
-    `Payment: ${split ? 'split — first half taken, second half due in 7 days (subscription capped after it)'
+    `Payment: ${split ? `split — first half taken, second half due in ${splitRule(held).inWords} (subscription capped after it)`
       : pricing ? `${pricing.paidCents === 0 ? 'no charge' : `paid in full, ${dollars(pricing.paidCents)}`} (${pricing.code ? `code ${pricing.code}, ` : ''}${pricing.percentOff}% off)`
       : 'paid in full'}`,
     meta.notes ? `Notes: ${meta.notes}` : null,
@@ -337,7 +343,7 @@ function balanceReminderParts(meta, amount, when) {
   const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key) || {};
   const at = meta.time && !tier.timeTbc ? ` at ${meta.time}` : '';
   return [
-    `Just a heads-up: the remaining ${amount} for your session on ${meta.date}${at} comes off the same card on ${when}.`,
+    `Just a heads-up: the remaining ${amount} for your ${tier.wedding ? 'wedding' : 'session'} on ${meta.date}${at} comes off the same card on ${when}.`,
     `Nothing for you to do — it happens automatically, and that is the final payment.`,
     `If you would rather use a different card, or anything has changed, just reply to this email and I will sort it out.`,
   ];
@@ -347,8 +353,9 @@ function balanceReminderText(meta, amount, when) {
 }
 // The same words in the brand frame (15 Oct 2026).
 function balanceReminderEmail(meta, amount, when) {
+  const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key) || {};
   return brandedEmail({
-    eyebrow: 'Your session balance',
+    eyebrow: tier.wedding ? 'Your wedding balance' : 'Your session balance',
     heading: `Hi ${meta.firstName || 'there'},`,
     paragraphs: balanceReminderParts(meta, amount, when).map(esc),
   });
@@ -357,16 +364,18 @@ function balanceReminderEmail(meta, amount, when) {
 // "That last payment did not go through" — in the brand frame, with Stripe's
 // hosted invoice page as the button so they can pay with another card.
 function balanceFailedEmail(meta, amount, payUrl) {
+  const tier = Object.values(TIERS).find((t) => t.serviceKey === meta.service_key) || {};
+  const noun = tier.wedding ? 'wedding' : 'session';
   return brandedEmail({
-    eyebrow: 'Your session balance',
+    eyebrow: `Your ${noun} balance`,
     heading: `Hi ${meta.firstName || 'there'},`,
     paragraphs: [
-      esc(`The remaining ${amount} for your session did not go through — usually just an expired card, or a bank being cautious about an automatic payment.`),
+      esc(`The remaining ${amount} for your ${noun} did not go through — usually just an expired card, or a bank being cautious about an automatic payment.`),
       ...(payUrl ? ['You can pay it here with any card:'] : ['If you reply to this email I will send you a payment link.']),
     ],
     buttons: payUrl ? [{ label: 'Pay the balance', url: payUrl }] : [],
     after: [
-      'Your session is still booked and nothing has been cancelled — this is only the balance.',
+      `Your ${noun} is still booked and nothing has been cancelled — this is only the balance.`,
       'If it is easier to sort another way, or something has changed, just reply and I will work around it.',
     ],
   });
@@ -409,14 +418,16 @@ async function notifyOwnerOfBooking(resend, meta, appointment, pricing = null) {
     subject: `[S&G] New booking — ${name} · ${tier.name} · ${when}`,
     text: [
       `New booking: ${tier.name}`,
-      `When: ${meta.date}${tier.timeTbc ? ' (time to be confirmed — move the 18:30 placeholder in Setmore)' : ` at ${meta.time}`}`,
+      `When: ${meta.date}${tier.timeTbc ? ` (time to be confirmed — move the ${tier.slotTimes[0]} placeholder in Setmore)` : ` at ${meta.time}`}`,
       `Client: ${name}`,
       `Email: ${meta.email}`,
       meta.phone ? `Phone: ${meta.phone}` : null,
       paid,
       meta.notes ? `\nNotes:\n${meta.notes}` : null,
       `\nSetmore appointment: ${(appointment && appointment.key) || '(none)'}`,
-      'They have been sent the confirmation with the session terms to sign.',
+      tier.wedding
+        ? "They have been sent the confirmation. No agreement was sent: the wedding agreement isn't built yet (stage 3)."
+        : 'They have been sent the confirmation with the session terms to sign.',
     ].filter(Boolean).join('\n'),
   });
   if (error) throw new Error(`Resend rejected the booking notice: ${error.message || JSON.stringify(error)}`);

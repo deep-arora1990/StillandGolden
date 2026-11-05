@@ -172,6 +172,10 @@ exports.handler = async (event) => {
     if (!link) {
       return { statusCode: 400, body: JSON.stringify({ error: 'This link has expired or is not valid. Please reply to your booking email and I will send a fresh one.' }) };
     }
+    // A wedding link must not fall through to the Golden default below.
+    if (link.s === 'wedding-short' || link.s === 'wedding-full') {
+      return { statusCode: 400, body: JSON.stringify({ error: "Weddings have their own agreement. Reply to your booking email and I'll send it." }) };
+    }
     data.sessionType = link.s || data.sessionType;
     data.sessionDate = link.d || data.sessionDate;
   }

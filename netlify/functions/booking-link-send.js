@@ -69,6 +69,7 @@ exports.handler = async (event) => {
   if (kind === 'model-call') return sendModelCallForms(data, email);
   // Christmas minis keep their own terms and pre-session form (Deep, 8 Oct).
   if (!tier || tier.hidden || data.tierKey === 'christmas-minis') return json(400, { error: `Not a package these emails cover: ${data.tierKey}` });
+  if (!termsPathFor(data.tierKey)) return json(400, { error: `The wedding agreement and questionnaire aren't ready yet: ${data.tierKey}` });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(400, { error: 'A valid email is required' });
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data.date || ''))) return json(400, { error: 'date must be YYYY-MM-DD' });
 
