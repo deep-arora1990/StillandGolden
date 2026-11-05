@@ -9,6 +9,7 @@ const SESSION_LABELS = {
   golden: 'Golden — up to 60 min, 20 images',
   gathered: 'Gathered — 90 min, full gallery (usually 60+ images)',
   bloom: 'Bloom — two sessions, maternity/family + newborn',
+  wedding: 'Wedding (elopement, micro or registry)',
   unsure: 'Not sure yet — help me choose',
 
   // Seasonal offers — reachable from the booking page's "dates don't suit" form.

@@ -1268,6 +1268,7 @@
             <option value="golden">Golden &mdash; up to 60 min, 20 images</option>
             <option value="gathered">Gathered &mdash; 90 min, full gallery (usually 60+ images)</option>
             <option value="bloom">Bloom &mdash; two sessions</option>
+            <option value="wedding">Wedding: elopement, micro or registry</option>
             <option value="unsure">Not sure yet &mdash; help me choose</option>
           </select>
           <p class="fg-hint">For a newborn, Gathered is the one I recommend: ninety minutes leaves room for feeds and settling, and every photo is yours. Golden suits families, maternity and cake smash. Bloom pairs maternity or family with newborn.</p>
@@ -1303,6 +1304,20 @@
   <footer data-sg-footer></footer>
 
   <script>
+    // /?enquire=wedding#contact preselects that session in the enquiry form.
+    // Values the form does not offer are ignored.
+    function preselectSession(search, select) {
+      const want = new URLSearchParams(search).get('enquire');
+      if (!want) return;
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === want) {
+          select.value = want;
+          return;
+        }
+      }
+    }
+    preselectSession(location.search, document.getElementById('st'));
+
     // Fix hash navigation: lazy images above the anchor keep loading after the
     // first scroll and push the target down, so re-scroll once on load and
     // again after they've had time to settle.

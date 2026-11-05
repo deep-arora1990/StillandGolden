@@ -178,3 +178,28 @@ describe('the enquiry reaches Studio after its emails', () => {
     expect(alt.slice(0, alt.indexOf('}),'))).toMatch(/ad: window\.sgAd \? window\.sgAd\(\) : null,/)
   })
 })
+
+describe('enquiry form: Wedding', () => {
+  it('offers Wedding, and labels it for Deep', () => {
+    expect(read('index.html')).toContain('<option value="wedding">Wedding: elopement, micro or registry</option>')
+    expect(read('netlify/functions/submit-enquiry.js')).toMatch(/wedding: 'Wedding \(elopement, micro or registry\)'/)
+  })
+
+  // index.html's own preselect function, run as the page runs it.
+  const preselectSession = (() => {
+    const fn = read('index.html').match(/function preselectSession\(search, select\) \{[\s\S]*?\n {4}\}\n/)
+    if (!fn) return () => { throw new Error('preselectSession missing from index.html') }
+    return new Function(fn[0] + '; return preselectSession')()
+  })()
+  const fakeSelect = () => ({ options: [{ value: '' }, { value: 'glimpse' }, { value: 'wedding' }, { value: 'unsure' }], value: '' })
+
+  it.each([
+    ['?enquire=wedding', 'wedding'],
+    ['?enquire=nonsense', ''],
+    ['', ''],
+  ])('preselects from %j -> %j', (search, expected) => {
+    const sel = fakeSelect()
+    preselectSession(search, sel)
+    expect(sel.value).toBe(expected)
+  })
+})
