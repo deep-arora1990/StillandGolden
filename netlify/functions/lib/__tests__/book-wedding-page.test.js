@@ -32,5 +32,22 @@ describe('the wedding booking page', () => {
     expect(html).toMatch(/weddingLink:/); expect(html).toContain("returnTo: '/book-wedding.html'")
     expect(html).toMatch(/['"]&t=['"]\s*\+\s*encodeURIComponent/)
   })
+  it('never leaks the link token through the referrer', () => {
+    expect(html).toContain('<meta name="referrer" content="no-referrer">')
+  })
+  it('turns a failed fetch into an error with no browser message', () => {
+    const fn = html.match(/function networkFailure\([\s\S]*?\n    }\n/)
+    expect(fn).toBeTruthy()
+    const networkFailure = new Function(fn[0] + '; return networkFailure')()
+    const e = networkFailure(new TypeError('Failed to fetch'))
+    expect(e.network).toBe(true); expect(e.message).toBe('')
+    expect(html).toMatch(/fetch\(FN \+ path, opts\)\.catch\(function \(e\) \{ throw networkFailure\(e\); \}\)/)
+  })
+  it('guards slot races, stale caches, bfcache and past dates', () => {
+    expect(html).toContain('if (state.date !== iso || !state.pkg) return;')
+    expect(html).toContain("addEventListener('pageshow'")
+    expect(html).toContain('e.persisted')
+    expect(html).toMatch(/id="details-heading" tabindex="-1"/)
+  })
   it('/book still looks 12 months ahead', () => { expect(read('book.html')).toContain('var MAX_MONTHS_AHEAD = 12;') })
 })

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Book your wedding | Still & Golden Photography</title>
   <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
   <!-- Private: opened only from a link Deep sends (/book-wedding?t=...).
        Not in the sitemap, disallowed in robots.txt, linked from nowhere, and
        no analytics tags (DEVELOPMENT.md, Adding a page, step 7): couples
@@ -256,7 +257,7 @@
 
     <!-- Step 3: details and payment -->
     <section id="step-details" class="step" aria-label="Your details">
-      <h2>Your details</h2>
+      <h2 id="details-heading" tabindex="-1">Your details</h2>
       <p class="summary-line" id="details-context"></p>
       <form id="details-form" class="details" novalidate>
         <div class="field-row">
@@ -360,8 +361,17 @@
       showStep('expired');
     }
 
+    // A dropped connection or blocked request: no message of the browser's
+    // ("Failed to fetch") ever reaches the page, so callers use their own line.
+    function networkFailure(e) {
+      var err = new Error('');
+      err.network = true;
+      err.cause = e;
+      return err;
+    }
+
     function api(path, opts) {
-      return fetch(FN + path, opts).then(function (res) {
+      return fetch(FN + path, opts).catch(function (e) { throw networkFailure(e); }).then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (body) {
           if (!res.ok) {
             var err = new Error((body.error && body.error.message) || 'Something went wrong');
@@ -520,31 +530,42 @@
 
     function loadCalendar() {
       var t = todayLocal();
-      if (!state.cursor) state.cursor = { year: t.year, month: t.month };
+      if (!state.cursor || state.cursor.year * 12 + state.cursor.month < t.year * 12 + t.month) {
+        state.cursor = { year: t.year, month: t.month };
+      }
       renderCalendar();
       fetchAvailability(state.cursor.year, state.cursor.month);
     }
+
+    var monthsInFlight = 0;
 
     function fetchAvailability(year, month) {
       var key = monthKey(year, month);
       if (state.availableDates[key]) { renderCalendar(); return; }
       var pkg = state.pkg;
+      monthsInFlight++;
       $('cal-loading').hidden = false;
       $('cal-wrap').classList.add('loading');
+      // The overlay stays until the last month fetch has answered.
+      function done() {
+        monthsInFlight--;
+        if (monthsInFlight > 0) return;
+        $('cal-loading').hidden = true;
+        $('cal-wrap').classList.remove('loading');
+      }
       api('booking-availability?service_key=' + encodeURIComponent(pkg.serviceKey) +
           '&year=' + year + '&month=' + month + linkParam())
         .then(function (data) {
+          done();
           if (state.pkg !== pkg) return; // they changed package while it loaded
           state.availableDates[key] = data.availableDates || [];
-          $('cal-loading').hidden = true;
-          $('cal-wrap').classList.remove('loading');
           renderCalendar();
         })
         .catch(function (err) {
-          $('cal-loading').hidden = true;
-          $('cal-wrap').classList.remove('loading');
+          done();
           if (err.code === 'LINK_INVALID') { showExpired(); return; }
-          showNotice(err.message || "Availability couldn't be loaded. Please try again.", true);
+          if (state.pkg !== pkg) return;
+          showNotice((err.network ? '' : err.message) || "Availability couldn't be loaded. Please try again.", true);
         });
     }
 
@@ -568,8 +589,8 @@
       $('cal-jump').value = monthKey(cur.year, cur.month);
 
       var maxDate = new Date(t.year, t.month - 1 + monthsAhead(), 1);
-      $('cal-prev').disabled = cur.year === t.year && cur.month === t.month;
-      $('cal-next').disabled = cur.year === maxDate.getFullYear() && cur.month === maxDate.getMonth() + 1;
+      $('cal-prev').disabled = cur.year * 12 + cur.month <= t.year * 12 + t.month;
+      $('cal-next').disabled = cur.year * 12 + cur.month >= maxDate.getFullYear() * 12 + maxDate.getMonth() + 1;
 
       var grid = $('cal-days');
       grid.innerHTML = '';
@@ -607,6 +628,14 @@
 
     // A wedding has one placeholder slot (the time is agreed with Deep), so
     // picking a day takes it silently and moves on to the details.
+    // A day the server says is gone greys out now, even if its month list is stale.
+    function removeAvailable(iso) {
+      var list = state.availableDates[iso.slice(0, 7)];
+      if (!list) return;
+      var i = list.indexOf(iso);
+      if (i !== -1) list.splice(i, 1);
+    }
+
     function selectDate(iso) {
       state.date = iso;
       state.time = null;
@@ -615,9 +644,11 @@
       $('slot-loading').hidden = false;
       api('booking-slots?service_key=' + encodeURIComponent(state.pkg.serviceKey) + '&date=' + iso + linkParam())
         .then(function (data) {
+          if (state.date !== iso || !state.pkg) return; // a newer pick or a reset got here first
           $('slot-loading').hidden = true;
           var slots = data.slots || [];
           if (!slots.length) {
+            removeAvailable(iso);
             state.date = null;
             renderCalendar();
             showNotice('Sorry, that day has just been taken. Pick another?', true);
@@ -628,11 +659,12 @@
           goToDetails();
         })
         .catch(function (err) {
+          if (err.code === 'LINK_INVALID') { $('slot-loading').hidden = true; showExpired(); return; }
+          if (state.date !== iso || !state.pkg) return;
           $('slot-loading').hidden = true;
-          if (err.code === 'LINK_INVALID') { showExpired(); return; }
           state.date = null;
           renderCalendar();
-          showNotice(err.message || "That day couldn't be checked. Please try again.", true);
+          showNotice((err.network ? '' : err.message) || "That day couldn't be checked. Please try again.", true);
         });
     }
 
@@ -647,6 +679,7 @@
       if ($('f-voucher').value.trim()) checkVoucher(); else { renderPayChoice(); setConfirmLabel(); }
       showStep('details');
       window.scrollTo(0, 0);
+      $('details-heading').focus({ preventScroll: true });
     }
 
     $('back-to-calendar').addEventListener('click', function () {
@@ -722,7 +755,7 @@
         setConfirmLabel();
       }).catch(function (err) {
         state.voucher = null;
-        voucherMessage(err.message || 'That voucher couldn’t be checked. Please try again.', true);
+        voucherMessage((err.network ? '' : err.message) || 'That voucher couldn’t be checked. Please try again.', true);
         renderPayChoice();
         setConfirmLabel();
       });
@@ -786,6 +819,7 @@
         if (err.code === 'DAY_TAKEN') {
           // Someone else got there first: back to the calendar, fresh dates.
           delete state.availableDates[monthKey(state.cursor.year, state.cursor.month)];
+          removeAvailable(state.date);
           state.date = null;
           showStep('calendar');
           loadCalendar();
@@ -798,6 +832,14 @@
         }
         showNotice("Couldn't start the payment. Please try again shortly, or send me a message.", true);
       });
+    });
+
+    // Back/forward from Stripe can restore this page frozen mid-payment.
+    window.addEventListener('pageshow', function (e) {
+      if (!e.persisted) return;
+      $('confirm-btn').disabled = false;
+      $('pay-split-btn').disabled = false;
+      if (state.pkg && state.date && state.time) { renderPayChoice(); setConfirmLabel(); }
     });
 
     // --- init ---------------------------------------------------------------------------
