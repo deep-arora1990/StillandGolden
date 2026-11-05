@@ -8,9 +8,13 @@
 // each keeping their own copy of the arithmetic.
 //
 // The rule (spec 2026-09-14, § 1–2):
-//   • 50% now, 50% seven days later. One rule, every tier.
-//   • Offered only when the session is at least 9 days away — seven days to the
-//     balance plus two days of margin, so a declined card leaves time to chase.
+//   • Families: 50% now, 50% seven days later. Offered only when the session
+//     is at least 9 days away — seven days to the balance plus two days of
+//     margin, so a declined card leaves time to chase.
+//   • Weddings (a tier with balanceAfterWeeks / splitMinNoticeDays): 50% now,
+//     50% four weeks later, offered only when the wedding is at least 35 days
+//     (five weeks) away. splitRule(tier) is the one place that picks between
+//     the two; everything else asks it.
 //
 // A tier without `depositCents` never offers the split. That is the feature
 // flag: to turn the split on for a tier, give it a deposit; to turn it off,
@@ -57,6 +61,21 @@ function subscriptionCancelAt(subscription) {
   return periodEnd + (periodEnd - periodStart);
 }
 
+// The split rule for a tier. Family tiers carry neither field and get the
+// default seven days / nine days' notice; a wedding tier names its own.
+function splitRule(tier) {
+  const weeks = tier && tier.balanceAfterWeeks;
+  if (!weeks) {
+    return { intervalWeeks: 1, balanceAfterDays: BALANCE_AFTER_DAYS, minNoticeDays: MIN_NOTICE_DAYS, inWords: `${BALANCE_AFTER_DAYS} days` };
+  }
+  return {
+    intervalWeeks: weeks,
+    balanceAfterDays: weeks * 7,
+    minNoticeDays: tier.splitMinNoticeDays || weeks * 7 + MIN_DAYS_BEFORE_SESSION,
+    inWords: weeks === 1 ? '1 week' : `${weeks} weeks`,
+  };
+}
+
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 // Calendar-date maths in UTC, never local time. These are dates, not moments:
@@ -85,17 +104,18 @@ function fromUtcDays(days) {
 function balancePlan(tier, sessionDate, today) {
   if (!tier || !tier.depositCents) return { eligible: false, reason: 'not-offered' };
 
+  const rule = splitRule(tier);
   const sessionDay = toUtcDays(sessionDate);
   const todayDay = toUtcDays(today);
 
-  if (sessionDay - todayDay < MIN_NOTICE_DAYS) return { eligible: false, reason: 'too-close' };
+  if (sessionDay - todayDay < rule.minNoticeDays) return { eligible: false, reason: 'too-close' };
 
   // The balance is whatever is left, rather than a second half computed
   // independently — so the two parts always sum to the price even if a tier
   // ever carries an odd number of cents.
   return {
     eligible: true,
-    chargeOn: fromUtcDays(todayDay + BALANCE_AFTER_DAYS),
+    chargeOn: fromUtcDays(todayDay + rule.balanceAfterDays),
     depositCents: tier.depositCents,
     balanceCents: tier.priceCents - tier.depositCents,
   };
@@ -132,7 +152,9 @@ function splitCheckoutParams(tier, plan, { date, time, firstName, lastName, emai
   const who = [firstName, lastName].filter(Boolean).join(' ').trim();
   // timeTbc offers (beach minis) carry a placeholder time Deep confirms later —
   // it must not reach the customer's payment page as if it were agreed.
-  const sessionLabel = tier.timeTbc ? `${date}, time to be confirmed` : `${date} at ${time}`;
+  const rule = splitRule(tier);
+  const wedding = Boolean(tier.wedding);
+  const sessionLabel = wedding ? `${date}, your wedding day` : tier.timeTbc ? `${date}, time to be confirmed` : `${date} at ${time}`;
   const balance = (plan.balanceCents / 100).toFixed(2);
 
   return {
@@ -143,16 +165,16 @@ function splitCheckoutParams(tier, plan, { date, time, firstName, lastName, emai
         price_data: {
           currency: 'aud',
           unit_amount: plan.depositCents,
-          recurring: { interval: 'week' },
+          recurring: rule.intervalWeeks > 1 ? { interval: 'week', interval_count: rule.intervalWeeks } : { interval: 'week' },
           product_data: {
-            name: `${tier.name} — half now, half in ${BALANCE_AFTER_DAYS} days`,
+            name: `${tier.name}${wedding ? ':' : ' —'} half now, half in ${rule.inWords}`,
             // Customer-facing, and load-bearing: Stripe's page says
             // "subscription", and this is the line that stops that alarming
             // anyone. It states the second payment and that nothing follows it.
             description:
-              `${sessionLabel} · ${tier.sessionMinutes || tier.durationMinutes} minutes. ` +
+              `${sessionLabel} · ${wedding ? tier.lengthLabel : `${tier.sessionMinutes || tier.durationMinutes} minutes`}. ` +
               `$${balance} will be charged to the same card on ${plan.chargeOn}. ` +
-              'That is the final payment — nothing is charged after it.',
+              `That is the final payment${wedding ? ',' : ' —'} nothing is charged after it.`,
           },
         },
       },
@@ -162,7 +184,9 @@ function splitCheckoutParams(tier, plan, { date, time, firstName, lastName, emai
       // charge is cancelling the subscription. It has to be identifiable at a
       // glance, and searchable, or finding the right one means matching on
       // customer email alone.
-      description: `${tier.name} — ${sessionLabel}${who ? ` — ${who}` : ''}`,
+      description: wedding
+        ? `${tier.name}, ${sessionLabel}${who ? `, ${who}` : ''}`
+        : `${tier.name} — ${sessionLabel}${who ? ` — ${who}` : ''}`,
       metadata: {
         service_key: tier.serviceKey,
         date,
@@ -183,6 +207,7 @@ function splitCheckoutParams(tier, plan, { date, time, firstName, lastName, emai
 
 module.exports = {
   balancePlan,
+  splitRule,
   splitCheckoutParams,
   subscriptionCancelAt,
   todayInMelbourne,

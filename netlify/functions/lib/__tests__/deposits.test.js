@@ -174,3 +174,64 @@ describe('subscriptionCancelAt', () => {
     expect(Number.isInteger(subscriptionCancelAt(subscription))).toBe(true)
   })
 })
+
+// ---- weddings split differently (stage 2) ----
+const fs = require('fs')
+const path = require('path')
+const { splitRule } = require('../deposits')
+const ROOT = path.resolve(__dirname, '../../../..')
+const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
+
+const weddingTier = { name: 'Short & sweet', serviceKey: 'svc_w', priceCents: 70000, depositCents: 35000,
+  balanceAfterWeeks: 4, splitMinNoticeDays: 35, wedding: true, timeTbc: true, lengthLabel: '3 hours', durationMinutes: 180 }
+
+describe('weddings split differently', () => {
+  const tier = { name: 'Christmas Mini', serviceKey: 'svc_1', priceCents: 15000, depositCents: 7500, sessionMinutes: 15, durationMinutes: 25 }
+  const plan = balancePlan(tier, '2026-12-25', '2026-10-02')
+
+  it('splitRule: family 7 days / 9 days notice, weddings 4 weeks / 5 weeks notice', () => {
+    expect(splitRule(splitTier)).toEqual({ intervalWeeks: 1, balanceAfterDays: 7, minNoticeDays: 9, inWords: '7 days' })
+    expect(splitRule(weddingTier)).toEqual({ intervalWeeks: 4, balanceAfterDays: 28, minNoticeDays: 35, inWords: '4 weeks' })
+  })
+  it('weddings: the balance comes off 4 weeks after booking', () => {
+    expect(balancePlan(weddingTier, '2027-03-06', '2026-11-05'))
+      .toEqual({ eligible: true, chargeOn: '2026-12-03', depositCents: 35000, balanceCents: 35000 })
+  })
+  it('weddings: split offered exactly 5 weeks out, not a day less', () => {
+    expect(balancePlan(weddingTier, '2026-12-10', '2026-11-05').eligible).toBe(true)
+    expect(balancePlan(weddingTier, '2026-12-09', '2026-11-05').reason).toBe('too-close')
+    expect(balancePlan(weddingTier, '2026-12-03', '2026-11-05').reason).toBe('too-close') // 4 weeks out
+  })
+  it("the cut-off counts from Melbourne's today", () => {
+    const today = todayInMelbourne(new Date('2026-11-05T13:30:00Z'))
+    expect(today).toBe('2026-11-06')
+    expect(balancePlan(weddingTier, '2026-12-10', today).eligible).toBe(false)
+  })
+  it('the wedding checkout bills every 4 weeks and says so, with no em dash', () => {
+    const p = splitCheckoutParams(weddingTier, balancePlan(weddingTier, '2027-03-06', '2026-11-05'),
+      { date: '2027-03-06', time: '10:00', firstName: 'Sam', lastName: 'Lee', email: 'sam@example.com' })
+    const pd = p.line_items[0].price_data
+    expect(pd.recurring).toEqual({ interval: 'week', interval_count: 4 })
+    expect(pd.product_data.name).toBe('Short & sweet: half now, half in 4 weeks')
+    expect(pd.product_data.description).toBe('2027-03-06, your wedding day · 3 hours. $350.00 will be charged to the same card on 2026-12-03. That is the final payment, nothing is charged after it.')
+    expect(p.subscription_data.metadata).toMatchObject({ pay_mode: 'split', charge_on: '2026-12-03', balance_cents: '35000' })
+    expect(JSON.stringify(p)).not.toMatch(/—/)
+  })
+  it('family split is unchanged: weekly, "half in 7 days"', () => {
+    const p = splitCheckoutParams(tier, plan, { date: '2026-12-25', time: '10:30' })
+    expect(p.line_items[0].price_data.recurring).toEqual({ interval: 'week' })
+    expect(p.line_items[0].price_data.product_data.name).toBe('Christmas Mini — half now, half in 7 days')
+  })
+  it('caps a 4-week subscription after its second charge', () => {
+    const P = 28 * 86400
+    expect(subscriptionCancelAt({ items: { data: [{ current_period_start: 1_000_000, current_period_end: 1_000_000 + P }] } }))
+      .toBe(1_000_000 + 2 * P)
+  })
+  it('the family agreements still say seven days and nine days', () => {
+    for (const f of ['contract.html', 'contract-mini.html', 'netlify/functions/submit-contract.js']) {
+      const s = read(f)
+      expect(s, f).toContain('remaining half seven days later')
+      expect(s, f).toContain('more than nine days away')
+    }
+  })
+})
