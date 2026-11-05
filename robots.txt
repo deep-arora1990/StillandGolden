@@ -20,5 +20,7 @@ Disallow: /model-call-questionnaire
 Disallow: /model-call-questionnaire.html
 Disallow: /unsubscribe
 Disallow: /unsubscribe.html
+Disallow: /book-wedding
+Disallow: /book-wedding.html
 
 Sitemap: https://stillandgolden.com.au/sitemap.xml

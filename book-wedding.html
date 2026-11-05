@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book your wedding | Still & Golden Photography</title>
+  <meta name="robots" content="noindex, nofollow">
+  <!-- Private: opened only from a link Deep sends (/book-wedding?t=...).
+       Not in the sitemap, disallowed in robots.txt, linked from nowhere, and
+       no analytics tags (DEVELOPMENT.md, Adding a page, step 7): couples
+       type their details here and the URL carries their link. -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/site.css">
+  <style>
+    body {
+      background: var(--off-white);
+      color: var(--warm-black);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* The slim form bar. site.css hides .nav-right under 940px
+       for the hamburger; this bar has no hamburger, so keep its one link. */
+    nav { padding: 28px 48px; }
+    .nav-logo span { color: var(--gold); }
+    .nav-right a { color: var(--mid); transition: color 0.2s; }
+    @media (max-width: 940px) { .nav-right { display: flex; } }
+    footer { margin-top: 40px; padding: 36px 48px; align-items: center; }
+    .footer-brand { font-family: var(--serif); font-size: 1rem; color: var(--gold); letter-spacing: 0.06em; }
+
+    main { max-width: 860px; margin: 0 auto; padding: 140px 48px 40px; }
+    h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; line-height: 1.12; margin-bottom: 12px; }
+    h1 em { font-style: italic; color: var(--gold); }
+    h2 { font-family: var(--serif); font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 400; margin: 0 0 18px; }
+    p.sub { color: #4d453f; margin-bottom: 36px; max-width: 60ch; }
+    p.sub[hidden] { display: none; }
+
+    /* Two equal CTAs, as on /book. */
+    .pay-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pay-choice .btn { width: 100%; margin: 0; line-height: 1.35; }
+    .pay-choice .btn small { display: block; font-weight: 400; opacity: 0.85; }
+    /* .btn sets display, which beats the hidden attribute: without this the
+       unoffered split button shows as an empty black bar (BOOKING.md). */
+    .pay-choice .btn[hidden] { display: none; }
+
+    .consent-check { display: flex; gap: 12px; align-items: flex-start; margin: 22px 0 6px; font-size: 0.85rem; color: #4d453f; cursor: pointer; }
+    .consent-check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--warm-black); flex-shrink: 0; }
+
+    /* Gift vouchers: a code instead of, or as well as, a card. */
+    .voucher { margin: 18px 0 16px; font-size: 0.88rem; }
+    .voucher summary { cursor: pointer; color: #4d453f; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(77, 69, 63, 0.35); }
+    .voucher-row { display: flex; gap: 10px; margin-top: 10px; }
+    .voucher-row input { flex: 1; min-width: 0; text-transform: uppercase; letter-spacing: 0.08em; }
+    .voucher-row .btn { margin: 0; white-space: nowrap; }
+    .voucher-msg { margin: 10px 0 0; font-size: 0.85rem; color: #4d453f; }
+    .voucher-msg.bad { color: #b04040; }
+    .voucher-msg[hidden] { display: none; }
+    .pay-note { margin: 12px 0 0; font-size: 0.82rem; line-height: 1.6; color: #6b625c; max-width: 52ch; }
+    .pay-note[hidden] { display: none; }
+    @media (max-width: 560px) {
+      .pay-choice { grid-template-columns: 1fr; }
+    }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    /* Package cards */
+    .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 40px; }
+    .svc-card {
+      text-align: left; cursor: pointer;
+      background: none; border: 1px solid var(--border);
+      padding: 26px 26px 22px; font-family: inherit; font-size: inherit; color: inherit; line-height: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .svc-card:hover, .svc-card:focus-visible { border-color: var(--gold); background: #fff; outline: none; }
+    .svc-card .svc-name { font-family: var(--serif); font-size: 1.5rem; }
+    .svc-card .svc-price { font-family: var(--serif); font-size: 1.2rem; color: var(--gold); margin: 2px 0 12px; }
+    .svc-card .svc-meta { font-size: 0.88rem; color: #4d453f; line-height: 1.7; }
+    .svc-card .svc-meta strong { font-weight: 400; color: var(--warm-black); }
+
+    /* Compact summary once a package is picked */
+    .svc-summary {
+      border: 1px solid var(--border); padding: 18px 24px; margin-bottom: 32px;
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px;
+    }
+    .svc-summary[hidden] { display: none; }
+    .svc-summary .sum-name { font-family: var(--serif); font-size: 1.3rem; }
+    .svc-summary .sum-meta { font-size: 0.84rem; color: var(--mid); }
+    .svc-summary .change {
+      margin-left: auto; background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: 0.8rem; letter-spacing: 0.08em;
+      color: var(--warm-black); border-bottom: 1px solid var(--warm-black); padding: 0 0 1px;
+    }
+    .svc-summary .change:hover { color: var(--gold); border-color: var(--gold); }
+
+    /* Calendar */
+    .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .cal-jump {
+      flex: 1; max-width: 240px; min-width: 0;
+      border: 1px solid var(--border); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231A1714' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 14px center;
+      -webkit-appearance: none; appearance: none; border-radius: 0;
+      padding: 8px 36px 8px 14px; text-align: center; text-align-last: center;
+      font-family: var(--serif); font-size: 1.2rem; color: var(--warm-black); cursor: pointer;
+    }
+    .cal-jump:focus { outline: none; border-color: var(--gold); }
+    .cal-nav {
+      background: none; border: 1px solid var(--border); cursor: pointer; flex-shrink: 0;
+      width: 40px; height: 40px; font-size: 1rem; color: var(--warm-black);
+      font-family: inherit; transition: border-color 0.2s;
+    }
+    .cal-nav:hover:not(:disabled) { border-color: var(--gold); }
+    .cal-nav:disabled { opacity: 0.3; cursor: default; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+    .cal-dow { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); text-align: center; padding: 6px 0; }
+    .cal-day {
+      background: none; border: 1px solid transparent; cursor: pointer;
+      aspect-ratio: 1; font-family: inherit; font-size: 0.9rem; color: var(--warm-black);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .cal-day.avail:hover, .cal-day.avail:focus-visible { border-color: var(--gold); outline: none; }
+    .cal-day:disabled { color: #C9C0B8; cursor: default; }
+    .cal-day.selected { background: var(--warm-black); color: var(--off-white); }
+    .cal-empty { border: none; }
+    .cal-wrap { position: relative; }
+    .cal-wrap .cal-grid { transition: opacity 0.25s; }
+    .cal-wrap.loading .cal-grid { opacity: 0.3; pointer-events: none; }
+    .cal-overlay {
+      position: absolute; inset: 0; margin: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(248, 245, 241, 0.55);
+      font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--mid); text-align: center; z-index: 2;
+    }
+    .cal-overlay[hidden] { display: none; }
+
+    /* Details form */
+    .details { max-width: 520px; }
+    .field { margin-bottom: 18px; }
+    .field label { display: block; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    .field input, .field textarea {
+      width: 100%; border: 1px solid var(--border); background: #fff;
+      padding: 12px 14px; font-family: inherit; font-size: 0.95rem; color: var(--warm-black);
+      border-radius: 0;
+    }
+    .field input:focus, .field textarea:focus { outline: none; border-color: var(--gold); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+
+    .btn {
+      display: inline-block; margin: 12px 0 8px; border: none; cursor: pointer;
+      font-family: inherit; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--off-white); background: var(--warm-black);
+      padding: 16px 34px; text-decoration: none; transition: background 0.25s;
+    }
+    .btn:hover:not(:disabled) { background: var(--gold); }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); }
+    .btn-ghost:hover:not(:disabled) { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
+
+    .notice {
+      border-left: 3px solid var(--gold); background: #fff;
+      padding: 14px 18px; margin: 0 0 24px; font-size: 0.9rem; color: #4d453f;
+    }
+    .notice[hidden] { display: none; }
+    .notice.error { border-left-color: #B4552D; }
+    .notice a { color: var(--warm-black); text-underline-offset: 3px; }
+    .loading { color: var(--mid); font-size: 0.9rem; letter-spacing: 0.04em; padding: 12px 0; }
+    .loading[hidden] { display: none; }
+
+    .summary-line { font-size: 0.86rem; color: var(--mid); margin: 0 0 24px; }
+    .summary-line b { color: var(--warm-black); font-weight: 400; }
+
+    /* Thank-you, back from Stripe */
+    .confirm-box { border: 1px solid var(--border); padding: 40px 44px; background: #fff; }
+    .confirm-box .tick { font-family: var(--serif); font-size: 2rem; line-height: 1.25; color: var(--gold); }
+
+    @media (max-width: 700px) {
+      main { padding: 120px 24px 32px; }
+      .confirm-box { padding: 28px 24px; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 20px 24px; }
+      footer { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- include:bar -->
+
+  <main>
+    <div class="label">Weddings &middot; Your booking link</div>
+    <h1>Let's lock in <em>your date</em></h1>
+    <p class="sub" id="intro" hidden></p>
+
+    <div id="notice" class="notice" role="alert" hidden></div>
+
+    <!-- The expired or edited link. The server's 403 decides; no t at all
+         lands here too. -->
+    <section id="step-expired" class="step" aria-label="Link expired">
+      <p class="notice error">This link has expired or isn't quite right. <a href="/?enquire=wedding#contact">Send me a message</a> and I'll get you a fresh one.</p>
+    </section>
+
+    <section id="step-checking" class="step active" aria-label="Checking your link">
+      <p class="loading">Checking your link&hellip;</p>
+    </section>
+
+    <!-- Step 1: package -->
+    <section id="step-service" class="step" aria-label="Choose a package">
+      <h2>Pick your package</h2>
+      <div class="svc-grid">
+        <button type="button" class="svc-card" data-tier="wedding-short">
+          <div class="svc-name">Short &amp; sweet</div>
+          <div class="svc-price">{{price.wedding-short}}</div>
+          <div class="svc-meta"><strong>3 hours.</strong> The ceremony, your people, you two, and whatever comes after.</div>
+        </button>
+        <button type="button" class="svc-card" data-tier="wedding-full">
+          <div class="svc-name">The whole shebang</div>
+          <div class="svc-price">{{price.wedding-full}}</div>
+          <div class="svc-meta"><strong>6 hours.</strong> All of that, plus getting ready, and the long lunch or dinner with the speeches and the dancing.</div>
+        </button>
+      </div>
+    </section>
+
+    <div id="svc-summary" class="svc-summary" hidden></div>
+
+    <!-- Step 2: calendar -->
+    <section id="step-calendar" class="step" aria-label="Choose your wedding date">
+      <h2>Pick your day</h2>
+      <div class="cal-head">
+        <button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month">&larr;</button>
+        <select class="cal-jump" id="cal-jump" aria-label="Jump to a month"></select>
+        <button type="button" class="cal-nav" id="cal-next" aria-label="Next month">&rarr;</button>
+      </div>
+      <div class="cal-wrap" id="cal-wrap">
+        <div class="cal-grid" id="cal-dows">
+          <span class="cal-dow">Mon</span><span class="cal-dow">Tue</span><span class="cal-dow">Wed</span>
+          <span class="cal-dow">Thu</span><span class="cal-dow">Fri</span><span class="cal-dow">Sat</span>
+          <span class="cal-dow">Sun</span>
+        </div>
+        <div class="cal-grid" id="cal-days" role="group" aria-label="Available dates"></div>
+        <p id="cal-loading" class="loading cal-overlay" hidden>Checking availability&hellip;</p>
+      </div>
+      <p id="slot-loading" class="loading" hidden>Checking that day&hellip;</p>
+    </section>
+
+    <!-- Step 3: details and payment -->
+    <section id="step-details" class="step" aria-label="Your details">
+      <h2>Your details</h2>
+      <p class="summary-line" id="details-context"></p>
+      <form id="details-form" class="details" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-first">First name</label>
+            <input id="f-first" name="firstName" type="text" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="f-last">Last name</label>
+            <input id="f-last" name="lastName" type="text" autocomplete="family-name" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="f-phone">Phone</label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="f-notes">Anything I should know? (optional)</label>
+          <textarea id="f-notes" name="notes" rows="3"></textarea>
+        </div>
+        <label class="consent-check" for="f-marketing">
+          <input type="checkbox" id="f-marketing">
+          <span>Email me occasionally about sessions and offers. (Optional, unsubscribe any time.)</span>
+        </label>
+        <details class="voucher" id="voucher-box">
+          <summary>Have a gift voucher?</summary>
+          <div class="voucher-row">
+            <input id="f-voucher" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="SG-XXXX-XXXX" maxlength="16" aria-label="Gift voucher code">
+            <button type="button" class="btn btn-ghost" id="voucher-apply">Apply</button>
+          </div>
+          <p class="voucher-msg" id="voucher-msg" role="status" hidden></p>
+        </details>
+        <div class="pay-choice" id="pay-choice">
+          <button type="submit" class="btn" id="confirm-btn" data-pay-mode="full">Pay in full</button>
+          <button type="submit" class="btn" id="pay-split-btn" data-pay-mode="split" hidden></button>
+        </div>
+        <p class="pay-note" id="pay-note" hidden></p>
+        <button type="button" class="btn btn-ghost" id="back-to-calendar">Back</button>
+      </form>
+    </section>
+
+    <!-- Back from Stripe after paying. Needs no link. -->
+    <section id="step-confirm" class="step" aria-label="Booking confirmed">
+      <div class="confirm-box">
+        <p class="tick">You're booked in! Your confirmation's on its way to your inbox.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- include:bar-footer -->
+
+  <script>
+  (function () {
+    'use strict';
+
+    var FN = '/.netlify/functions/';
+    var params = new URLSearchParams(window.location.search);
+
+    var state = {
+      t: params.get('t') || '',
+      link: null,          // wedding-link-check's answer: names, email, monthsAhead, packages
+      pkg: null,           // the chosen package, from link.packages
+      cursor: null,        // { year, month } shown in the calendar
+      availableDates: {},  // 'YYYY-MM' -> ['YYYY-MM-DD', ...]
+      date: null,
+      time: null,          // the day's single placeholder slot, never shown
+      split: null,         // booking-slots' split offer for the day
+      voucher: null,       // a checked gift voucher: { code, usedCents, payCents, leftoverCents }
+    };
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    // --- helpers -------------------------------------------------------------
+
+    function showNotice(msg, isError) {
+      var n = $('notice');
+      n.textContent = msg;
+      n.className = 'notice' + (isError ? ' error' : '');
+      n.hidden = false;
+      n.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function clearNotice() { $('notice').hidden = true; }
+
+    function showStep(name) {
+      var steps = document.querySelectorAll('.step');
+      for (var i = 0; i < steps.length; i++) steps[i].classList.remove('active');
+      $('step-' + name).classList.add('active');
+      $('svc-summary').hidden = !(state.pkg && (name === 'calendar' || name === 'details'));
+    }
+
+    // The link ran out (or was edited) somewhere along the way: every server
+    // step answers 403 LINK_INVALID, and the page says the same thing.
+    function showExpired() {
+      clearNotice();
+      $('intro').hidden = true;
+      state.pkg = null;
+      showStep('expired');
+    }
+
+    function api(path, opts) {
+      return fetch(FN + path, opts).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          if (!res.ok) {
+            var err = new Error((body.error && body.error.message) || 'Something went wrong');
+            err.code = body.error && body.error.code;
+            err.status = res.status;
+            throw err;
+          }
+          return body;
+        });
+      });
+    }
+
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    function dateStr(y, m, d) { return y + '-' + pad(m) + '-' + pad(d); }
+    function monthKey(y, m) { return y + '-' + pad(m); }
+
+    function formatDate(iso) {
+      var d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    // "4 December 2026", the day the second half comes off the card.
+    function longDate(iso) {
+      var p = iso.split('-');
+      var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
+      return d.toLocaleDateString('en-AU', { timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function todayLocal() {
+      var now = new Date();
+      return { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() };
+    }
+
+    // Amounts after a date is chosen come from the server, in cents. Thousands
+    // get a comma by hand, as the build does for the cards.
+    function money(cents) {
+      var whole = cents % 100 === 0;
+      var s = (cents / 100).toFixed(whole ? 0 : 2);
+      var parts = s.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return '$' + parts.join('.');
+    }
+
+    function linkParam() { return '&t=' + encodeURIComponent(state.t); }
+
+    // --- the link -------------------------------------------------------------
+
+    function checkLink() {
+      if (!state.t) { showExpired(); return; }
+      api('wedding-link-check?t=' + encodeURIComponent(state.t)).then(function (link) {
+        state.link = link;
+        $('intro').textContent = 'Hi ' + (link.firstName || 'there') +
+          "! Pick your package, pick your day, and you're in. Booked days are greyed out.";
+        $('intro').hidden = false;
+        $('f-first').value = link.firstName || '';
+        $('f-last').value = link.lastName || '';
+        $('f-email').value = link.email || '';
+        buildMonthJump();
+        showStep('service');
+        restoreCancelled();
+      }).catch(function (err) {
+        if (err.code === 'LINK_INVALID' || err.status === 403) { showExpired(); return; }
+        $('step-checking').querySelector('.loading').textContent =
+          "I couldn't check your link just now. Please refresh the page in a moment.";
+      });
+    }
+
+    function packageFor(tier) {
+      var list = (state.link && state.link.packages) || [];
+      for (var i = 0; i < list.length; i++) if (list[i].tier === tier) return list[i];
+      return null;
+    }
+
+    // Back from a cancelled Stripe payment: the return URL carries the link,
+    // the package and the date, so put them back.
+    function restoreCancelled() {
+      if (params.get('cancelled') !== '1') return;
+      var pkg = packageFor(params.get('service'));
+      var d = params.get('date');
+      if (!pkg || !/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return;
+      state.cursor = { year: Number(d.slice(0, 4)), month: Number(d.slice(5, 7)) };
+      selectPackage(pkg);
+      selectDate(d);
+      showNotice('Payment was cancelled, so nothing was charged. Your package and date are still picked if you want another go.', true);
+    }
+
+    // --- step 1: package --------------------------------------------------------
+
+    var cards = document.querySelectorAll('.svc-card');
+    for (var c = 0; c < cards.length; c++) {
+      (function (card) {
+        card.addEventListener('click', function () {
+          var pkg = packageFor(card.getAttribute('data-tier'));
+          if (pkg) { clearNotice(); selectPackage(pkg); }
+        });
+      })(cards[c]);
+    }
+
+    function selectPackage(pkg) {
+      if (!state.pkg || state.pkg.serviceKey !== pkg.serviceKey) state.availableDates = {};
+      state.pkg = pkg;
+      state.date = null;
+      state.time = null;
+      state.split = null;
+      renderSummary();
+      showStep('calendar');
+      loadCalendar();
+    }
+
+    function renderSummary() {
+      var box = $('svc-summary');
+      box.innerHTML = '';
+      var name = document.createElement('span');
+      name.className = 'sum-name';
+      name.textContent = state.pkg.name;
+      var meta = document.createElement('span');
+      meta.className = 'sum-meta';
+      meta.textContent = state.pkg.lengthLabel + ' · ' + money(state.pkg.priceCents);
+      var change = document.createElement('button');
+      change.type = 'button';
+      change.className = 'change';
+      change.textContent = 'change';
+      change.addEventListener('click', function () {
+        state.pkg = null;
+        state.date = null;
+        clearNotice();
+        showStep('service');
+      });
+      box.appendChild(name);
+      box.appendChild(meta);
+      box.appendChild(change);
+    }
+
+    // --- step 2: calendar ---------------------------------------------------------
+
+    // How far ahead: the current month plus link.monthsAhead (the server's
+    // number, so the page never restates it).
+    function monthsAhead() { return (state.link && state.link.monthsAhead) || 0; }
+
+    function buildMonthJump() {
+      var sel = $('cal-jump');
+      sel.innerHTML = '';
+      var t = todayLocal();
+      for (var i = 0; i <= monthsAhead(); i++) {
+        var d = new Date(t.year, t.month - 1 + i, 1);
+        var o = document.createElement('option');
+        o.value = monthKey(d.getFullYear(), d.getMonth() + 1);
+        o.textContent = d.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' });
+        sel.appendChild(o);
+      }
+    }
+
+    $('cal-jump').addEventListener('change', function () {
+      var v = $('cal-jump').value;
+      goToMonth(Number(v.slice(0, 4)), Number(v.slice(5, 7)));
+    });
+
+    function loadCalendar() {
+      var t = todayLocal();
+      if (!state.cursor) state.cursor = { year: t.year, month: t.month };
+      renderCalendar();
+      fetchAvailability(state.cursor.year, state.cursor.month);
+    }
+
+    function fetchAvailability(year, month) {
+      var key = monthKey(year, month);
+      if (state.availableDates[key]) { renderCalendar(); return; }
+      var pkg = state.pkg;
+      $('cal-loading').hidden = false;
+      $('cal-wrap').classList.add('loading');
+      api('booking-availability?service_key=' + encodeURIComponent(pkg.serviceKey) +
+          '&year=' + year + '&month=' + month + linkParam())
+        .then(function (data) {
+          if (state.pkg !== pkg) return; // they changed package while it loaded
+          state.availableDates[key] = data.availableDates || [];
+          $('cal-loading').hidden = true;
+          $('cal-wrap').classList.remove('loading');
+          renderCalendar();
+        })
+        .catch(function (err) {
+          $('cal-loading').hidden = true;
+          $('cal-wrap').classList.remove('loading');
+          if (err.code === 'LINK_INVALID') { showExpired(); return; }
+          showNotice(err.message || "Availability couldn't be loaded. Please try again.", true);
+        });
+    }
+
+    function goToMonth(y, m) {
+      state.cursor = { year: y, month: m };
+      renderCalendar();
+      fetchAvailability(y, m);
+    }
+
+    function shiftCursor(delta) {
+      var d = new Date(state.cursor.year, state.cursor.month - 1 + delta, 1);
+      goToMonth(d.getFullYear(), d.getMonth() + 1);
+    }
+
+    $('cal-prev').addEventListener('click', function () { shiftCursor(-1); });
+    $('cal-next').addEventListener('click', function () { shiftCursor(1); });
+
+    function renderCalendar() {
+      var t = todayLocal();
+      var cur = state.cursor;
+      $('cal-jump').value = monthKey(cur.year, cur.month);
+
+      var maxDate = new Date(t.year, t.month - 1 + monthsAhead(), 1);
+      $('cal-prev').disabled = cur.year === t.year && cur.month === t.month;
+      $('cal-next').disabled = cur.year === maxDate.getFullYear() && cur.month === maxDate.getMonth() + 1;
+
+      var grid = $('cal-days');
+      grid.innerHTML = '';
+      // Monday first
+      var firstDow = (new Date(cur.year, cur.month - 1, 1).getDay() + 6) % 7;
+      for (var i = 0; i < firstDow; i++) {
+        var blank = document.createElement('span');
+        blank.className = 'cal-day cal-empty';
+        blank.setAttribute('aria-hidden', 'true');
+        grid.appendChild(blank);
+      }
+      var avail = state.availableDates[monthKey(cur.year, cur.month)] || [];
+      var daysInMonth = new Date(cur.year, cur.month, 0).getDate();
+      for (var d = 1; d <= daysInMonth; d++) {
+        var iso = dateStr(cur.year, cur.month, d);
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'cal-day';
+        btn.textContent = d;
+        btn.setAttribute('aria-label', formatDate(iso));
+        // A wedding date is after today; the server's list decides the rest.
+        var notAfterToday = cur.year === t.year && cur.month === t.month && d <= t.day;
+        if (notAfterToday || avail.indexOf(iso) === -1) {
+          btn.disabled = true;
+        } else {
+          btn.classList.add('avail');
+          if (state.date === iso) btn.classList.add('selected');
+          (function (isoCopy) {
+            btn.addEventListener('click', function () { clearNotice(); selectDate(isoCopy); });
+          })(iso);
+        }
+        grid.appendChild(btn);
+      }
+    }
+
+    // A wedding has one placeholder slot (the time is agreed with Deep), so
+    // picking a day takes it silently and moves on to the details.
+    function selectDate(iso) {
+      state.date = iso;
+      state.time = null;
+      state.split = null;
+      renderCalendar();
+      $('slot-loading').hidden = false;
+      api('booking-slots?service_key=' + encodeURIComponent(state.pkg.serviceKey) + '&date=' + iso + linkParam())
+        .then(function (data) {
+          $('slot-loading').hidden = true;
+          var slots = data.slots || [];
+          if (!slots.length) {
+            state.date = null;
+            renderCalendar();
+            showNotice('Sorry, that day has just been taken. Pick another?', true);
+            return;
+          }
+          state.time = slots[0];
+          state.split = data.split || { available: false };
+          goToDetails();
+        })
+        .catch(function (err) {
+          $('slot-loading').hidden = true;
+          if (err.code === 'LINK_INVALID') { showExpired(); return; }
+          state.date = null;
+          renderCalendar();
+          showNotice(err.message || "That day couldn't be checked. Please try again.", true);
+        });
+    }
+
+    // --- step 3: details and payment ------------------------------------------------
+
+    function goToDetails() {
+      $('details-context').innerHTML = '';
+      var b = document.createElement('b');
+      b.textContent = state.pkg.name + ', ' + formatDate(state.date);
+      $('details-context').appendChild(b);
+      // A code already in the box is checked against this package's price.
+      if ($('f-voucher').value.trim()) checkVoucher(); else { renderPayChoice(); setConfirmLabel(); }
+      showStep('details');
+      window.scrollTo(0, 0);
+    }
+
+    $('back-to-calendar').addEventListener('click', function () {
+      clearNotice();
+      showStep('calendar');
+    });
+
+    // Whether half now is offered, and the amounts and date, come from
+    // booking-slots, so the notice period is never restated here.
+    function renderPayChoice() {
+      var split = state.split || { available: false };
+      var splitBtn = $('pay-split-btn');
+      var note = $('pay-note');
+
+      if (!split.available || state.voucher) {
+        // One full-width button, never a disabled second one.
+        splitBtn.hidden = true;
+        $('pay-choice').style.gridTemplateColumns = '1fr';
+        note.hidden = false;
+        note.textContent = state.voucher
+          ? 'A gift voucher is used when you pay in full.'
+          : "Your wedding's less than 5 weeks away, so this one's paid in full.";
+        return;
+      }
+
+      var when = longDate(split.chargeOn);
+      splitBtn.hidden = false;
+      $('pay-choice').style.gridTemplateColumns = '';
+      splitBtn.innerHTML = 'Pay half now<small></small>';
+      splitBtn.querySelector('small').textContent = money(split.depositCents) + ' now, ' +
+        money(split.balanceCents) + ' on ' + when;
+      // Screen readers get the whole commitment, not the first half alone.
+      splitBtn.setAttribute('aria-label',
+        'Pay ' + money(split.depositCents) + ' now, then ' + money(split.balanceCents) +
+        ' automatically on ' + when + '. No further payments.');
+
+      note.hidden = false;
+      note.textContent = 'Half now, and the other half comes off the same card 4 weeks later, on ' + when + '.';
+    }
+
+    function setConfirmLabel() {
+      var v = state.voucher;
+      var btn = $('confirm-btn');
+      if (v && v.payCents === 0) { btn.textContent = 'Book with voucher'; return; }
+      btn.innerHTML = 'Pay in full<small></small>';
+      btn.querySelector('small').textContent = money(v ? v.payCents : state.pkg.priceCents);
+    }
+
+    // --- gift vouchers ----------------------------------------------------------------
+
+    function voucherMessage(text, bad) {
+      var m = $('voucher-msg');
+      m.textContent = text;
+      m.className = 'voucher-msg' + (bad ? ' bad' : '');
+      m.hidden = !text;
+    }
+
+    function checkVoucher() {
+      var code = $('f-voucher').value.trim();
+      if (!code || !state.pkg) return;
+      voucherMessage('Checking…');
+      api('voucher-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code, service_key: state.pkg.serviceKey }),
+      }).then(function (v) {
+        state.voucher = v;
+        $('f-voucher').value = v.code;
+        voucherMessage('Your voucher covers ' + money(v.usedCents) + '.' +
+          (v.payCents > 0 ? ' You’ll pay the other ' + money(v.payCents) + '.' : ' Nothing left to pay.') +
+          (v.leftoverCents > 0 ? ' ' + money(v.leftoverCents) + ' stays on the voucher for next time.' : ''));
+        renderPayChoice();
+        setConfirmLabel();
+      }).catch(function (err) {
+        state.voucher = null;
+        voucherMessage(err.message || 'That voucher couldn’t be checked. Please try again.', true);
+        renderPayChoice();
+        setConfirmLabel();
+      });
+    }
+
+    $('voucher-apply').addEventListener('click', checkVoucher);
+    $('f-voucher').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); checkVoucher(); }
+    });
+    // Editing the code un-applies it until it's checked again.
+    $('f-voucher').addEventListener('input', function () {
+      if (!state.voucher) return;
+      state.voucher = null;
+      voucherMessage('');
+      renderPayChoice();
+      setConfirmLabel();
+    });
+
+    // --- submit -----------------------------------------------------------------------
+
+    $('details-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearNotice();
+      var form = e.target;
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+
+      var pressed = (e.submitter && e.submitter.dataset.payMode) || 'full';
+      var btn = e.submitter || $('confirm-btn');
+      var label = btn.innerHTML;
+      $('confirm-btn').disabled = true;
+      $('pay-split-btn').disabled = true;
+      btn.textContent = 'Off to payment…';
+
+      api('booking-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_key: state.pkg.serviceKey,
+          date: state.date,
+          time: state.time,
+          firstName: $('f-first').value.trim(),
+          lastName: $('f-last').value.trim(),
+          email: $('f-email').value.trim(),
+          phone: $('f-phone').value.trim(),
+          notes: $('f-notes').value.trim(),
+          marketingConsent: $('f-marketing').checked,
+          payMode: pressed,
+          // Checked or not, the server checks it again.
+          voucherCode: state.voucher ? state.voucher.code : ($('f-voucher').value.trim() || undefined),
+          weddingLink: state.t,
+          returnTo: '/book-wedding.html',
+        }),
+      }).then(function (data) {
+        if (!data.url) throw new Error('No payment URL returned');
+        window.location.href = data.url; // Stripe Checkout (or the mock success URL)
+      }).catch(function (err) {
+        $('confirm-btn').disabled = false;
+        $('pay-split-btn').disabled = false;
+        btn.innerHTML = label;
+        if (err.code === 'LINK_INVALID') { showExpired(); return; }
+        if (err.code === 'DAY_TAKEN') {
+          // Someone else got there first: back to the calendar, fresh dates.
+          delete state.availableDates[monthKey(state.cursor.year, state.cursor.month)];
+          state.date = null;
+          showStep('calendar');
+          loadCalendar();
+          showNotice(err.message, true);
+          return;
+        }
+        if (err.code === 'INVALID_DETAILS' || err.code === 'SETMORE_BUSY') {
+          showNotice(err.message, true);
+          return;
+        }
+        showNotice("Couldn't start the payment. Please try again shortly, or send me a message.", true);
+      });
+    });
+
+    // --- init ---------------------------------------------------------------------------
+
+    // Back from Stripe after paying: the thank-you needs no link.
+    if (params.get('booked') === '1') {
+      showStep('confirm');
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    // A gift voucher code in the URL opens the box with it filled in; it's
+    // checked once a package and date are picked.
+    (function () {
+      var code = params.get('voucher');
+      if (code) { $('f-voucher').value = code; $('voucher-box').open = true; }
+    })();
+
+    checkLink();
+  })();
+  </script>
+</body>
+</html>
