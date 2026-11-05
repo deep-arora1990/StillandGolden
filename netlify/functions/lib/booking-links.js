@@ -1,4 +1,6 @@
 // Signed links from a booking to its session terms and questionnaire (8 Oct 2026).
+// Weddings (stage 3, Nov 2026) route to their own agreement and questionnaire
+// through termsPathFor / questionnairePathFor, with the same booking token.
 //
 // The confirmation email's "Review & sign your session terms" button, and the
 // questionnaire button in the terms-signed email, carry a token: the booking's
@@ -90,13 +92,26 @@ function tokenForBooking(meta, tierKey, tier, appointmentKey) {
 // the Seasonal Mini Session Agreement (contract-mini.html); every package signs
 // the main one. Christmas minis keep their own terms page and never get here.
 const SEASONAL_AGREEMENT_TIERS = ['in-home-christmas', 'sunset-beach-minis'];
-// Weddings sign neither: their own agreement arrives in stage 3, which replaces
-// NO_AGREEMENT_YET with the wedding agreement's path. Until then termsPathFor
-// returns null and callers send no link.
-const NO_AGREEMENT_YET = ['wedding-short', 'wedding-full'];
+
+// Weddings (stage 3, Nov 2026) sign their own agreement, which both partners
+// sign on one page (wedding-agreement.html), and fill in their own
+// questionnaire (wedding-questionnaire.html). The list is written out rather
+// than read from setmore.js so this file never needs setmore; a test pins it to
+// WEDDING_TIER_KEYS. Both links are plain booking tokens (no `k`).
+const WEDDING_AGREEMENT_TIERS = ['wedding-short', 'wedding-full'];
+const WEDDING_AGREEMENT_PATH = '/wedding-agreement';
+const WEDDING_QUESTIONNAIRE_PATH = '/wedding-questionnaire';
+
 function termsPathFor(tierKey) {
-  if (NO_AGREEMENT_YET.includes(tierKey)) return null;
+  if (WEDDING_AGREEMENT_TIERS.includes(tierKey)) return WEDDING_AGREEMENT_PATH;
   return SEASONAL_AGREEMENT_TIERS.includes(tierKey) ? '/contract-mini' : '/contract';
 }
 
-module.exports = { sign, verify, linkFor, tokenForBooking, termsPathFor, NO_AGREEMENT_YET, MAX_AGE_DAYS };
+function questionnairePathFor(tierKey) {
+  return WEDDING_AGREEMENT_TIERS.includes(tierKey) ? WEDDING_QUESTIONNAIRE_PATH : '/questionnaire';
+}
+
+module.exports = {
+  sign, verify, linkFor, tokenForBooking, termsPathFor, questionnairePathFor,
+  WEDDING_AGREEMENT_TIERS, WEDDING_AGREEMENT_PATH, WEDDING_QUESTIONNAIRE_PATH, MAX_AGE_DAYS,
+};

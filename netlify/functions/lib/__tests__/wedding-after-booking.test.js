@@ -1,6 +1,7 @@
 // Stage 2, Task 7: after a wedding is booked. The client gets a confirmation
-// with no family agreement and the 4-week wording; Deep's notices name the right
-// period and placeholder; Studio gets a record it accepts. Resend and Studio are
+// with no family agreement (stage 3 links the wedding one, see
+// wedding-routing.test.js) and the 4-week wording; Deep's notices name the
+// right period and placeholder; Studio gets a record it accepts. Resend and Studio are
 // stubbed, so nothing here leaves the machine.
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
@@ -58,7 +59,7 @@ afterEach(() => {
 })
 
 describe('after a wedding booking', () => {
-  it('a wedding confirmation never links an agreement, and says 4 weeks', async () => {
+  it('a wedding confirmation never links the family agreement or the questionnaire, and says 4 weeks', async () => {
     const { TIERS } = await fresh('../setmore.js')
     const { _test } = await fresh('../../stripe-webhook.js')
     const resend = fakeResend()
@@ -71,23 +72,6 @@ describe('after a wedding booking', () => {
       expect(s).toContain('$350 paid today · $350 on Thursday 3 December')
       expect(s).not.toMatch(/10:00|10am|—|&mdash;|7 days|2 weeks/)
     }
-  })
-
-  it('termsPathFor sends no wedding anywhere until stage 3', async () => {
-    const { termsPathFor, NO_AGREEMENT_YET } = await fresh('../booking-links.js')
-    const { WEDDING_TIER_KEYS } = await fresh('../setmore.js')
-    expect(termsPathFor('wedding-short')).toBeNull(); expect(termsPathFor('wedding-full')).toBeNull()
-    expect(termsPathFor('golden')).toBe('/contract'); expect(NO_AGREEMENT_YET).toEqual(WEDDING_TIER_KEYS)
-  })
-
-  it("Studio's send-terms and send-questionnaire refuse weddings for now, sending nothing", async () => {
-    const { handler } = await fresh('../../booking-link-send.js')
-    for (const kind of ['terms', 'questionnaire']) {
-      const res = await handler(post({ kind, tierKey: 'wedding-full', email: 'sam@example.com', date: '2027-03-06', firstName: 'Sam', lastName: 'Lee' }, { 'x-ingest-secret': 'ingest-secret-test' }))
-      expect(res.statusCode).toBe(400)
-      expect(JSON.parse(res.body).error).toBe("The wedding agreement and questionnaire aren't ready yet: wedding-full")
-    }
-    expect(emails()).toHaveLength(0)
   })
 
   it('the family agreement refuses a wedding link instead of falling back to Golden', async () => {
@@ -109,7 +93,7 @@ describe('after a wedding booking', () => {
     let resend = fakeResend()
     await _test.notifyOwnerOfBooking(resend, { ...W, service_key: wk, ...split }, { key: 'appt9' })
     expect(resend.sent[0].text).toContain('10:00 placeholder')
-    expect(resend.sent[0].text).toContain('No agreement was sent')
+    expect(resend.sent[0].text).toContain('wedding agreement for both of them to sign')
     expect(resend.sent[0].text).not.toMatch(/18:30|session terms/)
     resend = fakeResend()
     await _test.notifyOwnerOfBooking(resend, { ...W, service_key: TIERS['sunset-beach-minis'].serviceKey, time: '18:30', ...split }, { key: 'a' })

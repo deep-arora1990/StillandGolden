@@ -312,21 +312,27 @@ function paymentLineFor(meta, tier, pricing) {
   return `Paid ${money(tier.priceCents)}`;
 }
 
-// The wedding confirmation (Nov 2026): no agreement link (stage 3 adds the
-// wedding agreement), no time (Deep settles it with the couple), 4-week gallery.
-function renderWeddingConfirmation(meta, tier, { pricing } = {}) {
+// The wedding confirmation (Nov 2026): no time (Deep settles it with the
+// couple), 4-week gallery. Since stage 3 it links the wedding agreement, which
+// both partners sign on one page (`termsUrl`, a signed booking link). The
+// questionnaire is not linked: Deep sends it from Studio nearer the day.
+function renderWeddingConfirmation(meta, tier, { pricing, termsUrl } = {}) {
   const date = formatDate(meta.date);
   const { html, text } = brandedEmail({
     eyebrow: "You're booked in",
     heading: `That's your date locked in, ${meta.firstName}.`,
+    paragraphs: ["Next up, here's your wedding agreement for you both to sign. Your details are already filled in, so it only takes a couple of minutes."],
     details: [
       ['Package', `${tier.name}, ${tier.lengthLabel} of wedding photography`],
       ['Date', date],
       ['Paid', paymentLineFor(meta, tier, pricing)],
       ['Your gallery', 'Every edited photo, within 4 weeks of the wedding'],
     ],
-    paragraphs: ["Next up, I'll send through your wedding agreement for you both to sign. Then 4 to 6 weeks before the day we'll jump on a planning call, and I'll send a short questionnaire so I know who's who."],
-    after: ['Got a question, or something\'s changed? Just reply to this email, it comes straight to me.'],
+    buttons: termsUrl ? [{ label: 'Sign your wedding agreement', url: termsUrl }] : [],
+    after: [
+      "Then 4 to 6 weeks before the day we'll jump on a planning call, and I'll send a short questionnaire so I know who's who.",
+      'Got a question, or something\'s changed? Just reply to this email, it comes straight to me.',
+    ],
   });
   return { subject: `You're booked in: ${tier.name}, ${date}`, html, text };
 }

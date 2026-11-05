@@ -146,13 +146,12 @@ async function sendBookingConfirmation(resend, meta, appointmentKey, pricing = n
   const tierKey = Object.keys(TIERS).find((k) => TIERS[k].serviceKey === meta.service_key);
   const tier = tierKey && TIERS[tierKey];
   if (!tier) throw new Error(`Unknown service_key for confirmation: ${meta.service_key}`);
-  // Weddings get no family agreement link (stage 3 adds their own).
+  // termsPathFor routes weddings to their own agreement (stage 3), so one
+  // signed link serves both; only the email around it differs.
+  const termsUrl = linkFor(termsPathFor(tierKey), tokenForBooking(meta, tierKey, tier, appointmentKey));
   const { subject, html, text } = tier.wedding
-    ? renderWeddingConfirmation(meta, tier, { pricing })
-    : renderConfirmation(valuesFromBooking(meta, tier, {
-      termsUrl: linkFor(termsPathFor(tierKey), tokenForBooking(meta, tierKey, tier, appointmentKey)),
-      pricing,
-    }));
+    ? renderWeddingConfirmation(meta, tier, { pricing, termsUrl })
+    : renderConfirmation(valuesFromBooking(meta, tier, { termsUrl, pricing }));
   const { error } = await resend.emails.send({
     from: `Still & Golden <${OWNER_EMAIL}>`,
     to: meta.email,
@@ -427,7 +426,7 @@ async function notifyOwnerOfBooking(resend, meta, appointment, pricing = null) {
       meta.notes ? `\nNotes:\n${meta.notes}` : null,
       `\nSetmore appointment: ${(appointment && appointment.key) || '(none)'}`,
       tier.wedding
-        ? "They have been sent the confirmation. No agreement was sent: the wedding agreement isn't built yet (stage 3)."
+        ? 'They have been sent the confirmation with the wedding agreement for both of them to sign.'
         : 'They have been sent the confirmation with the session terms to sign.',
     ].filter(Boolean).join('\n'),
   });

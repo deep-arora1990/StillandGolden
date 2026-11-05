@@ -68,7 +68,7 @@ function welcomeHtml(firstName, email) {
       <tr>
         <td style="background-color:#1A1714;padding:24px 48px;">
           <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:12px;letter-spacing:0.14em;color:#A8845A;text-transform:uppercase;">Still &amp; Golden Photography</p>
-          <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#8A7E78;">Newborn &amp; Family &middot; South-east Melbourne &middot; ABN 37 280 912 036</p>
+          <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#8A7E78;">Newborn, Family &amp; Weddings &middot; South-east Melbourne &middot; ABN 37 280 912 036</p>
           <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#8A7E78;">You signed up at stillandgolden.com.au. <a href="${unsubscribe}" style="color:#A8845A;">Unsubscribe</a> any time.</p>
         </td>
       </tr>

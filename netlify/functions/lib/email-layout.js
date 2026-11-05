@@ -40,7 +40,7 @@ const FOOTER_ROW = `        <tr>
           <td style="background-color:${C.black};padding:28px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr><td style="font-family:${SERIF};font-size:12px;letter-spacing:0.14em;color:${C.gold};text-transform:uppercase;padding-bottom:6px;">Still &amp; Golden Photography</td></tr>
-              <tr><td style="font-family:${SANS};font-size:11px;color:${C.muted};padding-bottom:3px;">Newborn &amp; Family &middot; South-east Melbourne</td></tr>
+              <tr><td style="font-family:${SANS};font-size:11px;color:${C.muted};padding-bottom:3px;">Newborn, Family &amp; Weddings &middot; South-east Melbourne</td></tr>
               <tr><td style="font-family:${SANS};font-size:11px;padding-bottom:3px;"><a href="https://stillandgolden.com.au" style="color:${C.gold};text-decoration:none;">stillandgolden.com.au</a></td></tr>
               <tr><td style="font-family:${SANS};font-size:11px;color:${C.muted};padding-bottom:20px;"><a href="https://instagram.com/stillandgoldenphotography" style="color:${C.muted};text-decoration:none;">@stillandgoldenphotography</a></td></tr>
               <tr>

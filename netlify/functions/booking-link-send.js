@@ -6,11 +6,18 @@
 // links (BOOKING_LINK_SECRET never leaves it) and the email designs. Studio
 // calls this server-to-server with BOOKING_INGEST_SECRET — the same shared
 // secret as booking-intake, one per pair of sites.
+//
+// Weddings (stage 3, Nov 2026): the same two buttons send the wedding agreement
+// (both partners sign it on one page) and the wedding questionnaire, routed by
+// termsPathFor / questionnairePathFor. The date only, never a time: a wedding's
+// Setmore time is a placeholder. The questionnaire goes to the one email Studio
+// sends; the link is a booking token minted when sent, so it lasts 120 days
+// from now rather than from the booking.
 
 const crypto = require('crypto');
 const { Resend } = require('resend');
 const { TIERS } = require('./lib/setmore');
-const { tokenForBooking, linkFor, termsPathFor } = require('./lib/booking-links');
+const { tokenForBooking, linkFor, termsPathFor, questionnairePathFor } = require('./lib/booking-links');
 const { formatDate, formatTime } = require('./lib/booking-confirmation');
 const { brandedEmail } = require('./lib/email-layout');
 
@@ -54,6 +61,34 @@ async function sendModelCallForms(data, email) {
   return json(200, { ok: true });
 }
 
+// The wedding versions of the two emails. The date only, never a time.
+function weddingMail(kind, tier, meta, token, tierKey) {
+  const when = formatDate(meta.date);
+  const heading = `Hi ${meta.firstName || 'there'},`;
+  const after = ['Any questions, just reply to this email.'];
+  return kind === 'terms'
+    ? {
+        subject: 'Your wedding agreement from Still & Golden',
+        ...brandedEmail({
+          eyebrow: 'Your wedding agreement',
+          heading,
+          paragraphs: [`Here's the agreement for your ${esc(tier.name)} wedding on ${esc(when)}. You both sign it on the same page, so grab your partner. Your details are already filled in, so it only takes a couple of minutes.`],
+          buttons: [{ label: 'Sign your wedding agreement', url: linkFor(termsPathFor(tierKey), token) }],
+          after,
+        }),
+      }
+    : {
+        subject: 'A few questions before your wedding',
+        ...brandedEmail({
+          eyebrow: 'Before your wedding',
+          heading,
+          paragraphs: [`Before your ${esc(tier.name)} wedding on ${esc(when)}: a short questionnaire about you two, the day and your people. It means I turn up already knowing who's who and what matters to you.`],
+          buttons: [{ label: 'Fill in your wedding questionnaire', url: linkFor(questionnairePathFor(tierKey), token) }],
+          after,
+        }),
+      };
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
   const headers = Object.fromEntries(Object.entries(event.headers || {}).map(([k, v]) => [k.toLowerCase(), v]));
@@ -69,7 +104,6 @@ exports.handler = async (event) => {
   if (kind === 'model-call') return sendModelCallForms(data, email);
   // Christmas minis keep their own terms and pre-session form (Deep, 8 Oct).
   if (!tier || tier.hidden || data.tierKey === 'christmas-minis') return json(400, { error: `Not a package these emails cover: ${data.tierKey}` });
-  if (!termsPathFor(data.tierKey)) return json(400, { error: `The wedding agreement and questionnaire aren't ready yet: ${data.tierKey}` });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(400, { error: 'A valid email is required' });
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data.date || ''))) return json(400, { error: 'date must be YYYY-MM-DD' });
 
@@ -82,7 +116,7 @@ exports.handler = async (event) => {
   if (!token) return json(500, { error: 'BOOKING_LINK_SECRET is not configured' });
 
   const when = tier.timeTbc || !meta.time ? formatDate(meta.date) : `${formatDate(meta.date)}, ${formatTime(meta.time)}`;
-  const mail = kind === 'terms'
+  const mail = tier.wedding ? weddingMail(kind, tier, meta, token, data.tierKey) : kind === 'terms'
     ? {
         subject: 'Your session terms — Still & Golden',
         ...brandedEmail({
@@ -99,7 +133,7 @@ exports.handler = async (event) => {
           eyebrow: 'Before your session',
           heading: `Hi ${meta.firstName || 'there'},`,
           paragraphs: [`Ahead of your ${esc(tier.name)} session on ${esc(when)}: a short questionnaire about your family, your place and anything you&rsquo;d love (or would rather avoid) in your photos. It helps me turn up already knowing what matters.`],
-          buttons: [{ label: 'Fill in your session questionnaire', url: linkFor('/questionnaire', token) }],
+          buttons: [{ label: 'Fill in your session questionnaire', url: linkFor(questionnairePathFor(data.tierKey), token) }],
           after: ['Any questions, just reply to this email.'],
         }),
       };

@@ -179,6 +179,12 @@ exports.handler = async (event) => {
     data.sessionType = link.s || data.sessionType;
     data.sessionDate = link.d || data.sessionDate;
   }
+  // Nor may a wedding typed into the form by hand (stage 3): resolveTier would
+  // match 'wedding-short' / 'wedding-full', or fall back to Golden for plain
+  // 'Wedding', and sign the family agreement for it.
+  if (!data.token && /wedding/i.test(String(data.sessionType || ''))) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Weddings have their own agreement. Reply to your booking email and I'll send it." }) };
+  }
 
   const {
     firstName, lastName, email,
