@@ -274,7 +274,51 @@ const TIERS = {
     timeTbc: true,
     locations: ['Frankston', 'Seaford', 'Carrum'],
   },
+
+  // Weddings (stage 2, Nov 2026). Date-only, like the sunset minis: the client
+  // books the day and Deep settles the start time with them, so 10:00 is only a
+  // placeholder he can move later. The tiers carry `wedding: true`, NOT
+  // `hidden`: booking-link-send.js refuses hidden tiers, and Studio must be able
+  // to send wedding links. /book leaves them out by filtering on `wedding`.
+  // The whole day is closed by service key (not by the placeholder slot), so a
+  // wedding blocks the full day however long the booking runs.
+  'wedding-short': {
+    name: 'Short & sweet',
+    tagline: 'Wedding photography, 3 hours',
+    serviceKey: 'e6fec08b-e408-4704-9e4f-61a19bd2342b',
+    durationMinutes: 180,
+    lengthLabel: '3 hours',
+    priceFrom: money('wedding-short').priceFrom,
+    priceCents: money('wedding-short').priceCents,
+    depositCents: money('wedding-short').depositCents,
+    includes: 'Your full gallery',
+    wedding: true,
+    fixedSchedule: true,
+    slotTimes: ['10:00'],
+    timeTbc: true,
+    balanceAfterWeeks: 4,
+    splitMinNoticeDays: 35,
+  },
+  'wedding-full': {
+    name: 'The whole shebang',
+    tagline: 'Wedding photography, 6 hours',
+    serviceKey: '95e6904c-a413-402c-877f-61c0b60e49a7',
+    durationMinutes: 360,
+    lengthLabel: '6 hours',
+    priceFrom: money('wedding-full').priceFrom,
+    priceCents: money('wedding-full').priceCents,
+    depositCents: money('wedding-full').depositCents,
+    includes: 'Your full gallery',
+    wedding: true,
+    fixedSchedule: true,
+    slotTimes: ['10:00'],
+    timeTbc: true,
+    balanceAfterWeeks: 4,
+    splitMinNoticeDays: 35,
+  },
 };
+
+const WEDDING_TIER_KEYS = Object.keys(TIERS).filter((k) => TIERS[k].wedding);
 
 const SERVICE_KEY_TO_TIER = {};
 for (const [tier, cfg] of Object.entries(TIERS)) {
@@ -795,6 +839,7 @@ async function getAppointmentsInRange(startDate, endDate) {
 
 module.exports = {
   TIERS,
+  WEDDING_TIER_KEYS,
   SERVICE_KEY_TO_TIER,
   TIMEZONE,
   MOCK,

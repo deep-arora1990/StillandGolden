@@ -12,9 +12,10 @@ exports.handler = async (event) => {
   }
 
   // Hidden tiers (fixed-date offers like Father's Day minis) have their own
-  // campaign pages — never show them in the main /book picker.
+  // campaign pages — never show them in the main /book picker. Wedding tiers
+  // are reached only by a signed link from Studio, so they stay off it too.
   const services = Object.entries(TIERS)
-    .filter(([, cfg]) => !cfg.hidden)
+    .filter(([, cfg]) => !cfg.hidden && !cfg.wedding)
     .map(([tier, cfg]) => ({
       tier,
       name: cfg.name,

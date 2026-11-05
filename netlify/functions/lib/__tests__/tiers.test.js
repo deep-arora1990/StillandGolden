@@ -13,7 +13,7 @@
 
 // describe/it/expect come from vitest's globals — see vitest.config.js.
 import { copyRule, scannedPages } from './copy-rules.js'
-const { TIERS } = require('../setmore')
+const { TIERS, WEDDING_TIER_KEYS } = require('../setmore')
 
 describe('tier config', () => {
   it('gives every tier its own Setmore service key', () => {
@@ -102,5 +102,28 @@ describe('session lengths', () => {
       for (const m of html.matchAll(/up to (forty-five|ninety|an hour and a half)/gi)) wrong.push({ page: f, found: m[0] })
     }
     copyRule('session-lengths', wrong)
+  })
+})
+
+describe('wedding tiers', () => {
+  it('two packages, 3 and 6 hours, date only, priced from prices.json', () => {
+    expect(TIERS['wedding-short']).toMatchObject({ name: 'Short & sweet', durationMinutes: 180, priceCents: 70000, depositCents: 35000,
+      wedding: true, fixedSchedule: true, timeTbc: true, slotTimes: ['10:00'], balanceAfterWeeks: 4, splitMinNoticeDays: 35, lengthLabel: '3 hours' })
+    expect(TIERS['wedding-full']).toMatchObject({ name: 'The whole shebang', durationMinutes: 360, priceCents: 100000, depositCents: 50000,
+      wedding: true, lengthLabel: '6 hours' })
+    expect(WEDDING_TIER_KEYS).toEqual(['wedding-short', 'wedding-full'])
+  })
+  it("are not hidden, so Studio's send buttons can reach them in stage 3", () => {
+    for (const k of WEDDING_TIER_KEYS) { expect(TIERS[k].hidden).toBeUndefined(); expect(TIERS[k].testOnly).toBeUndefined() }
+  })
+  it('stay off /book', async () => {
+    const { handler } = require('../../booking-services.js')
+    const tiers = JSON.parse((await handler({ httpMethod: 'GET' })).body).services.map((s) => s.tier)
+    expect(tiers).not.toContain('wedding-short'); expect(tiers).not.toContain('wedding-full')
+  })
+  it('are not sold as gift vouchers', () => {
+    const { PACKAGE_TIERS, validatePurchase } = require('../vouchers')
+    expect(PACKAGE_TIERS).toEqual(['glimpse', 'golden', 'gathered', 'bloom'])
+    expect(validatePurchase({ kind: 'package', tier: 'wedding-short', buyerName: 'A', buyerEmail: 'a@example.com', recipientName: 'R' }, TIERS).ok).toBe(false)
   })
 })
