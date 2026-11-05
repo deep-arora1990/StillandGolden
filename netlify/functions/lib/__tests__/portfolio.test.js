@@ -223,3 +223,15 @@ describe('live data: weddings', () => {
     for (const p of t.photos) expect(p.alt.trim().length, p.jpg).toBeGreaterThan(10)
   })
 })
+
+describe('portfolio opens the tab named in the URL hash', () => {
+  const html = require('node:fs').readFileSync(require('node:path').resolve(__dirname, '../../../../portfolio.html'), 'utf8')
+  it('activates a tab from location.hash and scrolls the tab row to it', () => {
+    expect(html).toMatch(/function openTabFromHash\(/)
+    expect(html).toMatch(/openTabFromHash\(location\.hash\)/)
+    expect(html).toContain("scrollIntoView({ block: 'nearest', inline: 'center' })")
+  })
+  it('uses the 940px hamburger breakpoint', () => {
+    expect(html).toMatch(/@media \(max-width: 940px\) \{\s*nav \{/)
+  })
+})

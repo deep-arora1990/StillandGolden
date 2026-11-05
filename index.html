@@ -870,12 +870,13 @@
     .reveal.visible { opacity: 1; transform: none; }
 
     /* ─── MOBILE ─── */
-    @media (max-width: 900px) {
+    @media (max-width: 940px) {
       nav { padding: 20px 24px; }
       nav.scrolled { padding: 14px 24px; }
       .nav-right { display: none; }
       .hamburger { display: block; }
-
+    }
+    @media (max-width: 900px) {
       #intro { padding: 120px 24px 48px; }
       .rule { margin: 0 24px; }
 
@@ -1227,7 +1228,7 @@
     <div class="contact-inner">
       <div class="contact-left">
         <h2 class="reveal">Let's start your<br>family's <em>album</em></h2>
-        <p class="reveal d1">I'd love to hear about your family. Fill in the form and I'll be in touch within 24 hours, or if you already know which session you want, <a href="/book">book online</a> and pick a date yourself. Currently booking Glimpse, Golden, Gathered and Bloom sessions &mdash; and if you're not sure which fits, just say so and I'll help you choose.</p>
+        <p class="reveal d1">I'd love to hear about your family. Fill in the form and I'll be in touch within 24 hours, or if you already know which session you want, <a href="/book">book online</a> and pick a date yourself. Currently booking Glimpse, Golden, Gathered and Bloom sessions, and weddings &mdash; and if you're not sure which fits, just say so and I'll help you choose.</p>
         <ul class="contact-meta reveal d2">
           <li><strong>Email</strong> <a href="mailto:hello@stillandgolden.com.au">hello@stillandgolden.com.au</a></li>
           <li><strong>Phone</strong> <a href="tel:+61426834359">0426 834 359</a></li>
@@ -1317,6 +1318,31 @@
       }
     }
     preselectSession(location.search, document.getElementById('st'));
+
+    // Wedding enquiries get wedding wording under the select and in the date box.
+    // Every other choice gets the family copy that is written into the markup.
+    function sessionHint(value) {
+      if (value === 'wedding') {
+        return {
+          hint: 'Tell me a bit about your plans: the date if you have one, where it is, and roughly how many of your people are coming.',
+          placeholder: 'e.g. Saturday 6 March next year, or sometime in autumn'
+        };
+      }
+      return {
+        hint: 'For a newborn, Gathered is the one I recommend: ninety minutes leaves room for feeds and settling, and every photo is yours. Golden suits families, maternity and cake smash. Bloom pairs maternity or family with newborn.',
+        placeholder: 'e.g. Due early May, or mid-June preferred'
+      };
+    }
+    function applySessionHint() {
+      const st = document.getElementById('st');
+      const hintEl = st.parentNode.querySelector('.fg-hint');
+      const dt = document.getElementById('dt');
+      const t = sessionHint(st.value);
+      if (hintEl) hintEl.textContent = t.hint;
+      if (dt) dt.placeholder = t.placeholder;
+    }
+    document.getElementById('st').addEventListener('change', applySessionHint);
+    applySessionHint();
 
     // Fix hash navigation: lazy images above the anchor keep loading after the
     // first scroll and push the target down, so re-scroll once on load and

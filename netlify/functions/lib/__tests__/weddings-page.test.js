@@ -37,4 +37,10 @@ describe('the Weddings page', () => {
     expect(read('netlify.toml')).toMatch(/from = "\/weddings\.html"\s+to = "\/weddings"\s+status = 301\s+force = true/)
     expect(read('sitemap.xml')).toContain('<loc>https://stillandgolden.com.au/weddings</loc>')
   })
+  it('links the caption to the Weddings tab, and texts via sms', () => {
+    expect(html).toContain('<a href="/portfolio#weddings">')
+    expect(html.match(/<a href="sms:\+61426834359">Text me<\/a>/g)).toHaveLength(2)
+    expect(read('index.html')).toContain('tel:+61426834359')
+    expect(html).toContain('Yep, if your wedding\'s more than 5 weeks away. Pay half when you book and the rest 4 weeks later, or pay it all upfront and get it out of the way.')
+  })
 })

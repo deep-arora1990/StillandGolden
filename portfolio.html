@@ -257,13 +257,15 @@
     .reveal.visible { opacity: 1; transform: none; }
 
     /* ─── MOBILE ─── */
-    @media (max-width: 900px) {
+    @media (max-width: 940px) {
       nav { padding: 20px 24px; }
       nav.scrolled { padding: 14px 24px; }
       .nav-right { display: none; }
       .hamburger { display: block; }
-      .port-header { padding: 100px 24px 32px; }
       .port-tabs-bar { top: 57px; }
+    }
+    @media (max-width: 900px) {
+      .port-header { padding: 100px 24px 32px; }
       .port-tabs {
         padding: 0 24px;
         overflow-x: auto;
@@ -414,6 +416,19 @@
       });
     }, { threshold: 0.05 });
     document.querySelectorAll('#tab-family .reveal').forEach(el => io.observe(el));
+
+    // /portfolio#weddings opens the Weddings tab. An unknown or missing hash
+    // leaves the page as it is (Family). The button is scrolled into view in
+    // the tab row, which overflows sideways on phones.
+    function openTabFromHash(hash) {
+      const name = (hash || '').replace(/^#/, '');
+      if (!name) return;
+      const btn = Array.from(document.querySelectorAll('.port-tab')).find(b => b.dataset.tab === name);
+      if (!btn) return;
+      btn.click();
+      btn.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }
+    openTabFromHash(location.hash);
   </script>
 </body>
 </html>

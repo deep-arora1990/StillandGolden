@@ -202,4 +202,33 @@ describe('enquiry form: Wedding', () => {
     preselectSession(search, sel)
     expect(sel.value).toBe(expected)
   })
+
+  // Wedding wording: the hint and date placeholder swap when Wedding is chosen.
+  const sessionHint = (() => {
+    const fn = read('index.html').match(/function sessionHint\(value\) \{[\s\S]*?\n {4}\}\n/)
+    if (!fn) return () => { throw new Error('sessionHint missing from index.html') }
+    return new Function(fn[0] + '; return sessionHint')()
+  })()
+  const FAMILY_HINT = 'For a newborn, Gathered is the one I recommend: ninety minutes leaves room for feeds and settling, and every photo is yours. Golden suits families, maternity and cake smash. Bloom pairs maternity or family with newborn.'
+  const FAMILY_PLACEHOLDER = 'e.g. Due early May, or mid-June preferred'
+
+  it('uses wedding wording for Wedding, and the original text for everything else', () => {
+    expect(sessionHint('wedding')).toEqual({
+      hint: 'Tell me a bit about your plans: the date if you have one, where it is, and roughly how many of your people are coming.',
+      placeholder: 'e.g. Saturday 6 March next year, or sometime in autumn',
+    })
+    for (const v of ['', 'glimpse', 'golden', 'gathered', 'bloom', 'unsure']) {
+      expect(sessionHint(v)).toEqual({ hint: FAMILY_HINT, placeholder: FAMILY_PLACEHOLDER })
+    }
+  })
+  it('keeps the original hint and placeholder in the markup, and applies the swap on load and on change', () => {
+    const html = read('index.html')
+    expect(html).toContain('<p class="fg-hint">' + FAMILY_HINT + '</p>')
+    expect(html).toContain('placeholder="' + FAMILY_PLACEHOLDER + '"')
+    expect(html).toMatch(/applySessionHint\(\)/)
+    expect(html).toMatch(/addEventListener\('change', applySessionHint\)/)
+  })
+  it('says weddings are being booked', () => {
+    expect(read('index.html')).toContain('Currently booking Glimpse, Golden, Gathered and Bloom sessions, and weddings &mdash; and if')
+  })
 })
