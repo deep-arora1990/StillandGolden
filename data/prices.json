@@ -6,5 +6,7 @@
   "bloom": { "price": 795 },
   "in-home-christmas": { "price": 295, "valued": 470 },
   "sunset-beach-minis": { "price": 295, "valued": 470 },
-  "christmas-minis": { "price": 150, "gallery": 50 }
+  "christmas-minis": { "price": 150, "gallery": 50 },
+  "wedding-short": { "price": 700 },
+  "wedding-full": { "price": 1000 }
 }

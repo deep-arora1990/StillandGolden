@@ -11,12 +11,15 @@ const ROOT = path.resolve(__dirname, '../../../..')
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8')
 const P = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/prices.json'), 'utf8'))
 async function fresh(mod) { vi.resetModules(); process.env.SETMORE_API_KEY = 'test'; return await import(mod) }
+// Weddings are priced before they are bookable (stage 1, 5 Nov 2026).
+// Stage 2 adds their booking tiers and empties this list.
+const NOT_BOOKABLE_YET = ['wedding-short', 'wedding-full']
 
 describe('the booking code charges what prices.json says', () => {
   it('every priced tier: price, cents, half deposit where split is offered, and valued-at', async () => {
     const { TIERS } = await fresh('../setmore.js')
     for (const [key, p] of Object.entries(P)) {
-      if (key.startsWith('_')) continue
+      if (key.startsWith('_') || NOT_BOOKABLE_YET.includes(key)) continue
       const t = TIERS[key]
       expect(t, key).toBeTruthy()
       expect(t.priceFrom, key).toBe(p.price)
@@ -30,6 +33,13 @@ describe('the booking code charges what prices.json says', () => {
     const { _test } = await fresh('../../submit-contract.js')
     expect(_test.TIERS.glimpse.upgrade).toBe(P.glimpse.gallery)
     expect(_test.TIERS.golden.upgrade).toBe(P.golden.gallery)
+  })
+
+  it('wedding prices live in prices.json, with no booking tier yet', async () => {
+    expect(P['wedding-short'].price).toBe(700)
+    expect(P['wedding-full'].price).toBe(1000)
+    const { TIERS } = await fresh('../setmore.js')
+    for (const k of NOT_BOOKABLE_YET) expect(TIERS[k], k).toBeUndefined()
   })
 
   it('"valued at" stays true: a Glimpse session plus its full gallery', () => {
@@ -51,7 +61,7 @@ describe('no page types a price into its structured data', () => {
 describe('no price is typed into the booking code', () => {
   it('setmore.js and submit-contract.js take every priced tier\'s money from prices.json', () => {
     const setmore = fs.readFileSync(path.join(ROOT, 'netlify/functions/lib/setmore.js'), 'utf8')
-    for (const key of Object.keys(P).filter((k) => !k.startsWith('_'))) {
+    for (const key of Object.keys(P).filter((k) => !k.startsWith('_') && !NOT_BOOKABLE_YET.includes(k))) {
       const start = setmore.search(new RegExp(`\\n  '?${key}'?: \\{`))
       expect(start, key).toBeGreaterThan(-1)
       const block = setmore.slice(start, setmore.indexOf('\n  },', start))
