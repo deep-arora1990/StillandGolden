@@ -133,3 +133,16 @@ describe('the copy goes to the email on the form only', () => {
     expect(JSON.stringify(emails())).not.toContain('alex@example.com')
   })
 })
+
+describe('final-review fixes', () => {
+  it('the page payload shape (expired token + weddingDate) is accepted', async () => {
+    const stale = L.sign({ a: 'appt9', f: 'Sam', l: 'Lee', e: 'sam@example.com', s: 'wedding-full', d: '2027-03-06', h: '' }, Date.now() - 200 * 86400000)
+    expect((await handler(post({ ...A, token: stale, weddingDate: '2027-03-06' }))).statusCode).toBe(200)
+    expect((await handler(post({ ...A, token: stale }))).statusCode).toBe(400)
+  })
+  it('a wedding-booking token is not a questionnaire link: it behaves as no link', async () => {
+    const k = link({ k: 'wedding-booking' })
+    expect((await handler(post({ ...A, token: k }))).statusCode).toBe(400)
+    expect((await handler(post({ ...A, token: k, weddingDate: '2027-03-06' }))).statusCode).toBe(200)
+  })
+})

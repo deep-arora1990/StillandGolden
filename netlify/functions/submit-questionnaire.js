@@ -1,6 +1,7 @@
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const { verify: verifyBookingLink } = require('./lib/booking-links');
 const { postBookingEvent } = require('./lib/studio-sync');
+const { TIERS: SETMORE_TIERS } = require('./lib/setmore');
 const { Resend } = require('resend');
 const { brandedEmail } = require('./lib/email-layout');
 
@@ -405,6 +406,14 @@ exports.handler = async (event) => {
     data = JSON.parse(event.body);
   } catch {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
+  }
+
+  // Weddings have their own questionnaire; a wedding link must not land here.
+  {
+    const wl = data.token ? verifyBookingLink(data.token) : null;
+    if (wl && SETMORE_TIERS[wl.s] && SETMORE_TIERS[wl.s].wedding) {
+      return { statusCode: 400, body: JSON.stringify({ error: "This link is for your wedding questionnaire. Reply to my email and I'll send you the right one." }) };
+    }
   }
 
   const { names, sessionDate } = data;

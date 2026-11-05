@@ -1,5 +1,6 @@
 const { Resend } = require('resend');
 const { verify: verifyBookingLink, linkFor } = require('./lib/booking-links');
+const { TIERS: SETMORE_TIERS } = require('./lib/setmore');
 const { postBookingEvent } = require('./lib/studio-sync');
 const { renderAgreementPDF } = require('./lib/agreement-pdf');
 // Full-gallery prices come from data/prices.json, like every other price.
@@ -172,17 +173,15 @@ exports.handler = async (event) => {
     if (!link) {
       return { statusCode: 400, body: JSON.stringify({ error: 'This link has expired or is not valid. Please reply to your booking email and I will send a fresh one.' }) };
     }
-    // A wedding link must not fall through to the Golden default below.
-    if (link.s === 'wedding-short' || link.s === 'wedding-full') {
-      return { statusCode: 400, body: JSON.stringify({ error: "Weddings have their own agreement. Reply to your booking email and I'll send it." }) };
-    }
     data.sessionType = link.s || data.sessionType;
     data.sessionDate = link.d || data.sessionDate;
   }
   // Nor may a wedding typed into the form by hand (stage 3): resolveTier would
   // match 'wedding-short' / 'wedding-full', or fall back to Golden for plain
   // 'Wedding', and sign the family agreement for it.
-  if (!data.token && /wedding/i.test(String(data.sessionType || ''))) {
+  // Applies after the link override, whatever the source: a wedding link, or a
+  // typed wedding beside a family link, must not fall through to Golden.
+  if ((SETMORE_TIERS[data.sessionType] && SETMORE_TIERS[data.sessionType].wedding) || /wedding/i.test(String(data.sessionType || ''))) {
     return { statusCode: 400, body: JSON.stringify({ error: "Weddings have their own agreement. Reply to your booking email and I'll send it." }) };
   }
 

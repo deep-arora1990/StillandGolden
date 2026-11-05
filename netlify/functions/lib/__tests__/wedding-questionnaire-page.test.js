@@ -30,4 +30,15 @@ describe('the wedding questionnaire page', () => {
     expect(html).toContain('submit-wedding-questionnaire'); expect(html).not.toContain("'/.netlify/functions/submit-questionnaire'")
   })
   it('never sends a partner email', () => { expect(html).not.toMatch(/partnerEmail|p2/) })
+  it('inline KEYS equal the function QUESTIONS keys', async () => {
+    const mod = await fresh('../../submit-wedding-questionnaire.js')
+    const _test = mod._test || mod.default._test
+    const m = html.match(/var KEYS = (\[[^\]]*\])/)
+    expect(JSON.parse(m[1])).toEqual(_test.QUESTIONS.map((q) => q.key))
+  })
+  it('sends weddingDate alongside the token, and reveals the date row on a date error', () => {
+    expect(html).toMatch(/payload\.token = booking\.token/)
+    expect(html).toMatch(/payload\.weddingDate = [^;]*booking\.d/)
+    expect(html).toMatch(/dateRow\.hidden = false/)
+  })
 })

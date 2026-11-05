@@ -137,3 +137,12 @@ describe('signing the wedding agreement', () => {
   })
   it('new source has no em dash or emoji', () => { expect(read('netlify/functions/submit-wedding-agreement.js')).not.toMatch(/—|&mdash;|\p{Extended_Pictographic}/u) })
 })
+
+describe('a wedding-booking token', () => {
+  it('cannot sign the agreement as a link', async () => {
+    const res = await handler(post({ ...good(), token: link({ k: 'wedding-booking' }) }))
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toContain('expired or')
+    expect(emails()).toHaveLength(0)
+  })
+})

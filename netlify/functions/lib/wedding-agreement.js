@@ -38,7 +38,7 @@ const SHARED_SECTIONS = [
     paras: [
       "If you cancel at least 14 days (2 weeks) before the wedding date, everything you've paid is refunded in full, and any payment still to come is cancelled.",
       "If you cancel fewer than 14 days before the wedding date, half the fee is refunded. If only the first half has been paid by then, it isn't refunded and the second payment is cancelled, so cancelling never costs more than half the fee.",
-      'Any part of the fee paid with a gift voucher is put back on the voucher rather than refunded as money.',
+      'Where a refund covers part of the fee paid with a gift voucher, that part goes back on the voucher rather than being refunded as money.',
       "If I can't be there. I'll do everything I can to be at your wedding. If illness or an emergency means the photographer can't attend, everything you've paid is refunded in full, and any payment still to come is cancelled. The photographer doesn't send a replacement.",
       "If you postpone. Before you lock in a new date, talk to all your suppliers, the photographer included, and get their availability for a handful of dates. If the photographer is free on your new date, your booking and everything you've paid move to it, and a second payment is still taken on its original date. If the photographer isn't free on any of your dates, it's treated as a cancellation by you, and the refund rules above apply, measured from the original wedding date.",
     ],

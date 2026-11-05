@@ -417,9 +417,9 @@
         var errorEl = document.getElementById('form-error');
         errorEl.style.display = 'none';
 
-        var needDate = !booking && !this.weddingDate.value;
+        var needDate = (!booking || !dateRow.hidden) && !this.weddingDate.value;
         if (!this.name.value.trim() || !this.email.value.trim() || !this.phone.value.trim() || needDate) {
-          errorEl.textContent = 'Please fill in your name, email, mobile' + (booking ? '' : ' and wedding date') + '.';
+          errorEl.textContent = 'Please fill in your name, email, mobile' + (needDate ? ' and wedding date' : '') + '.';
           errorEl.style.display = 'block';
           return;
         }
@@ -432,7 +432,13 @@
           if (k === 'gettingReady' && booking && booking.s === 'wedding-short') return;
           payload[k] = form.elements[k].value;
         });
-        if (booking) payload.token = booking.token; else payload.weddingDate = this.weddingDate.value;
+        // The date goes with the token too: if the link can't be verified on the
+        // server (expired, rotated), the date typed or read here still lands.
+        if (booking) {
+          payload.token = booking.token;
+          if (/^\d{4}-\d{2}-\d{2}$/.test(booking.d || '')) payload.weddingDate = booking.d;
+        }
+        if (!dateRow.hidden && this.weddingDate.value) payload.weddingDate = this.weddingDate.value;
 
         try {
           var res = await fetch('/.netlify/functions/submit-wedding-questionnaire', {
@@ -453,6 +459,10 @@
           errorEl.textContent = (err && err.message && err.message !== 'Submission failed' && err.message !== 'Failed to fetch')
             ? err.message
             : 'Something went wrong. Please try again, or email hello@stillandgolden.com.au';
+          if (/wedding date/i.test(errorEl.textContent) && dateRow.hidden) {
+            dateRow.hidden = false;
+            form.weddingDate.required = true;
+          }
           errorEl.style.display = 'block';
           btn.disabled = false;
           btn.textContent = 'Send this through';
