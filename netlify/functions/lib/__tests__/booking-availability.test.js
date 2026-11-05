@@ -24,6 +24,9 @@ function stub(slotsFor) {
     url = String(url)
     if (url.includes('/o/oauth2/token')) return reply({ response: true, data: { token: { access_token: 'tok', expires_in: 3600 } } })
     if (url.includes('/bookingapi/staffs')) return reply({ response: true, data: { staffs: [{ key: 'staff1' }] } })
+    // The month's one calendar read (wedding days, Nov 2026): an empty calendar,
+    // not counted as a slots probe.
+    if (url.includes('/bookingapi/appointments')) return reply({ response: true, data: { appointments: [] } })
     calls.slots++
     const d = JSON.parse(opts.body).selected_date // dd/MM/yyyy — slashes on the website, unlike Studio
     const iso = d.split('/').reverse().join('-')

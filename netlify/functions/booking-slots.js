@@ -6,8 +6,13 @@
 // it could drift from the server's copy. Same inputs as the slot lookup, so it
 // rides along rather than needing a call of its own. booking-checkout re-checks
 // it regardless: this decides what is shown, not what is allowed.
+//
+// Weddings (stage 2, Nov 2026) need `t`, the couple's signed wedding link, and
+// a date inside the wedding window. A wedding day is exclusive: a wedding needs
+// the day empty, and a booked wedding closes it for every other package.
 
-const { TIERS, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
+const { TIERS, getSlots, getFixedScheduleSlots, isDayOpen } = require('./lib/setmore');
+const { verifyWeddingLink, weddingDateProblem, WEDDING_LINK_INVALID_MESSAGE } = require('./lib/weddings');
 const { loadClosedDates, isClosedIn } = require('./lib/closed-dates');
 const { connectStore } = require('./lib/shared-store');
 const { balancePlan, todayInMelbourne } = require('./lib/deposits');
@@ -43,6 +48,24 @@ exports.handler = async (event) => {
     };
   }
 
+  if (tier.wedding) {
+    if (!verifyWeddingLink((event.queryStringParameters || {}).t)) {
+      return {
+        statusCode: 403,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: { code: 'LINK_INVALID', message: WEDDING_LINK_INVALID_MESSAGE } }),
+      };
+    }
+    const problem = weddingDateProblem(date, todayInMelbourne());
+    if (problem) {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: { code: 'INVALID_DETAILS', message: problem } }),
+      };
+    }
+  }
+
   // Outside a seasonal offer's window, or on one of Deep's breaks, there is
   // nothing to offer — answered before any Setmore call. Checkout enforces both.
   const closed = await loadClosedDates();
@@ -65,6 +88,15 @@ exports.handler = async (event) => {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slots, split: splitOffer(tier, date) }),
+      };
+    }
+
+    // A wedding on the day closes it, whatever Setmore's slot generator says.
+    if (!(await isDayOpen(tier, date))) {
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slots: [], split: null }),
       };
     }
 

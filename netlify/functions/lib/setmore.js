@@ -319,6 +319,17 @@ const TIERS = {
 };
 
 const WEDDING_TIER_KEYS = Object.keys(TIERS).filter((k) => TIERS[k].wedding);
+const WEDDING_SERVICE_KEYS = new Set(WEDDING_TIER_KEYS.map((k) => TIERS[k].serviceKey));
+
+// A wedding day is exclusive (stage 2, Nov 2026). A wedding needs the whole day
+// to itself, so any appointment at all closes the day for a wedding; and once a
+// wedding is booked, the day is closed for every other package too.
+// `appointments` are one day's appointments, as Setmore lists them.
+function dayOpenFor(tier, appointments) {
+  const list = appointments || [];
+  if (tier.wedding) return list.length === 0;
+  return !list.some((a) => WEDDING_SERVICE_KEYS.has(a.service_key));
+}
 
 const SERVICE_KEY_TO_TIER = {};
 for (const [tier, cfg] of Object.entries(TIERS)) {
@@ -755,6 +766,9 @@ async function getFixedScheduleSlots(tier, date) {
 
   const appointments = await getAppointmentsOnDate(date);
 
+  // A wedding on the date closes it for everything; a wedding needs it empty.
+  if (!dayOpenFor(tier, appointments)) return [];
+
   // One session a day: any appointment of this service on the date closes the
   // day, wherever Deep has since moved it to.
   if (tier.onePerDay && appointments.some((a) => a.service_key === tier.serviceKey)) {
@@ -795,7 +809,12 @@ async function getAppointmentsOnDate(date) {
     // SETMORE_MOCK_FULL=2026-11-08[,…] books the whole day out, so a local
     // preview can show the sold-out versions of fixed-schedule pages.
     const full = (process.env.SETMORE_MOCK_FULL || '').split(',').map((d) => d.trim());
-    return full.includes(date) ? [{ start_time: `${date}T00:00Z`, end_time: `${date}T23:59Z`, service_key: 'mock-full' }] : [];
+    if (full.includes(date)) return [{ start_time: `${date}T00:00Z`, end_time: `${date}T23:59Z`, service_key: 'mock-full' }];
+    // SETMORE_MOCK_WEDDING=2027-03-06[,…] puts a wedding on the day, so a local
+    // preview can show a wedding closing the day for every package.
+    const weddings = (process.env.SETMORE_MOCK_WEDDING || '').split(',').map((d) => d.trim());
+    if (weddings.includes(date)) return [{ start_time: `${date}T10:00Z`, end_time: `${date}T16:00Z`, service_key: TIERS['wedding-full'].serviceKey }];
+    return [];
   }
   const [y, m, d] = date.split('-');
   const data = await setmoreFetch('/bookingapi/appointments', {
@@ -837,9 +856,42 @@ async function getAppointmentsInRange(startDate, endDate) {
   return appointments;
 }
 
+// One calendar read for a run of days (both 'YYYY-MM-DD'), as a Map from each
+// date to that day's appointments. Every date in the range has an entry.
+//
+// Grouped by the date part of start_time, read straight off the string: the
+// value is studio-local with a fake 'Z' (see getFixedScheduleSlots), so going
+// through `new Date` would move a late-evening booking onto the next day. An
+// appointment whose date can't be read fails the whole read, because skipping
+// it would leave its day on sale.
+async function appointmentsByDay(startIso, endIso) {
+  const byDay = new Map(datesBetween(startIso, endIso).map((d) => [d, []]));
+  if (MOCK) {
+    for (const date of byDay.keys()) byDay.set(date, await getAppointmentsOnDate(date));
+    return byDay;
+  }
+  const appointments = await getAppointmentsInRange(startIso, endIso);
+  for (const appt of appointments) {
+    const day = String(appt.start_time || '').slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+      throw new SetmoreError(`Unparseable appointment start_time: ${appt.start_time}`, { code: 'BAD_APPOINTMENT_TIME' });
+    }
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day).push(appt);
+  }
+  return byDay;
+}
+
+// Whether `tier` can be booked on `date` at all, by the wedding rule above.
+// Throws when Setmore can't be read: an unknown day is never an open one.
+async function isDayOpen(tier, date) {
+  return dayOpenFor(tier, await getAppointmentsOnDate(date));
+}
+
 module.exports = {
   TIERS,
   WEDDING_TIER_KEYS,
+  WEDDING_SERVICE_KEYS,
   SERVICE_KEY_TO_TIER,
   TIMEZONE,
   MOCK,
@@ -852,4 +904,7 @@ module.exports = {
   getAppointmentsOnDate,
   getAppointmentsInRange,
   getFixedScheduleSlots,
+  dayOpenFor,
+  appointmentsByDay,
+  isDayOpen,
 };

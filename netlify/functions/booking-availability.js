@@ -11,8 +11,15 @@
 // fresh depends on how far out it is — see lib/availability-ttl.js. Before
 // 24 Sep 2026 the cache was per-container and 30 minutes flat, so calls grew
 // with visitors instead of with time.
+//
+// Weddings (stage 2, Nov 2026) need `t`, the couple's signed wedding link, and
+// reach 36 months ahead from tomorrow. A wedding day is exclusive: any booking
+// closes it for a wedding, and a wedding closes it for every other package.
+// Both are read from ONE calendar call per month (appointmentsByDay), before
+// any slot probe. A wedding month makes no slot probes at all.
 
-const { TIERS, TIMEZONE, getSlots, getFixedScheduleSlots } = require('./lib/setmore');
+const { TIERS, TIMEZONE, getSlots, getFixedScheduleSlots, appointmentsByDay, dayOpenFor } = require('./lib/setmore');
+const { verifyWeddingLink, lastWeddingDate, WEDDING_LINK_INVALID_MESSAGE } = require('./lib/weddings');
 const { loadClosedDates, isClosedIn } = require('./lib/closed-dates');
 const { connectStore } = require('./lib/shared-store');
 const { readMonth, writeMonth } = require('./lib/availability-cache');
@@ -53,11 +60,36 @@ exports.handler = async (event) => {
     };
   }
 
+  // A wedding month is only for someone holding a wedding link, and the link is
+  // checked before the cache is read, so a cached month is never served without it.
+  if (tier.wedding && !verifyWeddingLink((event.queryStringParameters || {}).t)) {
+    return {
+      statusCode: 403,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: { code: 'LINK_INVALID', message: WEDDING_LINK_INVALID_MESSAGE } }),
+    };
+  }
+
   const today = melbourneToday();
+  const todayIso = `${today.year}-${pad(today.month)}-${pad(today.day)}`;
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+
+  // Weddings run from tomorrow (Melbourne) to the end of the 36th month ahead.
+  // A month wholly outside that answers empty, with no Setmore call and nothing cached.
+  const weddingLast = tier.wedding ? lastWeddingDate(todayIso) : null;
+  const inWeddingWindow = (d) => d > todayIso && d <= weddingLast;
+  if (tier.wedding && !(`${year}-${pad(month)}-${pad(daysInMonth)}` > todayIso && `${year}-${pad(month)}-01` <= weddingLast)) {
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ availableDates: [] }),
+    };
+  }
+
   // Deep's breaks are filtered as the month is SERVED, not only when it is
   // probed, so a break added in Studio applies to months already cached.
   const { ranges: closedRanges } = await loadClosedDates();
-  const open = (list) => list.filter((d) => !isClosedIn(closedRanges, d));
+  const open = (list) => list.filter((d) => !isClosedIn(closedRanges, d) && (!tier.wedding || inWeddingWindow(d)));
   const cached = await readMonth(serviceKey, year, month);
   if (isFresh(cached, ttlForMonth(year, month, today))) {
     return {
@@ -69,7 +101,6 @@ exports.handler = async (event) => {
 
   // Days to probe: from today (Melbourne) through the end of the requested
   // month. A month fully in the past returns empty without any API calls.
-  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const isCurrentMonth = today.year === year && today.month === month;
   const firstDay = isCurrentMonth ? today.day : 1;
   const dates = [];
@@ -79,6 +110,7 @@ exports.handler = async (event) => {
       // A tier with a date window (seasonal offers) only ever offers those
       // dates — and not probing the rest also saves Setmore calls.
       if (tier.allowedDates && !tier.allowedDates.includes(iso)) continue;
+      if (tier.wedding && !inWeddingWindow(iso)) continue;
       // Closed dates (Deep's breaks) are never offered, nor probed.
       if (isClosedIn(closedRanges, iso)) continue;
       dates.push(iso);
@@ -106,9 +138,30 @@ exports.handler = async (event) => {
   const availableDates = [];
   const isolatedFailures = [];
   let systemic = null;
+
+  // One calendar read for the whole month drops the days a wedding has taken
+  // (or, for a wedding, any day with a booking on it) before anything is
+  // probed. Not knowing is not the same as open: a failed read is systemic.
+  let openDates = [];
+  if (dates.length) {
+    try {
+      const byDay = await appointmentsByDay(dates[0], dates[dates.length - 1]);
+      openDates = dates.filter((d) => dayOpenFor(tier, byDay.get(d) || []));
+    } catch (err) {
+      console.warn(`booking-availability: calendar read failed for ${year}-${pad(month)}:`, err.message);
+      systemic = err;
+    }
+  }
+
+  // A wedding can be any free day of the week: Setmore's working hours don't apply (the
+  // booking is written through the API, which doesn't check them), so there is
+  // nothing to probe.
+  if (tier.wedding && !systemic) availableDates.push(...openDates);
+  const toProbe = tier.wedding ? [] : openDates;
+
   try {
-    for (let i = 0; i < dates.length && !systemic; i += BATCH_SIZE) {
-      const batch = dates.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < toProbe.length && !systemic; i += BATCH_SIZE) {
+      const batch = toProbe.slice(i, i + BATCH_SIZE);
       const results = await Promise.all(
         batch.map(async (date) => {
           try {

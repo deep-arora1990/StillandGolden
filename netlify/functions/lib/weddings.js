@@ -9,6 +9,9 @@ const WEDDING_LINK_KIND = 'wedding-booking';
 const WEDDING_LINK_DAYS = 30;
 const WEDDING_MONTHS_AHEAD = 36;
 const WEDDING_PAGE_PATH = '/book-wedding';
+// What every wedding route answers (403, code LINK_INVALID) for a missing,
+// expired, edited or wrong-kind link.
+const WEDDING_LINK_INVALID_MESSAGE = "This link has expired or isn't quite right. Send me a message and I'll get you a fresh one.";
 
 function mintWeddingLink({ firstName, lastName, email }, { now = Date.now(), days = WEDDING_LINK_DAYS, base = 'https://stillandgolden.com.au' } = {}) {
   const token = sign({ k: WEDDING_LINK_KIND, f: firstName || '', l: lastName || '', e: email || '' }, now, days);
@@ -36,9 +39,16 @@ function lastWeddingDate(today) {
 
 function weddingDateProblem(date, today) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || ''))) return 'Pick your wedding date.';
+  // A real calendar date only: '2027-02-31' passes the shape check and the
+  // string comparisons below, so round-trip it through the calendar.
+  const [y, m, d] = date.split('-').map(Number);
+  const real = new Date(Date.UTC(y, m - 1, d));
+  if (real.getUTCFullYear() !== y || real.getUTCMonth() !== m - 1 || real.getUTCDate() !== d) {
+    return "That isn't a real date. Pick your wedding date from the calendar.";
+  }
   if (date <= today) return 'Your wedding date needs to be after today.';
   if (date > lastWeddingDate(today)) return `That date is further out than I can take bookings for yet (I open up to ${WEDDING_MONTHS_AHEAD} months ahead).`;
   return null;
 }
 
-module.exports = { WEDDING_LINK_KIND, WEDDING_LINK_DAYS, WEDDING_MONTHS_AHEAD, WEDDING_PAGE_PATH, mintWeddingLink, verifyWeddingLink, lastWeddingDate, weddingDateProblem };
+module.exports = { WEDDING_LINK_KIND, WEDDING_LINK_INVALID_MESSAGE, WEDDING_LINK_DAYS, WEDDING_MONTHS_AHEAD, WEDDING_PAGE_PATH, mintWeddingLink, verifyWeddingLink, lastWeddingDate, weddingDateProblem };
