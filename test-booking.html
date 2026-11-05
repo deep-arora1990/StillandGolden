@@ -128,7 +128,7 @@
       <p id="days-loading" class="loading">Checking availability…</p>
       <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
       <p id="slot-loading" class="loading" hidden>Loading times…</p>
-      <p id="slot-none" class="loading" hidden>No times left that day, pick another.</p>
+      <p id="slot-none" class="loading" hidden>No times left that day. Pick another.</p>
     </section>
 
     <!-- Step 2: details -->
@@ -390,7 +390,7 @@
         btn.textContent = 'Pay & book: $1';
         showNotice(err.code === 'INVALID_DETAILS'
           ? err.message
-          : 'Could not start the payment, check the function logs.', true);
+          : 'Could not start the payment. Check the function logs.', true);
       });
     });
 

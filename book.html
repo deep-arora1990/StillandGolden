@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Book a Session | Still & Golden Photography</title>
-  <meta name="description" content="Book your Still & Golden photography session, pick a session type, choose a date and time, and you're booked.">
+  <meta name="description" content="Book your Still & Golden photography session: pick a session type, choose a date and time, and you're booked.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -245,7 +245,7 @@
         <p class="summary-line" id="slot-context"></p>
         <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
         <p id="slot-loading" class="loading" hidden>Loading times…</p>
-        <p id="slot-none" class="loading" hidden>No times left on that date, please pick another.</p>
+        <p id="slot-none" class="loading" hidden>No times left on that date. Please pick another.</p>
       </div>
 
       <!-- "None of these dates work?" - a copy of the homepage enquiry form for
@@ -284,7 +284,7 @@
               <option value="bloom">Bloom: two sessions</option>
               <option value="in-home-christmas">In-home Christmas session</option>
               <option value="sunset-beach-minis">Sunset beach mini</option>
-              <option value="unsure">Not sure yet: help me choose</option>
+              <option value="unsure">Not sure yet, help me choose</option>
             </select>
           </div>
           <div class="field">
@@ -364,7 +364,7 @@
       <div class="confirm-box">
         <div class="tick">Payment received.</div>
         <h2 style="margin-top:6px;">You're all set</h2>
-        <p class="sub" style="margin-bottom:0;">Your booking is being confirmed and you'll get a confirmation email shortly, Setmore will send its own confirmation too. If anything needs to move, just reply to it or get in touch.</p>
+        <p class="sub" style="margin-bottom:0;">Your booking is being confirmed and you'll get a confirmation email shortly. Setmore will send its own confirmation too. If anything needs to move, just reply to it or get in touch.</p>
       </div>
     </section>
   </main>
@@ -791,7 +791,7 @@
       if (!slots.length) {
         $('slot-none').textContent = state.service.timeTbc
           ? "That day's already taken. Please pick another."
-          : 'No times left on that date, please pick another.';
+          : 'No times left on that date. Please pick another.';
         $('slot-none').hidden = false;
         return;
       }
@@ -803,7 +803,7 @@
         state.time = slots[0];
         var note = document.createElement('p');
         note.className = 'summary-line';
-        note.textContent = "That day is yours, I'll confirm the exact time with you, close to sunset.";
+        note.textContent = "That day is yours. I'll confirm the exact time with you, close to sunset.";
         var go = document.createElement('button');
         go.type = 'button';
         go.className = 'btn';
@@ -907,7 +907,7 @@
       note.hidden = false;
       note.textContent = 'Choosing part payment charges ' + money(split.depositCents) +
         ' today and the remaining ' + money(split.balanceCents) + ' to the same card on ' +
-        when + '. That is the final payment, nothing is charged after it.';
+        when + '. That is the final payment. Nothing is charged after it.';
     }
 
     // --- gift vouchers ----------------------------------------------------------

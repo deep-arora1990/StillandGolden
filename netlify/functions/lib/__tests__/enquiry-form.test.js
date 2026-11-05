@@ -229,6 +229,6 @@ describe('enquiry form: Wedding', () => {
     expect(html).toMatch(/addEventListener\('change', applySessionHint\)/)
   })
   it('says weddings are being booked', () => {
-    expect(read('index.html')).toContain('Currently booking Glimpse, Golden, Gathered and Bloom sessions, and weddings, and if')
+    expect(read('index.html')).toContain('Currently booking Glimpse, Golden, Gathered and Bloom sessions, and weddings. If')
   })
 })
