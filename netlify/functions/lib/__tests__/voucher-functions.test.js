@@ -40,6 +40,15 @@ describe('voucher-checkout: buying a voucher', () => {
     expect(s.success_url).toMatch(/\/gift-vouchers\?bought=1/)
   })
 
+  it('an Origin of "null" falls back to the host for return URLs', async () => {
+    const { handler } = await fresh('../../voucher-checkout.js')
+    const res = parse(await handler({ httpMethod: 'POST', headers: { origin: 'null', host: 'stillandgolden.com.au', 'x-forwarded-proto': 'https' }, body: JSON.stringify({ kind: 'package', tier: 'golden', buyerName: 'Amanda', buyerEmail: 'amanda@example.com', recipientName: 'Rand' }) }))
+    expect(res.status).toBe(200)
+    const s = stripe._sessions.at(-1)
+    expect(s.success_url.startsWith('https://stillandgolden.com.au/gift-vouchers?bought=1')).toBe(true)
+    expect(s.cancel_url.startsWith('https://stillandgolden.com.au/gift-vouchers?cancelled=1')).toBe(true)
+  })
+
   it('a $250 voucher charges $250; under $100 is refused with a message', async () => {
     const { handler } = await fresh('../../voucher-checkout.js')
     expect(parse(await handler(post({ kind: 'amount', amount: 250, buyerName: 'A', buyerEmail: 'a@example.com', recipientName: 'R' }))).status).toBe(200)

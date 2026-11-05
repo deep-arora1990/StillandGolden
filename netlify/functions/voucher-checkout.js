@@ -13,7 +13,8 @@ const error = (statusCode, code, message) => json(statusCode, { error: { code, m
 
 function requestOrigin(event) {
   const h = event.headers || {};
-  if (h.origin) return h.origin;
+  // A page sent with no-referrer makes the browser say Origin: null.
+  if (h.origin && h.origin !== 'null') return h.origin;
   return `${h['x-forwarded-proto'] || 'https'}://${h.host}`;
 }
 

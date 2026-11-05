@@ -102,6 +102,20 @@ afterEach(() => {
 })
 
 describe('wedding checkout', () => {
+  it('return URLs survive an Origin of "null" (no-referrer pages send it)', async () => {
+    const { handler } = await fresh('../../booking-checkout.js')
+    const nullOrigin = { origin: 'null', host: 'stillandgolden.com.au', 'x-forwarded-proto': 'https' }
+    let res = await handler({ httpMethod: 'POST', headers: nullOrigin, body: JSON.stringify(wedding({ date: '2029-11-27' })) })
+    expect(res.statusCode).toBe(200)
+    let s = stripe._sessions.at(-1)
+    expect(s.success_url.startsWith('https://stillandgolden.com.au/book-wedding.html')).toBe(true)
+    expect(s.cancel_url.startsWith('https://stillandgolden.com.au/book-wedding.html')).toBe(true)
+    res = await handler({ httpMethod: 'POST', headers: nullOrigin, body: JSON.stringify(golden()) })
+    expect(res.statusCode).toBe(200)
+    s = stripe._sessions.at(-1)
+    expect(s.success_url.startsWith('https://stillandgolden.com.au/')).toBe(true)
+  })
+
   it('checkout refuses a wedding without a valid link', async () => {
     for (const weddingLink of [undefined, tampered, mintedAt(NOW - 31 * 86400000), L.sign({ a: 'a1', s: 'golden', d: '2027-03-06' })]) {
       const r = await checkout(wedding({ weddingLink }))

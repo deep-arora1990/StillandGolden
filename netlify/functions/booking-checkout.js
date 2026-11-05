@@ -73,7 +73,8 @@ function adSourceMetadata(ad) {
 
 function requestOrigin(event) {
   const h = event.headers || {};
-  if (h.origin) return h.origin;
+  // A page sent with no-referrer makes the browser say Origin: null.
+  if (h.origin && h.origin !== 'null') return h.origin;
   const proto = h['x-forwarded-proto'] || 'https';
   return `${proto}://${h.host}`;
 }

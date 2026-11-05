@@ -475,6 +475,7 @@
       state.date = null;
       state.time = null;
       state.split = null;
+      $('slot-loading').hidden = true;
       renderSummary();
       showStep('calendar');
       loadCalendar();
@@ -547,7 +548,10 @@
       $('cal-loading').hidden = false;
       $('cal-wrap').classList.add('loading');
       // The overlay stays until the last month fetch has answered.
+      var finished = false;
       function done() {
+        if (finished) return;
+        finished = true;
         monthsInFlight--;
         if (monthsInFlight > 0) return;
         $('cal-loading').hidden = true;
@@ -644,7 +648,7 @@
       $('slot-loading').hidden = false;
       api('booking-slots?service_key=' + encodeURIComponent(state.pkg.serviceKey) + '&date=' + iso + linkParam())
         .then(function (data) {
-          if (state.date !== iso || !state.pkg) return; // a newer pick or a reset got here first
+          if (state.date !== iso || !state.pkg) { if (!state.date) $('slot-loading').hidden = true; return; } // a newer pick or a reset got here first
           $('slot-loading').hidden = true;
           var slots = data.slots || [];
           if (!slots.length) {
@@ -660,7 +664,7 @@
         })
         .catch(function (err) {
           if (err.code === 'LINK_INVALID') { $('slot-loading').hidden = true; showExpired(); return; }
-          if (state.date !== iso || !state.pkg) return;
+          if (state.date !== iso || !state.pkg) { if (!state.date) $('slot-loading').hidden = true; return; }
           $('slot-loading').hidden = true;
           state.date = null;
           renderCalendar();

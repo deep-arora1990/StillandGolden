@@ -44,7 +44,8 @@ describe('the wedding booking page', () => {
     expect(html).toMatch(/fetch\(FN \+ path, opts\)\.catch\(function \(e\) \{ throw networkFailure\(e\); \}\)/)
   })
   it('guards slot races, stale caches, bfcache and past dates', () => {
-    expect(html).toContain('if (state.date !== iso || !state.pkg) return;')
+    expect(html).toContain('if (state.date !== iso || !state.pkg) {')
+    expect(html).toContain('if (finished) return;')
     expect(html).toContain("addEventListener('pageshow'")
     expect(html).toContain('e.persisted')
     expect(html).toMatch(/id="details-heading" tabindex="-1"/)
