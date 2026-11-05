@@ -117,7 +117,7 @@
   <main>
     <div class="label">Internal &middot; not linked anywhere</div>
     <h1>Booking flow <em>test</em></h1>
-    <p class="sub">This page runs the real booking chain against the $1 Test service. Completing it <strong>charges $1 live</strong> — refund it from the Stripe dashboard (Payments → the payment → Refund) and delete the appointment in Setmore afterwards.</p>
+    <p class="sub">This page runs the real booking chain against the $1 Test service. Completing it <strong>charges $1 live</strong>: refund it from the Stripe dashboard (Payments → the payment → Refund) and delete the appointment in Setmore afterwards.</p>
 
     <div id="notice" class="notice" role="alert" hidden></div>
 
@@ -128,7 +128,7 @@
       <p id="days-loading" class="loading">Checking availability…</p>
       <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
       <p id="slot-loading" class="loading" hidden>Loading times…</p>
-      <p id="slot-none" class="loading" hidden>No times left that day — pick another.</p>
+      <p id="slot-none" class="loading" hidden>No times left that day, pick another.</p>
     </section>
 
     <!-- Step 2: details -->
@@ -162,7 +162,7 @@
           <input type="checkbox" id="f-terms" required>
           <label for="f-terms">I agree to the <a href="/session-contract.html" target="_blank" rel="noopener">session terms and conditions</a>.</label>
         </div>
-        <button type="submit" class="btn" id="pay-btn" disabled>Pay &amp; book — $1</button>
+        <button type="submit" class="btn" id="pay-btn" disabled>Pay &amp; book: $1</button>
         <button type="button" class="btn btn-ghost" id="back-to-slots">Back</button>
       </form>
     </section>
@@ -174,10 +174,10 @@
         <h2 style="margin-top:6px;">Test booking placed</h2>
         <p class="sub" style="margin-bottom:0;">Now verify the whole chain fired:</p>
         <ul>
-          <li><strong>Stripe</strong> — a $1 payment appears in the dashboard (then refund it).</li>
-          <li><strong>Setmore</strong> — the appointment exists at the chosen time (delete it when done).</li>
-          <li><strong>Resend</strong> — the contact exists in the general audience, with the phone property set if you entered one.</li>
-          <li><strong>Email</strong> — Setmore's confirmation email arrived at the address you used.</li>
+          <li><strong>Stripe</strong>: a $1 payment appears in the dashboard (then refund it).</li>
+          <li><strong>Setmore</strong>: the appointment exists at the chosen time (delete it when done).</li>
+          <li><strong>Resend</strong>: the contact exists in the general audience, with the phone property set if you entered one.</li>
+          <li><strong>Email</strong>: Setmore's confirmation email arrived at the address you used.</li>
         </ul>
       </div>
     </section>
@@ -258,7 +258,7 @@
         renderDays();
       }).catch(function (err) {
         $('days-loading').textContent = '';
-        showNotice(err.message || 'Availability could not be loaded — please refresh.', true);
+        showNotice(err.message || 'Availability could not be loaded. Please refresh.', true);
       });
     }
 
@@ -307,7 +307,7 @@
         })
         .catch(function (err) {
           $('slot-loading').hidden = true;
-          showNotice(err.message || 'Times could not be loaded — please try again.', true);
+          showNotice(err.message || 'Times could not be loaded. Please try again.', true);
         });
     }
 
@@ -344,7 +344,7 @@
       var ctx = $('details-context');
       ctx.innerHTML = '';
       var b = document.createElement('b');
-      b.textContent = 'Test booking — ' + formatDate(state.date) + ', ' + formatTime(state.time);
+      b.textContent = 'Test booking: ' + formatDate(state.date) + ', ' + formatTime(state.time);
       ctx.appendChild(b);
       showStep('details');
       $('f-first').focus();
@@ -387,10 +387,10 @@
         window.location.href = data.url; // Stripe Checkout
       }).catch(function (err) {
         btn.disabled = false;
-        btn.textContent = 'Pay & book — $1';
+        btn.textContent = 'Pay & book: $1';
         showNotice(err.code === 'INVALID_DETAILS'
           ? err.message
-          : 'Could not start the payment — check the function logs.', true);
+          : 'Could not start the payment, check the function logs.', true);
       });
     });
 
@@ -407,7 +407,7 @@
       if (params.get('cancelled') === '1') {
         state.restoreTime = params.get('time');
         if (params.get('date')) selectDate(params.get('date'));
-        showNotice('Payment was cancelled — no charge was made. Pick a time to try again.', true);
+        showNotice('Payment was cancelled. No charge was made. Pick a time to try again.', true);
       }
       loadAvailability();
     })();

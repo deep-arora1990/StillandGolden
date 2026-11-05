@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Christmas Mini Sessions — 8 November | Still &amp; Golden</title>
+  <title>Christmas Mini Sessions: 8 November | Still &amp; Golden</title>
   <meta name="description" content="Christmas mini sessions at Baxter Community Hall, Sunday 8 November 2026. {{price.christmas-minis}}, 15 minutes, 5 edited photos, in time for Christmas cards and gifting.">
-  <meta property="og:title" content="Christmas Mini Sessions — Sunday 8 November">
+  <meta property="og:title" content="Christmas Mini Sessions: Sunday 8 November">
   <meta property="og:description" content="{{price.christmas-minis}} · 15 minutes · 5 edited photos at Baxter Community Hall, Baxter. Ready for Christmas cards and gifting.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stillandgolden.com.au/christmas-minis">
@@ -134,10 +134,10 @@
     .offer .amount { font-family: var(--serif); font-size: 2.2rem; }
     .offer .detail { font-size: 0.84rem; color: var(--mid); letter-spacing: 0.04em; line-height: 1.8; }
 
-    /* Slots — same pattern as book.html, incl. the loading overlay */
+    /* Slots - same pattern as book.html, incl. the loading overlay */
     .counter { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
 
-    /* Countdown — deliberately quiet. The brand voice bans manufactured
+    /* Countdown - deliberately quiet. The brand voice bans manufactured
        urgency, so this states a real date plainly rather than pulsing red at
        anyone. No seconds: for a date months out they'd be theatre, and they'd
        force a repaint every second for nothing. */
@@ -215,7 +215,7 @@
     .btn-ghost { background: none; color: var(--warm-black); border: 1px solid var(--warm-black); margin-left: 12px; }
     .btn-ghost:hover:not(:disabled) { background: var(--gold); border-color: var(--gold); color: var(--off-white); }
 
-    /* Venue block — the one thing people re-open the page to check, so it gets
+    /* Venue block - the one thing people re-open the page to check, so it gets
        its own panel rather than being buried in the intro paragraph. */
     .venue { border-left: 3px solid var(--gold); background: #fff; padding: 22px 26px; margin: 0 0 40px; }
     .venue-label { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin: 0 0 10px; }
@@ -223,7 +223,7 @@
     .venue-address { font-size: 0.9rem; color: #4d453f; margin: 0 0 10px; }
     .venue-when { font-size: 0.9rem; color: #4d453f; margin: 0; }
 
-    /* Photos. The page had none — these two spots answer "what am I actually
+    /* Photos. The page had none - these two spots answer "what am I actually
        booking?". The top one is deliberately short (16/10 rather than the
        file's native 4:3) so the slot picker stays reachable on a phone
        instead of sitting under a full-height photo. */
@@ -248,7 +248,7 @@
     .pay-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .pay-choice .btn { width: 100%; margin: 0; line-height: 1.35; }
     .pay-choice .btn small { display: block; font-weight: 400; opacity: 0.85; }
-    /* .btn sets display, which beats the hidden attribute — without this the
+    /* .btn sets display, which beats the hidden attribute - without this the
        unoffered split button showed as an empty black bar. */
     .pay-choice .btn[hidden] { display: none; }
     .pay-note { margin: 12px 0 0; font-size: 0.78rem; line-height: 1.6; color: #6b625c; max-width: 46ch; }
@@ -261,7 +261,7 @@
       .set-shots { gap: 10px; margin-bottom: 22px; }
     }
 
-    /* FAQ — native <details> so it works without JavaScript and stays
+    /* FAQ - native <details> so it works without JavaScript and stays
        keyboard-operable. Answers remain in the DOM for search engines. */
     .faq details { border-bottom: 1px solid var(--border); }
     .faq summary {
@@ -315,7 +315,7 @@
   <main>
     <div class="label">One day only<span id="spots-label"></span></div>
     <h1>Christmas <em>Mini Sessions</em></h1>
-    <p class="sub">Sunday 8 November, at Baxter Community Hall. Fifteen minutes in a warm, festive set &mdash; perfect for this year's cards, prints and the grandparents' gifts.</p>
+    <p class="sub">Sunday 8 November, at Baxter Community Hall. Fifteen minutes in a warm, festive set, perfect for this year's cards, prints and the grandparents' gifts.</p>
 
     <!-- Shown only when the day has no free times left (checked live on load),
          so a cancellation puts the time picker back by itself. -->
@@ -358,13 +358,13 @@
       <p class="venue-label">Where &amp; when</p>
       <p class="venue-name">Baxter Community Hall</p>
       <p class="venue-address">211 Baxter-Tooradin Rd, Baxter VIC 3911</p>
-      <p class="venue-when">Sunday 8 November &middot; 15 sessions from 10:30am &mdash; last session 4:20pm</p>
+      <p class="venue-when">Sunday 8 November &middot; 15 sessions from 10:30am, last session 4:20pm</p>
     </div>
 
     <div class="countdown" id="countdown" hidden aria-live="polite">
-      <div class="cd-unit"><span class="cd-num" id="cd-days">—</span><span class="cd-label">Days</span></div>
-      <div class="cd-unit"><span class="cd-num" id="cd-hours">—</span><span class="cd-label">Hours</span></div>
-      <div class="cd-unit"><span class="cd-num" id="cd-mins">—</span><span class="cd-label">Minutes</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-days">-</span><span class="cd-label">Days</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-hours">-</span><span class="cd-label">Hours</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-mins">-</span><span class="cd-label">Minutes</span></div>
       <p class="cd-note" id="cd-note">until the first session on Sunday 8 November</p>
     </div>
 
@@ -413,10 +413,10 @@
         </div>
         <div class="terms">
           <input type="checkbox" id="f-marketing">
-          <label for="f-marketing">Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</label>
+          <label for="f-marketing">Email me occasionally about sessions and offers. (Optional, unsubscribe any time.)</label>
         </div>
         <div class="pay-choice" id="pay-choice">
-          <button type="submit" class="btn" id="pay-btn" disabled data-pay-mode="full">Pay &amp; book — {{price.christmas-minis}}</button>
+          <button type="submit" class="btn" id="pay-btn" disabled data-pay-mode="full">Pay &amp; book: {{price.christmas-minis}}</button>
           <button type="submit" class="btn" id="pay-split-btn" disabled data-pay-mode="split" hidden></button>
         </div>
         <p class="pay-note" id="pay-note" hidden></p>
@@ -429,14 +429,14 @@
       <div class="confirm-box">
         <div class="tick">Payment received.</div>
         <h2 style="margin-top:6px;">You're booked in</h2>
-        <p class="sub" style="margin-bottom:0;">Your Christmas mini is being confirmed and you'll get a confirmation email shortly &mdash; Setmore will send its own confirmation too. See you at Baxter Community Hall on Sunday 8 November.</p>
+        <p class="sub" style="margin-bottom:0;">Your Christmas mini is being confirmed and you'll get a confirmation email shortly, Setmore will send its own confirmation too. See you at Baxter Community Hall on Sunday 8 November.</p>
       </div>
     </section>
 
     <section class="after" aria-labelledby="set-h">
       <h2 id="set-h">The sets</h2>
       <div class="set-grid">
-        <p class="set-intro">Two of them, both up all day &mdash; pick one to start and move between them as you go.</p>
+        <p class="set-intro">Two of them, both up all day, pick one to start and move between them as you go.</p>
         <div class="set-shots">
           <div class="set-item">
             <div class="shot">
@@ -474,15 +474,15 @@
       <details>
         <summary>What do I get for {{price.christmas-minis}}?</summary>
         <div class="answer">
-          <p>A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks &mdash; in good time for cards and printing.</p>
-          <p>You'll see every edited image from your session and choose your five to download. If you'd rather have them all, you can add the full gallery for {{price.christmas-minis.gallery}} &mdash; a fifteen-minute session easily produces around twenty photos worth keeping.</p>
+          <p>A fifteen-minute session and five edited photos, delivered in a private online gallery within two weeks, in good time for cards and printing.</p>
+          <p>You'll see every edited image from your session and choose your five to download. If you'd rather have them all, you can add the full gallery for {{price.christmas-minis.gallery}}, a fifteen-minute session easily produces around twenty photos worth keeping.</p>
         </div>
       </details>
 
       <details>
         <summary>Is fifteen minutes actually enough?</summary>
         <div class="answer">
-          <p>For this, yes. Both sets are already built and lit, so none of your time goes on setting up &mdash; we start the moment you walk in.</p>
+          <p>For this, yes. Both sets are already built and lit, so none of your time goes on setting up, we start the moment you walk in.</p>
           <p>There's also a ten-minute buffer between each session, so nobody is hurried out the door and little ones get a moment to look around and warm up before we start.</p>
           <p>Fifteen minutes is also about the honest limit of a toddler's patience.</p>
         </div>
@@ -498,7 +498,7 @@
       <details>
         <summary>What should we wear?</summary>
         <div class="answer">
-          <p>Christmas clothes are very welcome &mdash; that's half the fun of it. If that's not your thing, wear whatever everyone is comfortable in instead.</p>
+          <p>Christmas clothes are very welcome, that's half the fun of it. If that's not your thing, wear whatever everyone is comfortable in instead.</p>
           <p>Neutrals sit beautifully against both sets, and textures like knits, cord and wool read better on camera than flat block colour. Rather than everyone matching exactly, pick colours that complement each other. Unless you're all going in matching Christmas pyjamas, which is its own kind of excellent.</p>
         </div>
       </details>
@@ -522,7 +522,7 @@
       <details>
         <summary>Can we bring the dog?</summary>
         <div class="answer">
-          <p>Not at this one, sorry &mdash; it's people only.</p>
+          <p>Not at this one, sorry, it's people only.</p>
         </div>
       </details>
 
@@ -536,7 +536,7 @@
       <details>
         <summary>What if we can't make our time?</summary>
         <div class="answer">
-          <p>Let me know as early as you can. If another time on the day is still free, I'll move you across to it &mdash; that's usually the easiest fix.</p>
+          <p>Let me know as early as you can. If another time on the day is still free, I'll move you across to it, that's usually the easiest fix.</p>
           <p>Everything runs on the one day, Sunday 8 November, so there's no other date to move to.</p>
           <p>If you need to cancel more than seven days before the session, you'll be refunded half the fee. Inside seven days, the session isn't refundable.</p>
         </div>
@@ -559,7 +559,7 @@
     // Same key as the 'christmas-minis' entry in netlify/functions/lib/setmore.js
     var SERVICE_KEY = 'e1a1b152-9b9c-49c9-950d-caa62f3f1b82';
     var SESSION_DATE = '2026-11-08';
-    // Mirrors the slotTimes list in netlify/functions/lib/setmore.js — keep
+    // Mirrors the slotTimes list in netlify/functions/lib/setmore.js - keep
     // the two in step. That list, not Setmore's working hours, is what pins
     // the day to the advertised times.
     var TOTAL_SPOTS = 15;
@@ -567,8 +567,8 @@
     var SCARCITY_THRESHOLD = 3;
 
     // First session, 10:30am on Sunday 8 November 2026, as a fixed UTC
-    // instant. Melbourne is AEDT (UTC+11) by then — daylight saving starts
-    // 4 October — and pinning the instant rather than parsing a local string
+    // instant. Melbourne is AEDT (UTC+11) by then - daylight saving starts
+    // 4 October - and pinning the instant rather than parsing a local string
     // means the countdown is identical wherever the reader is, instead of
     // silently counting to 10:30am in their own timezone.
     var FIRST_SESSION_UTC = Date.UTC(2026, 10, 7, 23, 30, 0);
@@ -595,7 +595,7 @@
       var steps = document.querySelectorAll('.step');
       for (var i = 0; i < steps.length; i++) steps[i].classList.remove('active');
       $('step-' + name).classList.add('active');
-      // Nothing left to book once they've paid — hide the closing CTA.
+      // Nothing left to book once they've paid - hide the closing CTA.
       var cta = $('faq-cta');
       if (cta) cta.hidden = (name === 'confirm');
     }
@@ -684,7 +684,7 @@
         .catch(function (err) {
           $('slot-loading').hidden = true;
           $('slots-wrap').classList.remove('loading');
-          showNotice(err.message || 'Availability could not be loaded — please refresh the page.', true);
+          showNotice(err.message || 'Availability could not be loaded. Please refresh the page.', true);
         });
     }
 
@@ -699,7 +699,7 @@
       // The count only appears once it means something. "13 of 15 spots left"
       // reads as "nobody has booked this"; at three or fewer it is real
       // scarcity and worth stating. Deliberately not a fraction at that point
-      // either — "3 of 15" invites the same reading.
+      // either - "3 of 15" invites the same reading.
       var counter = $('counter');
       if (slots.length <= SCARCITY_THRESHOLD) {
         counter.hidden = false;
@@ -741,7 +741,7 @@
       var ctx = $('details-context');
       ctx.innerHTML = '';
       var b = document.createElement('b');
-      b.textContent = 'Christmas Mini — Sunday 8 November, ' + formatTime(state.time) + ' · Baxter Community Hall';
+      b.textContent = 'Christmas Mini: Sunday 8 November, ' + formatTime(state.time) + ' · Baxter Community Hall';
       ctx.appendChild(b);
       showStep('details');
       $('f-first').focus();
@@ -752,12 +752,12 @@
     // The Pay button stays disabled until the terms checkbox is ticked.
     $('f-terms').addEventListener('change', function (e) {
       $('pay-btn').disabled = !e.target.checked;
-      // The split button is gated by the terms tick too — it is the same
+      // The split button is gated by the terms tick too - it is the same
       // agreement, and the deposit clause lives in it.
       $('pay-split-btn').disabled = !e.target.checked || !(state.split && state.split.available);
     });
 
-    // "21 September" rather than "in 7 days" — a date is a commitment someone
+    // "21 September" rather than "in 7 days" - a date is a commitment someone
     // can picture, and it is what they will look for on their statement.
     function longDate(iso) {
       var p = iso.split('-');
@@ -777,7 +777,7 @@
       var note = $('pay-note');
 
       if (!split.available) {
-        // One full-width button, never a disabled second one — a greyed-out
+        // One full-width button, never a disabled second one - a greyed-out
         // button invites "why can't I?" and there is no good answer to give.
         splitBtn.hidden = true;
         $('pay-choice').style.gridTemplateColumns = '1fr';
@@ -790,7 +790,7 @@
       $('pay-choice').style.gridTemplateColumns = '';
       splitBtn.innerHTML = 'Pay ' + money(split.depositCents) + ' now' +
         '<small>' + money(split.balanceCents) + ' on ' + when + '</small>';
-      // Screen readers get the whole commitment, not "Pay $75 now" alone —
+      // Screen readers get the whole commitment, not "Pay $75 now" alone -
       // that is what is being agreed to.
       splitBtn.setAttribute('aria-label',
         'Pay ' + money(split.depositCents) + ' now, then ' + money(split.balanceCents) +
@@ -799,7 +799,7 @@
       note.hidden = false;
       note.textContent = 'Choosing part payment charges ' + money(split.depositCents) +
         ' today and the remaining ' + money(split.balanceCents) + ' to the same card on ' +
-        when + '. That is the final payment — nothing is charged after it.';
+        when + '. That is the final payment, nothing is charged after it.';
     }
 
     $('details-form').addEventListener('submit', function (e) {
@@ -860,7 +860,7 @@
           showNotice(err.message, true);
           loadSlots();
         } else {
-          showNotice('Could not start the payment — please try again shortly, or get in touch.', true);
+          showNotice('Could not start the payment. Please try again shortly or get in touch.', true);
         }
       });
     });
@@ -872,7 +872,7 @@
 
       // Returned from Stripe after a successful payment.
       if (params.get('booked') === '1') {
-        // Report the sale once — sessionStorage stash is cleared on first run,
+        // Report the sale once - sessionStorage stash is cleared on first run,
         // and GA4 de-duplicates on transaction_id (the checkout session id).
         var pending = null;
         try {
@@ -892,11 +892,11 @@
         return;
       }
 
-      // Returned from a cancelled payment — reload the slots, re-highlight the
+      // Returned from a cancelled payment - reload the slots, re-highlight the
       // previously chosen time if it's still free, and say no charge was made.
       if (params.get('cancelled') === '1') {
         state.restoreTime = params.get('time');
-        showNotice('Payment was cancelled — no charge was made. Pick a time below if you’d like to try again.', true);
+        showNotice('Payment was cancelled. No charge was made. Pick a time below if you’d like to try again.', true);
       }
 
       startCountdown();

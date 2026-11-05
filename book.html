@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Book a Session | Still & Golden Photography</title>
-  <meta name="description" content="Book your Still & Golden photography session — pick a session type, choose a date and time, and you're booked.">
+  <meta name="description" content="Book your Still & Golden photography session, pick a session type, choose a date and time, and you're booked.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -40,7 +40,7 @@
     .pay-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .pay-choice .btn { width: 100%; margin: 0; line-height: 1.35; }
     .pay-choice .btn small { display: block; font-weight: 400; opacity: 0.85; }
-    /* .btn sets display, which beats the hidden attribute — without this the
+    /* .btn sets display, which beats the hidden attribute - without this the
        unoffered split button showed as an empty black bar. */
     .pay-choice .btn[hidden] { display: none; }
 
@@ -245,10 +245,10 @@
         <p class="summary-line" id="slot-context"></p>
         <div class="slots" id="slot-list" role="group" aria-label="Available times"></div>
         <p id="slot-loading" class="loading" hidden>Loading times…</p>
-        <p id="slot-none" class="loading" hidden>No times left on that date — please pick another.</p>
+        <p id="slot-none" class="loading" hidden>No times left on that date, please pick another.</p>
       </div>
 
-      <!-- "None of these dates work?" — a copy of the homepage enquiry form for
+      <!-- "None of these dates work?" - a copy of the homepage enquiry form for
            someone who wanted to book and couldn't find a date (6 Oct 2026).
            Same endpoint; source: 'book' flags it in Deep's notification. -->
       <div class="alt-enquiry" id="alt-enquiry">
@@ -278,13 +278,13 @@
           <div class="field">
             <label for="alt-session">Session</label>
             <select id="alt-session" required>
-              <option value="glimpse">Glimpse — up to 30 min, 10 images</option>
-              <option value="golden">Golden — up to 60 min, 20 images</option>
-              <option value="gathered">Gathered — 90 min, full gallery (usually 60+ images)</option>
-              <option value="bloom">Bloom — two sessions</option>
+              <option value="glimpse">Glimpse: up to 30 min, 10 images</option>
+              <option value="golden">Golden: up to 60 min, 20 images</option>
+              <option value="gathered">Gathered: 90 min, full gallery (usually 60+ images)</option>
+              <option value="bloom">Bloom: two sessions</option>
               <option value="in-home-christmas">In-home Christmas session</option>
               <option value="sunset-beach-minis">Sunset beach mini</option>
-              <option value="unsure">Not sure yet — help me choose</option>
+              <option value="unsure">Not sure yet: help me choose</option>
             </select>
           </div>
           <div class="field">
@@ -297,11 +297,11 @@
           </div>
           <label class="consent-check" for="alt-marketing">
             <input type="checkbox" id="alt-marketing">
-            <span>Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</span>
+            <span>Email me occasionally about sessions and offers. (Optional, unsubscribe any time.)</span>
           </label>
           <button type="submit" class="btn" id="alt-submit">Send enquiry</button>
-          <p class="alt-done" id="alt-success" hidden>Thanks — I'll be in touch within 24 hours.</p>
-          <p class="alt-fail" id="alt-error" hidden>Something went wrong — please email me directly at <a href="mailto:hello@stillandgolden.com.au">hello@stillandgolden.com.au</a></p>
+          <p class="alt-done" id="alt-success" hidden>Thanks, I'll be in touch within 24 hours.</p>
+          <p class="alt-fail" id="alt-error" hidden>Something went wrong. Please email me directly at <a href="mailto:hello@stillandgolden.com.au">hello@stillandgolden.com.au</a></p>
         </form>
       </div>
     </section>
@@ -339,7 +339,7 @@
         </div>
         <label style="display:flex;gap:12px;align-items:flex-start;margin:22px 0 6px;font-size:0.85rem;color:#4d453f;">
           <input type="checkbox" id="f-marketing" style="width:18px;height:18px;margin-top:2px;accent-color:var(--warm-black);flex-shrink:0;">
-          <span>Email me occasionally about sessions and offers. (Optional — unsubscribe any time.)</span>
+          <span>Email me occasionally about sessions and offers. (Optional, unsubscribe any time.)</span>
         </label>
         <p class="sub" style="font-size:0.8rem;">By continuing to payment you agree to the <a href="/session-contract.html" target="_blank" rel="noopener">session terms and conditions</a>.</p>
         <details class="voucher" id="voucher-box">
@@ -364,7 +364,7 @@
       <div class="confirm-box">
         <div class="tick">Payment received.</div>
         <h2 style="margin-top:6px;">You're all set</h2>
-        <p class="sub" style="margin-bottom:0;">Your booking is being confirmed and you'll get a confirmation email shortly &mdash; Setmore will send its own confirmation too. If anything needs to move, just reply to it or get in touch.</p>
+        <p class="sub" style="margin-bottom:0;">Your booking is being confirmed and you'll get a confirmation email shortly, Setmore will send its own confirmation too. If anything needs to move, just reply to it or get in touch.</p>
       </div>
     </section>
   </main>
@@ -381,8 +381,8 @@
     // (Deep, 24 Sep 2026; previously four). It is a rolling window, so it always
     // means "a year from now", not a fixed end date.
     //
-    // Setmore itself imposes no ceiling here — it answers for any month asked,
-    // including well into next year — so this number is the only thing deciding
+    // Setmore itself imposes no ceiling here - it answers for any month asked,
+    // including well into next year - so this number is the only thing deciding
     // how far out someone can book. Each extra month is one people can commit
     // Deep to before he has planned that far; a year was chosen knowingly.
     //
@@ -407,7 +407,7 @@
 
     // Analytics must never be able to break a booking. site-tags.js is a
     // separate request and ad blockers do remove files like it, so every call
-    // goes through this — if the helper isn't there, nothing happens.
+    // goes through this - if the helper isn't there, nothing happens.
     function track(name, params) {
       try { if (window.sgTrack) window.sgTrack(name, params); } catch (e) {}
     }
@@ -480,7 +480,7 @@
         renderServiceCards();
         applyUrlState();
       }).catch(function () {
-        $('svc-loading').textContent = 'Sessions could not be loaded — please refresh the page.';
+        $('svc-loading').textContent = 'Sessions could not be loaded. Please refresh the page.';
       });
     }
 
@@ -488,7 +488,7 @@
       var grid = $('svc-grid');
       grid.innerHTML = '';
       state.services.forEach(function (s) {
-        // Seasonal offers are booked from /offers via ?service= — never listed here.
+        // Seasonal offers are booked from /offers via ?service= - never listed here.
         if (s.unlisted) return;
         var btn = document.createElement('button');
         btn.type = 'button';
@@ -548,7 +548,7 @@
       var tier = params.get('service');
       var s = tier ? state.services.find(function (x) { return x.tier === tier; }) : null;
 
-      // Returned from a cancelled Stripe payment — restore the selection and
+      // Returned from a cancelled Stripe payment - restore the selection and
       // land back on the slots step with a notice.
       if (params.get('cancelled') === '1' && s && params.get('date') && params.get('time')) {
         var d = params.get('date');
@@ -556,7 +556,7 @@
         state.cursor = { year: Number(d.slice(0, 4)), month: Number(d.slice(5, 7)) };
         selectService(s);
         selectDate(d);
-        showNotice('Payment was cancelled — no charge was made. Your date is still selected below if you’d like to try again.', true);
+        showNotice('Payment was cancelled. No charge was made. Your date is still selected below if you’d like to try again.', true);
         return;
       }
 
@@ -625,14 +625,14 @@
           $('cal-loading').hidden = true;
           $('cal-wrap').classList.remove('loading');
           renderCalendar();
-          // A month with nothing free is the moment someone gives up — offer
+          // A month with nothing free is the moment someone gives up - offer
           // the enquiry form straight away (once; never re-open one they closed).
           if (!state.availableDates[key].length) openAltEnquiry(true);
         })
         .catch(function (err) {
           $('cal-loading').hidden = true;
           $('cal-wrap').classList.remove('loading');
-          showNotice(err.message || 'Availability could not be loaded — please try again.', true);
+          showNotice(err.message || 'Availability could not be loaded. Please try again.', true);
         });
     }
 
@@ -779,7 +779,7 @@
         })
         .catch(function (err) {
           $('slot-loading').hidden = true;
-          showNotice(err.message || 'Times could not be loaded — please try again.', true);
+          showNotice(err.message || 'Times could not be loaded. Please try again.', true);
         });
       $('slot-area').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -790,20 +790,20 @@
       $('slot-heading').textContent = state.service.timeTbc ? 'Your day' : 'Pick a time';
       if (!slots.length) {
         $('slot-none').textContent = state.service.timeTbc
-          ? "That day's already taken — please pick another."
-          : 'No times left on that date — please pick another.';
+          ? "That day's already taken. Please pick another."
+          : 'No times left on that date, please pick another.';
         $('slot-none').hidden = false;
         return;
       }
       // One session a day, time agreed directly with Deep: the server returns
-      // a single placeholder slot. It is selected silently and never shown —
+      // a single placeholder slot. It is selected silently and never shown -
       // showing it would read as a promised start time.
       if (state.service.timeTbc) {
         $('slot-none').hidden = true;
         state.time = slots[0];
         var note = document.createElement('p');
         note.className = 'summary-line';
-        note.textContent = "That day is yours — I'll confirm the exact time with you, close to sunset.";
+        note.textContent = "That day is yours, I'll confirm the exact time with you, close to sunset.";
         var go = document.createElement('button');
         go.type = 'button';
         go.className = 'btn';
@@ -841,7 +841,7 @@
     function goToDetails() {
       $('details-context').innerHTML = '';
       var b = document.createElement('b');
-      b.textContent = state.service.name + ' — ' + formatDate(state.date) + ', ' +
+      b.textContent = state.service.name + ': ' + formatDate(state.date) + ', ' +
         (state.service.timeTbc ? 'time to be confirmed' : formatTime(state.time));
       var locs = state.service.locations;
       var sel = $('f-location');
@@ -864,7 +864,7 @@
 
     $('back-to-slots').addEventListener('click', function () { showStep('calendar'); });
 
-    // "21 September" rather than "in 7 days" — a date is a commitment someone
+    // "21 September" rather than "in 7 days" - a date is a commitment someone
     // can picture, and it is what they will look for on their statement.
     function longDate(iso) {
       var p = iso.split('-');
@@ -885,7 +885,7 @@
 
       // A voucher is used when paying in full, so no part payment beside it.
       if (!split.available || state.voucher) {
-        // One full-width button, never a disabled second one — a greyed-out
+        // One full-width button, never a disabled second one - a greyed-out
         // button invites "why can't I?" and there is no good answer to give.
         splitBtn.hidden = true;
         $('pay-choice').style.gridTemplateColumns = '1fr';
@@ -898,7 +898,7 @@
       $('pay-choice').style.gridTemplateColumns = '';
       splitBtn.innerHTML = 'Pay ' + money(split.depositCents) + ' now' +
         '<small>' + money(split.balanceCents) + ' on ' + when + '</small>';
-      // Screen readers get the whole commitment, not "Pay $125 now" alone —
+      // Screen readers get the whole commitment, not "Pay $125 now" alone -
       // that is what is being agreed to.
       splitBtn.setAttribute('aria-label',
         'Pay ' + money(split.depositCents) + ' now, then ' + money(split.balanceCents) +
@@ -907,14 +907,14 @@
       note.hidden = false;
       note.textContent = 'Choosing part payment charges ' + money(split.depositCents) +
         ' today and the remaining ' + money(split.balanceCents) + ' to the same card on ' +
-        when + '. That is the final payment — nothing is charged after it.';
+        when + '. That is the final payment, nothing is charged after it.';
     }
 
     // --- gift vouchers ----------------------------------------------------------
 
     function setConfirmLabel() {
       var v = state.voucher;
-      $('confirm-btn').textContent = !v ? 'Pay & book — $' + state.service.priceFrom
+      $('confirm-btn').textContent = !v ? 'Pay & book: $' + state.service.priceFrom
         : v.payCents === 0 ? 'Book with voucher'
         : 'Pay ' + money(v.payCents) + ' & book';
     }
@@ -988,7 +988,7 @@
       });
 
       // Stripe navigates away and back, and the return trip carries only
-      // `booked=1&session_id=...` — not what was bought. Stash it so the
+      // `booked=1&session_id=...` - not what was bought. Stash it so the
       // confirmation step can report the sale with its real value.
       try {
         sessionStorage.setItem('sg_pending_purchase', JSON.stringify({
@@ -1037,7 +1037,7 @@
           delete state.availableDates[monthKey(state.cursor.year, state.cursor.month)];
           fetchAvailability(state.cursor.year, state.cursor.month);
         } else {
-          showNotice('Could not start the payment — please try again shortly, or use the enquiry form.', true);
+          showNotice('Could not start the payment. Please try again shortly or use the enquiry form.', true);
         }
       });
     });

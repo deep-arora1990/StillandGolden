@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session Questionnaire — Still & Golden Photography</title>
+  <title>Session Questionnaire | Still & Golden Photography</title>
   <meta name="robots" content="noindex, nofollow">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -165,8 +165,8 @@
     .fg textarea { resize: vertical; min-height: 100px; }
 
     /* Consent choice. Built as radios rather than a single tick-box on
-       purpose: a box left unticked is ambiguous — it could mean "no" or
-       "didn't notice" — and this is the one answer that must not be guessed
+       purpose: a box left unticked is ambiguous - it could mean "no" or
+       "didn't notice" - and this is the one answer that must not be guessed
        at later. Two explicit options, one of which must be chosen. */
     .consent {
       background: rgba(26,23,20,0.04);
@@ -332,7 +332,7 @@
 
     <div class="page-label">Pre-Session</div>
     <h1 class="page-title">Session Questionnaire</h1>
-    <p class="page-subtitle">This isn't homework — it's how I get to know your family before I ever pick up the camera. Answer as much or as little as you like; everything you tell me helps me photograph this season of your life the way it actually feels.</p>
+    <p class="page-subtitle">This isn't homework: it's how I get to know your family before I ever pick up the camera. Answer as much or as little as you like; everything you tell me helps me photograph this season of your life the way it actually feels.</p>
     <div class="rule"></div>
 
     <div id="form-wrap">
@@ -353,17 +353,17 @@
         </div>
         <div class="fg">
           <label for="email">Your email</label>
-          <span class="hint">So I can reply to you — and send you a copy of your answers to keep.</span>
+          <span class="hint">So I can reply to you: and send you a copy of your answers to keep.</span>
           <input type="email" id="email" name="email" autocomplete="email" required>
         </div>
         <div class="fg">
           <label for="address">Your address</label>
-          <span class="hint">For in-home sessions — so I know where I'm heading on the day, and can think about the light before I arrive.</span>
+          <span class="hint">For in-home sessions: so I know where I'm heading on the day, and can think about the light before I arrive.</span>
           <input type="text" id="address" name="address" autocomplete="street-address">
         </div>
         <div class="fg">
           <label for="children">Children's names and ages</label>
-          <span class="hint">Tell me a little about them — who they are right now, not just numbers.</span>
+          <span class="hint">Tell me a little about them: who they are right now, not just numbers.</span>
           <textarea id="children" name="children" style="min-height:70px;"></textarea>
         </div>
         <div class="fg">
@@ -377,7 +377,7 @@
         </div>
         <div class="fg">
           <label for="capture">What do you most want to capture?</label>
-          <span class="hint">Connection, candid moments, individual portraits, the whole family together — anything goes.</span>
+          <span class="hint">Connection, candid moments, individual portraits, the whole family together: anything goes.</span>
           <textarea id="capture" name="capture"></textarea>
         </div>
         <div class="fg">
@@ -387,7 +387,7 @@
         </div>
         <div class="fg">
           <label for="vision_link">Have a vision for your session? Share the link</label>
-          <span class="hint">A Pinterest board, an Instagram post you loved — anything that shows the feel you're after. I'll use it as a starting point, not a script.</span>
+          <span class="hint">A Pinterest board, an Instagram post you loved: anything that shows the feel you're after. I'll use it as a starting point, not a script.</span>
           <input type="text" id="vision_link" name="vision_link" placeholder="Paste a link, or the name of a board">
         </div>
         <div class="fg">
@@ -399,7 +399,7 @@
         <div class="form-section">
           <div class="form-section-heading">This Moment in Time</div>
         </div>
-        <p class="hint" style="margin:-6px 0 18px;">These are the questions I love most — the little things that make right now <em>right now</em>.</p>
+        <p class="hint" style="margin:-6px 0 18px;">These are the questions I love most: the little things that make right now <em>right now</em>.</p>
         <div class="fg">
           <label for="whats_special">What's special about this stage in your child's life that you don't want to forget?</label>
           <textarea id="whats_special" name="whats_special"></textarea>
@@ -423,7 +423,7 @@
         <div class="form-section">
           <div class="form-section-heading">Practical Notes</div>
         </div>
-        <p class="hint" style="margin:-6px 0 18px;">Nothing here is a problem — it just helps the day feel easy.</p>
+        <p class="hint" style="margin:-6px 0 18px;">Nothing here is a problem: it just helps the day feel easy.</p>
         <div class="frow">
           <div class="fg">
             <label for="best_time">Best time of day for your child/children</label>
@@ -432,7 +432,7 @@
           </div>
           <div class="fg">
             <label for="shy">Is anyone coming who's shy in front of the camera?</label>
-            <span class="hint">Good to know early — it changes how I start the session.</span>
+            <span class="hint">Good to know early: it changes how I start the session.</span>
             <input type="text" id="shy" name="shy">
           </div>
         </div>
@@ -504,7 +504,7 @@
     }
 
     // Prefill from the terms-signed email's link (8 Oct 2026). Everything stays
-    // editable — the questionnaire is the client's own words.
+    // editable - the questionnaire is the client's own words.
     var booking = readBookingLink();
     if (booking) {
       var qf = document.getElementById('questionnaire-form');
@@ -542,7 +542,7 @@
         anythingElse: this.anything_else.value,
         // Required in the markup, so the browser blocks submit before this
         // reads null. Sent as the literal Yes/No the client picked rather than
-        // a boolean — this is a consent record, and it should read back as the
+        // a boolean - this is a consent record, and it should read back as the
         // words they were shown.
         imageConsent: (this.image_consent.value || '')
       };

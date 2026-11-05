@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session Agreement — Still & Golden Photography</title>
+  <title>Session Agreement | Still & Golden Photography</title>
   <meta name="robots" content="noindex, nofollow">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -290,11 +290,11 @@
       <h2>What's Included</h2>
       <p>Every session is delivered as a private online gallery within 2 weeks of the session date. The gallery stays online for 2 months, and images download as high-resolution JPEG files for personal use. The number of professionally edited photographs included depends on the session booked:</p>
       <ul>
-        <li><strong>Glimpse</strong> &mdash; up to 30 minutes, 10 edited photographs. The full gallery may be added for {{price.glimpse.gallery}}.</li>
-        <li><strong>Golden</strong> &mdash; up to 60 minutes, 20 edited photographs. The full gallery may be added for {{price.golden.gallery}}.</li>
-        <li><strong>Gathered</strong> &mdash; 90 minutes, 30 or more edited photographs, with the full gallery included.</li>
-        <li><strong>Bloom</strong> &mdash; two separate 90-minute sessions (a maternity or family session, and a newborn session), each delivered as its own gallery of 30 or more edited photographs, with the full gallery included.</li>
-        <li><strong>Seasonal offers</strong> (In-home Christmas session, Sunset beach mini) &mdash; 45 minutes, with the full gallery included. A beach mini takes place at the beach chosen at booking, timed around sunset, with the start time confirmed by the photographer.</li>
+        <li><strong>Glimpse:</strong> up to 30 minutes, 10 edited photographs. The full gallery may be added for {{price.glimpse.gallery}}.</li>
+        <li><strong>Golden:</strong> up to 60 minutes, 20 edited photographs. The full gallery may be added for {{price.golden.gallery}}.</li>
+        <li><strong>Gathered:</strong> 90 minutes, 30 or more edited photographs, with the full gallery included.</li>
+        <li><strong>Bloom:</strong> two separate 90-minute sessions (a maternity or family session, and a newborn session), each delivered as its own gallery of 30 or more edited photographs, with the full gallery included.</li>
+        <li><strong>Seasonal offers</strong> (In-home Christmas session, Sunset beach mini), 45 minutes, with the full gallery included. A beach mini takes place at the beach chosen at booking, timed around sunset, with the start time confirmed by the photographer.</li>
       </ul>
       <p style="margin-top:14px;"><strong>Choosing your images:</strong> Your online gallery shows every edited image from your session. For Glimpse and Golden sessions, you choose the images included in your session (10 or 20) and download those at no extra cost. The full gallery can be added through your online gallery at any time within the 2 months it is online. Gathered, Bloom and seasonal offer sessions include the full gallery, so every image can be downloaded.</p>
     </div>
@@ -350,12 +350,12 @@
           <label for="st">Session type</label>
           <select id="st" name="session_type" required>
             <option value="" disabled selected>Select a session</option>
-            <option value="Glimpse">Glimpse — up to 30 min, 10 images</option>
-            <option value="Golden">Golden — up to 60 min, 20 images</option>
-            <option value="Gathered">Gathered — 90 min, 30+ images</option>
-            <option value="Bloom">Bloom — two 90 min sessions</option>
-            <option value="in-home-christmas">In-home Christmas session — 45 min, full gallery</option>
-            <option value="sunset-beach-minis">Sunset beach mini — 45 min, full gallery</option>
+            <option value="Glimpse">Glimpse: up to 30 min, 10 images</option>
+            <option value="Golden">Golden: up to 60 min, 20 images</option>
+            <option value="Gathered">Gathered: 90 min, 30+ images</option>
+            <option value="Bloom">Bloom: two 90 min sessions</option>
+            <option value="in-home-christmas">In-home Christmas session: 45 min, full gallery</option>
+            <option value="sunset-beach-minis">Sunset beach mini: 45 min, full gallery</option>
           </select>
         </div>
         <div class="frow">
@@ -411,7 +411,7 @@
       } catch (e) { return null; }
     }
 
-    // Prefill from the booking (8 Oct 2026). Package and date are locked — they
+    // Prefill from the booking (8 Oct 2026). Package and date are locked - they
     // describe the session that was paid for; name and email stay editable.
     var booking = readBookingLink();
     if (booking) {
@@ -425,7 +425,7 @@
       }
       if (sel.selectedIndex > 0) sel.disabled = true;
       if (booking.d) { form.session_date.value = booking.d; form.session_date.readOnly = true; }
-      var label = sel.selectedIndex > 0 ? sel.options[sel.selectedIndex].text.split(' — ')[0] : '';
+      var label = sel.selectedIndex > 0 ? sel.options[sel.selectedIndex].text.split(': ')[0] : '';
       var when = booking.d ? new Date(booking.d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '';
       var time = booking.h ? (function (h) { var p = h.split(':'), n = +p[0]; return (n % 12 || 12) + ':' + p[1] + (n < 12 ? 'am' : 'pm'); })(booking.h) : 'time to be confirmed';
       var ref = document.getElementById('booking-ref');
