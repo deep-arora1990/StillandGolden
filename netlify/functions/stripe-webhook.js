@@ -240,6 +240,7 @@ async function holdFailedBooking(stripe, resend, session, meta, err, pricing = n
     `Payment: ${split ? `split — first half taken, second half due in ${splitRule(held).inWords} (subscription capped after it)`
       : pricing ? `${pricing.paidCents === 0 ? 'no charge' : `paid in full, ${dollars(pricing.paidCents)}`} (${pricing.code ? `code ${pricing.code}, ` : ''}${pricing.percentOff}% off)`
       : 'paid in full'}`,
+    meta.voucher_code ? `Gift voucher: ${meta.voucher_code} covered ${dollars(Number(meta.voucher_used_cents) || 0)} of this booking. It has NOT been taken off the voucher yet: if you keep the booking, take that amount off the voucher in Stripe; if you refund it, leave the voucher as it is.` : null,
     meta.notes ? `Notes: ${meta.notes}` : null,
     `Stripe session: ${session.id}`,
     split && session.subscription ? `Subscription: ${typeof session.subscription === 'string' ? session.subscription : session.subscription.id}` : null,

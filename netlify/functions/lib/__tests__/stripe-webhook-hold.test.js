@@ -69,6 +69,27 @@ describe('held booking', () => {
     expect(toDeep.text).toMatch(/Unable to fetch customer!/)
   })
 
+  it('names the gift voucher and what it covered, so Deep can adjust it', async () => {
+    const { holdFailedBooking } = await webhook()
+    const resend = fakeResend()
+    const pricing = { listCents: 39500, paidCents: 29500, discountCents: 10000, percentOff: 25, code: null }
+    await holdFailedBooking(fakeStripe(), resend, { id: 'cs_1' },
+      { ...base, voucher_code: 'SG-ABCD-1234', voucher_used_cents: '10000' }, err, pricing)
+    const toDeep = resend.sent.find((m) => m.to !== base.email)
+    expect(toDeep.text).toMatch(/SG-ABCD-1234/)
+    expect(toDeep.text).toMatch(/\$100/)
+    expect(toDeep.text).toMatch(/voucher/i)
+    const toCustomer = resend.sent.find((m) => m.to === base.email)
+    expect(toCustomer.text).not.toMatch(/SG-ABCD-1234/)
+  })
+
+  it('leaves the alert unchanged when there is no voucher', async () => {
+    const { holdFailedBooking } = await webhook()
+    const resend = fakeResend()
+    await holdFailedBooking(fakeStripe(), resend, { id: 'cs_1' }, base, err)
+    expect(resend.sent.find((m) => m.to !== base.email).text).not.toMatch(/voucher/i)
+  })
+
   // The case that actually happened: split payment, booking failed, and the
   // subscription was left with nothing to stop it.
   it('still caps a split subscription, so a held booking cannot bill weekly forever', async () => {
