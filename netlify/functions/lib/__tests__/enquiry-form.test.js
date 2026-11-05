@@ -68,7 +68,7 @@ describe('Gathered is sold on the full gallery', () => {
     const { TIERS } = require('../setmore.js')
     expect(TIERS.gathered.includes).toMatch(/full gallery/i)
     expect(read('netlify/functions/submit-enquiry.js')).toMatch(/gathered: 'Gathered — 90 min, full gallery/)
-    expect(read('index.html')).toMatch(/<option value="gathered">Gathered &mdash; 90 min, full gallery/)
+    expect(read('index.html')).toMatch(/<option value="gathered">Gathered: 90 min, full gallery/)
     expect(read('packages.html')).toMatch(/pkg-name">Gathered<\/span><span class="pkg-tag">90 minutes &middot; full gallery/)
 
     // The full gallery averages 60+ images (Deep, 17 Oct 2026). The contract
@@ -229,6 +229,6 @@ describe('enquiry form: Wedding', () => {
     expect(html).toMatch(/addEventListener\('change', applySessionHint\)/)
   })
   it('says weddings are being booked', () => {
-    expect(read('index.html')).toContain('Currently booking Glimpse, Golden, Gathered and Bloom sessions, and weddings &mdash; and if')
+    expect(read('index.html')).toContain('Currently booking Glimpse, Golden, Gathered and Bloom sessions, and weddings, and if')
   })
 })

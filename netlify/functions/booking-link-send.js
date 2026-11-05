@@ -72,7 +72,7 @@ function weddingMail(kind, tier, meta, token, tierKey) {
         ...brandedEmail({
           eyebrow: 'Your wedding agreement',
           heading,
-          paragraphs: [`Here's the agreement for your ${esc(tier.name)} wedding on ${esc(when)}. You both sign it on the same page, so grab your partner. Your details are already filled in, so it only takes a couple of minutes.`],
+          paragraphs: [`Here's the agreement for your wedding on ${esc(when)} (${esc(tier.name)}). You both sign it on the same page, so grab your partner. Your details are already filled in, so it only takes a couple of minutes.`],
           buttons: [{ label: 'Sign your wedding agreement', url: linkFor(termsPathFor(tierKey), token) }],
           after,
         }),
@@ -82,7 +82,7 @@ function weddingMail(kind, tier, meta, token, tierKey) {
         ...brandedEmail({
           eyebrow: 'Before your wedding',
           heading,
-          paragraphs: [`Before your ${esc(tier.name)} wedding on ${esc(when)}: a short questionnaire about you two, the day and your people. It means I turn up already knowing who's who and what matters to you.`],
+          paragraphs: [`Before your wedding on ${esc(when)} (${esc(tier.name)}): a short questionnaire about you two, the day and your people. It means I turn up already knowing who's who and what matters to you.`],
           buttons: [{ label: 'Fill in your wedding questionnaire', url: linkFor(questionnairePathFor(tierKey), token) }],
           after,
         }),

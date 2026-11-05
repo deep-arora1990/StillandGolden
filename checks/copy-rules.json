@@ -32,6 +32,10 @@
     "session-lengths": {
       "headline": "Session length doesn't match the booking",
       "hint": "Glimpse books 30 minutes and Golden 60. A different length here promises a session the booking can't give."
+    },
+    "no-em-dash": {
+      "headline": "An em dash is in the copy",
+      "hint": "Deep's rule: no em dashes. Use a comma, colon or full stop instead. Don't swap in an en dash or spaced hyphen."
     }
   }
 }

@@ -138,8 +138,8 @@ describe('signing the terms', () => {
     // The page as published: prices are filled in by build.js from data/prices.json.
     const { renderPage } = (await import('module')).createRequire(import.meta.url)('../../../../build.js')
     const page = renderPage('contract.html', fs.readFileSync(path.join(ROOT, 'contract.html'), 'utf8'))
-    expect(page).toMatch(/Glimpse<\/strong> &mdash; up to 30 minutes[^<]*full gallery may be added for \$175/)
-    expect(page).toMatch(/Golden<\/strong> &mdash; up to 60 minutes[^<]*full gallery may be added for \$175/)
+    expect(page).toMatch(/Glimpse:<\/strong> up to 30 minutes[^<]*full gallery may be added for \$175/)
+    expect(page).toMatch(/Golden:<\/strong> up to 60 minutes[^<]*full gallery may be added for \$175/)
   })
 
   it('knows the two seasonal offers (full gallery included)', async () => {

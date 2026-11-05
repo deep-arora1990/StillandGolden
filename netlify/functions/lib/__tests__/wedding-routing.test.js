@@ -98,7 +98,7 @@ describe('wedding routing', () => {
     expect(m.to).toBe('sam@example.com')
     expect(L.verify(tokenIn(m.html, '/wedding-agreement'))).toMatchObject({ s: 'wedding-full', h: '', a: 'appt9', d: '2027-03-06' })
     expect(m.html).toContain('Your wedding agreement')
-    expect(m.html).toContain('The whole shebang wedding on Saturday, 6 March 2027')
+    expect(m.html).toMatch(/agreement for your wedding on Saturday, 6 March 2027 \(The whole shebang\)\./)
     expect(m.html).toContain('You both sign it on the same page')
     expect(m.html).not.toMatch(/10:00|10am|—|&mdash;|session terms/)
   })
@@ -115,7 +115,7 @@ describe('wedding routing', () => {
     expect(p).not.toHaveProperty('p2'); expect(p).not.toHaveProperty('k')
     expect(p.x).toBeGreaterThanOrEqual(before + 119 * 86400000)   // 120 days from sending, not from booking
     expect(m.html).toContain('Fill in your wedding questionnaire')
-    expect(m.html).toContain('Before your Short &amp; sweet wedding on Saturday, 6 March 2027')
+    expect(m.html).toContain('Before your wedding on Saturday, 6 March 2027 (Short &amp; sweet): a short questionnaire about you two, the day and your people.')
     expect(m.html).not.toMatch(/\/questionnaire\?t=|—|&mdash;/)
   })
 
