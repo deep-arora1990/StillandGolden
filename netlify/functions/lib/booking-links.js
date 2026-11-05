@@ -14,6 +14,7 @@
 //   a   Setmore appointment key        f / l / e   first name / last name / email
 //   s   tier key (e.g. 'golden')        d           session date 'YYYY-MM-DD'
 //   h   start time 'HH:MM' ('' when the time is to be confirmed)
+//   k   link kind (wedding links only; family links have none)
 //   loc beach, for offers with a location      x   expiry, ms since epoch
 
 const crypto = require('crypto');
@@ -34,16 +35,18 @@ function signature(data, key) {
 
 // Returns null when no secret is configured — callers then fall back to the
 // plain, unprefilled page rather than sending a link that can't be verified.
-function sign(payload, now = Date.now()) {
+function sign(payload, now = Date.now(), maxAgeDays = MAX_AGE_DAYS) {
   const key = secret();
   if (!key) return null;
-  const data = b64url(JSON.stringify({ ...payload, x: now + MAX_AGE_DAYS * 86400000 }));
+  const data = b64url(JSON.stringify({ ...payload, x: now + maxAgeDays * 86400000 }));
   return `${data}.${signature(data, key)}`;
 }
 
 // The payload, or null for anything tampered with, expired, malformed or
-// unverifiable. Constant-time comparison of the signature.
-function verify(token, now = Date.now()) {
+// unverifiable. Constant-time comparison of the signature. `kind` is the
+// payload's `k` (null for booking links, which carry none), so a wedding link
+// can never stand in for a family link or the other way round.
+function verify(token, now = Date.now(), { kind = null } = {}) {
   const key = secret();
   if (!key || typeof token !== 'string' || token.length > 2000) return null;
   const [data, sig] = token.split('.');
@@ -58,6 +61,7 @@ function verify(token, now = Date.now()) {
     return null;
   }
   if (!payload || typeof payload.x !== 'number' || payload.x < now) return null;
+  if ((payload.k ?? null) !== kind) return null;
   return payload;
 }
 
