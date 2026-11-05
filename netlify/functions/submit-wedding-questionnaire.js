@@ -3,7 +3,7 @@
 // The wedding questionnaire (wedding-questionnaire.html). It goes out from
 // Studio only (booking-link-send, kind questionnaire), never automatically
 // on signing. Answers go to Deep, to the couple (both partners when the
-// partner's email is known) and to Studio's Bookings screen.
+// signed link carries the partner's email) and to Studio's Bookings screen.
 //
 // There is deliberately no image-consent question here, no image_consent
 // field, and nothing is posted to STUDIO_QUESTIONNAIRE_INGEST_URL.
@@ -106,8 +106,9 @@ exports.handler = async (event) => {
   if (!weddingDate) return json(400, { error: 'Please add your wedding date.' });
   const pkg = tier ? tier.name : '';
 
-  // Partner 2's address, carried in from the questionnaire link. Ignored when invalid.
-  const rawPartner = String(data.partnerEmail || '').trim();
+  // Partner 2's address comes ONLY from the signed link (p2). Anything in the
+  // request body is ignored, so the form can't be made to email a stranger.
+  const rawPartner = String((link && link.p2) || '').trim();
   const partnerEmail = rawPartner.length <= 200 && EMAIL.test(rawPartner) ? rawPartner : '';
   const copyTo = [];
   for (const addr of [A.email, partnerEmail]) {

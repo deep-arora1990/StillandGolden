@@ -121,21 +121,29 @@ describe('the wedding questionnaire', () => {
   })
 })
 
-describe('Partner 2 is copied in', () => {
-  it('the couple copy goes to both when partnerEmail is valid', async () => {
+describe('Partner 2 is copied in, only from the signed link', () => {
+  it('a body partnerEmail is ignored entirely', async () => {
     await handler(post({ ...A, token: link(), partnerEmail: 'alex@example.com' }))
+    expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
+    expect(JSON.stringify(emails())).not.toContain('alex@example.com')
+    calls.length = 0
+    await handler(post({ ...A, weddingDate: '2027-03-06', partnerEmail: 'alex@example.com' }))
+    expect(JSON.stringify(emails())).not.toContain('alex@example.com')
+  })
+  it('a token carrying p2 copies both partners', async () => {
+    await handler(post({ ...A, token: link({ p2: 'alex@example.com' }) }))
     expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com', 'alex@example.com'])
     expect(emails()).toHaveLength(2)
   })
-  it('only to email when partnerEmail is missing or invalid', async () => {
-    for (const partnerEmail of [undefined, 'not-an-email', 'a@b.co'.padEnd(250, 'x')]) {
+  it('p2 equal to email, any case, goes once', async () => {
+    await handler(post({ ...A, token: link({ p2: 'SAM@Example.com' }) }))
+    expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
+  })
+  it('an invalid p2 is ignored', async () => {
+    for (const p2 of ['not-an-email', 'a@b.co'.padEnd(250, 'x')]) {
       calls.length = 0
-      await handler(post({ ...A, token: link(), ...(partnerEmail ? { partnerEmail } : {}) }))
+      await handler(post({ ...A, token: link({ p2 }) }))
       expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
     }
-  })
-  it('deduped when equal, ignoring case', async () => {
-    await handler(post({ ...A, token: link(), partnerEmail: 'SAM@Example.com' }))
-    expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
   })
 })
