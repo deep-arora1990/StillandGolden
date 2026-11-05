@@ -231,10 +231,12 @@ async function renderAgreementPDF(data, { title, sections }) {
         x: colX[i], y, size: fitSize(timesRoman, sg.name, 11, colW[i]),
         font: timesRoman, color: rgb(...BRAND.black),
       });
-      cur.drawText(sg.email, {
-        x: colX[i], y: y - 14, size: fitSize(helvetica, sg.email, 8, colW[i]),
-        font: helvetica, color: rgb(...BRAND.mid),
-      });
+      if (sg.email) {
+        cur.drawText(sg.email, {
+          x: colX[i], y: y - 14, size: fitSize(helvetica, sg.email, 8, colW[i]),
+          font: helvetica, color: rgb(...BRAND.mid),
+        });
+      }
       cur.drawText(agreed, {
         x: colX[i], y: y - 28, size: fitSize(helvetica, agreed, 9, colW[i]),
         font: helvetica, color: rgb(...BRAND.mid),

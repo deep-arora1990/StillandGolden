@@ -4,9 +4,9 @@
 // wedding booking email.
 //
 // One form for both partners: a wedding is booked by two people and either of
-// them can be held to the terms, so both type their name and email and both
-// tick. Each gets the signed PDF; Deep gets it too. The two may share an
-// inbox, so the couple's email goes to the unique list of addresses.
+// them can be held to the terms, so both type their name and both tick (Partner 1's
+// email is required, Partner 2's is optional). Each gets the signed PDF; Deep gets it too. Many couples share an
+// inbox, so the couple's email goes to the unique list of addresses given.
 //
 // The package and the wedding date come ONLY from the verified booking link
 // (link.s, link.d). The form can't change them, so a link can't be edited into
@@ -61,7 +61,8 @@ exports.handler = async (event) => {
     agreed: !!raw[i] && raw[i].agreed === true,
   }));
   const [p1, p2] = partners;
-  if (partners.some((p) => !p.name || !EMAIL.test(p.email))) return json(400, { error: 'Please add both your names and emails.' });
+  if (!p1.name || !p2.name || !EMAIL.test(p1.email)) return json(400, { error: "Please add both your names, and at least Partner 1's email." });
+  if (p2.email && !EMAIL.test(p2.email)) return json(400, { error: "Partner 2's email doesn't look quite right. Leave it blank if you share an inbox." });
   if (p1.name.toLowerCase() === p2.name.toLowerCase()) return json(400, { error: 'Partner 1 and Partner 2 need to be two different people.' });
   if (!(p1.agreed && p2.agreed)) return json(400, { error: 'You both need to tick the box to agree.' });
   const agreementDate = String(data.agreementDate || '');
@@ -93,7 +94,7 @@ exports.handler = async (event) => {
         `Wedding agreement signed by both partners: ${tier.name} (${tier.lengthLabel})`,
         `Wedding date: ${link.d}`,
         `Partner 1: ${p1.name} <${p1.email}>, agreed`,
-        `Partner 2: ${p2.name} <${p2.email}>, agreed`,
+        `Partner 2: ${p2.name}${p2.email ? ` <${p2.email}>` : ''}, agreed`,
         `Agreement date: ${agreementDate}`,
         `Signed from the booking link (Setmore appointment ${link.a || '?'})`,
       ].join('\n'),
@@ -102,7 +103,7 @@ exports.handler = async (event) => {
 
     await resend.emails.send({
       from: 'Still & Golden <hello@stillandgolden.com.au>',
-      to: [...new Set([p1.email, p2.email])],
+      to: [...new Set([p1.email, p2.email].filter(Boolean))],
       subject: 'Your signed wedding agreement',
       ...brandedEmail({
         eyebrow: 'Agreement signed',

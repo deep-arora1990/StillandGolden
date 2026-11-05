@@ -81,6 +81,8 @@ describe('signing the wedding agreement', () => {
       { ...g, partners: [g.partners[0]] },
       { ...g, partners: [g.partners[0], { name: '', email: 'alex@example.com', agreed: true }] },
       { ...g, partners: [g.partners[0], { name: 'Alex Kim', email: 'nope', agreed: true }] },
+      { ...g, partners: [{ ...g.partners[0], email: '' }, g.partners[1]] },
+      { ...g, partners: [{ ...g.partners[0], email: 'nope' }, g.partners[1]] },
       { ...g, partners: [g.partners[0], { name: ' sam lee ', email: 'x@example.com', agreed: true }] },
     ]) expect((await handler(post(bad))).statusCode).toBe(400)
     expect(emails()).toHaveLength(0); expect(toStudio()).toHaveLength(0)
@@ -89,6 +91,25 @@ describe('signing the wedding agreement', () => {
     const g = good(); g.partners[1].email = 'sam@example.com'
     expect((await handler(post(g))).statusCode).toBe(200)
     expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
+  })
+  it('Partner 2 email is optional: one recipient, clean Deep line, blank Studio email', async () => {
+    const g = good(); g.partners[1].email = ''
+    expect((await handler(post(g))).statusCode).toBe(200)
+    expect(emails()).toHaveLength(2)
+    expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
+    expect(to(OWNER).text).toContain('Partner 2: Alex Kim, agreed')
+    expect(to(OWNER).text).not.toContain('<>')
+    expect(toStudio()[0].body.signers).toEqual([{ name: 'Sam Lee', email: 'sam@example.com' }, { name: 'Alex Kim', email: '' }])
+  })
+  it('a Partner 2 email that is given but invalid is refused with a clear message', async () => {
+    const g = good(); g.partners[1].email = 'nope'
+    const res = await handler(post(g))
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toBe("Partner 2's email doesn't look quite right. Leave it blank if you share an inbox.")
+  })
+  it('missing Partner 1 email gets the new message', async () => {
+    const g = good(); g.partners[0].email = ''
+    expect(JSON.parse((await handler(post(g))).body).error).toBe('Please add both your names, and at least Partner 1\'s email.')
   })
   it('Studio hears terms_signed once, with both signers', async () => {
     await handler(post(good()))

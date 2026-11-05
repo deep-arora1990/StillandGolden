@@ -1,4 +1,4 @@
-// Stage 3, Task 5: the wedding questionnaire goes to Deep, to both partners
+// Stage 3, Task 5: the wedding questionnaire goes to Deep, to the one email given,
 // and to Studio, and it never asks about image consent.
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import fs from 'node:fs'
@@ -121,29 +121,15 @@ describe('the wedding questionnaire', () => {
   })
 })
 
-describe('Partner 2 is copied in, only from the signed link', () => {
+describe('the copy goes to the email on the form only', () => {
   it('a body partnerEmail is ignored entirely', async () => {
     await handler(post({ ...A, token: link(), partnerEmail: 'alex@example.com' }))
     expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
     expect(JSON.stringify(emails())).not.toContain('alex@example.com')
-    calls.length = 0
-    await handler(post({ ...A, weddingDate: '2027-03-06', partnerEmail: 'alex@example.com' }))
-    expect(JSON.stringify(emails())).not.toContain('alex@example.com')
   })
-  it('a token carrying p2 copies both partners', async () => {
+  it('a token carrying p2 does NOT add a recipient', async () => {
     await handler(post({ ...A, token: link({ p2: 'alex@example.com' }) }))
-    expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com', 'alex@example.com'])
-    expect(emails()).toHaveLength(2)
-  })
-  it('p2 equal to email, any case, goes once', async () => {
-    await handler(post({ ...A, token: link({ p2: 'SAM@Example.com' }) }))
     expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
-  })
-  it('an invalid p2 is ignored', async () => {
-    for (const p2 of ['not-an-email', 'a@b.co'.padEnd(250, 'x')]) {
-      calls.length = 0
-      await handler(post({ ...A, token: link({ p2 }) }))
-      expect([].concat(to('sam@example.com').to)).toEqual(['sam@example.com'])
-    }
+    expect(JSON.stringify(emails())).not.toContain('alex@example.com')
   })
 })

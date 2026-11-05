@@ -27,8 +27,9 @@ describe('the wedding agreement page', () => {
     expect(html).not.toMatch(/—|&mdash;|\p{Extended_Pictographic}/u)
     expect(html).not.toMatch(/7 days|seven days|nine days|sneak peek|image_consent|Faceless/i)
   })
-  it('both partners sign: two names, two emails, two required ticks', () => {
-    for (const id of ['p1name', 'p1email', 'p2name', 'p2email']) expect(html).toMatch(new RegExp(`id="${id}"[^>]*required`))
+  it('both partners sign: two names, Partner 1 email, two required ticks', () => {
+    expect(html).not.toMatch(/id="p2email"[^>]*required/); expect(html).toContain('Email (optional if you share one)')
+    for (const id of ['p1name', 'p1email', 'p2name']) expect(html).toMatch(new RegExp(`id="${id}"[^>]*required`))
     expect(html.match(/type="checkbox"[^>]*required/g)).toHaveLength(2)
     expect(html).toContain('submit-wedding-agreement'); expect(html).toMatch(/partners:\s*\[/)
     expect(html).not.toContain('submit-contract')

@@ -44,6 +44,17 @@ describe('agreement PDF signers', () => {
     expect(t).not.toContain('SESSION DATE')
   })
 
+  it('a signer with no email draws no empty email line', async () => {
+    const { renderAgreementPDF } = await fresh('../agreement-pdf.js')
+    const W = await fresh('../wedding-agreement.js')
+    const signers = [COUPLE.signers[0], { name: 'Alex Kim', email: '' }]
+    const { calls } = await drawnText(() => renderAgreementPDF({ ...COUPLE, signers }, W.weddingAgreementSections('wedding-full')))
+    const t = calls.map((c) => c.text)
+    expect(t).toContain('Alex Kim'); expect(t).toContain('sam@example.com')
+    expect(t).not.toContain(''); expect(t.some((x) => /<|>/.test(x))).toBe(false)
+    expect(t.filter((s) => s === 'Agreed: 2026-11-10')).toHaveLength(2)
+  })
+
   it("an emoji or a long name in a couple's names never breaks the PDF", async () => {
     const { renderAgreementPDF } = await fresh('../agreement-pdf.js')
     const W = await fresh('../wedding-agreement.js')
