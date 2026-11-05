@@ -52,4 +52,15 @@ describe('agreement PDF signers', () => {
     expect(calls.map((c) => c.text)).toContain('Sam Lee')
     for (const c of calls.filter((c) => c.text.startsWith('alexandria'))) expect(c.x + c.size * 0.5 * c.text.length).toBeLessThan(595.28)
   })
+
+  it('accented letters outside WinAnsi keep their base letter, emoji are dropped', async () => {
+    const { renderAgreementPDF } = await fresh('../agreement-pdf.js')
+    const W = await fresh('../wedding-agreement.js')
+    const names = [['M\u0101ori Ng\u0101', 'Maori Nga'], ['Nguy\u1EC5n Th\u1ECB', 'Nguyen Thi'], ['Zo\u00EB M\u00FCller', 'Zo\u00EB M\u00FCller'], ['Sam \u{1F48D} Lee', 'Sam Lee']]
+    for (const [input, expected] of names) {
+      const signers = [{ name: input, email: 'a@example.com' }, { name: 'Alex Kim', email: 'b@example.com' }]
+      const { calls } = await drawnText(() => renderAgreementPDF({ ...COUPLE, signers }, W.weddingAgreementSections('wedding-short')))
+      expect(calls.map((c) => c.text)).toContain(expected)
+    }
+  })
 })

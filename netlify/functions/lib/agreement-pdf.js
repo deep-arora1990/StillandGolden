@@ -19,7 +19,13 @@ const WINANSI_SAFE = /[\n\t\x20-\x7E\xA0-\xFF\u20AC\u201A\u0192\u201E\u2026\u202
 
 function pdfSafe(value) {
   if (typeof value !== 'string') return value;
-  const cleaned = [...value].filter((ch) => WINANSI_SAFE.test(ch)).join('');
+  // A letter WinAnsi lacks (ā, ễ) keeps its base letter: decompose, drop the
+  // combining marks, and keep the result only if it is drawable. Emoji and
+  // the like have no such base and are dropped.
+  const cleaned = [...value].map((ch) => {
+    if (WINANSI_SAFE.test(ch)) return ch;
+    return [...ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '')].filter((c) => WINANSI_SAFE.test(c)).join('');
+  }).join('');
   return cleaned.replace(/[^\S\n]{2,}/g, ' ').trim();
 }
 
