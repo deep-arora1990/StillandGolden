@@ -89,6 +89,9 @@ main a { color: var(--warm-black); }
 /* Christmas minis: two versions, picked by site.js from the live calendar
    (<html data-xmas>). Until it answers, the sold-out version shows. */
 html[data-xmas="open"] .xmas-sold { display: none !important; }
+/* After 5pm on the mini day (site.js sets data-xmas-over) the whole offer goes. */
+html[data-xmas-over] .pkg.xmas-card,
+html[data-xmas-over] h2:has(> .xmas-open) { display: none !important; }
 html:not([data-xmas="open"]) .xmas-open { display: none !important; }
 /* Sold out (12 Oct 2026): the card stays, so people see it went, but it
    recedes and points them at what's still open. */

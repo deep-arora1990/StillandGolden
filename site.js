@@ -7,6 +7,12 @@
 // the X button or when any menu link is tapped. It also runs the campaign
 // strip (switched off) and the Christmas minis sold-out check.
 
+// Christmas minis come down at 5pm on the day (Deep, 7 Nov 2026), after the last
+// session. The browser does it, so no deploy is needed at 5pm: <html data-xmas-over>
+// hides the offer on /offers (blocks.css). Remove the minis for good in the next update.
+var XMAS_OVER_AT = '2026-11-08T17:00:00+11:00';
+if (Date.now() >= Date.parse(XMAS_OVER_AT)) document.documentElement.setAttribute('data-xmas-over', '');
+
 (function () {
   // Christmas minis campaign. Everything below keys off CAMPAIGN so the whole
   // thing can be switched off by flipping `live` (or just letting `endsAt`
